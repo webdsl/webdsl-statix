@@ -1,0 +1,43 @@
+module WebDSL-Native
+
+imports
+  WebDSL-Lexical
+  WebDSL
+
+sorts
+
+  Derive DeriveType DeriveProperty
+
+context-free syntax
+
+  NativeClassDeclaration.NativeClass = "native" "class" QId NativeClassAlias NativeClassSuper "{" NativeClassElement* "}" 
+  NativeClassAlias.NativeClassAlias = "as" Id {prefer}
+  NativeClassAlias.None =  
+  NativeClassSuper.NativeClassSuper = ":" Id {prefer}
+  NativeClassSuper.None =  
+
+context-free syntax
+
+  NativeClassElement.NativeClassProperty = Id ":" NativeType 
+
+context-free syntax
+
+  NativeClassElement = NativeClassFunction 
+  NativeClassFunction.NativeClassFunction = NativeClassFunctionStatic NativeFunId "(" {NativeType ","}* ")" NativeClassFunctionReturn 
+  NativeClassElement = "constructor" "(" {NativeType ","}* ")" NativeClassFunctionReturn {reject}
+  NativeClassFunctionReturn.NativeClassFunctionReturn = ":" NativeType {prefer}
+  NativeClassFunctionReturn.None =  
+  NativeClassFunctionStatic.NativeClassFunctionStatic = "static" {prefer}
+  NativeClassFunctionStatic.None =  
+  NativeClassElement.NativeClassFunctionFromStatic = QId "as" NativeClassFunction 
+  NativeClassElement.NativeClassConstructor = "constructor" "(" {NativeType ","}* ")" 
+  NativeClassElement.NativeClassConstructorFromStatic = QId "as" "constructor" "(" {NativeType ","}* ")" 
+  NativeFunId = "constructor" {reject}
+  NativeType.NativeGenericType = Id "<" {NativeType ","}* ">" 
+  NativeType = "[" {NativeType ","}* "]" {ast("NativeGenericType(\"List\",<1>)")}
+  NativeType = "{" {NativeType ","}* "}" {ast("NativeGenericType(\"Set\",<1>)")}
+  NativeType.NativeSimpleType = Id 
+
+lexical syntax
+
+  NativeFunId = Id 

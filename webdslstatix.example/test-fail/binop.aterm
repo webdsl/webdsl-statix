@@ -1,0 +1,114 @@
+ApplicationDefs(
+  "binop"
+, [ DefinePage([], "root", [], None(), [])
+  , Entity("Ent1", "Ent2", [])
+  , Entity("Ent2", "Ent3", [])
+  , EntityNoSuper("Ent3", [])
+  , Function(
+      "testbinop"
+    , [Arg("sarg", SimpleSort("String"))]
+    , SimpleSort("Void")
+    , Block(
+        [ Stat(Add(Int("1"), Int("1")))
+        , Stat(Add(Float("1.0"), Float("1.0")))
+        , Stat(Add(String("123"), Int("123")))
+        , Stat(Add(String("123"), String("123")))
+        , Stat(Add(String("123"), Float("1.2")))
+        , Stat(Add(Int("1"), String("123")))
+        , Stat(
+            Add(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , VarDeclInitInferred(
+            "x1"
+          , Add(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , VarDeclInitInferred(
+            "x2"
+          , LargerThan(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , VarDeclInitInferred(
+            "x3"
+          , LargerThanOrEqual(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , VarDeclInitInferred(
+            "x4"
+          , SmallerThan(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , VarDeclInitInferred(
+            "x5"
+          , SmallerThanOrEqual(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , Stat(Sub(Int("132"), String("Sdfs")))
+        , Stat(Sub(Int("123"), Int("123")))
+        , Stat(Mul(Float("1.0"), Float("1.0")))
+        , Stat(Mod(Int("23423"), Int("2345")))
+        , Stat(Mod(Float("23423.0"), Float("2345.0")))
+        , Stat(
+            amb(
+              [ amb(
+                  [ Eq(
+                      amb(
+                        [ Or(And(True(), True()), False())
+                        , And(True(), Or(True(), False()))
+                        ]
+                      )
+                    , True()
+                    )
+                  , And(
+                      True()
+                    , amb(
+                        [ Eq(Or(True(), False()), True())
+                        , Or(True(), Eq(False(), True()))
+                        ]
+                      )
+                    )
+                  ]
+                )
+              , Or(And(True(), True()), Eq(False(), True()))
+              ]
+            )
+          )
+        , Stat(Eq(String(""), Int("1")))
+        , Stat(NotEq(Float("1.1"), String("123")))
+        , Stat(
+            Eq(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , Stat(
+            NotEq(
+              ObjectCreation(SimpleSort("Ent2"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , Stat(Eq(ThisCall("now", []), ThisCall("today", [])))
+        , Stat(
+            NotEq(Var("sarg"), Cast(String(""), SimpleSort("Email")))
+          )
+        , Stat(Eq(Var("sarg"), Int("123")))
+        , ScheduleNoFor(ThisCall("myNewFunc", []))
+        ]
+      )
+    )
+  ]
+, []
+)

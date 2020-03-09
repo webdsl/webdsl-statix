@@ -1,0 +1,7 @@
+module test
+
+language webdsl-statix
+
+test parse [[
+
+]] parse succeeds

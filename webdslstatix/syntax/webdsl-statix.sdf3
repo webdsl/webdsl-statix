@@ -1,0 +1,4 @@
+module webdsl-statix
+
+imports 
+  WebDSL

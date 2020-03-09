@@ -1,0 +1,196 @@
+module WebDSL-Action
+
+imports
+  WebDSL-Lexical
+  WebDSL-UI
+  WebDSL
+
+context-free syntax
+
+  Function.Function = "function" Id OptFormalArgs FunctionReturn Block 
+  FunctionReturn =  {ast("SimpleSort(\"Void\")")}
+  FunctionReturn = ":" Sort {ast("<1>")}
+  EntityBodyDeclaration.CachedFunction = "cached" Function 
+  GlobalsDef.CachedGlobalFunction = "cached" Function 
+  ExtendFunction.ExtendFunction = "extend" Function 
+  EntityBodyDeclaration = ExtendFunction 
+  GlobalsDef = ExtendFunction 
+  StaticEntityFunction.StaticEntityFunction = "static" "function" Id OptFormalArgs ReturnType Block 
+  ReturnType.ReturnType = ":" Sort 
+  ReturnType =  {ast("ReturnType(SimpleSort(\"Void\"))")}
+
+context-free syntax
+
+  Exp = FunctionExp 
+  FunctionExp.FunctionExp = "function" OptFormalArgs FunctionReturn Block 
+  Exp = FunctionRef 
+  FunctionRef.FunctionRef = "function." Id "(" {Sort ","}* ")" FunctionReturn 
+  Exp.FunctionRefCall = FunctionRef "(" {Exp ","}* ")" 
+  Exp.FunctionRefCallPartial = FunctionRef "(" "*" "," {Exp ","}* ")" 
+
+context-free syntax
+
+  Block.Block = "{" Statements "}" 
+  Statement = Block 
+  Statement.Stat = Exp ";" 
+  Statement.Return = "return" Exp ";" 
+  Statement.ReturnEmpty = "return" ";" 
+  Statement.GoTo = "goto" PageCall ";" {prefer}
+  Statement.GoTo = "goto" "(" PageCall ")" ";" {prefer}
+  Statement.Schedule = "schedule" Exp "for" Exp ";" 
+  Statement.ScheduleNoFor = "schedule" Exp ";" 
+
+context-free syntax
+
+  VarDeclStat.VarDecl = "var" Id ":" Sort ";" 
+  VarDeclStat.VarDeclInit = "var" Id ":" Sort ":=" Exp ";" 
+  VarDeclStat.VarDeclInitInferred = "var" Id ":=" Exp ";" 
+  Statement = VarDeclStat 
+
+context-free syntax
+
+  Statement.If = "if" "(" Exp ")" Block "else" Block 
+  Statement.IfNoElse = "if" "(" Exp ")" Block 
+  Statement.IfWithElseIf = "if" "(" Exp ")" Block ElseIfStatement+ OptElse 
+  ElseIfStatement.ElseIf = "else" "if" "(" Exp ")" Block 
+  OptElse = "else" Block {ast("<1>")}
+  OptElse =  {ast("Block([])")}
+  Statement.CaseStmt = "case" "(" {Exp ","}+ ")" "{" Case* "}" 
+  Case.CaseStmtAlt = {Exp ","}+ Block 
+  Case.CaseStmtDefault = "default" Block {prefer}
+  Statement.TypeCaseStmt = "typecase" "(" Exp "as" Id ")" "{" TypeCaseAlt* "}" 
+  TypeCaseAlt.TypeCaseStmtAlt = Sort Block 
+  TypeCaseAlt.TypeCaseStmtDefault = "default" Block {prefer}
+
+context-free syntax
+
+  Exp.IfExp = "if" "(" Exp ")" Exp "else" Exp 
+
+context-free syntax
+
+  Statement.ForStmt = "for" "(" Id ":" Sort "in" Exp OptFilter ")" Block 
+  Statement.ForStmtInferred = "for" "(" Id "in" Exp OptFilter ")" Block 
+  Statement.ForAllStmt = "for" "(" Id ":" Sort OptFilter ")" Block 
+  Statement.ForCountStmt = "for" "(" Id ":" "Int" "from" Exp "to" Exp ")" Block 
+  Statement.WhileStmt = "while" "(" Exp ")" Block 
+
+sorts
+
+  ConstValue Exp
+
+context-free syntax
+
+  ConstValue.Int = Int 
+  ConstValue.Long = Long 
+  ConstValue.Float = Float 
+  ConstValue = String 
+  Exp.Const = ConstValue 
+  Exp.Var = VarId 
+  VarId = Id 
+  Exp = "in" {reject}
+  Exp.GlobalVar = "global" "." Id {prefer}
+  Exp.SessionVar = "session" "." Id {prefer}
+  Exp.FieldAccess = Exp "." Id 
+  Exp.CollectionIndex = Exp "[" Exp "]" {prefer}
+  ObjectCreation.ObjectCreation = Sort "{" ObjectPropertyAssignment* "}" 
+  ObjectCreation.ObjectCreation = Sort "{" {ObjectPropertyAssignment ","}* "}" {prefer}
+  Exp = ObjectCreation 
+  ObjectPropertyAssignment.ObjectPropertyAssignment = Id ":=" Exp 
+  ObjectPropertyAssignment.IncompleteObjectPropertyAssignment = Id 
+  Assignment.Assignment = Exp ":=" Exp 
+  Exp = Assignment 
+  Exp.MapCreation = "[" Mapping* "]" {avoid}
+  Mapping.Mapping = Exp "->" Exp 
+  Exp.ListCreation = "[" {Exp ","}* "]" 
+  Exp.SetCreation = "{" {Exp ","}+ "}" 
+  Exp.TypedListCreation = "List" "<" Sort ">" "(" {Exp ","}* ")" {prefer}
+  Exp.TypedSetCreation = "Set" "<" Sort ">" "(" {Exp ","}* ")" {prefer}
+  Exp.ThisCall = Id "(" {Exp ","}* ")" 
+  Exp = "!" "(" {Exp ","}* ")" {reject}
+  Exp.Call = Exp "." Id "(" {Exp ","}* ")" 
+  Exp.IsA = Exp "is" "a" Sort 
+  Exp.Cast = Exp "as" Sort {avoid}
+
+context-free syntax
+
+  Exp.InColl = Exp "in" Exp {non-assoc}
+
+context-free restrictions
+
+  "in" -/- [a-zA-Z0-9\_]
+
+context-free syntax
+
+  Exp.Eq = Exp "==" Exp {left}
+  Exp.NotEq = Exp "!=" Exp {left}
+  Exp.LargerThan = Exp ">" Exp {left}
+  Exp.LargerThanOrEqual = Exp ">=" Exp {left}
+  Exp.SmallerThan = Exp "<" Exp {left}
+  Exp.SmallerThanOrEqual = Exp "<=" Exp {left}
+  Exp.True = "true" {prefer}
+  Exp.False = "false" {prefer}
+  Exp.Null = "null" {prefer}
+  Exp.And = Exp "&&" Exp {assoc}
+  Exp.Or = Exp "||" Exp {assoc}
+  Exp.Not = "!" Exp 
+  Exp = "(" Exp ")" {bracket}
+  ForExp.ForExp = "[" Exp "|" Id OptSort "in" Exp OptFilter OptGroupBy "]" 
+  ForExp = "[" Id OptSort "in" Exp OptFilter OptGroupBy "]" {ast("ForExp(Var(<1>),<1>,<2>,<3>,<4>,<5>)")}
+  Exp = ForExp 
+  OptGroupBy.GroupBy = "group by" Exp 
+  OptGroupBy.None =  
+  Exp.AndForExp = "And" ForExp 
+  Exp.OrForExp = "Or" ForExp 
+  Exp.Mul = Exp "*" Exp {assoc}
+  Exp.Div = Exp "/" Exp {assoc}
+  Exp.Mod = Exp "%" Exp {assoc}
+  Exp.Add = Exp "+" Exp {assoc}
+  Exp.Sub = Exp "-" Exp {assoc}
+
+context-free priorities
+
+  {left :
+    Exp.Call
+    Exp.FieldAccess
+    Exp.CollectionIndex
+    Exp.SessionVar } > 
+  {non-assoc :
+    Exp.IsA
+    Exp.Cast } > 
+  Exp.Not > 
+  {left :
+    Exp.Mul
+    Exp.Div
+    Exp.Mod } > 
+  {left:
+    Exp.Add
+    Exp.Sub } >  
+  Exp.InColl >
+  {left :
+    Exp.Eq
+    Exp.NotEq
+    Exp.LargerThan
+    Exp.LargerThanOrEqual
+    Exp.SmallerThan
+    Exp.SmallerThanOrEqual } > 
+  {left : Exp.And } > 
+  {left : Exp.Or } > 
+  { Assignment.Assignment } > 
+  Exp.IfExp
+
+context-free syntax
+
+  EmailCall.EmailCall = Id "(" {Exp ","}* ")" 
+  Exp.RenderEmailFunctionCall = "renderemail" "(" EmailCall ")" {prefer}
+  Exp.EmailFunctionCall = "email" "(" EmailCall ")" {prefer}
+  Exp.EmailFunctionCall = "email" EmailCall {prefer}
+  Exp.SendEmailFunctionCall = "sendemail" "(" EmailCall ")" {prefer}
+
+context-free syntax
+
+  Exp.RenderTemplateFunctionCall = "rendertemplate" "(" TemplateCall ")" {prefer}
+  Exp.ValidateTemplateFunctionCall = "validatetemplate" "(" TemplateCall ")" {prefer}
+
+context-free syntax
+
+  Exp.TemplateElementsArgument = "{" TemplateElement* "}" {avoid}

@@ -1,0 +1,218 @@
+module WebDSL-UI
+
+imports
+  WebDSL-Action	
+  WebDSL-Lexical
+  WebDSL-XML
+  WebDSL
+
+sorts
+
+  TemplateDefinition Modifier Exp
+
+context-free syntax
+
+  Definition = TemplateDefinition 
+  TemplateDefinition.Define = "define" Modifier* Id OptFormalArgs TemplateArgs "{" TemplateElement* "}" 
+  TemplateArgs.TemplateArgs = "requires" {TemplateArg ","}* {prefer}
+  TemplateArg.TemplateArg = Id "(" {Sort ","}* ")" 
+  TemplateArgs.None =  
+  TemplateDefinition.LocalRedefine = "define" Modifier* Id "(" {FormalArg ","}* ")" "=" Id OptLocalRedefineArgs 
+  OptLocalRedefineArgs.None =  
+  OptLocalRedefineArgs.LocalRedefineArgs = "(" "*" "," {LocalRedefineArg ","}+ ")" 
+  LocalRedefineArg.Var = Id 
+  TemplateDefinition.DefinePage = Modifier* "page" PageId OptFormalArgs TemplateArgs "{" TemplateElement* "}" 
+  TemplateDefinition.DefineTemplate = Modifier* "template" Id OptFormalArgs TemplateArgs "{" TemplateElement* "}" 
+  TemplateDefinition = Modifier* "email" Id OptFormalArgs TemplateArgs "{" TemplateElement* "}" {ast("Define([Email()], <2>, <3>, <4>, <5>)")}
+  OptFormalArgs = "(" {FormalArg ","}* ")" {ast("<1>")}
+  OptFormalArgs =  {ast("[]")}
+  Modifier.Page = "page" 
+  Modifier.Email = "email" 
+  Modifier.AjaxTemplate = "ajax" 
+  Modifier.Template = "template" 
+  Modifier.Feed = "feed" 
+  Modifier.Local = "local" 
+  Modifier.NoSpan = "no-span" 
+  Modifier.TemplateModSpan = "span" 
+  Modifier.TemplateModInline = "inline" 
+  Modifier.TempateModSecure = "secure" 
+  Modifier.TemplateModNotSecure = "not-secure" 
+  Modifier.TemplateModOverride = "override" 
+  Modifier.TemplateDeprecated = "deprecated" 
+  Modifier.ExpireCache = "expire-cache" 
+  Modifier.ReadOnlyPage = "read-only" 
+  Modifier.WebService = "service" 
+  TemplateElement = InitAction 
+  TemplateElement = Action 
+  VarDecl.TemplateVarDecl = "var" Id ":" Sort 
+  VarDecl.TemplateVarDeclInit = "var" Id ":" Sort ":=" Exp 
+  VarDecl.TemplateVarDeclInitInferred = "var" Id ":=" Exp 
+  TemplateElement = VarDecl 
+  VarDecl.TemplateVarDecl = "var" Id ":" Sort ";" {deprecated("remove ';'")}
+  VarDecl.TemplateVarDeclInit = "var" Id ":" Sort ":=" Exp ";" {deprecated("remove ';'")}
+  VarDecl.TemplateVarDeclInitInferred = "var" Id ":=" Exp ";" {deprecated("remove ';'")}
+  TemplateElement.RequestScopeTemplate = "request" VarDecl 
+  TemplateElement.LocalScopeTemplate = "local" VarDecl 
+  TemplateElement = TemplateDefinition 
+  TemplateElement = TemplateCall {avoid}
+  Filter.FilterNoOrderByNoLimit = "where" Exp 
+  Filter.FilterNoWhereNoLimit = "order" "by" {OrderExp ","}+ 
+  Filter.FilterNoLimit = "where" Exp "order" "by" {OrderExp ","}+ 
+  Filter.FilterNoOrderBy = "where" Exp Limit 
+  Filter.FilterNoWhere = "order" "by" {OrderExp ","}+ Limit 
+  Filter.FilterNoWhereNoOrderBy = Limit 
+  Filter.Filter = "where" Exp "order" "by" {OrderExp ","}+ Limit 
+  OrderExp.OrderNonSpecific = Exp 
+  OrderExp.OrderAscending = Exp "asc" 
+  OrderExp.OrderDescending = Exp "desc" 
+  Limit.Limit = "limit" Exp "offset" Exp 
+  Limit.LimitNoOffset = "limit" Exp 
+  Limit.LimitNoLimit = "offset" Exp 
+  TemplateElement.For = "for" "(" Id ":" Sort "in" Exp OptFilter ")" "{" TemplateElement* "}" ForSeparator 
+  OptFilter = Filter 
+  OptFilter.None =  
+  OptSort = ":" Sort {ast("<1>")}
+  OptSort.None =  
+  TemplateElement.ForInferred = "for" "(" Id "in" Exp OptFilter ")" "{" TemplateElement* "}" ForSeparator 
+  TemplateElement.ForAll = "for" "(" Id ":" Sort OptFilter ")" "{" TemplateElement* "}" ForSeparator 
+  TemplateElement.ForCount = "for" "(" Id ":" "Int" "from" Exp "to" Exp ")" "{" TemplateElement* "}" ForSeparator 
+  ForSeparator.ForSeparator = "separated-by" "{" TemplateElement* "}" 
+  ForSeparator.None =  
+  TemplateElement.IfElseIfTempl = "if" "(" Exp ")" "{" TemplateElement* "}" ElseIfTempl* ElseTempl? {prefer}
+  ElseIfTempl.ElseIfTempl = "else" "if" "(" Exp ")" "{" TemplateElement* "}" {prefer}
+  ElseTempl.ElseTempl = "else" "{" TemplateElement* "}" {prefer}
+  TemplateElement.TemplateCase = "case" "(" {Exp ","}+ ")" "{" TemplateCaseAlt* "}" 
+  TemplateCaseAlt.TemplateCaseAlt = {Exp ","}+ "{" TemplateElement* "}" 
+  TemplateCaseAlt.TemplateCaseAltDefault = "default" "{" TemplateElement* "}" {prefer}
+  TemplateElement.TemplateTypeCase = "typecase" "(" Exp "as" Id ")" "{" TemplateTypeCaseAlt* "}" 
+  TemplateTypeCaseAlt.TemplateTypeCaseAlt = Sort "{" TemplateElement* "}" 
+  TemplateTypeCaseAlt.TemplateTypeCaseDefault = "default" "{" TemplateElement* "}" {prefer}
+  TemplateCall.TemplateCall = TemplateCallId OptTCallArgs OptTCallPropAssigns TemplateBody 
+  OptTCallArgs = "(" {TemplateArgExp ","}* ")" {ast("<1>")}
+  OptTCallArgs =  {ast("[]")}
+  TemplateArgExp = Exp 
+  OptTCallPropAssigns = "[" {PropertyAssignment ","}* "]" {ast("<1>")}
+  OptTCallPropAssigns =  {ast("[]")}
+  TemplateBody.TemplateBody = "{" TemplateElement* "}" 
+  TemplateBody =  {ast("TemplateBody([])")}
+  TemplateBody.TemplateWith = "with" "{" ArgDefine* "}" 
+  ArgDefine.ArgDefine = TemplateCallId "(" {FormalArg ","}* ")" "{" TemplateElement* "}" 
+  TemplateCall = "with" "{" TemplateElement* "}" {reject}
+  TemplateElement.NavigateCall = "navigate" "(" PageCall ")" UNDEFINED* "{" TemplateElement* "}" {prefer}
+  TemplateElement.NavigateCall = "navigate" "(" PageCall ")" "[" {PropertyAssignment ","}* "]" "{" TemplateElement* "}" {prefer}
+  TemplateElement.NavigateCall = "navigate" PageCall UNDEFINED* "{" TemplateElement* "}" {prefer}
+  TemplateElement.NavigateCall = "navigate" PageCall "[" {PropertyAssignment ","}* "]" "{" TemplateElement* "}" {prefer}
+  PageCall.PageCall = PageId "(" {Exp ","}* ")" 
+  TemplateElement.Submit = "action" "(" Exp "," ActionCallOrInline ")" UNDEFINED* {prefer}
+  TemplateElement.Submit = "action" "(" Exp "," ActionCallOrInline ")" "[" {PropertyAssignment ","}* "]" {prefer}
+  TemplateElement.SubmitLink = "actionLink" "(" Exp "," ActionCallOrInline ")" UNDEFINED* {prefer}
+  TemplateElement.SubmitLink = "actionLink" "(" Exp "," ActionCallOrInline ")" "[" {PropertyAssignment ","}* "]" {prefer}
+  TemplateElement.Submit = "submit" "(" Exp "," ActionCallOrInline ")" UNDEFINED* {prefer}
+  TemplateElement.Submit = "submit" "(" Exp "," ActionCallOrInline ")" "[" {PropertyAssignment ","}* "]" {prefer}
+  TemplateElement.SubmitLink = "submitlink" "(" Exp "," ActionCallOrInline ")" UNDEFINED* {prefer}
+  TemplateElement.SubmitLink = "submitlink" "(" Exp "," ActionCallOrInline ")" "[" {PropertyAssignment ","}* "]" {prefer}
+  TemplateElement.SubmitElem = "submit" ActionCallOrInline UNDEFINED* "{" TemplateElement* "}" {prefer}
+  TemplateElement.SubmitElem = "submit" ActionCallOrInline "[" {PropertyAssignment ","}* "]" "{" TemplateElement* "}" {prefer}
+  TemplateElement.SubmitLinkElem = "submitlink" ActionCallOrInline UNDEFINED* "{" TemplateElement* "}" {prefer}
+  TemplateElement.SubmitLinkElem = "submitlink" ActionCallOrInline "[" {PropertyAssignment ","}* "]" "{" TemplateElement* "}" {prefer}
+  TemplateElement.DownloadLink = "downloadlink" ActionCallOrInline UNDEFINED* "{" TemplateElement* "}" {prefer}
+  TemplateElement.DownloadLink = "downloadlink" ActionCallOrInline "[" {PropertyAssignment ","}* "]" "{" TemplateElement* "}" {prefer}
+  TemplateElement.OutputImage = "outputimage" ActionCallOrInline UNDEFINED* "{" TemplateElement* "}" {prefer}
+  TemplateElement.OutputImage = "outputimage" ActionCallOrInline "[" {PropertyAssignment ","}* "]" "{" TemplateElement* "}" {prefer}
+  ActionCallOrInline = ActionCall 
+  ActionCallOrInline = InlineAction 
+  ActionCall.ActionCall = Id "(" {Exp ","}* ")" 
+  InlineAction.InlineAction = "action" Block 
+  Sort = "action" {reject}
+  TemplateCall = "action" {reject}
+  Exp = "action" {reject}
+  PropertyValue = "action" {reject}
+  PropertyAssignment.PropertySubmit = SubmitProp ":" ActionCallOrInline {prefer}
+  PropertyAssignment.PropertySubmit = SubmitProp ":=" ActionCallOrInline {prefer}
+  PropertyAssignment.PropertySubmit = SubmitProp "=" ActionCallOrInline {prefer}
+  PropertyAssignment.PropertyAssignment = ExtendedId ":" PropertyValue 
+  PropertyAssignment.PropertyAssignment = ExtendedId ":=" PropertyValue 
+  PropertyAssignment.PropertyAssignment = ExtendedId "=" PropertyValue 
+  PropertyValue = Exp 
+  PropertyAssignment.TemplateCallPropertyAjax = "ajax" {prefer}
+  PropertyAssignment.TemplateCallPropertyNoLoadingFeedback = "no loading feedback" {prefer}
+  PropertyAssignment.TemplateCallPropertySecure = "secure" {prefer}
+  PropertyAssignment.TemplateCallPropertyIgnoreValidation = "ignore-validation" {prefer}
+  PropertyAssignment.TemplateCallPropertyNotSecure = "not-secure" {prefer}
+  PropertyAssignment.TemplateCallPropertyNotNull = "not null" {prefer}
+  PropertyAssignment = CommonAttribute 
+  PropertyAssignment.PropertySubmitMultiple = SubmitProp "=" {ActionCallOrInlineOrExp ";"}+ {avoid}
+  ActionCallOrInlineOrExp = ActionCallOrInline {prefer}
+  ActionCallOrInlineOrExp = PropertyValue 
+
+lexical syntax
+
+  SubmitProp = "onabort" 
+  SubmitProp = "onblur" 
+  SubmitProp = "onchange" 
+  SubmitProp = "onclick" 
+  SubmitProp = "ondblclick" 
+  SubmitProp = "onerror" 
+  SubmitProp = "onfocus" 
+  SubmitProp = "onkeydown" 
+  SubmitProp = "onkeypress" 
+  SubmitProp = "onkeyup" 
+  SubmitProp = "onload" 
+  SubmitProp = "onmousedown" 
+  SubmitProp = "onmousemove" 
+  SubmitProp = "onmouseout" 
+  SubmitProp = "onmouseover" 
+  SubmitProp = "onmouseup" 
+  SubmitProp = "onreset" 
+  SubmitProp = "onresize" 
+  SubmitProp = "onselect" 
+  SubmitProp = "onsubmit" 
+  SubmitProp = "onunload" 
+  SubmitProp = "oninput" 
+
+context-free syntax
+
+  TemplateCall = "separated-by" "{" TemplateElement* "}" {reject}
+  InitAction.InitAction = "init" Block {prefer}
+  TemplateElement.DataBindAction = "databind" Block {prefer}
+  TemplateElement.RenderAction = "render" Block {prefer}
+  TemplateElement.AllPhasesAction = "allphases" Block {prefer}
+  TemplateElement.ValidateAction = "validate" Block {prefer}
+  Action.Action = "action" ActionModifier* Id OptFormalArgs Block 
+  ActionModifier.ActionModifierIgnoreValidation = "ignore-validation" 
+
+context-free syntax
+
+  TemplateCallId.QualifiedElementsCall = Id ".elements" {prefer}
+
+context-free syntax
+
+  Sort.TemplateVarArgSort = "[" {FormalVarArg ","}+ "]" 
+  FormalVarArg.FormalVarArg = Id ":" Sort 
+  TemplateCall.MemberTemplateCall = Id "." TemplateCall {avoid}
+  Exp.TemplateVarArgExp = "[" {ExpVarArg ","}+ "]" 
+  ExpVarArg.ExpVarArg = "(" {Exp ","}* ")" 
+  ExpVarArg.ExpVarArgFor = "for" "(" Id ":" Sort "in" Exp OptFilter ")" "{" {ExpVarArg ","}* "}" 
+  ExpVarArg.ExpVarArgForInferred = "for" "(" Id "in" Exp OptFilter ")" "{" {ExpVarArg ","}* "}" 
+  ExpVarArg.ExpVarArgForAll = "for" "(" Id ":" Sort OptFilter ")" "{" {ExpVarArg ","}* "}" 
+  ExpVarArg.ExpVarArgForCount = "for" "(" Id ":" "Int" "from" Exp "to" Exp ")" "{" {ExpVarArg ","}* "}" 
+
+context-free syntax
+
+  HTMLWrapper.HTMLWrapper = "htmlwrapper" Id Id HTMLWrapperAssigns 
+  HTMLWrapperAssigns.HTMLWrapperAssigns = "[" {Attribute ","}* "]" 
+  HTMLWrapperAssigns.HTMLWrapperAssigns = "[" Attribute* "]" {prefer}
+  HTMLWrapperAssigns =  {ast("HTMLWrapperAssigns([])")}
+  TemplateDefinition = HTMLWrapper 
+  TemplateDefinition.HTMLWrapperMultiple = "htmlwrapper" "{" HTMLWrapperBody* "}" 
+  HTMLWrapperBody.HTMLWrapperBody = Id Id HTMLWrapperAssigns 
+
+context-free syntax
+
+  TemplateId.TemplateId = "id" 
+  Exp = TemplateId 
+  VarId = "id" {reject}
+
+context-free restrictions
+
+  TemplateId -/- [a-zA-Z0-9\_]

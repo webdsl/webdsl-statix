@@ -1,0 +1,18 @@
+module WebDSL-EntityDerive
+
+imports
+  WebDSL-Lexical	
+  WebDSL-Action
+  WebDSL
+
+context-free syntax
+
+  TemplateArgExp.ExpEntityDerive = Exp "with" ExpEntityDeriveProp* {avoid}
+  ExpEntityDeriveProp.ExpEntityDeriveProp = Id "(" {Exp ","}* ")" 
+  ExpEntityDeriveProp.ExpEntityDeriveProp = Id UNDEFINED* 
+  Sort.ArgEntityDerive = Id "with" ArgEntityDeriveProp 
+  ArgEntityDeriveProp.ArgEntityDeriveProp = Id "(" {ArgEntityDerivePropArg ","}* ")" 
+  ArgEntityDeriveProp.ArgEntityDeriveProp = Id UNDEFINED* 
+  ArgEntityDerivePropArg.ArgEntityDerivePropArg = Id ":" Sort 
+  TemplateElement.ForeachElementEntityDerive = "foreach" Id "{" TemplateElement* "}" 
+  Statement.ForeachStatementEntityDerive = "foreach" Id "{" Statement* "}" 

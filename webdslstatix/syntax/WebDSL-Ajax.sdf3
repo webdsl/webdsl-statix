@@ -1,0 +1,55 @@
+module WebDSL-Ajax
+
+imports
+  WebDSL-Action
+  WebDSL-Lexical
+  WebDSL-UI
+
+sorts
+
+  Statement Exp InlineTemplate AjaxStatement
+
+context-free syntax
+
+  Statement.AjaxStatement = AjaxStatement ";" {prefer}
+  AjaxStatement.AjaxReplace = "replace" "(" Exp "," TemplateCall ")" 
+  AjaxStatement.AjaxAppend = "append" "(" Exp "," TemplateCall ")" 
+  AjaxStatement.AjaxVisibility = "visibility" "(" Exp "," AjaxVisibility ")" 
+  AjaxVisibility.Show = "show" 
+  AjaxVisibility.Toggle = "toggle" 
+  AjaxVisibility.Hide = "hide" 
+  AjaxStatement.AjaxRelocate = "relocate" "(" PageCall ")" 
+  AjaxStatement.AjaxRestyle = "restyle" "(" Exp "," Exp ")" 
+  AjaxStatement.AjaxClear = "clear" "(" Exp ")" 
+  AjaxStatement.AjaxRefresh = "refresh" "(" ")" 
+  AjaxStatement.AjaxRunScript = "runscript" "(" Exp ")" {prefer}
+  TemplateElement = Placeholder 
+  Placeholder = PlaceholderKeyword "<" Id ">" Id "{" TemplateElement* "}" {ast("Placeholder(<2>,<3>,<4>)"), prefer}
+  Placeholder = PlaceholderKeyword "<" Id ">" Exp "{" TemplateElement* "}" {ast("Placeholder(<2>,<3>,<4>)")}
+  Placeholder = PlaceholderKeyword "<" Id ">" Id TemplateCall {ast("PlaceholderWithAjaxCall(<2>,<3>,<4>)"), prefer}
+  Placeholder = PlaceholderKeyword "<" Id ">" PHExp TemplateCall {ast("PlaceholderWithAjaxCall(<2>,<3>,<4>)")}
+  Placeholder = PlaceholderKeyword Id "{" TemplateElement* "}" {ast("Placeholder(<2>,<3>)"), prefer}
+  Placeholder = PlaceholderKeyword Exp "{" TemplateElement* "}" {ast("Placeholder(<2>,<3>)")}
+  Placeholder = PlaceholderKeyword Id TemplateCall {ast("PlaceholderWithAjaxCall(<2>,<3>)"), prefer}
+  Placeholder = PlaceholderKeyword PHExp TemplateCall {ast("PlaceholderWithAjaxCall(<2>,<3>)")}
+  TemplateElement = PlaceholderVar 
+  PlaceholderVar = PlaceholderVarKeyword Id {ast("PlaceholderVar(<2>)"), prefer}
+
+context-free syntax
+
+  PlaceholderKeyword = "placeholder" 
+  PlaceholderVarKeyword = "placeholdervar" 
+
+context-free restrictions
+
+  PlaceholderKeyword
+  PlaceholderVarKeyword -/- [a-zA-Z0-9\_]
+
+context-free syntax
+
+  PHExp.ThisCall = Id "(" {Exp ","}* ")" 
+  PHExp.Call = Exp "." Id "(" {Exp ","}* ")" 
+  PHExp.FieldAccess = Exp "." Id {prefer}
+  PHExp.CollectionIndex = Exp "[" Exp "]" {prefer}
+  PHExp.Add = Exp "+" Exp 
+  PHExp = ConstValue 

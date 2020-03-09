@@ -1,0 +1,59 @@
+module WebDSL-Keywords
+
+imports
+  WebDSL-Ajax
+
+sorts
+
+  Keyword
+
+context-free syntax
+
+  Id = Keyword {reject}
+
+context-free syntax
+
+  Keyword = "function" 
+  Keyword = "return" 
+  Keyword = "as" 
+  Keyword = "define" 
+  Keyword = "for" 
+ 
+context-free restrictions
+
+  "as" -/- [a-zA-Z0-9\_]
+
+context-free syntax
+
+  TemplateCallId = "define" {reject}
+  TemplateCallId = "template" {reject}
+  TemplateCallId = "var" {reject}
+  TemplateCallId = "for" {reject}
+  TemplateCallId = "if" {reject}
+  TemplateCallId = "else" {reject}
+  TemplateCallId = "as" {reject}
+  TemplateCallId = "is" {reject}
+  TemplateCallId = "null" {reject}
+  TemplateCallId = "and" {reject}
+  TemplateCallId = "or" {reject}
+  TemplateCallId = "order" {reject}
+  TemplateCallId = "by" {reject}
+  TemplateCallId = "where" {reject}
+  TemplateCallId = "in" {reject}
+  TemplateCallId = "navigate" {reject}
+  TemplateCallId = "action" {reject}
+  TemplateCallId = "submit" {reject}
+  TemplateCallId = "goto" {reject}
+  TemplateCallId = "foreach" {reject}
+  TemplateCallId = "request" {reject}
+  TemplateCallId = "local" {reject}
+  TemplateCallId = "init" {reject}
+  TemplateCallId = "databind" {reject}
+  TemplateCallId = "derive" {reject}
+  TemplateCallId = "actionLink" {reject}
+  TemplateCallId = "submitlink" {reject}
+  TemplateCallId = "downloadlink" {reject}
+  TemplateCallId = "outputimage" {reject}
+  TemplateCallId = "placeholder" {reject}
+  TemplateCallId = PlaceholderKeyword {reject}
+  TemplateCallId = PlaceholderVarKeyword {reject}

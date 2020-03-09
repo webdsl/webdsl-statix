@@ -1,0 +1,37 @@
+module WebDSL-JavaScript
+
+imports
+  WebDSL-Action
+  WebDSL-Attributes
+
+sorts
+
+  TemplateElement
+
+context-free syntax
+
+  TemplateElement.JSElement = "<" "script" Attribute* ">" JSParts "</" "script" ">" {prefer}
+
+syntax
+
+  JSParts-CF = JSPart-CF* 
+  JSPart-CF.JSExp = "~" Exp-CF {prefer}
+  JSPart-CF.JSString = JSString-LEX 
+  JSPart-CF.JSTilde = "\\~" {prefer}
+
+sorts
+
+  JSChar JSString
+
+lexical syntax
+
+  JSString = JSChar+ 
+  JSChar = ~[\<\~] 
+  JSChar = SmallerThan 
+  SmallerThan = [\<] 
+  JSString = [\<] JSChar* {reject}
+
+lexical restrictions
+
+  SmallerThan -/- [\/]
+  JSString -/- ~[\<\~]

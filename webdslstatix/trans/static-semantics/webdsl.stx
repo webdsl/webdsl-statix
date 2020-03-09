@@ -1,0 +1,61 @@
+module static-semantics/webdsl
+
+imports
+  static-semantics/webdsl-constants
+
+signature
+
+// Only deal with whole applications for now  
+  sorts Unit constructors
+    ApplicationDefs : string * list(Definition) * list(Section) -> Unit //TO-DO deal with QIds instead of only strings
+    Application     : string                    * list(Section) -> Unit //TO-DO deal with QIds instead of only strings
+//  ModuleDefs      : ModuleName * list(Definition) * list(Section) -> Unit
+//  Module          : ModuleName                    * list(Section) -> Unit
+    
+  sorts Section constructors
+    Section : string * list(Definition) -> Unit
+      
+  sorts 
+    Definition
+    Statement
+    Exp
+  
+  sorts 
+    TYPE // semantic type
+
+rules // application and module
+
+  programOk : scope * Unit 
+
+  programOk(s, ApplicationDefs(appName, defs, sections)) :-
+    defsOk(s, defs),
+    sectionsOk(s, sections).
+  
+  programOk(s, Application(appName, sections)) :-
+    sectionsOk(s, sections).
+
+rules // declare common rules and mappings
+
+  sectionOk : scope * Section
+  sectionOk(_,_).
+  sectionsOk maps sectionOk(*, list(*))
+  
+  defOk : scope * Definition
+  defOk(_,_) :- false | error $[This definition is not yet implemented].
+  defsOk maps defOk(*, list(*))
+  
+  stmtOk : scope * Statement
+  stmtOk(_,_) :- false | error $[This statement is not yet implemented].
+  stmtsOk maps stmtOk(*, list(*))
+  
+  expOk : scope * Exp
+
+rules // typing
+
+  typeOfExp      : scope * Exp  -> TYPE
+  typeOfExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
+  
+  typeCompatible : TYPE * TYPE -> TYPE
+  typeCompatible(T1, T2) = UNTYPED(). //default
+  typeCompatible(T, T) = T. // same type is always type compatible
+  

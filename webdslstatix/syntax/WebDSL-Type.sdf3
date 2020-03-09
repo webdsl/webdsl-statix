@@ -1,0 +1,15 @@
+module WebDSL-Type
+
+imports
+  WebDSL-Lexical
+  WebDSL-Native
+  WebDSL-Search
+  WebDSL
+
+context-free syntax
+
+  Definition.TypeDef = "type" Id "{" TypeProperty* "}" 
+  TypeProperty.TypeDefAnno = Annotation 
+  TypeProperty = NativeClassFunction 
+  TypeProperty = "static" {reject}
+  TypeProperty.NativeClassFunctionFromStatic = QId "as" NativeClassFunction 

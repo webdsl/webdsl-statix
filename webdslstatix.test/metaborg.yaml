@@ -1,0 +1,9 @@
+---
+id: org.example:webdslstatix.test:0.1.0-SNAPSHOT
+name: webdsl-statix
+dependencies:
+  compile:
+  - org.example:webdslstatix:0.1.0-SNAPSHOT
+  - org.metaborg:org.metaborg.meta.lang.spt:${metaborgVersion}
+build:
+  useBuildSystemSpec: true

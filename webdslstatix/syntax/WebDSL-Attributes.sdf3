@@ -1,0 +1,33 @@
+module WebDSL-Attributes
+
+imports
+  WebDSL-Lexical	
+  WebDSL-Action
+
+sorts
+
+  AttributeAssign AttributeSelection
+
+context-free syntax
+
+  Definition.AttributeCollection = AttributeCollectionOverride "attributes" Id "{" AttributeElem* "}" 
+  AttributeElem.AttributeAssign = AttributeId "=" Exp 
+  AttributeElem.AttributeInclude = AttributeId "attributes" AttributeIncludeIgnore 
+  AttributeIncludeIgnore.None =  
+  AttributeIncludeIgnore.AttributeIncludeIgnore = "ignore" AttributeId+ 
+  AttributeCollectionOverride.None =  
+  AttributeCollectionOverride.AttributeCollectionOverride = "override" 
+  AttributeElem.AttributeIgnore = "ignore" AttributeId "attributes" 
+
+context-free syntax
+
+  AttributeId = Id 
+  AttributeId = "all" {reject}
+  AttributeId = "attributes" {reject}
+
+context-free syntax
+
+  AttributeSelection.AttributeSelection = AttributeId "attributes" 
+  AttributeSelection.AttributeIgnoreDefault = "ignore" "default" AttributeId 
+  PropertyAssignment = AttributeSelection 
+  Attribute = AttributeSelection 

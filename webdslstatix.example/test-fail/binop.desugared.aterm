@@ -1,0 +1,93 @@
+ApplicationDefs(
+  "binop"
+, [ DefinePage([], "root", [], None(), [])
+  , Entity("Ent1", "Ent2", [])
+  , Entity("Ent2", "Ent3", [])
+  , EntityNoSuper("Ent3", [])
+  , Function(
+      "testbinop"
+    , [Arg("sarg", SimpleSort("String"))]
+    , SimpleSort("Void")
+    , Block(
+        [ Stat(Add(Const(Int("1")), Const(Int("1"))))
+        , Stat(Add(Const(Float("1.0")), Const(Float("1.0"))))
+        , Stat(Add(Const(String("123")), Const(Int("123"))))
+        , Stat(Add(Const(String("123")), Const(String("123"))))
+        , Stat(Add(Const(String("123")), Const(Float("1.2"))))
+        , Stat(Add(Const(Int("1")), Const(String("123"))))
+        , Stat(
+            Add(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , VarDeclInitInferred(
+            "x1"
+          , Add(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , VarDeclInitInferred(
+            "x2"
+          , LargerThan(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , VarDeclInitInferred(
+            "x3"
+          , LargerThanOrEqual(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , VarDeclInitInferred(
+            "x4"
+          , SmallerThan(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , VarDeclInitInferred(
+            "x5"
+          , SmallerThanOrEqual(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , Stat(Sub(Const(Int("132")), Const(String("Sdfs"))))
+        , Stat(Sub(Const(Int("123")), Const(Int("123"))))
+        , Stat(Mul(Const(Float("1.0")), Const(Float("1.0"))))
+        , Stat(Mod(Const(Int("23423")), Const(Int("2345"))))
+        , Stat(Mod(Const(Float("23423.0")), Const(Float("2345.0"))))
+        , Stat(Or(And(True(), True()), Eq(False(), True())))
+        , Stat(Eq(Const(String("")), Const(Int("1"))))
+        , Stat(NotEq(Const(Float("1.1")), Const(String("123"))))
+        , Stat(
+            Eq(
+              ObjectCreation(SimpleSort("Ent1"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , Stat(
+            NotEq(
+              ObjectCreation(SimpleSort("Ent2"), [])
+            , ObjectCreation(SimpleSort("Ent1"), [])
+            )
+          )
+        , Stat(Eq(ThisCall("now", []), ThisCall("today", [])))
+        , Stat(
+            NotEq(
+              Var("sarg")
+            , Cast(Const(String("")), SimpleSort("Email"))
+            )
+          )
+        , Stat(Eq(Var("sarg"), Const(Int("123"))))
+        , Schedule(ThisCall("myNewFunc", []), ThisCall("now", []))
+        ]
+      )
+    )
+  ]
+, []
+)

@@ -1,0 +1,59 @@
+module WebDSL-Expand
+
+imports
+  WebDSL-UI	
+  WebDSL-Lexical
+
+sorts
+
+  Derive DeriveType DeriveProperty
+
+context-free syntax
+
+  TemplateElement.Derive = "derive" Id "from" Exp "for" "(" {DeriveProperty ","}* ")" {prefer}
+  TemplateElement.Derive = "derive" Id "from" Exp {prefer}
+  TemplateElement.Derive = "derive" Id "from" Exp "for" "(" {DeriveProperty ","}* ")" DeriveBody {prefer}
+  TemplateElement.Derive = "derive" Id "from" Exp DeriveBody {prefer}
+  TemplateElement.Derive = "derive" Id DeriveBody {prefer}
+  DeriveProperty.DeriveDefault = Id 
+  DeriveProperty.DeriveMode = Id "(" Id ")" 
+  DeriveBody.DeriveBody = "{" DeriveBodyElement* "}" 
+  DeriveBodyElement.DeriveBodyElement = Id "{" TemplateElement* "}" 
+  TemplateCall = "derive" {reject}
+  Definition.DeriveCrud = "derive" "crud" Id {prefer}
+  Definition.DeriveCrud = "derive" "CRUD" Id {prefer}
+
+context-free syntax
+
+  Definition.ExpandTemplateCall = "expand" ExpandId+ "to" Id 
+  Definition.ExpandTemplateDefinition = "expandtemplate" Id "to" ExpandArgId+ "{" Definition* "}" 
+  TemplateElement.ExpandLocal = "expand" ExpandId+ "to" ExpandArgId+ "{" TemplateElement* "}" {prefer}
+  EntityBodyDeclaration.ExpandLocal = "expand" ExpandId+ "to" ExpandArgId+ "{" EntityBodyDeclaration* "}" {prefer}
+  Statement.ExpandLocal = "expand" ExpandId+ "to" ExpandArgId+ "{" Statement* "}" {prefer}
+  ObjectPropertyAssignment.ExpandLocal = "expand" ExpandId+ "to" ExpandArgId+ "{" ObjectPropertyAssignment* "}" {prefer}
+  Definition.ExpandLocal = "expand" ExpandId+ "to" ExpandArgId+ "{" Definition* "}" {prefer}
+  Exp.ExpandLocal = "expand" ExpandId+ "to" ExpandArgId+ "{" Exp "}" {prefer}
+  Attribute.ExpandLocal = "expand" ExpandId+ "to" ExpandArgId+ "{" Attribute "}" {prefer}
+  PropertyAssignment.ExpandLocal = "expand" ExpandId+ "to" ExpandArgId+ "{" PropertyAssignment "}" {prefer}
+  FormalArg.ExpandLocal = "expand" ExpandId+ "to" ExpandArgId+ "{" FormalArg "}" {prefer}
+  Case.ExpandLocal = "expand" ExpandId+ "to" ExpandArgId+ "{" Case "}" {prefer}
+  TemplateCaseAlt.ExpandLocal = "expand" ExpandId+ "to" ExpandArgId+ "{" TemplateCaseAlt "}" {prefer}
+  TypeCaseAlt.ExpandLocal = "expand" ExpandId+ "to" ExpandArgId+ "{" TypeCaseAlt "}" {prefer}
+  TemplateTypeCaseAlt.ExpandLocal = "expand" ExpandId+ "to" ExpandArgId+ "{" TemplateTypeCaseAlt "}" {prefer}
+  ExpandId = "expandtemplate" {reject}
+  ExpandId = "template" {reject}
+  ExpandId = "expand" {reject}
+  ExpandId = "to" {reject}
+  ExpandArgId = "expandtemplate" {reject}
+  ExpandArgId = "template" {reject}
+  ExpandArgId = "expand" {reject}
+  ExpandArgId = "to" {reject}
+
+lexical syntax
+
+  ExpandId = [a-zA-Z0-9\_\-]+ 
+  ExpandArgId = Id 
+
+lexical restrictions
+
+  ExpandId -/- [a-zA-Z0-9\_\-]

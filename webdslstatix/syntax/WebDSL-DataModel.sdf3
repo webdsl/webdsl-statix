@@ -1,0 +1,82 @@
+module WebDSL-DataModel
+
+imports
+  WebDSL-Action	
+  WebDSL-Lexical
+  WebDSL-UI
+
+context-free syntax
+
+  Definition.GlobalsDefinition = "globals" "{" GlobalsDef* "}" {prefer, deprecated("'globals{ }' block is no longer necessary around global variables and functions")}
+  Entity.Entity = "entity" Id ":" Id "{" EntityBodyDeclaration* "}" 
+  Entity.EntityNoSuper = "entity" Id "{" EntityBodyDeclaration* "}" 
+  Entity.SessionEntity = "session" Id "{" EntityBodyDeclaration* "}" 
+  EntityBodyDeclaration = Property 
+  EntityBodyDeclaration = Function 
+  EntityBodyDeclaration = StaticEntityFunction 
+  EntityBodyDeclaration.CachedEntity = "cache" 
+  Definition = Entity 
+  Definition.ExtendEntity = "extend" "entity" Id "{" EntityBodyDeclaration* "}" 
+  Definition.ExtendSessionEntity = "extend" "session" Id "{" EntityBodyDeclaration* "}" 
+
+context-free restrictions
+
+  "cache" -/- [a-zA-Z0-9\_]
+
+sorts
+
+  Entity Property Sort Annotation
+
+context-free syntax
+
+  GlobalVarDecl.GlobalVarDecl = "var" Id ":" Sort 
+  GlobalVarDecl.GlobalVarDeclInit = "var" Id ":" Sort ":=" Exp 
+  GlobalVarDecl.GlobalVarDeclInitInferred = "var" Id ":=" Exp 
+  GlobalVarDecl.GlobalVarDecl = "var" Id ":" Sort ";" {deprecated("remove ';' from global variable declaration")}
+  GlobalVarDecl.GlobalVarDeclInit = "var" Id ":" Sort ":=" Exp ";" {deprecated("remove ';' from global variable declaration")}
+  GlobalVarDecl.GlobalVarDeclInitInferred = "var" Id ":=" Exp ";" {deprecated("remove ';' from global variable declaration")}
+  Definition.RequestScope = "request" GlobalVarDecl 
+  GlobalsDef = GlobalVarDecl 
+  GlobalsDef = Function 
+  Definition = GlobalsDef 
+  Definition = InitAction 
+
+sorts
+
+  Property Annotation
+
+context-free syntax
+
+  Property.Property = Id PropKind Sort OptPropAnnos 
+  Property.DerivedProperty = Id PropKind Sort OptPropAnnos ":=" Exp 
+  OptPropAnnos = "(" {Annotation ","}* ")" {ast("<1>")}
+  OptPropAnnos =  {ast("[]")}
+  PropKind.Simple = "::" 
+  PropKind.Ref = "->" 
+  PropKind.Comp = "<>" 
+  PropKind.AnyProp = ":" 
+
+sorts
+
+  Sort
+
+context-free syntax
+
+  Annotation.SimpleAnno = Id 
+  Annotation.InverseAnno = "inverse" "=" Id "." Id 
+  Annotation.IncompleteInverseAnno = "inverse" "=" Id 
+  Annotation.InverseSlaveAnno = "inverseSlave" "=" Id "." Id 
+  Annotation.InverseReferenceOnlyAnno = "inverse-reference-only" 
+  Annotation.InlineAnno = "inline" "(" {Id ","}* ")" 
+  Annotation.SelectAnno = "select" "=" Id 
+  Annotation.NotNullAnno = "not null" 
+  Annotation.NotEmptyAnno = "not empty" 
+  Annotation.AllowedAnno = "allowed" "=" Exp 
+  Annotation.DefaultAnno = "default" "=" Exp 
+  Annotation.LengthAnno = "length" "=" Int 
+  Annotation.FormatAnno = "format" "=" String 
+  Annotation.IndexAnno = "index" "(" ")" 
+  Annotation.IndexAnno = "index" "(" Int ")" 
+  Annotation.CollationAnno = "collation" "(" Id ")" 
+  Annotation.IdErrorAnno = "iderror" "=" String 
+  Annotation.IdEmptyErrorAnno = "idemptyerror" "=" String 

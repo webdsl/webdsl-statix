@@ -1,0 +1,63 @@
+module WebDSL-AccessControl 
+
+imports
+  WebDSL-UI	
+  WebDSL-Action	
+  WebDSL-DataModel	
+  WebDSL-Lexical
+  WebDSL
+
+sorts
+
+  MatchId
+
+lexical syntax
+
+  MatchId = [a-zA-Z] [a-zA-Z0-9\_\-]* [\*]? 
+  MatchId = [\*] 
+  WildCardArg = [\*] 
+
+context-free syntax
+
+  Section.AccessControlDefinition = "access" "control" "rules" Id? AccessControlDefinition* 
+  Section.AccessControlDefinition = "access" "control" "rules" "{" Id? AccessControlDefinition* "}" 
+  Definition.AccessControlPrincipal = "principal" "is" Id "with" "credentials" {Id ","}+ 
+  AccessControlDefinition.AccessControlPrincipal = "principal" "is" Id "with" "credentials" {Id ","}+ 
+  AccessControlDefinition = AccessControlRule 
+  AccessControlRule.AccessControlRule = "rule" Id MatchId OptMatchArgs "{" AccessControlCheck AccessControlRule* "}" 
+  OptMatchArgs = "(" MatchArgs ")" {ast("<1>")}
+  OptMatchArgs =  {ast("MatchArgs([],None())")}
+  MatchArgs.MatchArgs = {FormalArg ","}* WildCardArg? {prefer}
+  MatchArgs.MatchArgs = {Exp ","}* WildCardArg? 
+  AccessControlCheck = Exp 
+  AccessControlRule.SpecialAccessControlRule = "rule" Id "{" AccessControlCheck "}" 
+  Definition.Predicate = "predicate" Id OptFormalArgs "{" Exp "}" 
+  AccessControlDefinition.Predicate = "predicate" Id OptFormalArgs "{" Exp "}" 
+  EntityBodyDeclaration.PredicateInEntity = "predicate" Id OptFormalArgs "{" Exp "}" 
+  AccessControlPointcutElement.AccessControlPointcutElement = Id MatchId "(" {Id ","}* WildCardArg? ")" 
+  AccessControlPointcut.AccessControlPointcut = "pointcut" Id "(" {FormalArg ","}* ")" "{" {AccessControlPointcutElement ","}* "}" 
+  AccessControlDefinition = AccessControlPointcut 
+  TemplateElement.AccessControlImportRules = "apply ac rules" Id "(" {AccessControlImportRulesArg ","}* ")" {prefer}
+  AccessControlImportRulesArg.Var = Id 
+
+context-free syntax
+
+  Section.ACPolicy = "access" "control" "policy" PolicyExp 
+  PolicyExp.Name = Id 
+  PolicyExp = "(" PolicyExp ")" {bracket}
+  PolicyExp.PolicyAnd = PolicyExp "AND" PolicyExp {assoc}
+  PolicyExp.PolicyOr = PolicyExp "OR" PolicyExp {assoc}
+
+context-free priorities
+
+  {left :
+    } > {left :
+    }
+
+context-free priorities
+
+  {} > {}
+
+context-free syntax
+
+  Modifier.IgnoreAccessControl = "ignore-access-control" 

@@ -1,0 +1,14 @@
+module WebDSL-Enums
+
+imports
+  WebDSL-DataModel	
+  WebDSL-Lexical
+
+sorts
+
+  Defintion EnumValue
+
+context-free syntax
+
+  Definition.Enum = "enum" Id "{" {EnumValue ","}* "}" 
+  EnumValue.EnumValue = Id "(" String ")" 

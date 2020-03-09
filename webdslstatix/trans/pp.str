@@ -1,0 +1,49 @@
+module pp
+
+imports
+
+  libstratego-gpp
+  libspoofax/sdf/pp
+  libspoofax/editor/refactoring/-
+  pp/webdsl-statix-parenthesize
+  pp/webdsl-statix-pp
+
+rules
+
+  editor-format:
+    (node, _, ast, path, project-path) -> (filename, result)
+    with
+      ext      := <get-extension> path
+    ; filename := <guarantee-extension(|$[pp.[ext]])> path
+    ; result   := <pp-debug> node
+
+rules
+  
+  pp-webdsl-statix-string =
+    parenthesize-webdsl-statix
+    ; prettyprint-webdsl-statix-start-symbols
+    ; !V([], <id>)
+    ; box2text-string(|120)
+      
+  pp-partial-webdsl-statix-string =
+    parenthesize-webdsl-statix
+    ; prettyprint-webdsl-statix
+    ; !V([], <id>)
+    ; box2text-string(|120)
+    
+  pp-partial-webdsl-statix-string(|sort) =
+    parenthesize-webdsl-statix
+    ; prettyprint-webdsl-statix(|sort)
+    ; !V([], <id>)
+    ; box2text-string(|120)  
+      
+  pp-debug :
+    ast -> result
+    with
+       result := <pp-webdsl-statix-string> ast
+    <+ <bottomup(try(not(is-string); not(is-list); not(pp-webdsl-statix-string); debug(!"cannot pp ")))> ast
+    ;  result := ""
+
+rules
+  
+  construct-textual-change = construct-textual-change(pp-partial-webdsl-statix-string, parenthesize, override-reconstruction, resugar)

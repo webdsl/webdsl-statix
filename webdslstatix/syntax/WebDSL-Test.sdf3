@@ -1,0 +1,10 @@
+module WebDSL-Test
+
+imports
+  WebDSL-Action
+  WebDSL-Lexical
+
+context-free syntax
+
+  Definition.Test = "test" Id Block 
+  Definition = "test" Block {ast("Test(\"\",<1>)")}

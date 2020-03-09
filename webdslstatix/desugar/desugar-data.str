@@ -1,0 +1,12 @@
+module desugar/desugar-data
+
+imports
+  src-gen/signatures/-
+
+
+// All rules and signatures in here are copied directly from the WebDSL compiler.
+// Some concrete syntax transformations have been rewritten as abstract syntax transformations
+
+rules
+
+  normalize-data : ExtendSessionEntity(ident, entbodydecs){anno*} -> ExtendEntity(ident, entbodydecs){anno*}

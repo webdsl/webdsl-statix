@@ -1,0 +1,76 @@
+module WebDSL-Prefetch
+
+imports
+  WebDSL-Lexical	
+  WebDSL-Action	
+  WebDSL-UI
+  WebDSL
+
+sorts
+
+  TemplateElement Statement PrefetchFor PrefetchChildren PrefetchNode PrefetchTemplateArgs PrefetchTemplateArg PrefetchNodeMod PrefetchCondition PrefetchCondVal PrefetchCond PrefetchWhere PrefetchWhereMod
+
+context-free syntax
+
+  PrefetchFor.PrefetchFor = "prefetch-for" PrefetchForVar PrefetchTemplateArgs PrefetchWhere PrefetchChildren 
+  PrefetchChildren.PrefetchChildren = "{" PrefetchNode* "}" 
+  PrefetchChildrenOpt.None =  
+  PrefetchChildrenOpt = PrefetchChildren 
+  TemplateElement = PrefetchFor 
+  Statement = PrefetchFor 
+  PrefetchNode.PrefetchNode = PrefetchOwnerCast? Id PrefetchNodeMod* PrefetchTemplateArgs PrefetchCondition PrefetchWhere PrefetchChildrenOpt 
+  PrefetchIfDefault.None =  
+  PrefetchForVar.Var = Id 
+  PrefetchNodeMod.NoEmptyBatch = "no-empty-batch" 
+  PrefetchNodeMod.FetchEarly = "fetch-early" 
+  TemplateArgOrThis.TemplateArgOrThis = Id "(" {SortOrThis ","}* ")" 
+  SortOrThis = Sort 
+  SortOrThis = PrefetchThis {prefer}
+  SortOrThis.PrefetchThisCast = PrefetchThis "as" Sort 
+  PrefetchThis.PrefetchThis = "this" 
+  PrefetchTemplateArgs.None =  
+  PrefetchTemplateArgs.PrefetchTemplateArgs = "templates" "[" {TemplateArgOrThis ","}+ "]" 
+  PrefetchCondition.None =  
+  PrefetchCondition.PrefetchCondition = "if" "(" PrefetchCondOrTrue ")" 
+  PrefetchWhere.None =  
+  PrefetchWhere.PrefetchWhere = "where" PrefetchWhereMod* "(" PrefetchCondOrTrue ")" 
+  PrefetchWhereMod.Hint = "hint" 
+  NoneCons.None =  
+  PrefetchOwnerCast = SimpleSort "." {ast("<1>")}
+  PrefetchCondOrTrue = PrefetchCond 
+  PrefetchCondVal.True = "true" 
+  PrefetchCondVal.True = "true" {prefer}
+  PrefetchCondVal.False = "false" {prefer}
+  PrefetchCondVal.Null = "null" {prefer}
+  PrefetchCondVal = ConstValue {prefer}
+  PrefetchCondVal.Var = Id 
+  PrefetchCondVal.RelativeFieldAccess = NoneCons "." Id 
+  PrefetchCondVal.RelativeFieldAccess = SimpleSort "." Id 
+  PrefetchCondVal.Mul = PrefetchCondVal "*" PrefetchCondVal {assoc}
+  PrefetchCondVal.Div = PrefetchCondVal "/" PrefetchCondVal {assoc}
+  PrefetchCondVal.Mod = PrefetchCondVal "%" PrefetchCondVal {assoc}
+  PrefetchCondVal.Add = PrefetchCondVal "+" PrefetchCondVal {assoc}
+  PrefetchCondVal.Sub = PrefetchCondVal "-" PrefetchCondVal {assoc}
+  PrefetchCond = PrefetchCondVal 
+  PrefetchCond.Eq = PrefetchCondVal "==" PrefetchCondVal 
+  PrefetchCond.NotEq = PrefetchCondVal "!=" PrefetchCondVal 
+  PrefetchCond.LargerThan = PrefetchCondVal ">" PrefetchCondVal 
+  PrefetchCond.LargerThanOrEqual = PrefetchCondVal ">=" PrefetchCondVal 
+  PrefetchCond.SmallerThan = PrefetchCondVal "<" PrefetchCondVal 
+  PrefetchCond.SmallerThanOrEqual = PrefetchCondVal "<=" PrefetchCondVal 
+  PrefetchCond.And = PrefetchCond "&&" PrefetchCond {assoc}
+  PrefetchCond.Or = PrefetchCond "||" PrefetchCond {assoc}
+  PrefetchCond.Not = "!" PrefetchCond 
+  PrefetchCond = "(" PrefetchCond ")" {bracket}
+
+context-free priorities
+
+  {left :
+    } > {left :
+    }
+
+context-free priorities
+
+  PrefetchCond.Not > {left :
+    } > {left :
+    }

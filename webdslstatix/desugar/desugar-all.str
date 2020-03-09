@@ -1,0 +1,17 @@
+module desugar/desugar-all
+
+imports
+  src-gen/signatures/-
+  desugar/-
+
+rules
+  // All rules and signatures in here are copied directly from the WebDSL compiler.
+  // Some concrete syntax transformations have been rewritten as abstract syntax transformations 
+
+  desugar-all = innermost(normalize)
+  
+  normalize: ScheduleNoFor(e) -> Schedule(e, ThisCall("now", []))
+  
+  normalize = normalize-data
+  normalize = normalize-action
+  normalize = normalize-ui
