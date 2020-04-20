@@ -80,7 +80,6 @@ rules // type compatibility of constants
   
   // misc
   typeCompatible(NULL(), _) = NULL().
-  typeCompatible(_, NULL()) = NULL().
   
 rules // utils
 
