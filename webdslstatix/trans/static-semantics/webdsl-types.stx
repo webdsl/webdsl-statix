@@ -1,4 +1,4 @@
-module static-semantics/webdsl-constants
+module static-semantics/webdsl-types
 
 imports
   static-semantics/webdsl

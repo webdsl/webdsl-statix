@@ -3,6 +3,7 @@ module statics
 imports 
   static-semantics/webdsl
   static-semantics/webdsl-actions
+  static-semantics/webdsl-entities
 
 // see README.md for details on how to switch to multi-file analysis
 //

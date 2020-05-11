@@ -1,7 +1,7 @@
 module static-semantics/webdsl
 
 imports
-  static-semantics/webdsl-constants
+  static-semantics/webdsl-types
 
 signature
 
@@ -22,6 +22,19 @@ signature
   
   sorts 
     TYPE // semantic type
+    
+  namespaces
+    Entity : string
+    
+  name-resolution
+    labels P
+    resolve
+      Entity
+      filter P*
+      min $ < P
+    
+  relations
+    typeOfDecl : occurrence -> TYPE
 
 rules // application and module
 

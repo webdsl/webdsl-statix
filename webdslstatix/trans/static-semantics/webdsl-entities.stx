@@ -1,0 +1,40 @@
+module static-semantics/webdsl-entities
+
+imports
+  static-semantics/webdsl
+  
+signature
+  sorts EntityBodyDeclaration
+  
+  constructors
+    Entity        : string * string * list(EntityBodyDeclaration) -> Definition
+    EntityNoSuper : string          * list(EntityBodyDeclaration) -> Definition
+    SessionEntity : string          * list(EntityBodyDeclaration) -> Definition
+    
+  constructors
+    ENTITY : string -> TYPE
+    
+  sorts Option
+  constructors
+    DefinePage : list(string) * string * Option * list(string) -> Definition
+    
+rules
+
+  defOk(s, Entity(x, super, bodydecs)) :-
+    declareEntity(s, x).
+    // TO-DO: check entity body declarations
+    // TO-DO: declare `x` is a subtype of `super`
+    
+  defOk(s, EntityNoSuper(x, bodydecs)) :-
+    declareEntity(s, x).
+    // TO-DO: check entity body declarations
+    
+  defOk(s, SessionEntity(x, bodydecs)) :-
+    declareEntity(s, x).
+    // TO-DO: check entity body declarations
+  
+  declareEntity : scope * string
+  declareEntity(s, x) :-
+    s -> Entity{x} with typeOfDecl ENTITY(x),
+    typeOfDecl of Entity{x} in s |-> [(_, (_, ENTITY(x)))] | error $[Entity [x] is defined multiple times].
+  
