@@ -1,2 +1,3 @@
 .project
-
+*.aterm
+*.desugared.aterm
