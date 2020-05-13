@@ -102,13 +102,19 @@ rules // binary operators
   typeOfExp(s, Eq(e1, e2)) = BOOL() :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    typeCompatible(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Eq: [e1] has type [T1],[e2] has type [T2]].
+    or(
+      typeCompatible(T1, T2),
+      typeCompatible(T2, T1)
+    ) | error $[Wrong operand types for operator Eq: [e1] has type [T1],[e2] has type [T2]].
   
   // (e1 != e2)
   typeOfExp(s, NotEq(e1, e2)) = BOOL() :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    typeCompatible(T1, T2) != UNTYPED() | error $[Wrong operand types for operator NotEq: [e1] has type [T1],[e2] has type [T2]].
+    or(
+      typeCompatible(T1, T2),
+      typeCompatible(T2, T1)
+    ) | error $[Wrong operand types for operator NotEq: [e1] has type [T1],[e2] has type [T2]].
     
 rules // unary operators
 
@@ -125,7 +131,7 @@ rules // utils
   getLUBForAdd(_, STRING()) = STRING().
   
   getEqualNumericType : TYPE * TYPE -> TYPE
-  getEqualNumericType(_, _) = UNTYPED.
+  getEqualNumericType(_, _) = UNTYPED().
   getEqualNumericType(INT(), INT()) = INT().
   getEqualNumericType(INT(), LONG()) = LONG().
   getEqualNumericType(LONG(), INT()) = LONG().

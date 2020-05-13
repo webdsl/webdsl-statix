@@ -22,6 +22,11 @@ signature
   
   sorts 
     TYPE // semantic type
+    BOOL
+    
+  constructors
+    TRUE : BOOL
+    FALSE : BOOL
     
   namespaces
     Entity : string
@@ -65,10 +70,14 @@ rules // declare common rules and mappings
 
 rules // typing
 
-  typeOfExp      : scope * Exp  -> TYPE
+  typeOfExp : scope * Exp  -> TYPE
   typeOfExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
   
-  typeCompatible : TYPE * TYPE -> TYPE
-  typeCompatible(T1, T2) = UNTYPED(). //default
-  typeCompatible(T, T) = T. // same type is always type compatible
+  typeCompatible : TYPE * TYPE -> BOOL
+  typeCompatible(T1, T2) = FALSE(). //default
+  typeCompatible(T, T) = TRUE(). // same type is always type compatible
+  
+  or : BOOL * BOOL
+  or(TRUE(), _).
+  or(FALSE(), TRUE()).
   

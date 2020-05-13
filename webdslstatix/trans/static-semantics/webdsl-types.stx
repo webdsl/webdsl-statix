@@ -5,7 +5,7 @@ imports
 
 signature
 
-  sorts ConstValue constructors // constants
+  sorts ConstValue constructors // constant expressions
     Int     : string -> ConstValue
     Long    : string -> ConstValue
     Float   : string -> ConstValue
@@ -17,7 +17,7 @@ signature
     False   : Exp
     Null    : Exp
     
-  constructors // types
+  constructors // semantic types
     // numeric types
     INT           : TYPE
     FLOAT         : TYPE
@@ -60,26 +60,26 @@ rules // types of constant expressions
 rules // type compatibility of constants
   
   // numeric types 
-  typeCompatible(LONG(), INT()) = LONG().
-  typeCompatible(INT(), LONG()) = LONG().
+  typeCompatible(LONG(), INT()) = TRUE().
+  typeCompatible(INT(), LONG()) = TRUE().
   
   // string types
-  typeCompatible(STRING(), T2)      = STRING() :- isStringCompatibleType(T2).
-  typeCompatible(SECRET(), T2)      = STRING() :- isStringCompatibleType(T2).
-  typeCompatible(EMAIL(), T2)       = STRING() :- isStringCompatibleType(T2).
-  typeCompatible(URL(), T2)         = STRING() :- isStringCompatibleType(T2).
-  typeCompatible(WIKITEXT(), T2)    = STRING() :- isStringCompatibleType(T2).
-  typeCompatible(TEXT(), T2)        = STRING() :- isStringCompatibleType(T2).
-  typeCompatible(PATCH(), T2)       = STRING() :- isStringCompatibleType(T2).
-  typeCompatible(PLACEHOLDER(), T2) = STRING() :- isStringCompatibleType(T2).
+  typeCompatible(STRING(), T2)      = TRUE() :- isStringCompatibleType(T2).
+  typeCompatible(SECRET(), T2)      = TRUE() :- isStringCompatibleType(T2).
+  typeCompatible(EMAIL(), T2)       = TRUE() :- isStringCompatibleType(T2).
+  typeCompatible(URL(), T2)         = TRUE() :- isStringCompatibleType(T2).
+  typeCompatible(WIKITEXT(), T2)    = TRUE() :- isStringCompatibleType(T2).
+  typeCompatible(TEXT(), T2)        = TRUE() :- isStringCompatibleType(T2).
+  typeCompatible(PATCH(), T2)       = TRUE() :- isStringCompatibleType(T2).
+  typeCompatible(PLACEHOLDER(), T2) = TRUE() :- isStringCompatibleType(T2).
   
   // date types
-  typeCompatible(DATE(), T2)     = DATE()      :- isDateCompatibleType(T2).
-  typeCompatible(DATETIME(), T2) = DATETIME()  :- isDateCompatibleType(T2).
-  typeCompatible(TIME(), T2)     = TIME()      :- isDateCompatibleType(T2).
+  typeCompatible(DATE(), T2)     = TRUE() :- isDateCompatibleType(T2).
+  typeCompatible(DATETIME(), T2) = TRUE() :- isDateCompatibleType(T2).
+  typeCompatible(TIME(), T2)     = TRUE() :- isDateCompatibleType(T2).
   
   // misc
-  typeCompatible(NULL(), _) = NULL().
+  typeCompatible(NULL(), _) = TRUE().
   
 rules // utils
 
