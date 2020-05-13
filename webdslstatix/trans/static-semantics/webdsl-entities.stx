@@ -4,37 +4,44 @@ imports
   static-semantics/webdsl
   
 signature
-  sorts EntityBodyDeclaration
+  sorts EntityBodyDeclaration ObjectPropertyAssignment
   
   constructors
     Entity        : string * string * list(EntityBodyDeclaration) -> Definition
     EntityNoSuper : string          * list(EntityBodyDeclaration) -> Definition
-    SessionEntity : string          * list(EntityBodyDeclaration) -> Definition
+//  SessionEntity : string          * list(EntityBodyDeclaration) -> Definition
+//  TO-DO: Support SessionEntity
     
   constructors
-    ENTITY : string -> TYPE
-    
-  sorts Option
+    ENTITY : string * scope -> TYPE
+  
   constructors
-    DefinePage : list(string) * string * Option * list(string) -> Definition
+    ObjectCreation : Sort * list(ObjectPropertyAssignment) -> Exp
     
-rules
+rules // entity declaration 
 
-  defOk(s, Entity(x, super, bodydecs)) :-
-    declareEntity(s, x).
+  defOk(s_global, EntityNoSuper(x, bodydecs)) :- {s_entity}
+    new s_entity,
+    s_entity -IMPORTS-> s_global,
+    s_global -> Entity{x} with typeOfDecl ENTITY(x, s_entity),
+    typeOfDecl of Entity{x} in s_global |-> [(_, (_, ENTITY(x, s_entity)))] 
+        | error $[Entity [x] is defined multiple times].
     // TO-DO: check entity body declarations
-    // TO-DO: declare `x` is a subtype of `super`
     
-  defOk(s, EntityNoSuper(x, bodydecs)) :-
-    declareEntity(s, x).
+  defOk(s_global, Entity(x, super, bodydecs)) :- {s_entity s_super}
+    typeOfDecl of Entity{super} in s_global |-> [(_, (_, ENTITY(super, s_super)))]
+        | error $[Entity [super] is not defined],
+    new s_entity,
+    s_entity -IMPORTS-> s_global,
+    s_entity -EXTENDS-> s_super,
+    s_global -> Entity{x} with typeOfDecl ENTITY(x, s_entity),
+    typeOfDecl of Entity{x} in s_global |-> [(_, (_, ENTITY(x, s_entity)))] 
+        | error $[Entity [x] is defined multiple times].
     // TO-DO: check entity body declarations
-    
-  defOk(s, SessionEntity(x, bodydecs)) :-
-    declareEntity(s, x).
-    // TO-DO: check entity body declarations
-  
-  declareEntity : scope * string
-  declareEntity(s, x) :-
-    s -> Entity{x} with typeOfDecl ENTITY(x),
-    typeOfDecl of Entity{x} in s |-> [(_, (_, ENTITY(x)))] | error $[Entity [x] is defined multiple times].
-  
+
+rules // object creation
+
+  typeOfExp(s, ObjectCreation(SimpleSort(x), prop_assignments)) = ENTITY(x, s_entity) :-
+    typeOfDecl of Entity{x} in s |-> [(_, (_, ENTITY(x, _)))]
+        | error $[Entity [x] is not defined].
+    // TO-DO: check prop assignments

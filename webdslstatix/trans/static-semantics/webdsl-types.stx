@@ -47,6 +47,9 @@ signature
     NULL    : TYPE
     UNTYPED : TYPE
   
+  sorts Sort constructors // webdsl types
+    SimpleSort : string -> Sort
+  
 rules // types of constant expressions
   
   typeOfExp(_, Null()) = NULL().

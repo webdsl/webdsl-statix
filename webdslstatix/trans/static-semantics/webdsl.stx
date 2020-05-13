@@ -32,11 +32,11 @@ signature
     Entity : string
     
   name-resolution
-    labels P
+    labels EXTENDS IMPORTS
     resolve
       Entity
-      filter P*
-      min $ < P
+      filter EXTENDS* IMPORTS*
+      min $ < EXTENDS, $ < IMPORTS, EXTENDS < IMPORTS
     
   relations
     typeOfDecl : occurrence -> TYPE
