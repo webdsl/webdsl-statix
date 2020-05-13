@@ -76,8 +76,9 @@ rules // typing
   typeCompatible : TYPE * TYPE -> BOOL
   typeCompatible(T1, T2) = FALSE(). //default
   typeCompatible(T, T) = TRUE(). // same type is always type compatible
-  
+
+rules // utils
+
   or : BOOL * BOOL
   or(TRUE(), _).
   or(FALSE(), TRUE()).
-  
