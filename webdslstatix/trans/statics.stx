@@ -4,15 +4,23 @@ imports
   static-semantics/webdsl
   static-semantics/webdsl-actions
   static-semantics/webdsl-entities
+  static-semantics/webdsl-functions
+  
+  static-semantics/actions/built-ins
 
 // see README.md for details on how to switch to multi-file analysis
 //
 rules // single-file entry point
 
-  programOK : Unit
-  programOK(u) :- {s_init}
+  applicationOk : Unit
+  applicationOk(u) :- {s_init}
     new s_init,
+    init(s_init),
     programOk(s_init, u).
+
+  init : scope
+  init(s) :-
+    declareBuiltIns(s).
 
 //rules // multi-file entry point
 //

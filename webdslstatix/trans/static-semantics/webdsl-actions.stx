@@ -3,6 +3,7 @@ module static-semantics/webdsl-actions
 imports 
   static-semantics/webdsl
   static-semantics/actions/binops
+  static-semantics/actions/built-ins
 
 signature
 

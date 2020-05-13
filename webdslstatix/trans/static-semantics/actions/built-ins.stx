@@ -1,0 +1,26 @@
+module static-semantics/actions/built-ins
+
+imports
+  static-semantics/webdsl
+
+rules
+
+  declareBuiltIns : scope
+  declareBuiltIns(s) :-
+    declareDateBuiltIns(s).
+    
+  declareDateBuiltIns : scope
+  declareDateBuiltIns(s) :-
+    s -> Function{"now"}      with typeOfDecl FUNCTION([], DATETIME()),
+    s -> Function{"today"}    with typeOfDecl FUNCTION([], DATE()),
+    s -> Function{"Date"}     with typeOfDecl FUNCTION([STRING(), STRING()], DATE()),
+    s -> Function{"Date"}     with typeOfDecl FUNCTION([STRING()], DATE()),
+    s -> Function{"Time"}     with typeOfDecl FUNCTION([STRING(), STRING()], DATE()),
+    s -> Function{"Time"}     with typeOfDecl FUNCTION([STRING()], DATE()),
+    s -> Function{"DateTime"} with typeOfDecl FUNCTION([STRING(), STRING()], DATE()),
+    s -> Function{"DateTime"} with typeOfDecl FUNCTION([STRING()], DATE()).
+
+  declareIntBuiltIns : scope
+  declareIntBuiltIns(s) :-
+    s -> Function{"random"} with typeOfDecl FUNCTION([INT(), INT()], INT()),
+    s -> Function{"random"} with typeOfDecl FUNCTION([INT()], INT()).

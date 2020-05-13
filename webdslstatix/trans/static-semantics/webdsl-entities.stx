@@ -11,9 +11,6 @@ signature
     EntityNoSuper : string          * list(EntityBodyDeclaration) -> Definition
 //  SessionEntity : string          * list(EntityBodyDeclaration) -> Definition
 //  TO-DO: Support SessionEntity
-    
-  constructors
-    ENTITY : scope -> TYPE
   
   constructors
     ObjectCreation : Sort * list(ObjectPropertyAssignment) -> Exp

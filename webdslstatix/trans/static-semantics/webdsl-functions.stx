@@ -1,0 +1,17 @@
+module static-semantics/webdsl-functions
+
+imports
+  static-semantics/webdsl
+
+signature
+
+  constructors
+    ThisCall : string * list(Exp) -> Exp
+
+rules
+
+  typeOfExp(s, ThisCall(f, args)) = return_type :- {param_types}
+    typeOfDecl of Function{f} in s |-> [(_, (_, FUNCTION(param_types, return_type)))].
+    // TO-DO: check parameter types
+    // TO-DO: support overloading
+    

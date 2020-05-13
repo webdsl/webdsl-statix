@@ -23,10 +23,6 @@ signature
     
     // unary operators (slightly out of place here)
     Not : Exp -> Exp
-
-rules
-  expOk(s, exp) :- {T}
-    typeOfExp(s, exp) == T.
   
 rules // binary operators
   // (e1 + e2)

@@ -30,11 +30,16 @@ signature
     
   namespaces
     Entity : string
+    Function : string
     
   name-resolution
     labels EXTENDS IMPORTS
     resolve
       Entity
+      filter EXTENDS* IMPORTS*
+      min $ < EXTENDS, $ < IMPORTS, EXTENDS < IMPORTS
+    resolve
+      Function
       filter EXTENDS* IMPORTS*
       min $ < EXTENDS, $ < IMPORTS, EXTENDS < IMPORTS
     
@@ -43,8 +48,7 @@ signature
 
 rules // application and module
 
-  programOk : scope * Unit 
-
+  programOk : scope * Unit
   programOk(s, ApplicationDefs(appName, defs, sections)) :-
     defsOk(s, defs),
     sectionsOk(s, sections).
@@ -67,6 +71,8 @@ rules // declare common rules and mappings
   stmtsOk maps stmtOk(*, list(*))
   
   expOk : scope * Exp
+  expOk(s, exp) :- {T}
+    typeOfExp(s, exp) == T.
 
 rules // typing
 

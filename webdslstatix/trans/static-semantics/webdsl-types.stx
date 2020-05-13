@@ -18,6 +18,9 @@ signature
     Null    : Exp
     
   constructors // semantic types
+    FUNCTION : list(TYPE) * TYPE -> TYPE // list of arguments and return type
+    ENTITY   : scope             -> TYPE 
+    
     // numeric types
     INT           : TYPE
     FLOAT         : TYPE
