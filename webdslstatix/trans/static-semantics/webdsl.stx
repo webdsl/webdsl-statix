@@ -7,8 +7,8 @@ signature
 
 // Only deal with whole applications for now  
   sorts Unit constructors
-    ApplicationDefs : string * list(Definition) * list(Section) -> Unit //TO-DO deal with QIds instead of only strings
-    Application     : string                    * list(Section) -> Unit //TO-DO deal with QIds instead of only strings
+    ApplicationDefs : string * list(Definition) * list(Section) -> Unit
+    Application     : string                    * list(Section) -> Unit
 //  ModuleDefs      : ModuleName * list(Definition) * list(Section) -> Unit
 //  Module          : ModuleName                    * list(Section) -> Unit
     

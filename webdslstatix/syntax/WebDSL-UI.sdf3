@@ -78,7 +78,9 @@ context-free syntax
   TemplateElement.ForCount = "for" "(" Id ":" "Int" "from" Exp "to" Exp ")" "{" TemplateElement* "}" ForSeparator 
   ForSeparator.ForSeparator = "separated-by" "{" TemplateElement* "}" 
   ForSeparator.None =  
-  TemplateElement.IfElseIfTempl = "if" "(" Exp ")" "{" TemplateElement* "}" ElseIfTempl* ElseTempl? {prefer}
+  TemplateElement.IfElseIfTempl = "if" "(" Exp ")" "{" TemplateElement* "}" ElseIfTempl* OptElseTempl {prefer}
+  OptElseTempl.None = <>
+  OptElseTempl = ElseTempl //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
   ElseIfTempl.ElseIfTempl = "else" "if" "(" Exp ")" "{" TemplateElement* "}" {prefer}
   ElseTempl.ElseTempl = "else" "{" TemplateElement* "}" {prefer}
   TemplateElement.TemplateCase = "case" "(" {Exp ","}+ ")" "{" TemplateCaseAlt* "}" 

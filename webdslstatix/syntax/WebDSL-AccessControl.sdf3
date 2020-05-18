@@ -19,26 +19,31 @@ lexical syntax
 
 context-free syntax
 
-  Section.AccessControlDefinition = "access" "control" "rules" Id? AccessControlDefinition* 
-  Section.AccessControlDefinition = "access" "control" "rules" "{" Id? AccessControlDefinition* "}" 
+  Section.AccessControlDefinition = "access" "control" "rules" OptId AccessControlDefinition* 
+  Section.AccessControlDefinition = "access" "control" "rules" "{" OptId AccessControlDefinition* "}" //TO-DO: different constructor and desugar this into rule above
+  OptId.None = <> //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+  OptId = Id
   Definition.AccessControlPrincipal = "principal" "is" Id "with" "credentials" {Id ","}+ 
   AccessControlDefinition.AccessControlPrincipal = "principal" "is" Id "with" "credentials" {Id ","}+ 
   AccessControlDefinition = AccessControlRule 
   AccessControlRule.AccessControlRule = "rule" Id MatchId OptMatchArgs "{" AccessControlCheck AccessControlRule* "}" 
   OptMatchArgs = "(" MatchArgs ")" {ast("<1>")}
   OptMatchArgs =  {ast("MatchArgs([],None())")}
-  MatchArgs.MatchArgs = {FormalArg ","}* WildCardArg? {prefer}
-  MatchArgs.MatchArgs = {Exp ","}* WildCardArg? 
+  MatchArgs.MatchArgs = {FormalArg ","}* OptWildCardArg {prefer}
+  MatchArgs.MatchArgs = {Exp ","}* OptWildCardArg 
   AccessControlCheck = Exp 
   AccessControlRule.SpecialAccessControlRule = "rule" Id "{" AccessControlCheck "}" 
   Definition.Predicate = "predicate" Id OptFormalArgs "{" Exp "}" 
   AccessControlDefinition.Predicate = "predicate" Id OptFormalArgs "{" Exp "}" 
   EntityBodyDeclaration.PredicateInEntity = "predicate" Id OptFormalArgs "{" Exp "}" 
-  AccessControlPointcutElement.AccessControlPointcutElement = Id MatchId "(" {Id ","}* WildCardArg? ")" 
+  AccessControlPointcutElement.AccessControlPointcutElement = Id MatchId "(" {Id ","}* OptWildCardArg ")" 
   AccessControlPointcut.AccessControlPointcut = "pointcut" Id "(" {FormalArg ","}* ")" "{" {AccessControlPointcutElement ","}* "}" 
   AccessControlDefinition = AccessControlPointcut 
   TemplateElement.AccessControlImportRules = "apply ac rules" Id "(" {AccessControlImportRulesArg ","}* ")" {prefer}
   AccessControlImportRulesArg.Var = Id 
+  
+  OptWildCardArg.None = <>
+  OptWildCardArg = WildCardArg //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
 
 context-free syntax
 

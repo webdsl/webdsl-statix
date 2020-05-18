@@ -10,7 +10,9 @@ sorts
 context-free syntax
 
   Definition = FullTextAnalyzer 
-  FullTextAnalyzer.FullTextAnalyzer = DEFAULT? "analyzer" Id "{" FullTextAnalyzerBody "}" 
+  FullTextAnalyzer.FullTextAnalyzer = OptDEFAULT "analyzer" Id "{" FullTextAnalyzerBody "}" 
+  OptDEFAULT.None = <> 
+  OptDEFAULT = DEFAULT //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
   FullTextAnalyzerBody = FullTextAnalyzerBodyDef 
   FullTextAnalyzerBody.DualFullTextAnalyzerBodyDef = INDEXORQUERY "{" FullTextAnalyzerBodyDef "}" INDEXORQUERY "{" FullTextAnalyzerBodyDef "}" 
   FullTextAnalyzerBodyDef.FullTextAnalyzerBodyDef = CharFilter* Tokenizer TokenFilter* 
@@ -47,10 +49,10 @@ context-free syntax
   SearchMapping.SearchMapping = "search" "mapping" Id "{" SearchMappingContent* "}" 
   SearchMappingContent.SearchNamespaceMapping = "namespace" "by" Id {prefer}
   SearchMappingContent.SearchNamespaceMapping = "namespace" "by" Id ";" 
-  SearchMappingContent.SearchFieldMapping = DEFAULTSF? KW MappingPart* ";" 
-  SearchMappingContent.SearchFieldMapping = DEFAULTSF? "index" Id MappingPart* ";" 
-  SearchMappingContent.SearchFieldMapping = DEFAULTSF? KW MappingPart* 
-  SearchMappingContent.SearchFieldMapping = DEFAULTSF? "index" Id MappingPart* 
+  SearchMappingContent.SearchFieldMapping = OptDEFAULTSF KW MappingPart* ";" 
+  SearchMappingContent.SearchFieldMapping = OptDEFAULTSF "index" Id MappingPart* ";" 
+  SearchMappingContent.SearchFieldMapping = OptDEFAULTSF KW MappingPart* 
+  SearchMappingContent.SearchFieldMapping = OptDEFAULTSF "index" Id MappingPart* 
   MappingPart.FieldName = "as" Id 
   MappingPart.AnalyzerName = "using" Id 
   MappingPart.Boost = "boosted" "to" Float 
@@ -69,6 +71,9 @@ context-free syntax
   KW = "index" {reject}
   KW = "depth" {reject}
   KW = "for" {reject}
+  
+  OptDEFAULTSF.None = <>
+  OptDEFAULTSF = DEFAULTSF //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
 
 lexical syntax
 
@@ -78,7 +83,7 @@ lexical syntax
   SA-Key = "subclass" 
   SA-Key = "depth" 
   DEFAULT = "default" 
-  DEFAULT = "default_builtin_analyzer" 
+  DEFAULT = "default_builtin_analyzer"
   DEFAULTSF = "+" 
   SA-Value = Id 
   SA-Value = Float 
@@ -119,15 +124,15 @@ context-free syntax
   FacetExp.RangeFacetDef = SearchField "(" {Range ","}+ ")" 
   FilterConstraint.FieldFilterConstraint = SearchField ":" Exp 
   FieldsConstraint.FieldsConstraint = {QuerySearchField ","}+ ":" 
-  QuerySearchField.QuerySearchField = SearchField QueryBoost? 
+  QuerySearchField.QuerySearchField = SearchField OptQueryBoost 
   QueryConstraint.QueryConstraint = {QueryExp ","}+ {avoid}
   QueryBoost.QueryBoost = "^" Exp 
-  MatchGroup.Clause = BoolOp? "(" MatchGroup+ ")" {avoid}
-  MatchGroup.Query = FieldsConstraint? QueryConstraint {avoid}
+  MatchGroup.Clause = OptBoolOp "(" MatchGroup+ ")" {avoid}
+  MatchGroup.Query = OptFieldsConstraint QueryConstraint {avoid}
   MatchGroup.MatchAllQuery = "*" ":" "*" 
-  QueryExp.GroupDef = BoolOp? "(" QueryExp+ ")" Slop? {prefer}
-  QueryExp.TermDef = BoolOp? QueryTerm Slop? {avoid}
-  QueryExp.RangeDef = BoolOp? Range 
+  QueryExp.GroupDef = OptBoolOp "(" QueryExp+ ")" OptSlop {prefer}
+  QueryExp.TermDef = OptBoolOp QueryTerm OptSlop {avoid}
+  QueryExp.RangeDef = OptBoolOp Range 
   Slop.Slop = "~" Exp 
   Range.Range = RangeOpen ExpOrWildCard "to" ExpOrWildCard RangeClose 
   Range.Range = RangeOpen ExpOrWildCard "TO" ExpOrWildCard RangeClose 
@@ -141,7 +146,7 @@ context-free syntax
   BoolOp.MustNot = "-" 
   QueryTerm = Exp 
   QueryTerm = SearcherDef {reject}
-  SortExp.SortDef = SearchField Direction? 
+  SortExp.SortDef = SearchField OptDirection 
   Direction.Ascending = "asc" 
   Direction.Ascending = "ascending" 
   Direction.Descending = "desc" 
@@ -169,6 +174,21 @@ context-free syntax
   QueryTerm = SearcherKW {reject}
   QueryTerm = SearcherKW "(" Exp ")" {reject}
   QueryTerm = "[" {Exp ","}* "]" {reject}
+  
+  OptQueryBoost.None = <>
+  OptQueryBoost = QueryBoost //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+
+  OptBoolOp.None = <>
+  OptBoolOp = BoolOp //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+
+  OptFieldsConstraint.None = <>
+  OptFieldsConstraint = FieldsConstraint //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+  
+  OptSlop.None = <>
+  OptSlop = Slop //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+  
+  OptDirection.None = <>
+  OptDirection = Direction //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
 
 context-free restrictions
 

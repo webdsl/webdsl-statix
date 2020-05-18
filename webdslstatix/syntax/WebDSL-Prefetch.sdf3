@@ -18,7 +18,7 @@ context-free syntax
   PrefetchChildrenOpt = PrefetchChildren 
   TemplateElement = PrefetchFor 
   Statement = PrefetchFor 
-  PrefetchNode.PrefetchNode = PrefetchOwnerCast? Id PrefetchNodeMod* PrefetchTemplateArgs PrefetchCondition PrefetchWhere PrefetchChildrenOpt 
+  PrefetchNode.PrefetchNode = OptPrefetchOwnerCast Id PrefetchNodeMod* PrefetchTemplateArgs PrefetchCondition PrefetchWhere PrefetchChildrenOpt 
   PrefetchIfDefault.None =  
   PrefetchForVar.Var = Id 
   PrefetchNodeMod.NoEmptyBatch = "no-empty-batch" 
@@ -37,6 +37,8 @@ context-free syntax
   PrefetchWhereMod.Hint = "hint" 
   NoneCons.None =  
   PrefetchOwnerCast = SimpleSort "." {ast("<1>")}
+  OptPrefetchOwnerCast.None = <>
+  OptPrefetchOwnerCast = PrefetchOwnerCast //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
   PrefetchCondOrTrue = PrefetchCond 
   PrefetchCondVal.True = "true" 
   PrefetchCondVal.True = "true" {prefer}
