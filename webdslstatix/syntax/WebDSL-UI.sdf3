@@ -8,7 +8,11 @@ imports
 
 sorts
 
-  TemplateDefinition Modifier Exp
+  TemplateDefinition Modifier Exp TemplateElement
+
+lexical sorts
+
+  SubmitProp
 
 context-free syntax
 

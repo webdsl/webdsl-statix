@@ -3,6 +3,10 @@ module WebDSL-Lexical
 imports
   WebDSL-Action
 
+lexical sorts
+
+  TemplateCallId Id PageId ExtendedId ModuleName SectionName
+
 lexical syntax
 
   TemplateCallId = Id %% hook for reject rules on templatecall names
@@ -18,14 +22,14 @@ lexical restrictions
   PageId -/- [a-zA-Z0-9\_\-]
   ModuleName -/- [a-zA-Z0-9\/]
 
+lexical sorts
+
+   Int Long Float FloatDigits ExponentPart SignedInteger String StringPart SimpleStringPart
+
 lexical syntax
 
   Int = "-"? [0-9]+ 
-  Long = "-"? [0-9]+ "L" 
-  JustMyTest = "jnrofnsci3jmf"
-
-lexical syntax
-
+  Long = "-"? [0-9]+ "L"
   Float = "-"? FloatDigits ExponentPart? [fFdD]? 
   FloatDigits = [0-9]* "." [0-9]+ 
   FloatDigits = [0-9]+ 
@@ -83,6 +87,10 @@ context-free syntax
   SimpleExp.ThisCall = Id "(" {Exp ","}* ")" 
   SimpleExp.Call = SimpleExp "." Id "(" {Exp ","}* ")" 
 
+lexical sorts
+
+  QMLex StringLex StringLexInterp StringChar HexPart
+
 lexical syntax
 
   QMLex = "\"" 
@@ -98,20 +106,24 @@ lexical restrictions
   StringLex
   StringLexInterp -/- ~[\"\n\~]
 
-  lexical syntax
-    LAYOUT     = [\ \t\n\r]
-    LAYOUT     = "//" ~[\n\r]* NewLineEOF
-    LAYOUT     = "/*" InsideComment* "*/" 
-    InsideComment  = ~[\*] 
-    InsideComment  = CommentChar 
-    CommentChar    = [\*]     
-    NewLineEOF = [\n\r] 
-    NewLineEOF = EOF 
-    EOF        =  
+lexical sorts
 
-  lexical restrictions
-    CommentChar -/- [\/]
-    EOF         -/- ~[]
+  InsideComment CommentChar NewLineEOF EOF
+
+lexical syntax
+  LAYOUT     = [\ \t\n\r]
+  LAYOUT     = "//" ~[\n\r]* NewLineEOF
+  LAYOUT     = "/*" InsideComment* "*/" 
+  InsideComment  = ~[\*] 
+  InsideComment  = CommentChar 
+  CommentChar    = [\*]     
+  NewLineEOF = [\n\r] 
+  NewLineEOF = EOF 
+  EOF        =  
+
+lexical restrictions
+  CommentChar -/- [\/]
+  EOF         -/- ~[]
 
 context-free restrictions
 
@@ -119,6 +131,10 @@ context-free restrictions
   LAYOUT? -/- [\/].[\/]
   LAYOUT? -/- [\/].[\*]
   SectionName -/- ~[\n\r]
+
+lexical sorts
+
+  Word
 
 lexical syntax
 

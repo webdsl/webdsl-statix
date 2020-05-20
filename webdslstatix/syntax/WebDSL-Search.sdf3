@@ -5,7 +5,11 @@ imports
 
 sorts
 
-  Definition Annotation Exp
+  Definition Annotation Exp OptDEFAULT
+
+lexical sorts
+
+  DEFAULT DEFAULTSF SA-Key SA-Value SearcherKW SearchMappingAnnoKW SearchFieldId ENTITY SEARCHERREF INDEXORQUERY
 
 context-free syntax
 

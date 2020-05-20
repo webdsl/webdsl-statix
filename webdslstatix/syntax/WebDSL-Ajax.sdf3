@@ -7,7 +7,7 @@ imports
 
 sorts
 
-  Statement Exp InlineTemplate AjaxStatement
+  Statement Exp InlineTemplate AjaxStatement Placeholder PlaceholderVar PlaceholderKeyword PlaceholderVarKeyword
 
 context-free syntax
 
@@ -23,22 +23,25 @@ context-free syntax
   AjaxStatement.AjaxClear = "clear" "(" Exp ")" 
   AjaxStatement.AjaxRefresh = "refresh" "(" ")" 
   AjaxStatement.AjaxRunScript = "runscript" "(" Exp ")" {prefer}
-  TemplateElement = Placeholder 
-  Placeholder = PlaceholderKeyword "<" Id ">" Id "{" TemplateElement* "}" {ast("Placeholder(<2>,<3>,<4>)"), prefer}
-  Placeholder = PlaceholderKeyword "<" Id ">" Exp "{" TemplateElement* "}" {ast("Placeholder(<2>,<3>,<4>)")}
-  Placeholder = PlaceholderKeyword "<" Id ">" Id TemplateCall {ast("PlaceholderWithAjaxCall(<2>,<3>,<4>)"), prefer}
-  Placeholder = PlaceholderKeyword "<" Id ">" PHExp TemplateCall {ast("PlaceholderWithAjaxCall(<2>,<3>,<4>)")}
-  Placeholder = PlaceholderKeyword Id "{" TemplateElement* "}" {ast("Placeholder(<2>,<3>)"), prefer}
-  Placeholder = PlaceholderKeyword Exp "{" TemplateElement* "}" {ast("Placeholder(<2>,<3>)")}
-  Placeholder = PlaceholderKeyword Id TemplateCall {ast("PlaceholderWithAjaxCall(<2>,<3>)"), prefer}
-  Placeholder = PlaceholderKeyword PHExp TemplateCall {ast("PlaceholderWithAjaxCall(<2>,<3>)")}
+  TemplateElement = Placeholder
+  
+  // TO-DO: desugar this instead of {ast} 
+  Placeholder.PlaceholderGenericId = PlaceholderKeyword "<" Id ">" Id "{" TemplateElement* "}" {ast("Placeholder(<2>,<3>,<4>)"), prefer}
+  Placeholder.PlaceholderGenericExp = PlaceholderKeyword "<" Id ">" Exp "{" TemplateElement* "}" {ast("Placeholder(<2>,<3>,<4>)")}
+  Placeholder.PlaceholderGenericIdTC = PlaceholderKeyword "<" Id ">" Id TemplateCall {ast("PlaceholderWithAjaxCall(<2>,<3>,<4>)"), prefer}
+  Placeholder.PlaceholderGenericExpTC = PlaceholderKeyword "<" Id ">" PHExp TemplateCall {ast("PlaceholderWithAjaxCall(<2>,<3>,<4>)")}
+  Placeholder.PlaceholderId = PlaceholderKeyword Id "{" TemplateElement* "}" {ast("Placeholder(<2>,<3>)"), prefer}
+  Placeholder.PlaceholderExp = PlaceholderKeyword Exp "{" TemplateElement* "}" {ast("Placeholder(<2>,<3>)")}
+  Placeholder.PlaceholderIdTC = PlaceholderKeyword Id TemplateCall {ast("PlaceholderWithAjaxCall(<2>,<3>)"), prefer}
+  Placeholder.PlaceholderExpTC = PlaceholderKeyword PHExp TemplateCall {ast("PlaceholderWithAjaxCall(<2>,<3>)")}
   TemplateElement = PlaceholderVar 
-  PlaceholderVar = PlaceholderVarKeyword Id {ast("PlaceholderVar(<2>)"), prefer}
+  PlaceholderVar.PlaceholderVar = PlaceholderVarKeyword Id {ast("PlaceholderVar(<2>)"), prefer}
 
 context-free syntax
 
-  PlaceholderKeyword = "placeholder" 
-  PlaceholderVarKeyword = "placeholdervar" 
+  // to-do: desugar or inline this
+  PlaceholderKeyword.PlaceholderKeyword = "placeholder" 
+  PlaceholderVarKeyword.PlaceholderVarKeyword = "placeholdervar" 
 
 context-free restrictions
 

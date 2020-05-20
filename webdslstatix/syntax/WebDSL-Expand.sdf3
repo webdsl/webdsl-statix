@@ -6,7 +6,7 @@ imports
 
 sorts
 
-  Derive DeriveType DeriveProperty
+  Derive DeriveType DeriveProperty ExpandId ExpandArgId
 
 context-free syntax
 

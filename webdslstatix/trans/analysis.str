@@ -8,13 +8,17 @@ imports
   pp
   
   desugar/desugar-all
+  
+  injections/-
 
 rules // Analysis
 
   // see README.md for details on how to switch to multi-file analysis
 
   // single-file analysis
-  editor-analyze = stx-editor-analyze(id|"statics", "applicationOk")
+  editor-analyze = stx-editor-analyze(pre-analyze, post-analyze|"statics", "applicationOk")
+  pre-analyze = explicate-injections-webdsl-statix
+  post-analyze = strip-annos; implicate-injections-webdsl-statix
   
   // multi-file analysis
 //  editor-analyze = stx-editor-analyze(id|"statics", "projectOk", "fileOk")

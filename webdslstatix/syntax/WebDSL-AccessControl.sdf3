@@ -7,9 +7,9 @@ imports
   WebDSL-Lexical
   WebDSL
 
-sorts
+lexical sorts
 
-  MatchId
+  MatchId WildCardArg
 
 lexical syntax
 

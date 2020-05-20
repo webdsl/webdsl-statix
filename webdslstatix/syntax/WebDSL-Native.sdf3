@@ -8,6 +8,10 @@ sorts
 
   Derive DeriveType DeriveProperty
 
+lexical sorts
+
+  NativeFunId
+
 context-free syntax
 
   NativeClassDeclaration.NativeClass = "native" "class" QId NativeClassAlias NativeClassSuper "{" NativeClassElement* "}" 

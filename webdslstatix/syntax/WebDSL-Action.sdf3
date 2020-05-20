@@ -84,7 +84,7 @@ context-free syntax
   ConstValue.Long = Long 
   ConstValue.Float = Float 
   ConstValue = String 
-  Exp.Const = ConstValue 
+  Exp = ConstValue 
   Exp.Var = VarId 
   VarId = Id 
   Exp = "in" {reject}

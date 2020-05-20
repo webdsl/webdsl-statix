@@ -3,6 +3,10 @@ module WebDSL-XML
 imports
   WebDSL-Action
 
+lexical sorts
+
+  HTML5VoidElement XMLComment XMLCommentChar OneDash TwoDashes QualName Qualifier NCName
+
 context-free syntax
 
   TemplateElement.XMLEmptyElement = "<" QualName Attribute* "/>" 
