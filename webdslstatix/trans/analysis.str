@@ -17,7 +17,7 @@ rules // Analysis
 
   // single-file analysis
   editor-analyze = stx-editor-analyze(pre-analyze, post-analyze|"statics", "applicationOk")
-  pre-analyze = explicate-injections-webdsl-statix
+  pre-analyze = desugar-all; explicate-injections-webdsl-statix
   post-analyze = strip-annos; implicate-injections-webdsl-statix
   
   // multi-file analysis
