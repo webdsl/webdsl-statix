@@ -6,7 +6,7 @@ imports
 
 sorts
 
-  AttributeAssign AttributeSelection
+  AttributeSelection
 
 context-free syntax
 

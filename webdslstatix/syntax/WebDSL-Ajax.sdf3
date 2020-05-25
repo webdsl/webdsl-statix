@@ -7,7 +7,7 @@ imports
 
 sorts
 
-  Statement Exp InlineTemplate AjaxStatement Placeholder PlaceholderVar PlaceholderKeyword PlaceholderVarKeyword
+  Statement Exp AjaxStatement Placeholder PlaceholderVar PlaceholderKeyword PlaceholderVarKeyword
 
 context-free syntax
 

@@ -8,7 +8,7 @@ imports
 
 sorts
 
-  TemplateElement Statement PrefetchFor PrefetchChildren PrefetchNode PrefetchTemplateArgs PrefetchTemplateArg PrefetchNodeMod PrefetchCondition PrefetchCondVal PrefetchCond PrefetchWhere PrefetchWhereMod
+  TemplateElement Statement PrefetchFor PrefetchChildren PrefetchNode PrefetchTemplateArgs PrefetchNodeMod PrefetchCondition PrefetchCondVal PrefetchCond PrefetchWhere PrefetchWhereMod
 
 context-free syntax
 

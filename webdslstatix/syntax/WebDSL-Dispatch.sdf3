@@ -7,7 +7,7 @@ imports
 
 sorts
 
-  DispatchEntry DispatchBody DispatchArg
+  DispatchEntry
 
 context-free syntax
 

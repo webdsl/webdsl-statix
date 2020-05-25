@@ -34,7 +34,7 @@ context-free start-symbols
 
 sorts
 
-  Id QId Int ModuleName SectionHeader Float FloatDigits ExponentPart SignedInteger String UNDEFINED Eof
+  Id QId Int ModuleName Float String UNDEFINED
 
 context-free syntax
 

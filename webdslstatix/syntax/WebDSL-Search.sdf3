@@ -5,7 +5,7 @@ imports
 
 sorts
 
-  Definition Annotation Exp OptDEFAULT
+  Annotation Exp OptDEFAULT
 
 lexical sorts
 

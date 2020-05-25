@@ -6,7 +6,7 @@ imports
 
 sorts
 
-  Defintion EnumValue
+  EnumValue
 
 context-free syntax
 

@@ -6,7 +6,7 @@ imports
 
 sorts
 
-  Derive DeriveType DeriveProperty
+  DeriveProperty
 
 lexical sorts
 

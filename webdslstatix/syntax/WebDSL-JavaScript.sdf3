@@ -19,7 +19,7 @@ syntax
   JSPart-CF.JSString = JSString-LEX 
   JSPart-CF.JSTilde = "\\~" {prefer}
 
-sorts
+lexical sorts
 
   JSChar JSString
 
