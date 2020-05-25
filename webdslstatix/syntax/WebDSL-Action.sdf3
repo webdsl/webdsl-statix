@@ -5,26 +5,32 @@ imports
   WebDSL-UI
   WebDSL
 
+context-free sorts
+
+  OptSort
+
 context-free syntax
 
-  Function.Function = "function" Id OptFormalArgs FunctionReturn Block 
-  FunctionReturn =  {ast("SimpleSort(\"Void\")")}
-  FunctionReturn = ":" Sort {ast("<1>")}
+  Function.Function = "function" Id OptFormalArgs OptSort Block
+  OptSort.None = <>
+  OptSort = ":" Sort
+  //TO-DO: desugar this FunctionReturn =  {ast("SimpleSort(\"Void\")")}
   EntityBodyDeclaration.CachedFunction = "cached" Function 
   GlobalsDef.CachedGlobalFunction = "cached" Function 
   ExtendFunction.ExtendFunction = "extend" Function 
   EntityBodyDeclaration = ExtendFunction 
   GlobalsDef = ExtendFunction 
   StaticEntityFunction.StaticEntityFunction = "static" "function" Id OptFormalArgs ReturnType Block 
-  ReturnType.ReturnType = ":" Sort 
-  ReturnType =  {ast("ReturnType(SimpleSort(\"Void\"))")}
+  ReturnType.ReturnType = ":" Sort
+  ReturnType.None = <> 
+  //TO-DO: desugar this ReturnType =  {ast("ReturnType(SimpleSort(\"Void\"))")}
 
 context-free syntax
 
   Exp = FunctionExp 
-  FunctionExp.FunctionExp = "function" OptFormalArgs FunctionReturn Block 
+  FunctionExp.FunctionExp = "function" OptFormalArgs OptSort Block 
   Exp = FunctionRef 
-  FunctionRef.FunctionRef = "function." Id "(" {Sort ","}* ")" FunctionReturn 
+  FunctionRef.FunctionRef = "function." Id "(" {Sort ","}* ")" OptSort 
   Exp.FunctionRefCall = FunctionRef "(" {Exp ","}* ")" 
   Exp.FunctionRefCallPartial = FunctionRef "(" "*" "," {Exp ","}* ")" 
 
@@ -53,8 +59,9 @@ context-free syntax
   Statement.IfNoElse = "if" "(" Exp ")" Block 
   Statement.IfWithElseIf = "if" "(" Exp ")" Block ElseIfStatement+ OptElse 
   ElseIfStatement.ElseIf = "else" "if" "(" Exp ")" Block 
-  OptElse = "else" Block {ast("<1>")}
-  OptElse =  {ast("Block([])")}
+  OptElse = "else" Block
+  OptElse.None = <>
+  //TO-DO: desugar this OptElse =  {ast("Block([])")}
   Statement.CaseStmt = "case" "(" {Exp ","}+ ")" "{" Case* "}" 
   Case.CaseStmtAlt = {Exp ","}+ Block 
   Case.CaseStmtDefault = "default" Block {prefer}
@@ -135,7 +142,8 @@ context-free syntax
   Exp.Not = "!" Exp 
   Exp = "(" Exp ")" {bracket}
   ForExp.ForExp = "[" Exp "|" Id OptSort "in" Exp OptFilter OptGroupBy "]" 
-  ForExp = "[" Id OptSort "in" Exp OptFilter OptGroupBy "]" {ast("ForExp(Var(<1>),<1>,<2>,<3>,<4>,<5>)")}
+  ForExp.ForExpAlt = "[" Id OptSort "in" Exp OptFilter OptGroupBy "]"
+  //TO-DO: desugar this ForExp = "[" Id OptSort "in" Exp OptFilter OptGroupBy "]" {ast("ForExp(Var(<1>),<1>,<2>,<3>,<4>,<5>)")}
   Exp = ForExp 
   OptGroupBy.GroupBy = "group by" Exp 
   OptGroupBy.None =  

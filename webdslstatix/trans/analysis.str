@@ -39,6 +39,10 @@ rules // Debugging
   debug-show-desugared-aterm:(selected, _, _, path, project-path) -> (filename, result)
     with filename := <guarantee-extension(|"desugared.aterm")> path
        ; result   := <desugar-all> selected 
+       
+  debug-show-desugared-explicated-injections-aterm:(selected, _, _, path, project-path) -> (filename, result)
+    with filename := <guarantee-extension(|"explicated.aterm")> path
+       ; result   := <pre-analyze> selected
 
   // Prints the analyzed annotated abstract syntax ATerm of a selection.
   debug-show-analyzed: (selected, _, _, path, project-path) -> (filename, result)

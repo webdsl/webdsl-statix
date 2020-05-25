@@ -36,7 +36,7 @@ context-free syntax
   PrefetchWhere.PrefetchWhere = "where" PrefetchWhereMod* "(" PrefetchCondOrTrue ")" 
   PrefetchWhereMod.Hint = "hint" 
   NoneCons.None =  
-  PrefetchOwnerCast = SimpleSort "." {ast("<1>")}
+  PrefetchOwnerCast = SimpleSort "." //TO-DO: possibly desugar this {ast("<1>")}
   OptPrefetchOwnerCast.None = <>
   OptPrefetchOwnerCast = PrefetchOwnerCast //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
   PrefetchCondOrTrue = PrefetchCond 

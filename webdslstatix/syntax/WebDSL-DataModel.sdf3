@@ -49,8 +49,9 @@ context-free syntax
 
   Property.Property = Id PropKind Sort OptPropAnnos 
   Property.DerivedProperty = Id PropKind Sort OptPropAnnos ":=" Exp 
-  OptPropAnnos = "(" {Annotation ","}* ")" {ast("<1>")}
-  OptPropAnnos =  {ast("[]")}
+  OptPropAnnos = "(" {Annotation ","}* ")" //TO-DO: possibly desugar this, not sure if it works as is with the list {ast("<1>")}
+  OptPropAnnos.None = <>
+  //TO-DO: desugar this OptPropAnnos.None =  {ast("[]")} 
   PropKind.Simple = "::" 
   PropKind.Ref = "->" 
   PropKind.Comp = "<>" 

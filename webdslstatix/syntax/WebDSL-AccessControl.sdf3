@@ -7,6 +7,10 @@ imports
   WebDSL-Lexical
   WebDSL
 
+context-free sorts
+
+  OptMatchArgs
+
 lexical sorts
 
   MatchId WildCardArg
@@ -27,8 +31,9 @@ context-free syntax
   AccessControlDefinition.AccessControlPrincipal = "principal" "is" Id "with" "credentials" {Id ","}+ 
   AccessControlDefinition = AccessControlRule 
   AccessControlRule.AccessControlRule = "rule" Id MatchId OptMatchArgs "{" AccessControlCheck AccessControlRule* "}" 
-  OptMatchArgs = "(" MatchArgs ")" {ast("<1>")}
-  OptMatchArgs =  {ast("MatchArgs([],None())")}
+  OptMatchArgs = "(" MatchArgs ")"
+  OptMatchArgs.None = <>
+  //TO-DO: desugar this OptMatchArgs =  {ast("MatchArgs([],None())")}
   MatchArgs.MatchArgs = {FormalArg ","}* OptWildCardArg {prefer}
   MatchArgs.MatchArgs = {Exp ","}* OptWildCardArg 
   AccessControlCheck = Exp 
