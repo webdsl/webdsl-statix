@@ -50,12 +50,12 @@ lexical restrictions
 syntax
   
   %% string literal as expression
-  String-CF.StringRaw = QMLex-LEX StringLex-LEX QMLex-LEX //TO-DO: possibly desugar this, not sure how it works in kernel syntax {ast("String(<2>)")}
-  String-CF.StringInterpRaw = QMLex-LEX StringPart-CF* QMLex-LEX {avoid} //TO-DO: possibly desugar this, not sure how it works in kernel syntax {ast("StringInterp(<2>)")}
+  String-CF.StringRaw = QMLex-LEX StringLex-LEX QMLex-LEX
+  String-CF.StringInterpRaw = QMLex-LEX StringPart-CF* QMLex-LEX {avoid}
   
   %% string literal as template element
-  TemplateElement-CF.TextRaw = QMLex-LEX StringLex-LEX QMLex-LEX //TO-DO: possibly desugar this, not sure how it works in kernel syntax {ast("Text(<2>)")}
-  TemplateElement-CF.TextInterpRaw = QMLex-LEX StringPart-CF* QMLex-LEX {avoid} //TO-DO: possibly desugar this, not sure how it works in kernel syntax {ast("TextInterp(<2>)")} 
+  TemplateElement-CF.TextRaw = QMLex-LEX StringLex-LEX QMLex-LEX
+  TemplateElement-CF.TextInterpRaw = QMLex-LEX StringPart-CF* QMLex-LEX {avoid} 
   StringPart-CF = SimpleStringPart-CF
   StringPart-CF = StringLexInterp-LEX 
   SimpleStringPart-CF.InterpExp = "~" SimpleExp-CF 
