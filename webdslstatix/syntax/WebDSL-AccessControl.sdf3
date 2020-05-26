@@ -1,9 +1,9 @@
 module WebDSL-AccessControl 
 
 imports
-  WebDSL-UI	
-  WebDSL-Action	
-  WebDSL-DataModel	
+  WebDSL-UI
+  WebDSL-Action
+  WebDSL-DataModel
   WebDSL-Lexical
   WebDSL
 
@@ -24,16 +24,15 @@ lexical syntax
 context-free syntax
 
   Section.AccessControlDefinition = "access" "control" "rules" OptId AccessControlDefinition* 
-  Section.AccessControlDefinition = "access" "control" "rules" "{" OptId AccessControlDefinition* "}" //TO-DO: different constructor and desugar this into rule above
-  OptId.None = <> //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
-  OptId = Id
+  Section.AccessControlDefinitionAlt = "access" "control" "rules" "{" OptId AccessControlDefinition* "}"
+  OptId.None = <>
+  OptId.Some = Id
   Definition.AccessControlPrincipal = "principal" "is" Id "with" "credentials" {Id ","}+ 
   AccessControlDefinition.AccessControlPrincipal = "principal" "is" Id "with" "credentials" {Id ","}+ 
   AccessControlDefinition = AccessControlRule 
   AccessControlRule.AccessControlRule = "rule" Id MatchId OptMatchArgs "{" AccessControlCheck AccessControlRule* "}" 
   OptMatchArgs = "(" MatchArgs ")"
   OptMatchArgs.None = <>
-  //TO-DO: desugar this OptMatchArgs =  {ast("MatchArgs([],None())")}
   MatchArgs.MatchArgs = {FormalArg ","}* OptWildCardArg {prefer}
   MatchArgs.MatchArgs = {Exp ","}* OptWildCardArg 
   AccessControlCheck = Exp 
@@ -46,9 +45,9 @@ context-free syntax
   AccessControlDefinition = AccessControlPointcut 
   TemplateElement.AccessControlImportRules = "apply ac rules" Id "(" {AccessControlImportRulesArg ","}* ")" {prefer}
   AccessControlImportRulesArg.Var = Id 
-  
+
   OptWildCardArg.None = <>
-  OptWildCardArg = WildCardArg //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+  OptWildCardArg.Some = WildCardArg
 
 context-free syntax
 
@@ -57,16 +56,6 @@ context-free syntax
   PolicyExp = "(" PolicyExp ")" {bracket}
   PolicyExp.PolicyAnd = PolicyExp "AND" PolicyExp {assoc}
   PolicyExp.PolicyOr = PolicyExp "OR" PolicyExp {assoc}
-
-context-free priorities
-
-  {left :
-    } > {left :
-    }
-
-context-free priorities
-
-  {} > {}
 
 context-free syntax
 

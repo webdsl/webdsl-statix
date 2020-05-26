@@ -1,0 +1,9 @@
+module desugar/desugar-accesscontrol
+
+imports
+  src-gen/signatures/-
+
+rules
+
+  normalize-accesscontrol : AccessControlDefinitionAlt(x, acdefs) -> AccessControlDefinition(x, acdefs)
+  normalize-accesscontrol : AccessControlRule(x, y, None(), check, acrules) -> AccessControlRule(x, y, MatchArgs([],None()), check, acrules)

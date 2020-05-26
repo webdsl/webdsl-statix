@@ -16,3 +16,4 @@ rules
   normalize = normalize-action
   normalize = normalize-ui
   normalize = normalize-lexical
+  normalize = normalize-accesscontrol
