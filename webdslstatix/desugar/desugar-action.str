@@ -3,13 +3,18 @@ module desugar/desugar-action
 imports
   src-gen/signatures/-
 
-// All rules and signatures in here are copied directly from the WebDSL compiler.
-// Some concrete syntax transformations have been rewritten as abstract syntax transformations
-  
 signature constructors
   NoOrder : Term
 
 rules
+
+  normalize-action : OptSortNone() -> SimpleSort("Void")
+  normalize-action : ReturnTypeNone() -> ReturnType(SimpleSort("Void"))
+  normalize-action : OptElseNone() -> Block([])
+  normalize-action : ForExpAlt(x, sort, exp, filter, groupby) -> ForExp(Var(x), x, sort, exp, filter, groupby)
+
+// All rules and signatures below are copied directly from the WebDSL compiler.
+// Some concrete syntax transformations have been rewritten as abstract syntax transformations
 
   normalize-action : FilterNoOrderByNoLimit(we) -> Filter(we, NoOrder(), Limit(Int("-1"), Int("0")))
   normalize-action : FilterNoWhereNoLimit(obe)  -> Filter(True(), obe, Limit(Int("-1"), Int("0")))

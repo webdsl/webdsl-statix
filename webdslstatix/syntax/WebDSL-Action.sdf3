@@ -12,9 +12,8 @@ context-free sorts
 context-free syntax
 
   Function.Function = "function" Id OptFormalArgs OptSort Block
-  OptSort.None = <>
+  OptSort.OptSortNone = <>
   OptSort = ":" Sort
-  //TO-DO: desugar this FunctionReturn =  {ast("SimpleSort(\"Void\")")}
   EntityBodyDeclaration.CachedFunction = "cached" Function 
   GlobalsDef.CachedGlobalFunction = "cached" Function 
   ExtendFunction.ExtendFunction = "extend" Function 
@@ -22,8 +21,7 @@ context-free syntax
   GlobalsDef = ExtendFunction 
   StaticEntityFunction.StaticEntityFunction = "static" "function" Id OptFormalArgs ReturnType Block 
   ReturnType.ReturnType = ":" Sort
-  ReturnType.None = <> 
-  //TO-DO: desugar this ReturnType =  {ast("ReturnType(SimpleSort(\"Void\"))")}
+  ReturnType.ReturnTypeNone = <>
 
 context-free syntax
 
@@ -60,8 +58,7 @@ context-free syntax
   Statement.IfWithElseIf = "if" "(" Exp ")" Block ElseIfStatement+ OptElse 
   ElseIfStatement.ElseIf = "else" "if" "(" Exp ")" Block 
   OptElse = "else" Block
-  OptElse.None = <>
-  //TO-DO: desugar this OptElse =  {ast("Block([])")}
+  OptElse.OptElseNone = <>
   Statement.CaseStmt = "case" "(" {Exp ","}+ ")" "{" Case* "}" 
   Case.CaseStmtAlt = {Exp ","}+ Block 
   Case.CaseStmtDefault = "default" Block {prefer}
@@ -143,7 +140,6 @@ context-free syntax
   Exp = "(" Exp ")" {bracket}
   ForExp.ForExp = "[" Exp "|" Id OptSort "in" Exp OptFilter OptGroupBy "]" 
   ForExp.ForExpAlt = "[" Id OptSort "in" Exp OptFilter OptGroupBy "]"
-  //TO-DO: desugar this ForExp = "[" Id OptSort "in" Exp OptFilter OptGroupBy "]" {ast("ForExp(Var(<1>),<1>,<2>,<3>,<4>,<5>)")}
   Exp = ForExp 
   OptGroupBy.GroupBy = "group by" Exp 
   OptGroupBy.None =  
