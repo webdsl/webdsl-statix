@@ -55,5 +55,4 @@ context-free syntax
   TemplateCallId = "downloadlink" {reject}
   TemplateCallId = "outputimage" {reject}
   TemplateCallId = "placeholder" {reject}
-  TemplateCallId = PlaceholderKeyword {reject}
-  TemplateCallId = PlaceholderVarKeyword {reject}
+  TemplateCallId = "placeholdervar" {reject}
