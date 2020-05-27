@@ -10,3 +10,4 @@ imports
 rules
 
   normalize-data : ExtendSessionEntity(ident, entbodydecs){anno*} -> ExtendEntity(ident, entbodydecs){anno*}
+  normalize-data : OptPropAnnosNone() -> []
