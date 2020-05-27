@@ -3,15 +3,20 @@ module desugar/desugar-ui
 imports
   src-gen/signatures/-
 
-
-// All rules and signatures in here are copied directly from the WebDSL compiler.
-// Some concrete syntax transformations have been rewritten as abstract syntax transformations
-
 signature constructors
   IfTempl : Term * Term * Term -> Term
 
 rules
-  
+
+  normalize-ui : DefineEmail(_, x, fargs, targs, telements) -> Define([Email()], x, fargs, targs, telements)
+  normalize-ui : OptFormalArgsNone() -> []
+  normalize-ui : OptTCallArgsNone() -> []
+  normalize-ui : OptTCallPropAssignsNone() -> []
+  normalize-ui : TemplateBodyNone() -> TemplateBody([])
+  normalize-ui : HTMLWrapperAssignsNone() -> HTMLWrapperAssigns([])
+
+  // All rules below are copied directly from the WebDSL compiler.
+  // Some concrete syntax transformations have been rewritten as abstract syntax transformations
   normalize-ui :
     IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)], None()){anno*} -> IfTempl(e1, elem1*, [IfTempl(e2, elem2*, [])]){anno*}
   
