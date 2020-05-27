@@ -18,3 +18,4 @@ rules
   normalize = normalize-lexical
   normalize = normalize-accesscontrol
   normalize = normalize-native
+  normalize = normalize-test

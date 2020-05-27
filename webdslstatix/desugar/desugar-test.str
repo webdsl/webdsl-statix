@@ -1,0 +1,8 @@
+module desugar/desugar-test
+
+imports
+  src-gen/signatures/-
+
+rules
+
+  normalize-test : UnnamedTest(xs) -> Test("", xs)
