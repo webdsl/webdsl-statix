@@ -142,7 +142,7 @@ context-free syntax
   ForExp.ForExpAlt = "[" Id OptSort "in" Exp OptFilter OptGroupBy "]"
   Exp = ForExp 
   OptGroupBy.GroupBy = "group by" Exp 
-  OptGroupBy.None =  
+  OptGroupBy.None = <>
   Exp.AndForExp = "And" ForExp 
   Exp.OrForExp = "Or" ForExp 
   Exp.Mul = Exp "*" Exp {assoc}

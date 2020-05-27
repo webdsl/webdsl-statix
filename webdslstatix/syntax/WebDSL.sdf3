@@ -2,30 +2,30 @@ module WebDSL
 
 imports
   WebDSL-Lexical
-  WebDSL-Keywords	
-  WebDSL-UI	
-  WebDSL-Ajax	
-  WebDSL-Action	
-  WebDSL-DataModel	
-  WebDSL-DataValidation	
-  WebDSL-AccessControl	
-  WebDSL-XML	
-  WebDSL-JavaScript	
-  WebDSL-CSS	
-  WebDSL-Regex	
-  WebDSL-Enums	
-  WebDSL-Expand	
-  WebDSL-Native	
-  WebDSL-Dispatch	
-  WebDSL-Exception	
-  WebDSL-Type	
-  WebDSL-Test	
-  WebDSL-TimeInterval	
-  WebDSL-Service	
-  WebDSL-Search	
-  WebDSL-Prefetch	
-  WebDSL-Routing	
-  WebDSL-Attributes	
+  WebDSL-Keywords
+  WebDSL-UI
+  WebDSL-Ajax
+  WebDSL-Action
+  WebDSL-DataModel
+  WebDSL-DataValidation
+  WebDSL-AccessControl
+  WebDSL-XML
+  WebDSL-JavaScript
+  WebDSL-CSS
+  WebDSL-Regex
+  WebDSL-Enums
+  WebDSL-Expand
+  WebDSL-Native
+  WebDSL-Dispatch
+  WebDSL-Exception
+  WebDSL-Type
+  WebDSL-Test
+  WebDSL-TimeInterval
+  WebDSL-Service
+  WebDSL-Search
+  WebDSL-Prefetch
+  WebDSL-Routing
+  WebDSL-Attributes
   WebDSL-EntityDerive
 
 context-free start-symbols

@@ -1,7 +1,7 @@
 module WebDSL-Enums
 
 imports
-  WebDSL-DataModel	
+  WebDSL-DataModel
   WebDSL-Lexical
 
 sorts

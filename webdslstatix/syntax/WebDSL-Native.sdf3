@@ -30,9 +30,9 @@ context-free syntax
   NativeClassFunction.NativeClassFunction = NativeClassFunctionStatic NativeFunId "(" {NativeType ","}* ")" NativeClassFunctionReturn 
   NativeClassElement = "constructor" "(" {NativeType ","}* ")" NativeClassFunctionReturn {reject}
   NativeClassFunctionReturn.NativeClassFunctionReturn = ":" NativeType {prefer}
-  NativeClassFunctionReturn.None =  
+  NativeClassFunctionReturn.None = <>
   NativeClassFunctionStatic.NativeClassFunctionStatic = "static" {prefer}
-  NativeClassFunctionStatic.None =  
+  NativeClassFunctionStatic.None = <>
   NativeClassElement.NativeClassFunctionFromStatic = QId "as" NativeClassFunction 
   NativeClassElement.NativeClassConstructor = "constructor" "(" {NativeType ","}* ")" 
   NativeClassElement.NativeClassConstructorFromStatic = QId "as" "constructor" "(" {NativeType ","}* ")" 

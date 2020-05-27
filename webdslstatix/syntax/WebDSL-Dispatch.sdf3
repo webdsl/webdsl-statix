@@ -17,7 +17,7 @@ context-free syntax
   DispatchEntry.DispatchEntryNoArg = Id "{" TemplateElement* "}" 
   DispatchEntry.DispatchEntity = Id ":" Sort "{" TemplateElement* "}" 
   DispatchEntryDefault.DispatchDefault = "default" "{" TemplateElement* "}" 
-  DispatchEntryDefault.None =  
+  DispatchEntryDefault.None = <>
   DispatchEntry = "default" "(" {FormalArg ","}* ")" "{" TemplateElement* "}" {reject}
   DispatchEntry = "default" "{" TemplateElement* "}" {reject}
   DispatchNavigate.DispatchNavigate = "navigate" "(" {DispatchNavigateCall "/"}+ ")" "{" TemplateElement* "}" 

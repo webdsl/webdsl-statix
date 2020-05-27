@@ -1,7 +1,7 @@
 module WebDSL-DataModel
 
 imports
-  WebDSL-Action	
+  WebDSL-Action
   WebDSL-Lexical
   WebDSL-UI
 

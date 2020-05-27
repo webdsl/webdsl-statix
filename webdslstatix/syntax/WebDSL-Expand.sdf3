@@ -1,7 +1,7 @@
 module WebDSL-Expand
 
 imports
-  WebDSL-UI	
+  WebDSL-UI
   WebDSL-Lexical
 
 sorts

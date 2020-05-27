@@ -16,7 +16,7 @@ context-free syntax
   Definition = FullTextAnalyzer 
   FullTextAnalyzer.FullTextAnalyzer = OptDEFAULT "analyzer" Id "{" FullTextAnalyzerBody "}" 
   OptDEFAULT.None = <> 
-  OptDEFAULT = DEFAULT //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+  OptDEFAULT.Some = DEFAULT
   FullTextAnalyzerBody = FullTextAnalyzerBodyDef 
   FullTextAnalyzerBody.DualFullTextAnalyzerBodyDef = INDEXORQUERY "{" FullTextAnalyzerBodyDef "}" INDEXORQUERY "{" FullTextAnalyzerBodyDef "}" 
   FullTextAnalyzerBodyDef.FullTextAnalyzerBodyDef = CharFilter* Tokenizer TokenFilter* 
@@ -77,7 +77,7 @@ context-free syntax
   KW = "for" {reject}
   
   OptDEFAULTSF.None = <>
-  OptDEFAULTSF = DEFAULTSF //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+  OptDEFAULTSF.Some = DEFAULTSF
 
 lexical syntax
 
@@ -180,46 +180,24 @@ context-free syntax
   QueryTerm = "[" {Exp ","}* "]" {reject}
   
   OptQueryBoost.None = <>
-  OptQueryBoost = QueryBoost //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+  OptQueryBoost.Some = QueryBoost
 
   OptBoolOp.None = <>
-  OptBoolOp = BoolOp //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+  OptBoolOp.Some = BoolOp
 
   OptFieldsConstraint.None = <>
-  OptFieldsConstraint = FieldsConstraint //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+  OptFieldsConstraint.Some = FieldsConstraint
   
   OptSlop.None = <>
-  OptSlop = Slop //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+  OptSlop.Some = Slop
   
   OptDirection.None = <>
-  OptDirection = Direction //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+  OptDirection.Some = Direction
 
 context-free restrictions
 
   BoolOp -/- [0-9]
   QueryTerm -/- [\(]
-
-context-free priorities
-
-  {} > {}
-
-context-free priorities
-
-  {} > {} > {} > {left :
-    } > {left :
-    } > {SuggestionPart.Similarity
-         SuggestionPart.SuggestTerm} > {}
-
-context-free priorities
-
-  {RetrievalExp.SearchResults
-   RetrievalExp.FacetResults
-   RetrievalExp.SearchResultsSize
-   RetrievalExp.SearchTimeString} > {}
-
-context-free priorities
-
-  {} > {}
 
 lexical syntax
 

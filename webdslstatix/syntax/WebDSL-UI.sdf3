@@ -1,7 +1,7 @@
 module WebDSL-UI
 
 imports
-  WebDSL-Action	
+  WebDSL-Action
   WebDSL-Lexical
   WebDSL-XML
   WebDSL
@@ -20,9 +20,9 @@ context-free syntax
   TemplateDefinition.Define = "define" Modifier* Id OptFormalArgs TemplateArgs "{" TemplateElement* "}" 
   TemplateArgs.TemplateArgs = "requires" {TemplateArg ","}* {prefer}
   TemplateArg.TemplateArg = Id "(" {Sort ","}* ")" 
-  TemplateArgs.None =  
+  TemplateArgs.None = <>
   TemplateDefinition.LocalRedefine = "define" Modifier* Id "(" {FormalArg ","}* ")" "=" Id OptLocalRedefineArgs 
-  OptLocalRedefineArgs.None =  
+  OptLocalRedefineArgs.None = <>
   OptLocalRedefineArgs.LocalRedefineArgs = "(" "*" "," {LocalRedefineArg ","}+ ")" 
   LocalRedefineArg.Var = Id 
   TemplateDefinition.DefinePage = Modifier* "page" PageId OptFormalArgs TemplateArgs "{" TemplateElement* "}" 
@@ -74,17 +74,17 @@ context-free syntax
   Limit.LimitNoLimit = "offset" Exp 
   TemplateElement.For = "for" "(" Id ":" Sort "in" Exp OptFilter ")" "{" TemplateElement* "}" ForSeparator 
   OptFilter = Filter 
-  OptFilter.None =  
+  OptFilter.None = <>
   OptSort = ":" Sort
   OptSort.None = <>
   TemplateElement.ForInferred = "for" "(" Id "in" Exp OptFilter ")" "{" TemplateElement* "}" ForSeparator 
   TemplateElement.ForAll = "for" "(" Id ":" Sort OptFilter ")" "{" TemplateElement* "}" ForSeparator 
   TemplateElement.ForCount = "for" "(" Id ":" "Int" "from" Exp "to" Exp ")" "{" TemplateElement* "}" ForSeparator 
   ForSeparator.ForSeparator = "separated-by" "{" TemplateElement* "}" 
-  ForSeparator.None =  
+  ForSeparator.None = <>
   TemplateElement.IfElseIfTempl = "if" "(" Exp ")" "{" TemplateElement* "}" ElseIfTempl* OptElseTempl {prefer}
   OptElseTempl.None = <>
-  OptElseTempl = ElseTempl //TO-DO: this was made to get statix signature generator to work, check if it has any further implications
+  OptElseTempl.Some = ElseTempl
   ElseIfTempl.ElseIfTempl = "else" "if" "(" Exp ")" "{" TemplateElement* "}" {prefer}
   ElseTempl.ElseTempl = "else" "{" TemplateElement* "}" {prefer}
   TemplateElement.TemplateCase = "case" "(" {Exp ","}+ ")" "{" TemplateCaseAlt* "}" 
@@ -209,7 +209,6 @@ context-free syntax
   HTMLWrapperAssigns.HTMLWrapperAssigns = "[" {Attribute ","}* "]" 
   HTMLWrapperAssigns.HTMLWrapperAssigns = "[" Attribute* "]" {prefer}
   HTMLWrapperAssigns.HTMLWrapperAssignsNone = <>
-  //TO-DO: desugar this HTMLWrapperAssigns =  {ast("HTMLWrapperAssigns([])")}
   TemplateDefinition = HTMLWrapper 
   TemplateDefinition.HTMLWrapperMultiple = "htmlwrapper" "{" HTMLWrapperBody* "}" 
   HTMLWrapperBody.HTMLWrapperBody = Id Id HTMLWrapperAssigns 

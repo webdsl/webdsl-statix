@@ -1,7 +1,7 @@
 module WebDSL-EntityDerive
 
 imports
-  WebDSL-Lexical	
+  WebDSL-Lexical
   WebDSL-Action
   WebDSL
 

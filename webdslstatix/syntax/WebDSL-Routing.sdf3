@@ -10,4 +10,4 @@ context-free syntax
   RoutingElement.RoutingReceive = "receive" OptRoutingArgs Block 
   RoutingElement.RoutingConstruct = "construct" OptRoutingArgs Block 
   OptRoutingArgs.RoutingArgs = "(" {FormalArg ","}* ")" 
-  OptRoutingArgs.None =  
+  OptRoutingArgs.None = <>
