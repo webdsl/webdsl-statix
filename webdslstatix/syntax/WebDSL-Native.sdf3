@@ -40,8 +40,6 @@ context-free syntax
   NativeType.NativeGenericType = Id "<" {NativeType ","}* ">"
   NativeType.NativeGenericTypeList = "[" {NativeType ","}* "]"
   NativeType.NativeGenericTypeSet = "{" {NativeType ","}* "}"
-  //TO-DO: desugar this NativeType = "[" {NativeType ","}* "]" {ast("NativeGenericType(\"List\",<1>)")}
-  //TO-DO: desugar this NativeType = "{" {NativeType ","}* "}" {ast("NativeGenericType(\"Set\",<1>)")}
   NativeType.NativeSimpleType = Id 
 
 lexical syntax

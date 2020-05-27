@@ -6,6 +6,10 @@ imports
 rules
 
   normalize-data : OptPropAnnosNone() -> []
+  normalize-data : ListSort(x) -> GenericSort("List", [x])
+  normalize-data : SetSort(x) -> GenericSort("Set", [x])
+  normalize-data : FunctionSortParamsNone() -> []
+  normalize-data : FunctionSortReturnNone() -> SimpleSort("Void")
 
   // All rules and signatures below are copied directly from the WebDSL compiler.
   // Some concrete syntax transformations have been rewritten as abstract syntax transformations

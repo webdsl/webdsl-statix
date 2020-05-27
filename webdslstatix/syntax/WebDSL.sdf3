@@ -58,19 +58,15 @@ context-free syntax %% Types
   %% List type '[Type]' and Set type '{Type}' notation
   ListSort.ListSort = "[" Sort "]"
   SetSort.SetSort = "{" Sort "}"
-  //TO-DO: desugar this ListSort = "[" Sort "]" {ast("GenericSort(\"List\",[<1>])")}
-  //TO-DO: desugar this SetSort = "{" Sort "}" {ast("GenericSort(\"Set\",[<1>])")}
   
   %% function type; optionally specify (named) args and return type
   FunctionSort.FunctionSort = "function" FunctionSortParams FunctionSortReturn
-  FunctionSortParams = "(" {FunctionSortParam ","}* ")" //TO-DO: possibly desugar this, not sure how it works with the list {ast("<1>")}
-  FunctionSortParams.None = <> 
-  //TO-DO: desugar this: FunctionSortParams =  {ast("[]")}
+  FunctionSortParams = "(" {FunctionSortParam ","}* ")"
+  FunctionSortParams.FunctionSortParamsNone = <>
   FunctionSortParam.UnnamedArg = Sort 
   FunctionSortParam.Arg = Id ":" Sort 
   FunctionSortReturn = ":" Sort
-  FunctionSortReturn.None = <> 
-  //TO-DO: desugar this FunctionSortReturn =  {ast("SimpleSort(\"Void\")")}
+  FunctionSortReturn.FunctionSortReturnNone = <>
   SimpleSort = "function" {reject}
   FormalArg.Arg = Id ":" Sort 
 
