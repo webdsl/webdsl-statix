@@ -16,9 +16,9 @@ context-free syntax
 
   NativeClassDeclaration.NativeClass = "native" "class" QId NativeClassAlias NativeClassSuper "{" NativeClassElement* "}" 
   NativeClassAlias.NativeClassAlias = "as" Id {prefer}
-  NativeClassAlias.None =  
+  NativeClassAlias.None = <>
   NativeClassSuper.NativeClassSuper = ":" Id {prefer}
-  NativeClassSuper.None =  
+  NativeClassSuper.None = <>
 
 context-free syntax
 

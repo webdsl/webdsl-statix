@@ -17,3 +17,4 @@ rules
   normalize = normalize-ui
   normalize = normalize-lexical
   normalize = normalize-accesscontrol
+  normalize = normalize-native

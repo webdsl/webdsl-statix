@@ -1,0 +1,9 @@
+module desugar/desugar-native
+
+imports
+  src-gen/signatures/-
+
+rules
+
+  normalize-native : NativeGenericTypeList(x) -> NativeGenericType("List", x)
+  normalize-native : NativeGenericTypeSet(x)  -> NativeGenericType("Set", x)
