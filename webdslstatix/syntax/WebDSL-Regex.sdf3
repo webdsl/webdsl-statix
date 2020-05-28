@@ -9,7 +9,7 @@ sorts
 
 context-free syntax
 
-  Exp.Call = RegexExp "." Id "(" {Exp ","}* ")" 
+  Exp.RegexCall = RegexExp "." Id "(" {Exp ","}* ")" 
   RegexExp.RegexPattern = "/" Pattern "/" 
   Pattern.SingleBranch = Branche 
   Pattern.TupleBranch = Pattern "|" Pattern {right, prefer}

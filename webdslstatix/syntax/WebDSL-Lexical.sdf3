@@ -81,11 +81,11 @@ context-free syntax
 %% a '.' after a SimpleExp must be rejected as part of String to avoid amb, e.g. not allowed: "~a."
 %% in these cases, use '()' if a '.' is needed as part of the string,       e.g.     allowed: "~(a)."
   
-  SimpleVar.Var = VarId 
+  SimpleVar.SimpleVar = VarId 
   SimpleExp = SimpleVar 
-  SimpleExp.FieldAccess = SimpleExp "." Id 
-  SimpleExp.ThisCall = Id "(" {Exp ","}* ")" 
-  SimpleExp.Call = SimpleExp "." Id "(" {Exp ","}* ")" 
+  SimpleExp.SimpleFieldAccess = SimpleExp "." Id 
+  SimpleExp.SimpleThisCall = Id "(" {Exp ","}* ")" 
+  SimpleExp.SimpleCall = SimpleExp "." Id "(" {Exp ","}* ")" 
 
 lexical sorts
 

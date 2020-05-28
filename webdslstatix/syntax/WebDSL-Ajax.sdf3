@@ -40,9 +40,9 @@ context-free syntax
 
 context-free syntax
 
-  PHExp.ThisCall = Id "(" {Exp ","}* ")" 
-  PHExp.Call = Exp "." Id "(" {Exp ","}* ")" 
-  PHExp.FieldAccess = Exp "." Id {prefer}
-  PHExp.CollectionIndex = Exp "[" Exp "]" {prefer}
-  PHExp.Add = Exp "+" Exp 
+  PHExp.PHThisCall = Id "(" {Exp ","}* ")" 
+  PHExp.PHCall = Exp "." Id "(" {Exp ","}* ")" 
+  PHExp.PHFieldAccess = Exp "." Id {prefer}
+  PHExp.PHCollectionIndex = Exp "[" Exp "]" {prefer}
+  PHExp.PHAdd = Exp "+" Exp 
   PHExp = ConstValue 

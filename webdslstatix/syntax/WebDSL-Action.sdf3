@@ -7,7 +7,7 @@ imports
 
 context-free sorts
 
-  OptSort
+  OptSort Block Function ExtendFunction ReturnType StaticEntityFunction
 
 context-free syntax
 
@@ -22,6 +22,10 @@ context-free syntax
   StaticEntityFunction.StaticEntityFunction = "static" "function" Id OptFormalArgs ReturnType Block 
   ReturnType.ReturnType = ":" Sort
   ReturnType.ReturnTypeNone = <>
+
+context-free sorts
+
+  FunctionExp FunctionRef
 
 context-free syntax
 
@@ -40,9 +44,13 @@ context-free syntax
   Statement.Return = "return" Exp ";" 
   Statement.ReturnEmpty = "return" ";" 
   Statement.GoTo = "goto" PageCall ";" {prefer}
-  Statement.GoTo = "goto" "(" PageCall ")" ";" {prefer}
+  Statement.GoToAlt = "goto" "(" PageCall ")" ";" {prefer}
   Statement.Schedule = "schedule" Exp "for" Exp ";" 
   Statement.ScheduleNoFor = "schedule" Exp ";" 
+
+context-free sorts
+
+  VarDeclStat
 
 context-free syntax
 
@@ -50,6 +58,10 @@ context-free syntax
   VarDeclStat.VarDeclInit = "var" Id ":" Sort ":=" Exp ";" 
   VarDeclStat.VarDeclInitInferred = "var" Id ":=" Exp ";" 
   Statement = VarDeclStat 
+
+context-free sorts
+
+  ElseIfStatement OptElse Case TypeCaseAlt
 
 context-free syntax
 
@@ -78,9 +90,9 @@ context-free syntax
   Statement.ForCountStmt = "for" "(" Id ":" "Int" "from" Exp "to" Exp ")" Block 
   Statement.WhileStmt = "while" "(" Exp ")" Block 
 
-sorts
+context-free sorts
 
-  ConstValue Exp
+  ConstValue Exp VarId ObjectCreation ObjectPropertyAssignment Assignment Mapping
 
 context-free syntax
 
@@ -96,7 +108,7 @@ context-free syntax
   Exp.SessionVar = "session" "." Id {prefer}
   Exp.FieldAccess = Exp "." Id 
   Exp.CollectionIndex = Exp "[" Exp "]" {prefer}
-  ObjectCreation.ObjectCreation = Sort "{" ObjectPropertyAssignment* "}" 
+  ObjectCreation.ObjectCreationAlt = Sort "{" ObjectPropertyAssignment* "}" 
   ObjectCreation.ObjectCreation = Sort "{" {ObjectPropertyAssignment ","}* "}" {prefer}
   Exp = ObjectCreation 
   ObjectPropertyAssignment.ObjectPropertyAssignment = Id ":=" Exp 
@@ -123,6 +135,10 @@ context-free restrictions
 
   "in" -/- [a-zA-Z0-9\_]
 
+context-free sorts
+
+  OptGroupBy ForExp
+
 context-free syntax
 
   Exp.Eq = Exp "==" Exp {left}
@@ -142,7 +158,7 @@ context-free syntax
   ForExp.ForExpAlt = "[" Id OptSort "in" Exp OptFilter OptGroupBy "]"
   Exp = ForExp 
   OptGroupBy.GroupBy = "group by" Exp 
-  OptGroupBy.None = <>
+  OptGroupBy.OptGroupByNone = <>
   Exp.AndForExp = "And" ForExp 
   Exp.OrForExp = "Or" ForExp 
   Exp.Mul = Exp "*" Exp {assoc}
@@ -182,12 +198,16 @@ context-free priorities
   { Assignment.Assignment } > 
   Exp.IfExp
 
+context-free sorts
+
+  EmailCall
+
 context-free syntax
 
   EmailCall.EmailCall = Id "(" {Exp ","}* ")" 
   Exp.RenderEmailFunctionCall = "renderemail" "(" EmailCall ")" {prefer}
   Exp.EmailFunctionCall = "email" "(" EmailCall ")" {prefer}
-  Exp.EmailFunctionCall = "email" EmailCall {prefer}
+  Exp.EmailFunctionCallAlt = "email" EmailCall {prefer}
   Exp.SendEmailFunctionCall = "sendemail" "(" EmailCall ")" {prefer}
 
 context-free syntax

@@ -8,7 +8,7 @@ imports
 
 sorts
 
-  TemplateDefinition Modifier TemplateElement OptFormalArgs
+  TemplateDefinition Modifier TemplateElement OptFormalArgs OptFilter PageCall TemplateCall
 
 lexical sorts
 
@@ -24,7 +24,7 @@ context-free syntax
   TemplateDefinition.LocalRedefine = "define" Modifier* Id "(" {FormalArg ","}* ")" "=" Id OptLocalRedefineArgs 
   OptLocalRedefineArgs.None = <>
   OptLocalRedefineArgs.LocalRedefineArgs = "(" "*" "," {LocalRedefineArg ","}+ ")" 
-  LocalRedefineArg.Var = Id 
+  LocalRedefineArg.LocalRedefineArg = Id 
   TemplateDefinition.DefinePage = Modifier* "page" PageId OptFormalArgs TemplateArgs "{" TemplateElement* "}" 
   TemplateDefinition.DefineTemplate = Modifier* "template" Id OptFormalArgs TemplateArgs "{" TemplateElement* "}"
   TemplateDefinition.DefineEmail = Modifier* "email" Id OptFormalArgs TemplateArgs "{" TemplateElement* "}"
@@ -75,8 +75,6 @@ context-free syntax
   TemplateElement.For = "for" "(" Id ":" Sort "in" Exp OptFilter ")" "{" TemplateElement* "}" ForSeparator 
   OptFilter = Filter 
   OptFilter.None = <>
-  OptSort = ":" Sort
-  OptSort.None = <>
   TemplateElement.ForInferred = "for" "(" Id "in" Exp OptFilter ")" "{" TemplateElement* "}" ForSeparator 
   TemplateElement.ForAll = "for" "(" Id ":" Sort OptFilter ")" "{" TemplateElement* "}" ForSeparator 
   TemplateElement.ForCount = "for" "(" Id ":" "Int" "from" Exp "to" Exp ")" "{" TemplateElement* "}" ForSeparator 

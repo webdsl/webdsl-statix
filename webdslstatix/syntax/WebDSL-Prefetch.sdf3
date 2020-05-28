@@ -20,7 +20,7 @@ context-free syntax
   Statement = PrefetchFor 
   PrefetchNode.PrefetchNode = OptPrefetchOwnerCast Id PrefetchNodeMod* PrefetchTemplateArgs PrefetchCondition PrefetchWhere PrefetchChildrenOpt 
   PrefetchIfDefault.None = <>
-  PrefetchForVar.Var = Id 
+  PrefetchForVar.PrefetchForVar = Id 
   PrefetchNodeMod.NoEmptyBatch = "no-empty-batch" 
   PrefetchNodeMod.FetchEarly = "fetch-early" 
   TemplateArgOrThis.TemplateArgOrThis = Id "(" {SortOrThis ","}* ")" 
@@ -39,28 +39,27 @@ context-free syntax
   PrefetchOwnerCast = SimpleSort "."
   OptPrefetchOwnerCast.None = <>
   OptPrefetchOwnerCast.Some = PrefetchOwnerCast
-  PrefetchCondOrTrue = PrefetchCond 
-  PrefetchCondVal.True = "true" 
-  PrefetchCondVal.True = "true" {prefer}
-  PrefetchCondVal.False = "false" {prefer}
-  PrefetchCondVal.Null = "null" {prefer}
+  PrefetchCondOrTrue = PrefetchCond
+  PrefetchCondVal.PrefetchTrue = "true" {prefer}
+  PrefetchCondVal.PrefetchFalse = "false" {prefer}
+  PrefetchCondVal.PrefetchNull = "null" {prefer}
   PrefetchCondVal = ConstValue {prefer}
-  PrefetchCondVal.Var = Id 
+  PrefetchCondVal.PretchCondVar = Id 
   PrefetchCondVal.RelativeFieldAccess = NoneCons "." Id 
   PrefetchCondVal.RelativeFieldAccess = SimpleSort "." Id 
-  PrefetchCondVal.Mul = PrefetchCondVal "*" PrefetchCondVal {assoc}
-  PrefetchCondVal.Div = PrefetchCondVal "/" PrefetchCondVal {assoc}
-  PrefetchCondVal.Mod = PrefetchCondVal "%" PrefetchCondVal {assoc}
-  PrefetchCondVal.Add = PrefetchCondVal "+" PrefetchCondVal {assoc}
-  PrefetchCondVal.Sub = PrefetchCondVal "-" PrefetchCondVal {assoc}
+  PrefetchCondVal.PrefetchMul = PrefetchCondVal "*" PrefetchCondVal {assoc}
+  PrefetchCondVal.PrefetchDiv = PrefetchCondVal "/" PrefetchCondVal {assoc}
+  PrefetchCondVal.PrefetchMod = PrefetchCondVal "%" PrefetchCondVal {assoc}
+  PrefetchCondVal.PrefetchAdd = PrefetchCondVal "+" PrefetchCondVal {assoc}
+  PrefetchCondVal.PrefetchSub = PrefetchCondVal "-" PrefetchCondVal {assoc}
   PrefetchCond = PrefetchCondVal 
-  PrefetchCond.Eq = PrefetchCondVal "==" PrefetchCondVal 
-  PrefetchCond.NotEq = PrefetchCondVal "!=" PrefetchCondVal 
-  PrefetchCond.LargerThan = PrefetchCondVal ">" PrefetchCondVal 
-  PrefetchCond.LargerThanOrEqual = PrefetchCondVal ">=" PrefetchCondVal 
-  PrefetchCond.SmallerThan = PrefetchCondVal "<" PrefetchCondVal 
-  PrefetchCond.SmallerThanOrEqual = PrefetchCondVal "<=" PrefetchCondVal 
-  PrefetchCond.And = PrefetchCond "&&" PrefetchCond {assoc}
-  PrefetchCond.Or = PrefetchCond "||" PrefetchCond {assoc}
-  PrefetchCond.Not = "!" PrefetchCond 
+  PrefetchCond.PrefetchEq = PrefetchCondVal "==" PrefetchCondVal 
+  PrefetchCond.PrefetchNotEq = PrefetchCondVal "!=" PrefetchCondVal 
+  PrefetchCond.PrefetchLargerThan = PrefetchCondVal ">" PrefetchCondVal 
+  PrefetchCond.PrefetchLargerThanOrEqual = PrefetchCondVal ">=" PrefetchCondVal 
+  PrefetchCond.PrefetchSmallerThan = PrefetchCondVal "<" PrefetchCondVal 
+  PrefetchCond.PrefetchSmallerThanOrEqual = PrefetchCondVal "<=" PrefetchCondVal 
+  PrefetchCond.PrefetchAnd = PrefetchCond "&&" PrefetchCond {assoc}
+  PrefetchCond.PrefetchOr = PrefetchCond "||" PrefetchCond {assoc}
+  PrefetchCond.PrefetchNot = "!" PrefetchCond 
   PrefetchCond = "(" PrefetchCond ")" {bracket}

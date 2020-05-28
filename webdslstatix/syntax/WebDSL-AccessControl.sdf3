@@ -15,11 +15,11 @@ context-free sorts
   // Access control sorts
   AccessControlDefinition AccessControlPrincipal AccessControlRule AccessControlCheck
   AccessControlPointcutElement AccessControlPointcut AccessControlImportRulesArg
-  PolicyExp Predicate
+  PolicyExp Predicate MatchArgs
 
 lexical sorts
 
-  MatchId WildCardArg MatchArgs
+  MatchId WildCardArg
 
 lexical syntax
 
@@ -41,7 +41,7 @@ context-free syntax
   OptMatchArgs.OptMatchArgsSome = "(" MatchArgs ")"
   OptMatchArgs.OptMatchArgsNone = <>
   MatchArgs.MatchArgs = {FormalArg ","}* OptWildCardArg {prefer}
-  MatchArgs.MatchArgs = {Exp ","}* OptWildCardArg 
+  MatchArgs.MatchArgsExps = {Exp ","}* OptWildCardArg 
   AccessControlCheck = Exp 
   AccessControlRule.SpecialAccessControlRule = "rule" Id "{" AccessControlCheck "}" 
   Predicate.Predicate = "predicate" Id OptFormalArgs "{" Exp "}"
