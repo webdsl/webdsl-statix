@@ -5,9 +5,9 @@ imports
   WebDSL-Lexical
   WebDSL-UI
 
-sorts
+context-free sorts
 
-  AjaxStatement Placeholder PlaceholderWithAjaxCall PlaceholderVar
+  AjaxStatement Placeholder PlaceholderWithAjaxCall PlaceholderVar AjaxVisibility
 
 context-free syntax
 
@@ -26,17 +26,21 @@ context-free syntax
   
   TemplateElement = Placeholder
   TemplateElement = PlaceholderWithAjaxCall
-  Placeholder.Placeholder = "placeholder" "<" Id ">" Id "{" TemplateElement* "}" {prefer}
-  Placeholder.Placeholder = "placeholder" "<" Id ">" Exp "{" TemplateElement* "}" 
+  Placeholder.PlaceholderHtml = "placeholder" "<" Id ">" Id "{" TemplateElement* "}" {prefer}
+  Placeholder.PlaceholderHtmlExp = "placeholder" "<" Id ">" Exp "{" TemplateElement* "}" 
   Placeholder.Placeholder = "placeholder" Id "{" TemplateElement* "}" {prefer}
-  Placeholder.Placeholder = "placeholder" Exp "{" TemplateElement* "}" 
-  PlaceholderWithAjaxCall.PlaceholderWithAjaxCall = "placeholder" "<" Id ">" Id TemplateCall {prefer}
-  PlaceholderWithAjaxCall.PlaceholderWithAjaxCall = "placeholder" "<" Id ">" PHExp TemplateCall 
-  PlaceholderWithAjaxCall.PlaceholderWithAjaxCall = "placeholder" Id TemplateCall {prefer}
-  PlaceholderWithAjaxCall.PlaceholderWithAjaxCall = "placeholder" PHExp TemplateCall 
+  Placeholder.PlaceholderExp = "placeholder" Exp "{" TemplateElement* "}" 
+  PlaceholderWithAjaxCall.PlaceholderAjaxHtml = "placeholder" "<" Id ">" Id TemplateCall {prefer}
+  PlaceholderWithAjaxCall.PlaceholderAjaxHtmlExp = "placeholder" "<" Id ">" PHExp TemplateCall 
+  PlaceholderWithAjaxCall.PlaceholderAjax = "placeholder" Id TemplateCall {prefer}
+  PlaceholderWithAjaxCall.PlaceholderAjaxExp = "placeholder" PHExp TemplateCall 
   
   TemplateElement = PlaceholderVar 
   PlaceholderVar.PlaceholderVar = "placeholdervar" Id {prefer}
+
+context-free sorts
+
+  PHExp
 
 context-free syntax
 
