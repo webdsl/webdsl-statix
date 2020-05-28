@@ -2,10 +2,11 @@ module WebDSL-Search
 
 imports
   WebDSL-Lexical
+  WebDSL-DataModel
 
 sorts
 
-  Annotation Exp OptDEFAULT
+  OptDEFAULT
 
 lexical sorts
 

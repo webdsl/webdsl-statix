@@ -5,7 +5,7 @@ imports
 
 sorts
 
-  Pattern Exp
+  Pattern
 
 context-free syntax
 

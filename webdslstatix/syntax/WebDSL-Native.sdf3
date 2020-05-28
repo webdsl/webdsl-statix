@@ -4,10 +4,6 @@ imports
   WebDSL-Lexical
   WebDSL
 
-sorts
-
-  DeriveProperty
-
 lexical sorts
 
   NativeFunId

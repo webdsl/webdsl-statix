@@ -3,10 +3,7 @@ module WebDSL-JavaScript
 imports
   WebDSL-Action
   WebDSL-Attributes
-
-sorts
-
-  TemplateElement
+  WebDSL-UI
 
 context-free syntax
 

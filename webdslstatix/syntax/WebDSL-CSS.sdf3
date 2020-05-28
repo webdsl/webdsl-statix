@@ -1,12 +1,9 @@
 module WebDSL-CSS
 
 imports
+  WebDSL-UI
   WebDSL-Attributes
   WebDSL-JavaScript
-
-sorts
-
-  TemplateElement
 
 context-free syntax
 

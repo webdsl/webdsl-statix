@@ -7,7 +7,7 @@ imports
 
 sorts
 
-  Statement Exp AjaxStatement Placeholder PlaceholderWithAjaxCall PlaceholderVar
+  AjaxStatement Placeholder PlaceholderWithAjaxCall PlaceholderVar
 
 context-free syntax
 

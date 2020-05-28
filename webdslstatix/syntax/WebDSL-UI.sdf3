@@ -8,7 +8,7 @@ imports
 
 sorts
 
-  TemplateDefinition Modifier Exp TemplateElement
+  TemplateDefinition Modifier TemplateElement
 
 lexical sorts
 
