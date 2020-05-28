@@ -9,11 +9,17 @@ imports
 
 context-free sorts
 
-  OptMatchArgs
+  // Optional sorts
+  OptMatchArgs OptId OptWildCardArg
+
+  // Access control sorts
+  AccessControlDefinition AccessControlPrincipal AccessControlRule AccessControlCheck
+  AccessControlPointcutElement AccessControlPointcut AccessControlImportRulesArg
+  PolicyExp Predicate
 
 lexical sorts
 
-  MatchId WildCardArg
+  MatchId WildCardArg MatchArgs
 
 lexical syntax
 
@@ -25,29 +31,31 @@ context-free syntax
 
   Section.AccessControlDefinition = "access" "control" "rules" OptId AccessControlDefinition* 
   Section.AccessControlDefinitionAlt = "access" "control" "rules" "{" OptId AccessControlDefinition* "}"
-  OptId.None = <>
-  OptId.Some = Id
-  Definition.AccessControlPrincipal = "principal" "is" Id "with" "credentials" {Id ","}+ 
-  AccessControlDefinition.AccessControlPrincipal = "principal" "is" Id "with" "credentials" {Id ","}+ 
+  OptId.OptIdNone = <>
+  OptId.OptIdSome = Id
+  AccessControlPrincipal.AccessControlPrincipal = "principal" "is" Id "with" "credentials" {Id ","}+ 
+  Definition = AccessControlPrincipal
+  AccessControlDefinition = AccessControlPrincipal
   AccessControlDefinition = AccessControlRule 
   AccessControlRule.AccessControlRule = "rule" Id MatchId OptMatchArgs "{" AccessControlCheck AccessControlRule* "}" 
-  OptMatchArgs = "(" MatchArgs ")"
-  OptMatchArgs.None = <>
+  OptMatchArgs.OptMatchArgsSome = "(" MatchArgs ")"
+  OptMatchArgs.OptMatchArgsNone = <>
   MatchArgs.MatchArgs = {FormalArg ","}* OptWildCardArg {prefer}
   MatchArgs.MatchArgs = {Exp ","}* OptWildCardArg 
   AccessControlCheck = Exp 
   AccessControlRule.SpecialAccessControlRule = "rule" Id "{" AccessControlCheck "}" 
-  Definition.Predicate = "predicate" Id OptFormalArgs "{" Exp "}" 
-  AccessControlDefinition.Predicate = "predicate" Id OptFormalArgs "{" Exp "}" 
+  Predicate.Predicate = "predicate" Id OptFormalArgs "{" Exp "}"
+  Definition = Predicate
+  AccessControlDefinition = Predicate
   EntityBodyDeclaration.PredicateInEntity = "predicate" Id OptFormalArgs "{" Exp "}" 
   AccessControlPointcutElement.AccessControlPointcutElement = Id MatchId "(" {Id ","}* OptWildCardArg ")" 
   AccessControlPointcut.AccessControlPointcut = "pointcut" Id "(" {FormalArg ","}* ")" "{" {AccessControlPointcutElement ","}* "}" 
   AccessControlDefinition = AccessControlPointcut 
   TemplateElement.AccessControlImportRules = "apply ac rules" Id "(" {AccessControlImportRulesArg ","}* ")" {prefer}
-  AccessControlImportRulesArg.Var = Id 
+  AccessControlImportRulesArg.ACVar = Id 
 
-  OptWildCardArg.None = <>
-  OptWildCardArg.Some = WildCardArg
+  OptWildCardArg.OptWildCardArgNone = <>
+  OptWildCardArg.OptWildCardArgSome = WildCardArg
 
 context-free syntax
 

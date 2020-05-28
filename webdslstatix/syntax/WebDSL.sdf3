@@ -34,7 +34,7 @@ context-free start-symbols
 
 sorts
 
-  QId UNDEFINED
+  QId UNDEFINED FormalArg
 
 context-free syntax
 
@@ -72,7 +72,7 @@ context-free syntax %% Types
 
 sorts
 
-  Application Module Unit
+  Application Module Unit Section Definition
 
 syntax
 

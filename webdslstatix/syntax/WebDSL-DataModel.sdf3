@@ -5,6 +5,10 @@ imports
   WebDSL-Lexical
   WebDSL-UI
 
+context-free sorts
+
+  EntityBodyDeclaration
+
 context-free syntax
 
   Definition.GlobalsDefinition = "globals" "{" GlobalsDef* "}" {prefer, deprecated("'globals{ }' block is no longer necessary around global variables and functions")}
