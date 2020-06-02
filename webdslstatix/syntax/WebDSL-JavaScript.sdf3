@@ -5,13 +5,16 @@ imports
   WebDSL-Attributes
   WebDSL-UI
 
+context-free sorts
+
+  JSPart
+
 context-free syntax
 
-  TemplateElement.JSElement = "<" "script" Attribute* ">" JSParts "</" "script" ">" {prefer}
+  TemplateElement.JSElement = "<" "script" Attribute* ">" JSPart* "</" "script" ">" {prefer}
 
 syntax
 
-  JSParts-CF = JSPart-CF* 
   JSPart-CF.JSExp = "~" Exp-CF {prefer}
   JSPart-CF.JSString = JSString-LEX 
   JSPart-CF.JSTilde = "\\~" {prefer}

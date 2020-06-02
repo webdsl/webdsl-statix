@@ -14,6 +14,23 @@ rules
   normalize-ui : OptTCallPropAssignsNone() -> []
   normalize-ui : TemplateBodyNone() -> TemplateBody([])
   normalize-ui : HTMLWrapperAssignsNone() -> HTMLWrapperAssigns([])
+  
+  normalize-ui : NavigateCallParenthesesNoProps(p, elems) -> NavigateCall(p, [], elems)
+  normalize-ui : NavigateCallParentheses(p, props, elems) -> NavigateCall(p, props, elems)
+  normalize-ui : NavigateCallNoProps(p, elems) -> NavigateCall(p, [], elems)
+  
+  normalize-ui : SubmitActionNoProps(exp, action) -> Submit(exp, action, [])
+  normalize-ui : SubmitAction(exp, action, props) -> Submit(exp, action, props)
+  normalize-ui : SubmitNoProps(exp, action) -> Submit(exp, action, [])
+  
+  normalize-ui : SubmitLinkActionNoProps(exp, action) -> SubmitLink(exp, action, [])
+  normalize-ui : SubmitLinkAction(exp, action, props) -> SubmitLink(exp, action, props)
+  normalize-ui : SubmitLinkNoProps(exp, action) -> SubmitLink(exp, action, [])
+  
+  normalize-ui : SubmitElemNoProps(action, elems) -> SubmitElem(action, [], elems)
+  normalize-ui : SubmitLinkElemNoProps(action, elems) -> SubmitLinkElem(action, [], elems)
+  normalize-ui : DownloadLinkNoProps(action, elems) -> DownloadLink(action, [], elems)
+  normalize-ui : OutputImageNoProps(action, elems) -> OutputImage(action, [], elems)
 
   // All rules below are copied directly from the WebDSL compiler.
   // Some concrete syntax transformations have been rewritten as abstract syntax transformations

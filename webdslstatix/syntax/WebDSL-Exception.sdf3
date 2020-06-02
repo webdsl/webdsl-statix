@@ -5,6 +5,10 @@ imports
   WebDSL-Lexical
   WebDSL
 
+context-free sorts
+
+  Catch
+
 context-free syntax
 
   Statement.ThrowStatement = "throw" {Exp ","}+ ";" {prefer}

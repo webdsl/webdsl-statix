@@ -29,21 +29,25 @@ context-free restrictions
 
 context-free sorts
 
-  Entity Property Sort Annotation GlobalsDef
+  Entity Property Sort Annotation GlobalsDef GlobalVarDecl
 
 context-free syntax
 
   GlobalVarDecl.GlobalVarDecl = "var" Id ":" Sort 
   GlobalVarDecl.GlobalVarDeclInit = "var" Id ":" Sort ":=" Exp 
   GlobalVarDecl.GlobalVarDeclInitInferred = "var" Id ":=" Exp 
-  GlobalVarDecl.GlobalVarDecl = "var" Id ":" Sort ";" {deprecated("remove ';' from global variable declaration")}
-  GlobalVarDecl.GlobalVarDeclInit = "var" Id ":" Sort ":=" Exp ";" {deprecated("remove ';' from global variable declaration")}
-  GlobalVarDecl.GlobalVarDeclInitInferred = "var" Id ":=" Exp ";" {deprecated("remove ';' from global variable declaration")}
+  GlobalVarDecl.GlobalVarDeclDepr = "var" Id ":" Sort ";" {deprecated("remove ';' from global variable declaration")}
+  GlobalVarDecl.GlobalVarDeclInitDepr = "var" Id ":" Sort ":=" Exp ";" {deprecated("remove ';' from global variable declaration")}
+  GlobalVarDecl.GlobalVarDeclInitInferredDepr = "var" Id ":=" Exp ";" {deprecated("remove ';' from global variable declaration")}
   Definition.RequestScope = "request" GlobalVarDecl 
   GlobalsDef = GlobalVarDecl 
   GlobalsDef = Function 
   Definition = GlobalsDef 
   Definition = InitAction 
+
+context-free sorts
+
+  OptPropAnnos PropKind
 
 context-free syntax
 

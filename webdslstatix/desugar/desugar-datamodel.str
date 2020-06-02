@@ -1,0 +1,10 @@
+module desugar/desugar-datamodel
+
+imports
+  src-gen/signatures/-
+
+  rules
+
+  normalize-datamodel : GlobalVarDeclDepr(x, t) -> GlobalVarDecl(x, t)
+  normalize-datamodel : GlobalVarDeclInitDepr(x, t, exp) -> GlobalVarDeclInit(x, t, exp)
+  normalize-datamodel : GlobalVarDeclInitInferredDepr(x, exp) -> GlobalVarDeclInitInferred(x, exp)

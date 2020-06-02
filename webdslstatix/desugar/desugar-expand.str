@@ -1,0 +1,9 @@
+module desugar/desugar-expand
+
+imports
+
+  src-gen/signatures/-
+
+rules
+
+  normalize-expand: DeriveCrudUpper(x) -> DeriveCrud(x)

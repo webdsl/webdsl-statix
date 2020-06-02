@@ -1,0 +1,10 @@
+module desugar/desugar-entityderive
+
+imports
+
+  src-gen/signatures/-
+
+rules
+
+  normalize-entityderive : ExpEntityDerivePropAlt(x) -> ExpEntityDeriveProp(x, [])
+  normalize-entityderive : ArgEntityDerivePropAlt(x) -> ArgEntityDeriveProp(x, [])

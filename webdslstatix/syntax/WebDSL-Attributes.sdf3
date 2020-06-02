@@ -3,19 +3,22 @@ module WebDSL-Attributes
 imports
   WebDSL-Lexical
   WebDSL-Action
+  WebDSL-UI
+  WebDSL
 
-sorts
+context-free sorts
 
-  AttributeSelection
+  AttributeSelection AttributeCollectionOverride AttributeElem 
+  AttributeId AttributeIncludeIgnore Attribute
 
 context-free syntax
 
   Definition.AttributeCollection = AttributeCollectionOverride "attributes" Id "{" AttributeElem* "}" 
   AttributeElem.AttributeAssign = AttributeId "=" Exp 
   AttributeElem.AttributeInclude = AttributeId "attributes" AttributeIncludeIgnore 
-  AttributeIncludeIgnore.None = <>
+  AttributeIncludeIgnore.AttributeIncludeIgnoreNone = <>
   AttributeIncludeIgnore.AttributeIncludeIgnore = "ignore" AttributeId+ 
-  AttributeCollectionOverride.None = <>
+  AttributeCollectionOverride.AttributeCollectionOverrideNone = <>
   AttributeCollectionOverride.AttributeCollectionOverride = "override" 
   AttributeElem.AttributeIgnore = "ignore" AttributeId "attributes" 
 

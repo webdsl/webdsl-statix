@@ -4,6 +4,10 @@ imports
   WebDSL-Action
   WebDSL-Lexical
 
+context-free sorts
+
+  ValidateEntity
+
 context-free syntax
 
   Annotation.ValidateCreateAnno = "validatecreate" "(" Exp "," Exp ")" {prefer}
