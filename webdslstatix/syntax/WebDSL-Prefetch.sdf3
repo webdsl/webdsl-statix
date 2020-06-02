@@ -6,7 +6,7 @@ imports
   WebDSL-UI
   WebDSL
 
-sorts
+context-free sorts
 
   PrefetchFor PrefetchChildren PrefetchNode PrefetchTemplateArgs PrefetchNodeMod PrefetchCondition PrefetchCondVal PrefetchCond PrefetchWhere PrefetchWhereMod
 

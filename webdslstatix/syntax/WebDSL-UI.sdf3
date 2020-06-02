@@ -6,7 +6,7 @@ imports
   WebDSL-XML
   WebDSL
 
-sorts
+context-free sorts
 
   TemplateDefinition Modifier TemplateElement OptFormalArgs OptFilter PageCall TemplateCall
 

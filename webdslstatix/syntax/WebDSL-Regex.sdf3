@@ -3,7 +3,7 @@ module WebDSL-Regex
 imports
   WebDSL-Lexical
 
-sorts
+context-free sorts
 
   Pattern
 
@@ -14,24 +14,17 @@ context-free syntax
   Pattern.SingleBranch = Branche 
   Pattern.TupleBranch = Pattern "|" Pattern {right, prefer}
 
-sorts
+context-free sorts
 
-  Branche
-
-context-free syntax
-
-  Branche.Pieces = Piece+ 
-
-sorts
-
-  Piece
+  Branche Piece
 
 context-free syntax
 
+  Branche.Pieces = Piece+
   Piece.SingleAtom = Atom 
   Piece.QuantifiedAtom = Atom Quantifier 
 
-sorts
+context-free sorts
 
   Quantifier
 
@@ -56,7 +49,7 @@ context-free syntax
   Quantifier.PossessiveZeroOrMore = "*+" 
   Quantifier.PossessiveOneOrMore = "++" 
 
-sorts
+context-free sorts
 
   Atom
 
@@ -79,7 +72,7 @@ context-free syntax
   Atom.AtomCharacter = AtomCharacter 
   Atom.QuotedAtom = "\\Q" AllChars "\\E" 
 
-sorts
+context-free sorts
 
   CharacterClass BracketItem
 
@@ -96,7 +89,7 @@ context-free syntax
   BracketItem.BracketLiteral = BracketLiteral 
   BracketItem.BracketCharacter = BracketCharacter 
 
-sorts
+context-free sorts
 
   ClassKeyword
 
@@ -139,17 +132,14 @@ lexical syntax
   AllChars = "/" 
   AllChars.DoubleQuote = "\"" 
 
-sorts
+context-free sorts
 
   BracketCharacter AtomCharacter
 
 context-free syntax
 
   BracketCharacter.DoubleQuote = "\"" 
-  AtomCharacter.DoubleQuote = "\"" 
-
-context-free syntax
-
+  AtomCharacter.DoubleQuote = "\""
   BracketCharacter.OctalChar = "\\0" OctalValue 
   BracketCharacter.HexHexChar = "\\x" TwoHexValue 
   BracketCharacter.DecHexChar = "\\u" FourHexValue 
@@ -203,7 +193,7 @@ context-free syntax
   AtomCharacter.Tab = "\\\t" 
   AtomCharacter.Newline = "\\\n" 
 
-sorts
+context-free sorts
 
   QuotablePatternSymbol
 
@@ -221,7 +211,7 @@ context-free syntax
   QuotablePatternSymbol.DoubleQuote = "\"" 
   QuotablePatternSymbol.DoubleQuote = "\"" 
 
-sorts
+lexical sorts
 
   Integer OctalValue TwoHexValue FourHexValue BackReference ControlValue
 
@@ -237,7 +227,7 @@ lexical syntax
   ControlValue = [0-9] 
   ControlValue = [0-9] [0-9] 
 
-sorts
+context-free sorts
 
   RegexId RegexID
 

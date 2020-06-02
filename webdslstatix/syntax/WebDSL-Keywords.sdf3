@@ -3,7 +3,7 @@ module WebDSL-Keywords
 imports
   WebDSL-Ajax
 
-sorts
+context-free sorts
 
   Keyword
 

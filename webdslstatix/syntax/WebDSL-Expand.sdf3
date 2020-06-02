@@ -4,7 +4,7 @@ imports
   WebDSL-UI
   WebDSL-Lexical
 
-sorts
+context-free sorts
 
   DeriveProperty ExpandId ExpandArgId
 

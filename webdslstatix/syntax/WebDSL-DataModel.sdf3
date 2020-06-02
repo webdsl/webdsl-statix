@@ -27,7 +27,7 @@ context-free restrictions
 
   "cache" -/- [a-zA-Z0-9\_]
 
-sorts
+context-free sorts
 
   Entity Property Sort Annotation GlobalsDef
 

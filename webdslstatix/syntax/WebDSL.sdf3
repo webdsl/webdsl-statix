@@ -32,7 +32,7 @@ context-free start-symbols
 
   Unit
 
-sorts
+context-free sorts
 
   QId UNDEFINED FormalArg
 
@@ -70,7 +70,7 @@ context-free syntax %% Types
   SimpleSort = "function" {reject}
   FormalArg.Arg = Id ":" Sort 
 
-sorts
+context-free sorts
 
   Application Module Unit Section Definition
 
@@ -91,7 +91,7 @@ context-free syntax
   Unit = Application 
   Unit = Module 
 
-sorts
+context-free sorts
 
   Action Statements Statement
 

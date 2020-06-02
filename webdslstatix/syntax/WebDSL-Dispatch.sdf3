@@ -5,7 +5,7 @@ imports
   WebDSL-UI
   WebDSL
 
-sorts
+context-free sorts
 
   DispatchEntry
 
