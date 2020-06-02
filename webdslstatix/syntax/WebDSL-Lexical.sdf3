@@ -24,7 +24,7 @@ lexical restrictions
 
 lexical sorts
 
-   Int Long Float FloatDigits ExponentPart SignedInteger String StringPart SimpleStringPart
+   Int Long Float FloatDigits ExponentPart SignedInteger
 
 lexical syntax
 
@@ -45,6 +45,10 @@ lexical restrictions
   FloatDigits -/- [0-9]
   SignedInteger -/- [0-9]
 
+context-free sorts
+
+  String StringPart SimpleStringPart
+
 %% Kernel syntax is required here since we do not want LAYOUT to be parsed between
 %% the first QMLex and StringLex
 syntax
@@ -58,7 +62,7 @@ syntax
   TemplateElement-CF.TextInterpRaw = QMLex-LEX StringPart-CF* QMLex-LEX {avoid} 
   StringPart-CF = SimpleStringPart-CF
   StringPart-CF = StringLexInterp-LEX 
-  SimpleStringPart-CF.InterpExp = "~" SimpleExp-CF 
+  SimpleStringPart-CF.InterpSimpleExp = "~" SimpleExp-CF 
   StringPart-CF.InterpExp = "~" "(" Exp-CF ")" 
 
 restrictions
@@ -66,12 +70,20 @@ restrictions
   SimpleStringPart -/- [\.\(]    %% make fieldaccess/call not part of string that follows
                                  %% use parentheses variant if a . is needed in the string
 
+context-free sorts
+
+  OutputShorthand
+
 context-free syntax
 %% ~SimpleExp and ~(Exp) shorthand for output template call
 
-  OutputShorthand.OutputShorthand = "~" SimpleExp 
+  OutputShorthand.OutputShorthandSimpleExp = "~" SimpleExp 
   OutputShorthand.OutputShorthand = "~" "(" Exp ")" 
   TemplateElement = OutputShorthand 
+
+context-free sorts
+
+  SimpleVar SimpleExp
 
 context-free syntax
 %% SimpleExp: specific commonly occuring expressions allowed directly after '~' inside string
