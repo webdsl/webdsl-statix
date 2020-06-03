@@ -58,6 +58,10 @@ context-free syntax
   Attribute.XMLAttributesIf = "if" "(" Exp ")" "{" Attribute* "}" 
   Attribute.XMLAttributesIfElse = "if" "(" Exp ")" "{" Attribute* "}" "else" "{" Attribute* "}" 
 
+context-free sorts
+
+  CommonAttribute
+
 context-free syntax
 
   Attribute.Attribute = QualName "=" Exp 
