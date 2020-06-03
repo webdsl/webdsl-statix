@@ -1,40 +1,13 @@
-module WebDSL
+module WebDSL-Core
 
 imports
-  WebDSL-Lexical
-  WebDSL-Keywords
-  WebDSL-UI
-  WebDSL-Ajax
-  WebDSL-Action
   WebDSL-DataModel
-  WebDSL-DataValidation
-  WebDSL-AccessControl
-  WebDSL-XML
-  WebDSL-JavaScript
-  WebDSL-CSS
-  WebDSL-Regex
-  WebDSL-Enums
-  WebDSL-Expand
-  WebDSL-Native
-  WebDSL-Dispatch
-  WebDSL-Exception
-  WebDSL-Type
-  WebDSL-Test
-  WebDSL-TimeInterval
-  WebDSL-Service
-  WebDSL-Search
-  WebDSL-Prefetch
-  WebDSL-Routing
-  WebDSL-Attributes
-  WebDSL-EntityDerive
-
-context-free start-symbols
-
-  Unit
+  WebDSL-Lexical
 
 context-free sorts
 
-  QId FormalArg SimpleSort
+  QId FormalArg OptFormalArgs SimpleSort GenericSort RefSort ListSort SetSort FunctionSort FunctionSortParams Arg
+  FunctionSortParam FunctionSortReturn
 
 context-free syntax
 
@@ -51,7 +24,7 @@ context-free syntax %% Types
   Sort = FunctionSort 
   SimpleSort.SimpleSort = Id 
   GenericSort.GenericSort = Id "<" {Sort ","}+ ">" 
-  RefSort.RefSort = "Ref" "<" Sort ">" 
+  RefSort.RefSortAlt = "Ref" "<" Sort ">" 
   RefSort.RefSort = "ref" Sort 
   GenericSort = "Ref" "<" Sort ">" {reject}
   
@@ -64,15 +37,18 @@ context-free syntax %% Types
   FunctionSortParams = "(" {FunctionSortParam ","}* ")"
   FunctionSortParams.FunctionSortParamsNone = <>
   FunctionSortParam.UnnamedArg = Sort 
-  FunctionSortParam.Arg = Id ":" Sort 
+  Arg.Arg = Id ":" Sort
+  FunctionSortParam = Arg
   FunctionSortReturn = ":" Sort
   FunctionSortReturn.FunctionSortReturnNone = <>
   SimpleSort = "function" {reject}
-  FormalArg.Arg = Id ":" Sort 
+  FormalArg = Arg
+  OptFormalArgs = "(" {FormalArg ","}* ")"
+  OptFormalArgs.OptFormalArgsNone = <>
 
 context-free sorts
 
-  Application Module Unit Section Definition
+  Application Module Unit Section Definition Description
 
 syntax
 
@@ -93,10 +69,8 @@ context-free syntax
 
 context-free sorts
 
-  Action Statements Statement
+  Action Statement
 
 context-free syntax
 
   Definition = Action 
-  Statements = Statement* 
-  Definition = NativeClassDeclaration 

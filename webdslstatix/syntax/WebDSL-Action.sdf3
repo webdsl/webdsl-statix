@@ -1,9 +1,10 @@
 module WebDSL-Action
 
 imports
+  WebDSL-Core
+  WebDSL-DataModel
   WebDSL-Lexical
   WebDSL-UI
-  WebDSL
 
 context-free sorts
 
@@ -38,7 +39,7 @@ context-free syntax
 
 context-free syntax
 
-  Block.Block = "{" Statements "}" 
+  Block.Block = "{" Statement* "}" 
   Statement = Block 
   Statement.Stat = Exp ";" 
   Statement.Return = "return" Exp ";" 
@@ -103,6 +104,7 @@ context-free syntax
   Exp = ConstValue 
   Exp.Var = VarId 
   VarId = Id 
+  SimpleVar.SimpleVar = VarId
   Exp = "in" {reject}
   Exp.GlobalVar = "global" "." Id {prefer}
   Exp.SessionVar = "session" "." Id {prefer}
@@ -126,6 +128,14 @@ context-free syntax
   Exp.Call = Exp "." Id "(" {Exp ","}* ")" 
   Exp.IsA = Exp "is" "a" Sort 
   Exp.Cast = Exp "as" Sort {avoid}
+
+  OutputShorthand.OutputShorthand = "~" "(" Exp ")"
+  SimpleExp.SimpleThisCall = Id "(" {Exp ","}* ")" 
+  SimpleExp.SimpleCall = SimpleExp "." Id "(" {Exp ","}* ")" 
+
+syntax
+
+  StringPart-CF.InterpExp = "~" "(" Exp-CF ")"
 
 context-free syntax
 

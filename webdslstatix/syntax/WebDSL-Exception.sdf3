@@ -2,8 +2,8 @@ module WebDSL-Exception
 
 imports
   WebDSL-Action
+  WebDSL-Core
   WebDSL-Lexical
-  WebDSL
 
 context-free sorts
 

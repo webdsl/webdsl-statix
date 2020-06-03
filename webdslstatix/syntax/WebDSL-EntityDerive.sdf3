@@ -1,10 +1,8 @@
 module WebDSL-EntityDerive
 
 imports
-  WebDSL-Lexical
   WebDSL-Action
-  WebDSL-UI
-  WebDSL
+  WebDSL-Lexical
 
 context-free sorts
 

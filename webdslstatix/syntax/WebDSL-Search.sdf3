@@ -1,8 +1,8 @@
 module WebDSL-Search
 
 imports
+  WebDSL-Core
   WebDSL-Lexical
-  WebDSL-DataModel
 
 context-free sorts
 

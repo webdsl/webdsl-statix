@@ -1,6 +1,7 @@
 module WebDSL-Regex
 
 imports
+  WebDSL-Action
   WebDSL-Lexical
 
 context-free sorts

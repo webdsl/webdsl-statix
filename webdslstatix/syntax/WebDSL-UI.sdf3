@@ -2,13 +2,14 @@ module WebDSL-UI
 
 imports
   WebDSL-Action
+  WebDSL-Attributes
+  WebDSL-Core
   WebDSL-Lexical
   WebDSL-XML
-  WebDSL
 
 context-free sorts
 
-  TemplateDefinition Modifier TemplateElement OptFormalArgs OptFilter PageCall TemplateCall PropertyAssignment
+  TemplateDefinition Modifier TemplateElement OptFilter PageCall TemplateCall PropertyAssignment
   TemplateArgExp TemplateCaseAlt TemplateTypeCaseAlt
 
 lexical sorts
@@ -29,8 +30,6 @@ context-free syntax
   TemplateDefinition.DefinePage = Modifier* "page" PageId OptFormalArgs TemplateArgs "{" TemplateElement* "}" 
   TemplateDefinition.DefineTemplate = Modifier* "template" Id OptFormalArgs TemplateArgs "{" TemplateElement* "}"
   TemplateDefinition.DefineEmail = Modifier* "email" Id OptFormalArgs TemplateArgs "{" TemplateElement* "}"
-  OptFormalArgs = "(" {FormalArg ","}* ")"
-  OptFormalArgs.OptFormalArgsNone = <>
   Modifier.Page = "page" 
   Modifier.Email = "email" 
   Modifier.AjaxTemplate = "ajax" 
@@ -150,6 +149,14 @@ context-free syntax
   ActionCallOrInlineOrExp = ActionCallOrInline {prefer}
   ActionCallOrInlineOrExp = PropertyValue 
 
+  TemplateElement = OutputShorthand
+
+syntax
+
+  %% string literal as template element
+  TemplateElement-CF.TextRaw = QMLex-LEX StringLex-LEX QMLex-LEX
+  TemplateElement-CF.TextInterpRaw = QMLex-LEX StringPart-CF* QMLex-LEX {avoid} 
+
 lexical syntax
 
   SubmitProp = "onabort" 
@@ -182,6 +189,7 @@ context-free sorts
 context-free syntax
 
   TemplateCall = "separated-by" "{" TemplateElement* "}" {reject}
+  Definition = InitAction
   InitAction.InitAction = "init" Block {prefer}
   TemplateElement.DataBindAction = "databind" Block {prefer}
   TemplateElement.RenderAction = "render" Block {prefer}

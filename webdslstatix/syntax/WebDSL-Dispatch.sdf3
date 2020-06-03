@@ -1,9 +1,10 @@
 module WebDSL-Dispatch
 
 imports
+  WebDSL-Action
+  WebDSL-Core
   WebDSL-Lexical
   WebDSL-UI
-  WebDSL
 
 context-free sorts
 

@@ -1,8 +1,5 @@
 module WebDSL-Keywords
 
-imports
-  WebDSL-Ajax
-
 context-free sorts
 
   Keyword

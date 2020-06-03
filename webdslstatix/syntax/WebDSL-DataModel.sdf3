@@ -3,7 +3,6 @@ module WebDSL-DataModel
 imports
   WebDSL-Action
   WebDSL-Lexical
-  WebDSL-UI
 
 context-free sorts
 
@@ -43,7 +42,6 @@ context-free syntax
   GlobalsDef = GlobalVarDecl 
   GlobalsDef = Function 
   Definition = GlobalsDef 
-  Definition = InitAction 
 
 context-free sorts
 

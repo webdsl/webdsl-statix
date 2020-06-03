@@ -1,11 +1,10 @@
 module WebDSL-AccessControl 
 
 imports
-  WebDSL-UI
   WebDSL-Action
+  WebDSL-Core
   WebDSL-DataModel
   WebDSL-Lexical
-  WebDSL
 
 context-free sorts
 

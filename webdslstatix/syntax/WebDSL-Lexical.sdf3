@@ -1,8 +1,5 @@
 module WebDSL-Lexical
 
-imports
-  WebDSL-Action
-
 lexical sorts
 
   TemplateCallId Id PageId ExtendedId ModuleName SectionName
@@ -57,13 +54,9 @@ syntax
   String-CF.StringRaw = QMLex-LEX StringLex-LEX QMLex-LEX
   String-CF.StringInterpRaw = QMLex-LEX StringPart-CF* QMLex-LEX {avoid}
   
-  %% string literal as template element
-  TemplateElement-CF.TextRaw = QMLex-LEX StringLex-LEX QMLex-LEX
-  TemplateElement-CF.TextInterpRaw = QMLex-LEX StringPart-CF* QMLex-LEX {avoid} 
   StringPart-CF = SimpleStringPart-CF
   StringPart-CF = StringLexInterp-LEX 
   SimpleStringPart-CF.InterpSimpleExp = "~" SimpleExp-CF 
-  StringPart-CF.InterpExp = "~" "(" Exp-CF ")" 
 
 restrictions
 
@@ -78,8 +71,6 @@ context-free syntax
 %% ~SimpleExp and ~(Exp) shorthand for output template call
 
   OutputShorthand.OutputShorthandSimpleExp = "~" SimpleExp 
-  OutputShorthand.OutputShorthand = "~" "(" Exp ")" 
-  TemplateElement = OutputShorthand 
 
 context-free sorts
 
@@ -92,12 +83,9 @@ context-free syntax
 %% allowed after '~': var/fieldaccess/thiscall/call/brackets a, a.b, a(), a.b(), (exp)
 %% a '.' after a SimpleExp must be rejected as part of String to avoid amb, e.g. not allowed: "~a."
 %% in these cases, use '()' if a '.' is needed as part of the string,       e.g.     allowed: "~(a)."
-  
-  SimpleVar.SimpleVar = VarId 
+
   SimpleExp = SimpleVar 
   SimpleExp.SimpleFieldAccess = SimpleExp "." Id 
-  SimpleExp.SimpleThisCall = Id "(" {Exp ","}* ")" 
-  SimpleExp.SimpleCall = SimpleExp "." Id "(" {Exp ","}* ")" 
 
 lexical sorts
 

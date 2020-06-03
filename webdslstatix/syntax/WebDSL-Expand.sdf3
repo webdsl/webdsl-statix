@@ -1,8 +1,8 @@
 module WebDSL-Expand
 
 imports
-  WebDSL-UI
   WebDSL-Lexical
+  WebDSL-UI
 
 context-free sorts
 

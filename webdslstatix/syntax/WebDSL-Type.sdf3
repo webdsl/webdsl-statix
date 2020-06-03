@@ -1,10 +1,9 @@
 module WebDSL-Type
 
 imports
+  WebDSL-DataModel
   WebDSL-Lexical
   WebDSL-Native
-  WebDSL-Search
-  WebDSL
 
 context-free syntax
 

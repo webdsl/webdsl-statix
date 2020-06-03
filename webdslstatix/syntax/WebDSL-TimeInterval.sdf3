@@ -1,7 +1,6 @@
 module WebDSL-TimeInterval
 
 imports
-  WebDSL-Lexical
   WebDSL-Action
 
 context-free syntax

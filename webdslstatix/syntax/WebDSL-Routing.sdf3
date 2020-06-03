@@ -1,8 +1,8 @@
 module WebDSL-Routing
 
 imports
+  WebDSL-Core
   WebDSL-Action
-  WebDSL
 
 context-free sorts
 

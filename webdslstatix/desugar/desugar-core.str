@@ -1,0 +1,9 @@
+module desugar/desugar-core
+
+imports
+
+  src-gen/signatures/-
+
+rules
+
+  normalize-core : RefSortAlt(sort) -> RefSort(sort)

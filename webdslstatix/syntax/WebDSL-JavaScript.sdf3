@@ -3,15 +3,15 @@ module WebDSL-JavaScript
 imports
   WebDSL-Action
   WebDSL-Attributes
-  WebDSL-UI
-
-context-free sorts
-
-  JSPart
 
 context-free syntax
 
   TemplateElement.JSElement = "<" "script" Attribute* ">" JSPart* "</" "script" ">" {prefer}
+  TemplateElement.StyleElement = "<" "style" Attribute* ">" JSPart* "</" "style" ">" {prefer}
+
+context-free sorts
+
+  JSPart
 
 syntax
 

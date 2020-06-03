@@ -1,8 +1,8 @@
 module WebDSL-Native
 
 imports
+  WebDSL-Core
   WebDSL-Lexical
-  WebDSL
 
 context-free sorts
 
@@ -10,6 +10,7 @@ context-free sorts
 
 context-free syntax
 
+  Definition = NativeClassDeclaration 
   NativeClassDeclaration.NativeClass = "native" "class" QId NativeClassAlias NativeClassSuper "{" NativeClassElement* "}" 
   NativeClassAlias.NativeClassAlias = "as" Id {prefer}
   NativeClassAlias.NativeClassAliasNone = <>
@@ -19,6 +20,7 @@ context-free syntax
 context-free sorts
 
   NativeClassElement NativeType NativeClassFunction NativeClassFunctionReturn NativeClassFunctionStatic
+  NativeClassFunctionFromStatic
 
 context-free syntax
 

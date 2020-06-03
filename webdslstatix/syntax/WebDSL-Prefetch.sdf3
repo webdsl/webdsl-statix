@@ -1,10 +1,9 @@
 module WebDSL-Prefetch
 
 imports
-  WebDSL-Lexical
   WebDSL-Action
-  WebDSL-UI
-  WebDSL
+  WebDSL-Core
+  WebDSL-Lexical
 
 context-free sorts
 
