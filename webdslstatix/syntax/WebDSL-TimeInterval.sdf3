@@ -3,6 +3,10 @@ module WebDSL-TimeInterval
 imports
   WebDSL-Action
 
+context-free sorts
+
+  TimeIntervalPart TimeInterval
+
 context-free syntax
 
   TimeIntervalPart.Weeks = Exp "weeks" 
