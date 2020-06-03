@@ -1,14 +1,8 @@
 module desugar/desugar-lexical
 
 imports
+
   src-gen/signatures/-
-
-signature constructors
-  String       : String       -> String
-  StringInterp : List(String) -> String
-
-  Text       : String       -> TemplateElement
-  TextInterp : List(String) -> TemplateElement
 
 rules
 

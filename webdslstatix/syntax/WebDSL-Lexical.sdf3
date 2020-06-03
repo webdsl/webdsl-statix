@@ -89,7 +89,7 @@ context-free syntax
 
 lexical sorts
 
-  QMLex StringLex StringLexInterp StringChar HexPart
+  QMLex StringLex StringLexInterp StringChar HexPart STRING
 
 lexical syntax
 

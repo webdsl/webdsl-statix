@@ -3,9 +3,6 @@ module desugar/desugar-ui
 imports
   src-gen/signatures/-
 
-signature constructors
-  IfTempl : Term * Term * Term -> Term
-
 rules
 
   normalize-ui : DefineEmail(_, x, fargs, targs, telements) -> Define([Email()], x, fargs, targs, telements)
@@ -14,50 +11,48 @@ rules
   normalize-ui : OptTCallPropAssignsNone() -> []
   normalize-ui : TemplateBodyNone() -> TemplateBody([])
   normalize-ui : HTMLWrapperAssignsNone() -> HTMLWrapperAssigns([])
-  
+
   normalize-ui : NavigateCallParenthesesNoProps(p, elems) -> NavigateCall(p, [], elems)
   normalize-ui : NavigateCallParentheses(p, props, elems) -> NavigateCall(p, props, elems)
   normalize-ui : NavigateCallNoProps(p, elems) -> NavigateCall(p, [], elems)
-  
+
   normalize-ui : SubmitActionNoProps(exp, action) -> Submit(exp, action, [])
   normalize-ui : SubmitAction(exp, action, props) -> Submit(exp, action, props)
   normalize-ui : SubmitNoProps(exp, action) -> Submit(exp, action, [])
-  
+
   normalize-ui : SubmitLinkActionNoProps(exp, action) -> SubmitLink(exp, action, [])
   normalize-ui : SubmitLinkAction(exp, action, props) -> SubmitLink(exp, action, props)
   normalize-ui : SubmitLinkNoProps(exp, action) -> SubmitLink(exp, action, [])
-  
+
   normalize-ui : SubmitElemNoProps(action, elems) -> SubmitElem(action, [], elems)
   normalize-ui : SubmitLinkElemNoProps(action, elems) -> SubmitLinkElem(action, [], elems)
   normalize-ui : DownloadLinkNoProps(action, elems) -> DownloadLink(action, [], elems)
   normalize-ui : OutputImageNoProps(action, elems) -> OutputImage(action, [], elems)
-  
+
   normalize-ui : TemplateVarDeclDepr(x, sort) -> TemplateVarDecl(x, sort)
   normalize-ui : TemplateVarDeclInitDepr(x, sort, exp) -> TemplateVarDeclInit(x, sort, exp)
   normalize-ui : TemplateVarDeclInitInferredDepr(x, exp) -> TemplateVarDeclInitInferred(x, exp)
-  
+
   normalize-ui : PropertySubmitColon(prop, call) -> PropertySubmit(prop, call)
   normalize-ui : PropertySubmitAssign(prop, call) -> PropertySubmit(prop, call)
-  
+
   normalize-ui : PropertyAssignmentColon(x, val) -> PropertyAssignment(x, val)
   normalize-ui : PropertyAssignmentAssign(x, val) -> PropertyAssignment(x, val)
-  
+
   normalize-ui : HTMLWrapperAssignsCommaSep(attributes) -> HTMLWrapperAssigns(attributes)
 
-  // All rules below are copied directly from the WebDSL compiler.
-  // Some concrete syntax transformations have been rewritten as abstract syntax transformations
   normalize-ui :
-    IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)], None()){anno*} -> IfTempl(e1, elem1*, [IfTempl(e2, elem2*, [])]){anno*}
-  
+    IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)], OptElseTemplNone()){anno*} -> IfTempl(e1, elem1*, [IfTempl(e2, elem2*, [])]){anno*}
+
   normalize-ui :
-    IfElseIfTempl(e1, elem1*, [], None()){anno*} -> IfTempl(e1, elem1*, []){anno*}
-  
+    IfElseIfTempl(e1, elem1*, [], OptElseTemplNone()){anno*} -> IfTempl(e1, elem1*, []){anno*}
+
   normalize-ui :
-    IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)], Some(ElseTempl(elem3*))){anno*} -> IfTempl(e1, elem1*, [IfTempl(e2, elem2*, elem3*)]){anno*}
-  
+    IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)], OptElseTemplSome(ElseTempl(elem3*))){anno*} -> IfTempl(e1, elem1*, [IfTempl(e2, elem2*, elem3*)]){anno*}
+
   normalize-ui :
-    IfElseIfTempl(e1, elem1*, [], Some(ElseTempl(elem3*))){anno*} -> IfTempl(e1, elem1*, elem3*){anno*}
-  
+    IfElseIfTempl(e1, elem1*, [], OptElseTemplSome(ElseTempl(elem3*))){anno*} -> IfTempl(e1, elem1*, elem3*){anno*}
+
   normalize-ui :
     IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)|elseif*@[_|_]], elem){anno*} ->
     IfTempl(e1, elem1*, [IfElseIfTempl(e2, elem2*, elseif*, elem)]){anno*}

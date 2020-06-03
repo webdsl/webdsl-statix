@@ -83,7 +83,7 @@ context-free syntax
   Filter.Filter = "where" Exp "order" "by" {OrderExp ","}+ Limit 
   OrderExp.OrderNonSpecific = Exp 
   OrderExp.OrderAscending = Exp "asc" 
-  OrderExp.OrderDescending = Exp "desc" 
+  OrderExp.OrderDescending = Exp "desc"
   Limit.Limit = "limit" Exp "offset" Exp 
   Limit.LimitNoOffset = "limit" Exp 
   Limit.LimitNoLimit = "offset" Exp 
@@ -104,7 +104,7 @@ context-free syntax
   ForSeparator.ForSeparatorNone = <>
   TemplateElement.IfElseIfTempl = "if" "(" Exp ")" "{" TemplateElement* "}" ElseIfTempl* OptElseTempl {prefer}
   OptElseTempl.OptElseTemplNone = <>
-  OptElseTempl.Some = ElseTempl
+  OptElseTempl.OptElseTemplSome = ElseTempl
   ElseIfTempl.ElseIfTempl = "else" "if" "(" Exp ")" "{" TemplateElement* "}" {prefer}
   ElseTempl.ElseTempl = "else" "{" TemplateElement* "}" {prefer}
   TemplateElement.TemplateCase = "case" "(" {Exp ","}+ ")" "{" TemplateCaseAlt* "}" 
@@ -113,6 +113,9 @@ context-free syntax
   TemplateElement.TemplateTypeCase = "typecase" "(" Exp "as" Id ")" "{" TemplateTypeCaseAlt* "}" 
   TemplateTypeCaseAlt.TemplateTypeCaseAlt = Sort "{" TemplateElement* "}" 
   TemplateTypeCaseAlt.TemplateTypeCaseDefault = "default" "{" TemplateElement* "}" {prefer}
+
+  // conditional templates are desugared to this constructor:
+  TemplateElement.IfTempl = "if" "(" Exp ")" "{" TemplateElement* "}" "else" "{" TemplateElement* "}" {avoid}
 
 context-free sorts
 
