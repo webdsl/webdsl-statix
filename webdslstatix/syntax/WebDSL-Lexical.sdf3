@@ -2,11 +2,11 @@ module WebDSL-Lexical
 
 lexical sorts
 
-  TemplateCallId Id PageId ExtendedId ModuleName SectionName
+  TemplateCallIdLex Id PageId ExtendedId ModuleName SectionName
 
 lexical syntax
 
-  TemplateCallId = Id %% hook for reject rules on templatecall names
+  TemplateCallIdLex = Id %% hook for reject rules on templatecall names
   Id = [a-zA-Z] [a-zA-Z0-9\_]* 
   PageId = [a-zA-Z] [a-zA-Z0-9\_\-]* 
   ExtendedId = [a-zA-Z0-9\-\_\.]+ 

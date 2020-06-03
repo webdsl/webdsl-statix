@@ -31,6 +31,18 @@ rules
   normalize-ui : SubmitLinkElemNoProps(action, elems) -> SubmitLinkElem(action, [], elems)
   normalize-ui : DownloadLinkNoProps(action, elems) -> DownloadLink(action, [], elems)
   normalize-ui : OutputImageNoProps(action, elems) -> OutputImage(action, [], elems)
+  
+  normalize-ui : TemplateVarDeclDepr(x, sort) -> TemplateVarDecl(x, sort)
+  normalize-ui : TemplateVarDeclInitDepr(x, sort, exp) -> TemplateVarDeclInit(x, sort, exp)
+  normalize-ui : TemplateVarDeclInitInferredDepr(x, exp) -> TemplateVarDeclInitInferred(x, exp)
+  
+  normalize-ui : PropertySubmitColon(prop, call) -> PropertySubmit(prop, call)
+  normalize-ui : PropertySubmitAssign(prop, call) -> PropertySubmit(prop, call)
+  
+  normalize-ui : PropertyAssignmentColon(x, val) -> PropertyAssignment(x, val)
+  normalize-ui : PropertyAssignmentAssign(x, val) -> PropertyAssignment(x, val)
+  
+  normalize-ui : HTMLWrapperAssignsCommaSep(attributes) -> HTMLWrapperAssigns(attributes)
 
   // All rules below are copied directly from the WebDSL compiler.
   // Some concrete syntax transformations have been rewritten as abstract syntax transformations

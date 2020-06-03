@@ -10,7 +10,8 @@ imports
 context-free sorts
 
   TemplateDefinition Modifier TemplateElement OptFilter PageCall TemplateCall PropertyAssignment
-  TemplateArgExp TemplateCaseAlt TemplateTypeCaseAlt
+  TemplateArgExp TemplateCaseAlt TemplateTypeCaseAlt TemplateArgs TemplateArg OptLocalRedefineArgs
+  LocalRedefineArg
 
 lexical sorts
 
@@ -22,9 +23,9 @@ context-free syntax
   TemplateDefinition.Define = "define" Modifier* Id OptFormalArgs TemplateArgs "{" TemplateElement* "}" 
   TemplateArgs.TemplateArgs = "requires" {TemplateArg ","}* {prefer}
   TemplateArg.TemplateArg = Id "(" {Sort ","}* ")" 
-  TemplateArgs.None = <>
+  TemplateArgs.TemplateArgsNone = <>
   TemplateDefinition.LocalRedefine = "define" Modifier* Id "(" {FormalArg ","}* ")" "=" Id OptLocalRedefineArgs 
-  OptLocalRedefineArgs.None = <>
+  OptLocalRedefineArgs.OptLocalRedefineArgsNone = <>
   OptLocalRedefineArgs.LocalRedefineArgs = "(" "*" "," {LocalRedefineArg ","}+ ")" 
   LocalRedefineArg.LocalRedefineArg = Id 
   TemplateDefinition.DefinePage = Modifier* "page" PageId OptFormalArgs TemplateArgs "{" TemplateElement* "}" 
@@ -48,17 +49,31 @@ context-free syntax
   Modifier.WebService = "service" 
   TemplateElement = InitAction 
   TemplateElement = Action 
+
+context-free sorts
+
+  VarDecl
+
+context-free syntax
+
   VarDecl.TemplateVarDecl = "var" Id ":" Sort 
   VarDecl.TemplateVarDeclInit = "var" Id ":" Sort ":=" Exp 
   VarDecl.TemplateVarDeclInitInferred = "var" Id ":=" Exp 
   TemplateElement = VarDecl 
-  VarDecl.TemplateVarDecl = "var" Id ":" Sort ";" {deprecated("remove ';'")}
-  VarDecl.TemplateVarDeclInit = "var" Id ":" Sort ":=" Exp ";" {deprecated("remove ';'")}
-  VarDecl.TemplateVarDeclInitInferred = "var" Id ":=" Exp ";" {deprecated("remove ';'")}
+  VarDecl.TemplateVarDeclDepr = "var" Id ":" Sort ";" {deprecated("remove ';'")}
+  VarDecl.TemplateVarDeclInitDepr = "var" Id ":" Sort ":=" Exp ";" {deprecated("remove ';'")}
+  VarDecl.TemplateVarDeclInitInferredDepr = "var" Id ":=" Exp ";" {deprecated("remove ';'")}
   TemplateElement.RequestScopeTemplate = "request" VarDecl 
   TemplateElement.LocalScopeTemplate = "local" VarDecl 
   TemplateElement = TemplateDefinition 
   TemplateElement = TemplateCall {avoid}
+
+context-free sorts
+
+  Filter OrderExp Limit
+
+context-free syntax
+
   Filter.FilterNoOrderByNoLimit = "where" Exp 
   Filter.FilterNoWhereNoLimit = "order" "by" {OrderExp ","}+ 
   Filter.FilterNoLimit = "where" Exp "order" "by" {OrderExp ","}+ 
@@ -72,16 +87,23 @@ context-free syntax
   Limit.Limit = "limit" Exp "offset" Exp 
   Limit.LimitNoOffset = "limit" Exp 
   Limit.LimitNoLimit = "offset" Exp 
-  TemplateElement.For = "for" "(" Id ":" Sort "in" Exp OptFilter ")" "{" TemplateElement* "}" ForSeparator 
   OptFilter = Filter 
-  OptFilter.None = <>
+  OptFilter.OptFilterNone = <> 
+
+context-free sorts
+
+  ForSeparator ElseIfTempl ElseTempl OptElseTempl
+
+context-free syntax
+
+  TemplateElement.For = "for" "(" Id ":" Sort "in" Exp OptFilter ")" "{" TemplateElement* "}" ForSeparator 
   TemplateElement.ForInferred = "for" "(" Id "in" Exp OptFilter ")" "{" TemplateElement* "}" ForSeparator 
   TemplateElement.ForAll = "for" "(" Id ":" Sort OptFilter ")" "{" TemplateElement* "}" ForSeparator 
   TemplateElement.ForCount = "for" "(" Id ":" "Int" "from" Exp "to" Exp ")" "{" TemplateElement* "}" ForSeparator 
   ForSeparator.ForSeparator = "separated-by" "{" TemplateElement* "}" 
-  ForSeparator.None = <>
+  ForSeparator.ForSeparatorNone = <>
   TemplateElement.IfElseIfTempl = "if" "(" Exp ")" "{" TemplateElement* "}" ElseIfTempl* OptElseTempl {prefer}
-  OptElseTempl.None = <>
+  OptElseTempl.OptElseTemplNone = <>
   OptElseTempl.Some = ElseTempl
   ElseIfTempl.ElseIfTempl = "else" "if" "(" Exp ")" "{" TemplateElement* "}" {prefer}
   ElseTempl.ElseTempl = "else" "{" TemplateElement* "}" {prefer}
@@ -91,6 +113,13 @@ context-free syntax
   TemplateElement.TemplateTypeCase = "typecase" "(" Exp "as" Id ")" "{" TemplateTypeCaseAlt* "}" 
   TemplateTypeCaseAlt.TemplateTypeCaseAlt = Sort "{" TemplateElement* "}" 
   TemplateTypeCaseAlt.TemplateTypeCaseDefault = "default" "{" TemplateElement* "}" {prefer}
+
+context-free sorts
+
+  OptTCallArgs OptTCallPropAssigns TemplateBody ArgDefine
+
+context-free syntax
+
   TemplateCall.TemplateCall = TemplateCallId OptTCallArgs OptTCallPropAssigns TemplateBody 
   OptTCallArgs = "(" {TemplateArgExp ","}* ")"
   OptTCallArgs.OptTCallArgsNone = <>
@@ -102,11 +131,21 @@ context-free syntax
   TemplateBody.TemplateWith = "with" "{" ArgDefine* "}" 
   ArgDefine.ArgDefine = TemplateCallId "(" {FormalArg ","}* ")" "{" TemplateElement* "}" 
   TemplateCall = "with" "{" TemplateElement* "}" {reject}
+
+context-free syntax
+
   TemplateElement.NavigateCallParenthesesNoProps = "navigate" "(" PageCall ")" "{" TemplateElement* "}" {prefer}
   TemplateElement.NavigateCallParentheses = "navigate" "(" PageCall ")" "[" {PropertyAssignment ","}* "]" "{" TemplateElement* "}" {prefer}
   TemplateElement.NavigateCallNoProps = "navigate" PageCall "{" TemplateElement* "}" {prefer}
   TemplateElement.NavigateCall = "navigate" PageCall "[" {PropertyAssignment ","}* "]" "{" TemplateElement* "}" {prefer}
   PageCall.PageCall = PageId "(" {Exp ","}* ")" 
+
+context-free sorts
+
+  ActionCallOrInline ActionCall InlineAction
+
+context-free syntax
+
   TemplateElement.SubmitActionNoProps = "action" "(" Exp "," ActionCallOrInline ")" {prefer}
   TemplateElement.SubmitAction = "action" "(" Exp "," ActionCallOrInline ")" "[" {PropertyAssignment ","}* "]" {prefer}
   TemplateElement.SubmitLinkActionNoProps = "actionLink" "(" Exp "," ActionCallOrInline ")" {prefer}
@@ -131,11 +170,18 @@ context-free syntax
   TemplateCall = "action" {reject}
   Exp = "action" {reject}
   PropertyValue = "action" {reject}
-  PropertyAssignment.PropertySubmit = SubmitProp ":" ActionCallOrInline {prefer}
-  PropertyAssignment.PropertySubmit = SubmitProp ":=" ActionCallOrInline {prefer}
+
+context-free sorts
+
+  PropertyValue ActionCallOrInlineOrExp
+
+context-free syntax
+
+  PropertyAssignment.PropertySubmitColon = SubmitProp ":" ActionCallOrInline {prefer}
+  PropertyAssignment.PropertySubmitAssign = SubmitProp ":=" ActionCallOrInline {prefer}
   PropertyAssignment.PropertySubmit = SubmitProp "=" ActionCallOrInline {prefer}
-  PropertyAssignment.PropertyAssignment = ExtendedId ":" PropertyValue 
-  PropertyAssignment.PropertyAssignment = ExtendedId ":=" PropertyValue 
+  PropertyAssignment.PropertyAssignmentColon = ExtendedId ":" PropertyValue 
+  PropertyAssignment.PropertyAssignmentAssign = ExtendedId ":=" PropertyValue 
   PropertyAssignment.PropertyAssignment = ExtendedId "=" PropertyValue 
   PropertyValue = Exp 
   PropertyAssignment.TemplateCallPropertyAjax = "ajax" {prefer}
@@ -184,7 +230,7 @@ lexical syntax
 
 context-free sorts
 
-  InitAction
+  InitAction ActionModifier TemplateCallId
 
 context-free syntax
 
@@ -197,10 +243,12 @@ context-free syntax
   TemplateElement.ValidateAction = "validate" Block {prefer}
   Action.Action = "action" ActionModifier* Id OptFormalArgs Block 
   ActionModifier.ActionModifierIgnoreValidation = "ignore-validation" 
+  TemplateCallId.QualifiedElementsCall = TemplateCallIdLex ".elements" {prefer}
+  TemplateCallId = TemplateCallIdLex
 
-context-free syntax
+context-free sorts
 
-  TemplateCallId.QualifiedElementsCall = Id ".elements" {prefer}
+  FormalVarArg ExpVarArg
 
 context-free syntax
 
@@ -214,15 +262,23 @@ context-free syntax
   ExpVarArg.ExpVarArgForAll = "for" "(" Id ":" Sort OptFilter ")" "{" {ExpVarArg ","}* "}" 
   ExpVarArg.ExpVarArgForCount = "for" "(" Id ":" "Int" "from" Exp "to" Exp ")" "{" {ExpVarArg ","}* "}" 
 
+context-free sorts
+
+  HTMLWrapper HTMLWrapperAssigns HTMLWrapperBody
+
 context-free syntax
 
   HTMLWrapper.HTMLWrapper = "htmlwrapper" Id Id HTMLWrapperAssigns 
-  HTMLWrapperAssigns.HTMLWrapperAssigns = "[" {Attribute ","}* "]" 
+  HTMLWrapperAssigns.HTMLWrapperAssignsCommaSep = "[" {Attribute ","}* "]" 
   HTMLWrapperAssigns.HTMLWrapperAssigns = "[" Attribute* "]" {prefer}
   HTMLWrapperAssigns.HTMLWrapperAssignsNone = <>
   TemplateDefinition = HTMLWrapper 
   TemplateDefinition.HTMLWrapperMultiple = "htmlwrapper" "{" HTMLWrapperBody* "}" 
   HTMLWrapperBody.HTMLWrapperBody = Id Id HTMLWrapperAssigns 
+
+context-free sorts
+
+  TemplateId
 
 context-free syntax
 
