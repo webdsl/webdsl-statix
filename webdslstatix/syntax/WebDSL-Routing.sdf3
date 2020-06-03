@@ -4,10 +4,14 @@ imports
   WebDSL-Action
   WebDSL
 
+context-free sorts
+
+  RoutingElement OptRoutingArgs
+
 context-free syntax
 
   Definition.Routing = "routing" "{" RoutingElement* "}" 
   RoutingElement.RoutingReceive = "receive" OptRoutingArgs Block 
   RoutingElement.RoutingConstruct = "construct" OptRoutingArgs Block 
   OptRoutingArgs.RoutingArgs = "(" {FormalArg ","}* ")" 
-  OptRoutingArgs.None = <>
+  OptRoutingArgs.OptRoutingArgsNone = <>

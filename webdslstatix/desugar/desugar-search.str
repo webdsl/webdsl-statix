@@ -1,0 +1,33 @@
+module desugar/desugar-search
+
+imports
+
+  src-gen/signatures/-
+
+rules
+
+  normalize-search : CharFilterNoArgs(name) -> CharFilter(name, [])
+  normalize-search : CharFilterNoArgsDepr(name) -> CharFilter(name, [])
+  normalize-search : CharFilterDepr(name, args) -> CharFilter(name, args)
+
+  normalize-search : TokenFilterNoArgs(name) -> TokenFilter(name, [])
+  normalize-search : TokenFilterNoArgsDepr(name) -> TokenFilter(name, [])
+  normalize-search : TokenFilterDepr(name, args) -> TokenFilter(name, args)
+
+  normalize-search : ConstraintFilterAlt(constraints) -> ConstraintFilter(constraints)
+  normalize-search : FacetDefAlt(constraints) -> FacetDef(constraints)
+
+  normalize-search : DiscreteFacetDefDepr(sf, exp) -> DiscreteFacetDef(sf, exp)
+  normalize-search : RangeFacetDefDepr(sf, ranges) -> RangeFacetDef(sf, ranges)
+
+  normalize-search : SearchMappingDepr(x, content) -> SearchMapping(x, content)
+  normalize-search : SearchMappingEmbeddedDepr(content) -> SearchMappingEmbedded(content)
+
+  normalize-search : SearchNamespaceMappingAlt(x) -> SearchNamespaceMapping(x)
+  normalize-search : SearchFieldMappingAlt(sf, kw, parts) -> SearchFieldMapping(sf, kw, parts)
+
+  normalize-search : EmbeddedDepthAlt(x) -> EmbeddedDepth(x)
+  
+  normalize-search : RangeAlt(open, exp1, exp2, close) -> Range(open, exp1, exp2, close)
+  normalize-search : AscendingAbbr() -> Ascending()
+  normalize-search : DescendingAbbr() -> Descending()
