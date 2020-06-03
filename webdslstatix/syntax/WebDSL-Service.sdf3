@@ -6,6 +6,10 @@ imports
   WebDSL-Lexical
   WebDSL-UI
 
+context-free sorts
+
+  SyncConfigEmbedded SyncOption
+
 context-free syntax
 
   Definition.ServiceFunction = "service" Modifier* Id "(" {FormalArg ","}* ")" Block 
