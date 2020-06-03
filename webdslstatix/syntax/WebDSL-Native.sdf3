@@ -4,40 +4,46 @@ imports
   WebDSL-Lexical
   WebDSL
 
-lexical sorts
+context-free sorts
 
-  NativeFunId
+  NativeClassAlias NativeClassSuper NativeClassDeclaration
 
 context-free syntax
 
   NativeClassDeclaration.NativeClass = "native" "class" QId NativeClassAlias NativeClassSuper "{" NativeClassElement* "}" 
   NativeClassAlias.NativeClassAlias = "as" Id {prefer}
-  NativeClassAlias.None = <>
+  NativeClassAlias.NativeClassAliasNone = <>
   NativeClassSuper.NativeClassSuper = ":" Id {prefer}
-  NativeClassSuper.None = <>
+  NativeClassSuper.NativeClassSuperNone = <>
+
+context-free sorts
+
+  NativeClassElement NativeType NativeClassFunction NativeClassFunctionReturn NativeClassFunctionStatic
 
 context-free syntax
 
-  NativeClassElement.NativeClassProperty = Id ":" NativeType 
-
-context-free syntax
-
+  NativeClassElement.NativeClassProperty = Id ":" NativeType
   NativeClassElement = NativeClassFunction 
   NativeClassFunction.NativeClassFunction = NativeClassFunctionStatic NativeFunId "(" {NativeType ","}* ")" NativeClassFunctionReturn 
   NativeClassElement = "constructor" "(" {NativeType ","}* ")" NativeClassFunctionReturn {reject}
   NativeClassFunctionReturn.NativeClassFunctionReturn = ":" NativeType {prefer}
-  NativeClassFunctionReturn.None = <>
+  NativeClassFunctionReturn.NativeClassFunctionReturnNone = <>
   NativeClassFunctionStatic.NativeClassFunctionStatic = "static" {prefer}
-  NativeClassFunctionStatic.None = <>
-  NativeClassElement.NativeClassFunctionFromStatic = QId "as" NativeClassFunction 
+  NativeClassFunctionStatic.NativeClassFunctionStaticNone = <>
+  NativeClassFunctionFromStatic.NativeClassFunctionFromStatic = QId "as" NativeClassFunction
+  NativeClassElement = NativeClassFunctionFromStatic
   NativeClassElement.NativeClassConstructor = "constructor" "(" {NativeType ","}* ")" 
   NativeClassElement.NativeClassConstructorFromStatic = QId "as" "constructor" "(" {NativeType ","}* ")" 
-  NativeFunId = "constructor" {reject}
   NativeType.NativeGenericType = Id "<" {NativeType ","}* ">"
   NativeType.NativeGenericTypeList = "[" {NativeType ","}* "]"
   NativeType.NativeGenericTypeSet = "{" {NativeType ","}* "}"
   NativeType.NativeSimpleType = Id 
 
+lexical sorts
+
+  NativeFunId
+
 lexical syntax
 
   NativeFunId = Id 
+  NativeFunId = "constructor" {reject}

@@ -34,7 +34,7 @@ context-free start-symbols
 
 context-free sorts
 
-  QId FormalArg
+  QId FormalArg SimpleSort
 
 context-free syntax
 
