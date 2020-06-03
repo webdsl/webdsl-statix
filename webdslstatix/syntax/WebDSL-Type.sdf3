@@ -5,6 +5,10 @@ imports
   WebDSL-Lexical
   WebDSL-Native
 
+context-free sorts
+
+  TypeProperty
+
 context-free syntax
 
   Definition.TypeDef = "type" Id "{" TypeProperty* "}" 
