@@ -9,17 +9,17 @@ imports
 context-free sorts
 
   PrefetchFor PrefetchChildren PrefetchNode PrefetchTemplateArgs PrefetchNodeMod PrefetchCondition PrefetchCondVal PrefetchCond PrefetchWhere PrefetchWhereMod
+  PrefetchForVar OptSimpleSort PrefetchChildrenOpt OptPrefetchOwnerCast SortOrThis TemplateArgOrThis PrefetchThis
 
 context-free syntax
 
   PrefetchFor.PrefetchFor = "prefetch-for" PrefetchForVar PrefetchTemplateArgs PrefetchWhere PrefetchChildren 
   PrefetchChildren.PrefetchChildren = "{" PrefetchNode* "}" 
-  PrefetchChildrenOpt.None = <>
+  PrefetchChildrenOpt.PrefetchChildrenOptNone = <>
   PrefetchChildrenOpt = PrefetchChildren 
   TemplateElement = PrefetchFor 
   Statement = PrefetchFor 
   PrefetchNode.PrefetchNode = OptPrefetchOwnerCast Id PrefetchNodeMod* PrefetchTemplateArgs PrefetchCondition PrefetchWhere PrefetchChildrenOpt 
-  PrefetchIfDefault.None = <>
   PrefetchForVar.PrefetchForVar = Id 
   PrefetchNodeMod.NoEmptyBatch = "no-empty-batch" 
   PrefetchNodeMod.FetchEarly = "fetch-early" 
@@ -28,25 +28,23 @@ context-free syntax
   SortOrThis = PrefetchThis {prefer}
   SortOrThis.PrefetchThisCast = PrefetchThis "as" Sort 
   PrefetchThis.PrefetchThis = "this" 
-  PrefetchTemplateArgs.None = <>
+  PrefetchTemplateArgs.PrefetchTemplateArgsNone = <>
   PrefetchTemplateArgs.PrefetchTemplateArgs = "templates" "[" {TemplateArgOrThis ","}+ "]" 
-  PrefetchCondition.None = <>
-  PrefetchCondition.PrefetchCondition = "if" "(" PrefetchCondOrTrue ")" 
-  PrefetchWhere.None = <>
-  PrefetchWhere.PrefetchWhere = "where" PrefetchWhereMod* "(" PrefetchCondOrTrue ")" 
-  PrefetchWhereMod.Hint = "hint" 
-  NoneCons.None = <>
-  PrefetchOwnerCast = SimpleSort "."
-  OptPrefetchOwnerCast.None = <>
-  OptPrefetchOwnerCast.Some = PrefetchOwnerCast
-  PrefetchCondOrTrue = PrefetchCond
+  PrefetchCondition.PrefetchConditionNone = <>
+  PrefetchCondition.PrefetchCondition = "if" "(" PrefetchCond ")" 
+  PrefetchWhere.PrefetchWhereNone = <>
+  PrefetchWhere.PrefetchWhere = "where" PrefetchWhereMod* "(" PrefetchCond ")" 
+  PrefetchWhereMod.Hint = "hint"
+  OptPrefetchOwnerCast.OptPrefetchOwnerCastNone = <>
+  OptPrefetchOwnerCast.OptPrefetchOwnerCastSome = SimpleSort "."
   PrefetchCondVal.PrefetchTrue = "true" {prefer}
   PrefetchCondVal.PrefetchFalse = "false" {prefer}
   PrefetchCondVal.PrefetchNull = "null" {prefer}
   PrefetchCondVal = ConstValue {prefer}
   PrefetchCondVal.PretchCondVar = Id 
-  PrefetchCondVal.RelativeFieldAccess = NoneCons "." Id 
-  PrefetchCondVal.RelativeFieldAccess = SimpleSort "." Id 
+  OptSimpleSort.OptSimpleSortNone = <>
+  OptSimpleSort = SimpleSort
+  PrefetchCondVal.RelativeFieldAccess = OptSimpleSort "." Id 
   PrefetchCondVal.PrefetchMul = PrefetchCondVal "*" PrefetchCondVal {assoc}
   PrefetchCondVal.PrefetchDiv = PrefetchCondVal "/" PrefetchCondVal {assoc}
   PrefetchCondVal.PrefetchMod = PrefetchCondVal "%" PrefetchCondVal {assoc}
