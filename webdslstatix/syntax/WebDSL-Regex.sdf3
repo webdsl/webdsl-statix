@@ -5,7 +5,7 @@ imports
 
 context-free sorts
 
-  Pattern
+  Pattern RegexExp
 
 context-free syntax
 
@@ -74,15 +74,13 @@ context-free syntax
 
 context-free sorts
 
-  CharacterClass BracketItem
+  CharacterClass BracketItem BracketLiteralOrBracketCharacter
 
 context-free syntax
 
   CharacterClass.BracketList = "[" BracketItem+ "]" 
   CharacterClass.NegatedBracketList = "[^" BracketItem+ "]" 
   BracketItem.Range = BracketLiteralOrBracketCharacter "-" BracketLiteralOrBracketCharacter 
-  BracketLiteralOrBracketCharacter = BracketLiteral 
-  BracketLiteralOrBracketCharacter = BracketCharacter 
   BracketLiteralOrBracketCharacter = BracketLiteral 
   BracketLiteralOrBracketCharacter = BracketCharacter 
   BracketItem.Union = CharacterClass 
@@ -109,7 +107,7 @@ context-free syntax
   ClassKeyword.XDigitClass = "XDigit" 
   ClassKeyword.WhiteSpace = "Space" 
   ClassKeyword.JavaIsLowerCase = "javaLowerCase" 
-  ClassKeyword.JavaIsLowerCase = "javaUpperCase" 
+  ClassKeyword.JavaIsUpperCase = "javaUpperCase" 
   ClassKeyword.JavaIsWhitespace = "javaWhitespace" 
   ClassKeyword.JavaIsMirrored = "javaMirrored" 
   ClassKeyword.GreekBlock = "InGreek" 
@@ -130,77 +128,102 @@ lexical syntax
   AtomLiteral = [\}\)\|\[] {reject}
   AllChars = [\\\|\$\*\+\?\.\{\}\(\)\&\]\-\[\^\!\#\%\'\,\:\;\<\=\>\@\_\`\~a-zA-Z0-9\t\n\r]* 
   AllChars = "/" 
-  AllChars.DoubleQuote = "\"" 
+  AllChars = DoubleQuote 
 
 context-free sorts
 
-  BracketCharacter AtomCharacter
+  BracketCharacter AtomCharacter DoubleQuote OctalChar HexHexChar DecHexChar Tab Newline Return Formfeed Alarm Escape
+  WordChar NonWordChar WhiteSpaceChar DigitChar NonDigitChar ControlCharacter WordBoundry NonWordBoundry InputBeginBoundry
+  PrevMatchEndBoundry EndInputBoundry EndInputFinalBoundry Space NonWhiteSpaceChar BackReference
 
 context-free syntax
 
-  BracketCharacter.DoubleQuote = "\"" 
-  AtomCharacter.DoubleQuote = "\""
-  BracketCharacter.OctalChar = "\\0" OctalValue 
-  BracketCharacter.HexHexChar = "\\x" TwoHexValue 
-  BracketCharacter.DecHexChar = "\\u" FourHexValue 
-  BracketCharacter.Tab = "\\t" 
-  BracketCharacter.Newline = "\\n" 
-  BracketCharacter.Return = "\\r" 
-  BracketCharacter.Formfeed = "\\f" 
-  BracketCharacter.Alarm = "\\a" 
-  BracketCharacter.Escape = "\\e" 
-  BracketCharacter.WordChar = "\\w" 
-  BracketCharacter.NonWordChar = "\\W" 
-  BracketCharacter.WhiteSpaceChar = "\\s" 
-  BracketCharacter.NonWhiteSpaceChar = "\\S" 
-  BracketCharacter.DigitChar = "\\d" 
-  BracketCharacter.NonDigitChar = "\\D" 
-  BracketCharacter.ControlCharacter = "\\c" ControlValue 
-  BracketCharacter.WordBoundry = "\\b" 
-  BracketCharacter.NonWordBoundry = "\\B" 
-  BracketCharacter.InputBeginBoundry = "\\A" 
-  BracketCharacter.PrevMatchEndBoundry = "\\G" 
-  BracketCharacter.EndInputBoundry = "\\Z" 
-  BracketCharacter.EndInputFinalBoundry = "\\z" 
-  BracketCharacter.BackReference = "\\" BackReference 
-  BracketCharacter.Space = "\\ " 
-  BracketCharacter.Tab = "\\\t" 
-  BracketCharacter.Newline = "\\\n" 
-  AtomCharacter.OctalChar = "\\0" OctalValue 
-  AtomCharacter.HexHexChar = "\\x" TwoHexValue 
-  AtomCharacter.DecHexChar = "\\u" FourHexValue 
-  AtomCharacter.Tab = "\\t" 
-  AtomCharacter.Newline = "\\n" 
-  AtomCharacter.Return = "\\r" 
-  AtomCharacter.Formfeed = "\\f" 
-  AtomCharacter.Alarm = "\\a" 
-  AtomCharacter.Escape = "\\e" 
-  AtomCharacter.WordChar = "\\w" 
-  AtomCharacter.NonWordChar = "\\W" 
-  AtomCharacter.WhiteSpaceChar = "\\s" 
-  AtomCharacter.NonWhiteSpaceChar = "\\S" 
-  AtomCharacter.DigitChar = "\\d" 
-  AtomCharacter.NonDigitChar = "\\D" 
-  AtomCharacter.ControlCharacter = "\\c" ControlValue 
-  AtomCharacter.WordBoundry = "\\b" 
-  AtomCharacter.NonWordBoundry = "\\B" 
-  AtomCharacter.InputBeginBoundry = "\\A" 
-  AtomCharacter.PrevMatchEndBoundry = "\\G" 
-  AtomCharacter.EndInputBoundry = "\\Z" 
-  AtomCharacter.EndInputFinalBoundry = "\\z" 
-  AtomCharacter.BackReference = "\\" BackReference 
-  AtomCharacter.Space = "\\ " 
-  AtomCharacter.Tab = "\\\t" 
-  AtomCharacter.Newline = "\\\n" 
+  DoubleQuote.DoubleQuote = "\""
+  OctalChar.OctalChar = "\\0" OctalValue 
+  HexHexChar.HexHexChar = "\\x" TwoHexValue 
+  DecHexChar.DecHexChar = "\\u" FourHexValue 
+  Tab.Tab = "\\t" 
+  Newline.Newline = "\\n" 
+  Return.Return = "\\r" 
+  Formfeed.Formfeed = "\\f" 
+  Alarm.Alarm = "\\a" 
+  Escape.Escape = "\\e" 
+  WordChar.WordChar = "\\w" 
+  NonWordChar.NonWordChar = "\\W" 
+  WhiteSpaceChar.WhiteSpaceChar = "\\s" 
+  NonWhiteSpaceChar.NonWhiteSpaceChar = "\\S" 
+  DigitChar.DigitChar = "\\d" 
+  NonDigitChar.NonDigitChar = "\\D" 
+  ControlCharacter.ControlCharacter = "\\c" ControlValue 
+  WordBoundry.WordBoundry = "\\b" 
+  NonWordBoundry.NonWordBoundry = "\\B" 
+  InputBeginBoundry.InputBeginBoundry = "\\A" 
+  PrevMatchEndBoundry.PrevMatchEndBoundry = "\\G" 
+  EndInputBoundry.EndInputBoundry = "\\Z" 
+  EndInputFinalBoundry.EndInputFinalBoundry = "\\z" 
+  BackReference.BackReference = "\\" BackReferenceLex
+  Space.Space = "\\ "
+
+  BracketCharacter = DoubleQuote
+  BracketCharacter = OctalChar
+  BracketCharacter = HexHexChar
+  BracketCharacter = DecHexChar
+  BracketCharacter = Tab
+  BracketCharacter = Newline
+  BracketCharacter = Return
+  BracketCharacter = Formfeed
+  BracketCharacter = Alarm
+  BracketCharacter = Escape
+  BracketCharacter = WordChar
+  BracketCharacter = NonWordChar
+  BracketCharacter = WhiteSpaceChar
+  BracketCharacter = NonWhiteSpaceChar
+  BracketCharacter = DigitChar
+  BracketCharacter = NonDigitChar
+  BracketCharacter = ControlCharacter
+  BracketCharacter = WordBoundry
+  BracketCharacter = NonWordBoundry
+  BracketCharacter = InputBeginBoundry
+  BracketCharacter = PrevMatchEndBoundry
+  BracketCharacter = EndInputBoundry
+  BracketCharacter = EndInputFinalBoundry
+  BracketCharacter = BackReference
+  BracketCharacter = Space
+  AtomCharacter = DoubleQuote
+  AtomCharacter = OctalChar
+  AtomCharacter = HexHexChar
+  AtomCharacter = DecHexChar
+  AtomCharacter = Tab
+  AtomCharacter = Newline
+  AtomCharacter = Return
+  AtomCharacter = Formfeed
+  AtomCharacter = Alarm
+  AtomCharacter = Escape
+  AtomCharacter = WordChar
+  AtomCharacter = NonWordChar
+  AtomCharacter = WhiteSpaceChar
+  AtomCharacter = NonWhiteSpaceChar
+  AtomCharacter = DigitChar
+  AtomCharacter = NonDigitChar
+  AtomCharacter = ControlCharacter
+  AtomCharacter = WordBoundry
+  AtomCharacter = NonWordBoundry
+  AtomCharacter = InputBeginBoundry
+  AtomCharacter = PrevMatchEndBoundry
+  AtomCharacter = EndInputBoundry
+  AtomCharacter = EndInputFinalBoundry
+  AtomCharacter = BackReference
+  AtomCharacter = Space
 
 context-free sorts
 
-  QuotablePatternSymbol
+  QuotablePatternSymbol Quoted
 
 context-free syntax
 
-  AtomCharacter.Quoted = "\\" QuotablePatternSymbol 
-  BracketCharacter.Quoted = "\\" QuotablePatternSymbol 
+  Quoted.Quoted = "\\" QuotablePatternSymbol
+  AtomCharacter = Quoted
+  BracketCharacter = Quoted
 
 lexical syntax
 
@@ -208,17 +231,16 @@ lexical syntax
 
 context-free syntax
 
-  QuotablePatternSymbol.DoubleQuote = "\"" 
-  QuotablePatternSymbol.DoubleQuote = "\"" 
+  QuotablePatternSymbol = DoubleQuote
 
 lexical sorts
 
-  Integer OctalValue TwoHexValue FourHexValue BackReference ControlValue
+  Integer OctalValue TwoHexValue FourHexValue BackReferenceLex ControlValue
 
 lexical syntax
 
   Integer = [0-9]+ 
-  BackReference = [1-9] [0-9]* 
+  BackReferenceLex = [1-9] [0-9]* 
   OctalValue = [0-7] 
   OctalValue = [0-7] [0-7] 
   OctalValue = [0-3] [0-7] [0-7] 
