@@ -1,37 +1,24 @@
 module static-semantics/webdsl
 
 imports
+  signatures/WebDSL-Core-sig
+
   static-semantics/webdsl-types
 
 signature
 
-// Only deal with whole applications for now  
-  sorts Unit constructors
-    ApplicationDefs : string * list(Definition) * list(Section) -> Unit
-    Application     : string                    * list(Section) -> Unit
-//  ModuleDefs      : ModuleName * list(Definition) * list(Section) -> Unit
-//  Module          : ModuleName                    * list(Section) -> Unit
-    
-  sorts Section constructors
-    Section : string * list(Definition) -> Unit
-      
-  sorts 
-    Definition
-    Statement
-    Exp
-  
-  sorts 
+  sorts
     TYPE // semantic type
     BOOL
-    
+
   constructors
     TRUE : BOOL
     FALSE : BOOL
-    
+
   namespaces
     Entity : string
     Function : string
-    
+
   name-resolution
     labels EXTENDS IMPORTS
     resolve
@@ -42,18 +29,18 @@ signature
       Function
       filter EXTENDS* IMPORTS*
       min $ < EXTENDS, $ < IMPORTS, EXTENDS < IMPORTS
-    
+
   relations
     typeOfDecl : occurrence -> TYPE
 
 rules // application and module
 
   programOk : scope * Unit
-  programOk(s, ApplicationDefs(appName, defs, sections)) :-
+  programOk(s, Application2Unit(ApplicationDefs(appName, defs, sections))) :-
     defsOk(s, defs),
     sectionsOk(s, sections).
-  
-  programOk(s, Application(appName, sections)) :-
+
+  programOk(s, Application2Unit(Application(appName, sections))) :-
     sectionsOk(s, sections).
 
 rules // declare common rules and mappings
@@ -61,15 +48,15 @@ rules // declare common rules and mappings
   sectionOk : scope * Section
   sectionOk(_,_).
   sectionsOk maps sectionOk(*, list(*))
-  
+
   defOk : scope * Definition
   defOk(_,_) :- false | error $[This definition is not yet implemented].
   defsOk maps defOk(*, list(*))
-  
+
   stmtOk : scope * Statement
   stmtOk(_,_) :- false | error $[This statement is not yet implemented].
   stmtsOk maps stmtOk(*, list(*))
-  
+
   expOk : scope * Exp
   expOk(s, exp) :- {T}
     typeOfExp(s, exp) == T.
@@ -78,7 +65,7 @@ rules // typing
 
   typeOfExp : scope * Exp  -> TYPE
   typeOfExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
-  
+
   typeCompatible : TYPE * TYPE -> BOOL
   typeCompatible(T1, T2) = FALSE(). //default
   typeCompatible(T, T) = TRUE(). // same type is always type compatible

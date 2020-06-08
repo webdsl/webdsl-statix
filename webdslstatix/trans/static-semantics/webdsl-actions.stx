@@ -1,27 +1,12 @@
 module static-semantics/webdsl-actions
 
-imports 
+imports
   static-semantics/webdsl
-  static-semantics/actions/binops
-  static-semantics/actions/built-ins
 
-signature
-
-  constructors
-    Function : string * list(FormalArg) * FunctionReturn * Block -> Definition
-    
-  sorts Block constructors 
-    Block : list(Statement) -> Block
-    
-  sorts FormalArg FunctionReturn
-  
-  constructors
-    Stat : Exp -> Statement
-  
 rules
 
-  defOk(s, Function(_, args, returntype, Block(stmts))) :-
+  defOk(s, GlobalsDef2Definition(Function2GlobalsDef(Function(_, args, returntype, Block(stmts))))) :-
     stmtsOk(s, stmts).
-  
+
   stmtOk(s, Stat(exp)) :-
     expOk(s, exp).

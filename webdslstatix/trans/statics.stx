@@ -1,11 +1,9 @@
 module statics
 
-imports 
+imports
+  signatures/WebDSL-Core-sig
+
   static-semantics/webdsl
-  static-semantics/webdsl-actions
-  static-semantics/webdsl-entities
-  static-semantics/webdsl-functions
-  
   static-semantics/actions/built-ins
 
 // see README.md for details on how to switch to multi-file analysis

@@ -5,27 +5,15 @@ imports
 
 signature
 
-  sorts ConstValue constructors // constant expressions
-    Int     : string -> ConstValue
-    Long    : string -> ConstValue
-    Float   : string -> ConstValue
-    String  : string -> ConstValue
-    
-  constructors
-    Const   : ConstValue -> Exp
-    True    : Exp
-    False   : Exp
-    Null    : Exp
-    
   constructors // semantic types
     FUNCTION : list(TYPE) * TYPE -> TYPE // list of arguments and return type
     ENTITY   : scope             -> TYPE 
-    
+
     // numeric types
     INT           : TYPE
     FLOAT         : TYPE
     LONG          : TYPE
-    
+
     // string types
     STRING      : TYPE
     SECRET      : TYPE
@@ -35,40 +23,37 @@ signature
     TEXT        : TYPE
     PATCH       : TYPE
     PLACEHOLDER : TYPE
-    
+
     // time types
     DATE      : TYPE
     DATETIME  : TYPE
     TIME      : TYPE
-    
+
     // other
     REGEX   : TYPE
     BOOL    : TYPE
     VOID    : TYPE
     UUID    : TYPE
-    
+
     NULL    : TYPE
     UNTYPED : TYPE
-  
-  sorts Sort constructors // webdsl types
-    SimpleSort : string -> Sort
-  
+
 rules // types of constant expressions
-  
+
   typeOfExp(_, Null()) = NULL().
-  typeOfExp(_, Const(Int(_))) = INT().
-  typeOfExp(_, Const(Long(_))) = LONG().
-  typeOfExp(_, Const(Float(_))) = FLOAT().
-  typeOfExp(_, Const(String(_))) = STRING().
+  typeOfExp(_, ConstValue2Exp(Int(_))) = INT().
+  typeOfExp(_, ConstValue2Exp(Long(_))) = LONG().
+  typeOfExp(_, ConstValue2Exp(Float(_))) = FLOAT().
+  typeOfExp(_, ConstValue2Exp(String(_))) = STRING().
   typeOfExp(_, True()) = BOOL().
   typeOfExp(_, False()) = BOOL().
-  
+
 rules // type compatibility of constants
-  
+
   // numeric types 
   typeCompatible(LONG(), INT()) = TRUE().
   typeCompatible(INT(), LONG()) = TRUE().
-  
+
   // string types
   typeCompatible(STRING(), T2)      = TRUE() :- isStringCompatibleType(T2).
   typeCompatible(SECRET(), T2)      = TRUE() :- isStringCompatibleType(T2).
@@ -78,22 +63,22 @@ rules // type compatibility of constants
   typeCompatible(TEXT(), T2)        = TRUE() :- isStringCompatibleType(T2).
   typeCompatible(PATCH(), T2)       = TRUE() :- isStringCompatibleType(T2).
   typeCompatible(PLACEHOLDER(), T2) = TRUE() :- isStringCompatibleType(T2).
-  
+
   // date types
   typeCompatible(DATE(), T2)     = TRUE() :- isDateCompatibleType(T2).
   typeCompatible(DATETIME(), T2) = TRUE() :- isDateCompatibleType(T2).
   typeCompatible(TIME(), T2)     = TRUE() :- isDateCompatibleType(T2).
-  
+
   // misc
   typeCompatible(NULL(), _) = TRUE().
-  
+
 rules // utils
 
   isDateCompatibleType : TYPE
   isDateCompatibleType(DATE()).
   isDateCompatibleType(DATETIME()).
   isDateCompatibleType(TIME()).
-  
+
   isStringCompatibleType : TYPE
   isStringCompatibleType(STRING()).
   isStringCompatibleType(SECRET()).

@@ -1,29 +1,10 @@
 module static-semantics/actions/binops
 
 imports
+  signatures/WebDSL-Action-sig
+
   static-semantics/webdsl
-  
-signature
-    
-  constructors
-    // binary operators
-    Add                 : Exp * Exp -> Exp
-    Sub                 : Exp * Exp -> Exp
-    Mul                 : Exp * Exp -> Exp
-    Div                 : Exp * Exp -> Exp
-    Mod                 : Exp * Exp -> Exp
-    Eq                  : Exp * Exp -> Exp
-    NotEq               : Exp * Exp -> Exp
-    LargerThan          : Exp * Exp -> Exp
-    LargerThanOrEqual   : Exp * Exp -> Exp
-    SmallerThan         : Exp * Exp -> Exp
-    SmallerThanOrEqual  : Exp * Exp -> Exp
-    And                 : Exp * Exp -> Exp
-    Or                  : Exp * Exp -> Exp
-    
-    // unary operators (slightly out of place here)
-    Not : Exp -> Exp
-  
+
 rules // binary operators
   // (e1 + e2)
   typeOfExp(s, Add(e1, e2)) = T :- {T1 T2}
@@ -38,62 +19,62 @@ rules // binary operators
     typeOfExp(s, e2) == T2,
     getEqualNumericType(T1, T2) == T,
     T != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
-  
+
   // (e1 * e2)
   typeOfExp(s, Mul(e1, e2)) = T :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     getEqualNumericType(T1, T2) == T,
     T != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
-  
+
   // (e1 / e2)
   typeOfExp(s, Div(e1, e2)) = T :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     getEqualNumericType(T1, T2) == T,
     T != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
-  
+
   // (e1 % e2)
   typeOfExp(s, Mod(e1, e2)) = T :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     getEqualNumericType(T1, T2) == T,
     T != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
-  
+
   // (e1 > e2)
   typeOfExp(s, LargerThan(e1, e2)) = BOOL() :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     getEqualNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
-  
+
   // (e1 >= e2)
   typeOfExp(s, LargerThanOrEqual(e1, e2)) = BOOL() :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     getEqualNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
-  
+
   // (e1 < e2)
   typeOfExp(s, SmallerThan(e1, e2)) = BOOL() :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     getEqualNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
-  
+
   // (e1 <= e2)
   typeOfExp(s, SmallerThanOrEqual(e1, e2)) = BOOL() :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     getEqualNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
-    
+
   // (e1 && e2)
   typeOfExp(s, And(e1, e2)) = BOOL() :- {T1 T2} 
     typeOfExp(s, e1) == T1, T1 == BOOL() | error $[Wrong operand types for operator And: [e1] has type [T1]],
     typeOfExp(s, e2) == T2, T2 == BOOL() | error $[Wrong operand types for operator And: [e2] has type [T2]].
-    
+
   // (e1 || e2)
   typeOfExp(s, Or(e1, e2)) = BOOL() :- {T1 T2}
     typeOfExp(s, e1) == T1, T1 == BOOL() | error $[Wrong operand types for operator And: [e1] has type [T1]],
     typeOfExp(s, e2) == T2, T2 == BOOL() | error $[Wrong operand types for operator And: [e2] has type [T2]].
-    
+
   // (e1 == e2)
   typeOfExp(s, Eq(e1, e2)) = BOOL() :- {T1 T2}
     typeOfExp(s, e1) == T1,
@@ -102,7 +83,7 @@ rules // binary operators
       typeCompatible(T1, T2),
       typeCompatible(T2, T1)
     ) | error $[Wrong operand types for operator Eq: [e1] has type [T1],[e2] has type [T2]].
-  
+
   // (e1 != e2)
   typeOfExp(s, NotEq(e1, e2)) = BOOL() :- {T1 T2}
     typeOfExp(s, e1) == T1,
@@ -111,21 +92,21 @@ rules // binary operators
       typeCompatible(T1, T2),
       typeCompatible(T2, T1)
     ) | error $[Wrong operand types for operator NotEq: [e1] has type [T1],[e2] has type [T2]].
-    
+
 rules // unary operators
 
   // (!e)
   typeOfExp(s, Not(e)) = BOOL() :- {T}
     typeOfExp(s, e) == T,
     T == BOOL() | error $[Wrong operand type for operator Not: [e] has type [T]].
-    
+
 rules // utils
 
   getLUBForAdd : TYPE * TYPE -> TYPE
   getLUBForAdd(T1, T2) = getEqualNumericType(T1, T2).
   getLUBForAdd(STRING(), _) = STRING().
   getLUBForAdd(_, STRING()) = STRING().
-  
+
   getEqualNumericType : TYPE * TYPE -> TYPE
   getEqualNumericType(_, _) = UNTYPED().
   getEqualNumericType(INT(), INT()) = INT().

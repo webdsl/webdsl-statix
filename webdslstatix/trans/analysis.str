@@ -6,9 +6,9 @@ imports
   statix/api
 
   pp
-  
+
   desugar/desugar-all
-  
+
   injections/-
 
 rules // Analysis
@@ -17,9 +17,9 @@ rules // Analysis
 
   // single-file analysis
   editor-analyze = stx-editor-analyze(pre-analyze, post-analyze|"statics", "applicationOk")
-  pre-analyze = desugar-all; explicate-injections-webdsl-statix
-  post-analyze = strip-annos; implicate-injections-webdsl-statix
-  
+  pre-analyze = explicate-injections-webdsl-statix-Unit
+  post-analyze = implicate-injections-webdsl-statix-Unit
+
   // multi-file analysis
 //  editor-analyze = stx-editor-analyze(id|"statics", "projectOk", "fileOk")
 
@@ -35,11 +35,11 @@ rules // Debugging
   debug-show-aterm: (selected, _, _, path, project-path) -> (filename, result)
     with filename := <guarantee-extension(|"aterm")> path
        ; result   := selected
-       
+
   debug-show-desugared-aterm:(selected, _, _, path, project-path) -> (filename, result)
     with filename := <guarantee-extension(|"desugared.aterm")> path
        ; result   := <desugar-all> selected 
-       
+
   debug-show-desugared-explicated-injections-aterm:(selected, _, _, path, project-path) -> (filename, result)
     with filename := <guarantee-extension(|"explicated.aterm")> path
        ; result   := <pre-analyze> selected

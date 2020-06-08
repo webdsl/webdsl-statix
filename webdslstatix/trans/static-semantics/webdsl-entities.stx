@@ -2,47 +2,35 @@ module static-semantics/webdsl-entities
 
 imports
   static-semantics/webdsl
-  
-signature
-  sorts EntityBodyDeclaration ObjectPropertyAssignment
-  
-  constructors
-    Entity        : string * string * list(EntityBodyDeclaration) -> Definition
-    EntityNoSuper : string          * list(EntityBodyDeclaration) -> Definition
-//  SessionEntity : string          * list(EntityBodyDeclaration) -> Definition
-//  TO-DO: Support SessionEntity
-  
-  constructors
-    ObjectCreation : Sort * list(ObjectPropertyAssignment) -> Exp
-    
+
 rules // entity declaration 
 
-  defOk(s_global, EntityNoSuper(x, bodydecs)) :- {s_entity}
+  defOk(s_global, Entity2Definition(EntityNoSuper(x, bodydecs))) :- {s_entity}
     new s_entity,
     s_entity -IMPORTS-> s_global,
     s_global -> Entity{x} with typeOfDecl ENTITY(s_entity),
-    typeOfDecl of Entity{x} in s_global |-> [(_, (_, ENTITY(s_entity)))] 
+    typeOfDecl of Entity{x} in s_global |-> [(_, (_, ENTITY(s_entity)))]
         | error $[Entity [x] is defined multiple times].
     // TO-DO: check entity body declarations
-    
-  defOk(s_global, Entity(x, super, bodydecs)) :- {s_entity s_super}
+
+  defOk(s_global, Entity2Definition(Entity(x, super, bodydecs))) :- {s_entity s_super}
     typeOfDecl of Entity{super} in s_global |-> [(_, (_, ENTITY(s_super)))]
         | error $[Entity [super] is not defined],
     new s_entity,
     s_entity -IMPORTS-> s_global,
     s_entity -EXTENDS-> s_super,
     s_global -> Entity{x} with typeOfDecl ENTITY(s_entity),
-    typeOfDecl of Entity{x} in s_global |-> [(_, (_, ENTITY(s_entity)))] 
+    typeOfDecl of Entity{x} in s_global |-> [(_, (_, ENTITY(s_entity)))]
         | error $[Entity [x] is defined multiple times].
     // TO-DO: check entity body declarations
 
 rules // object creation
 
-  typeOfExp(s, ObjectCreation(SimpleSort(x), prop_assignments)) = ENTITY(s_entity) :-
+  typeOfExp(s, ObjectCreation2Exp(ObjectCreation(SimpleSort(x), prop_assignments))) = ENTITY(s_entity) :-
     typeOfDecl of Entity{x} in s |-> [(_, (_, ENTITY(s_entity)))]
         | error $[Entity [x] is not defined].
     // TO-DO: check prop assignments
-    
+
 rules // subtyping
 
   typeCompatible(ENTITY(s_sub), ENTITY(s_super)) = extends(s_sub, s_super).
@@ -53,7 +41,7 @@ rules // subtyping
              min $ < EXTENDS
              in s_sub |-> query_result,
     result == extendsHelper(query_result).
-    
+
   extendsHelper : list((path * scope)) -> BOOL
   extendsHelper(_) = FALSE().
   extendsHelper([(_,_)]) = TRUE().

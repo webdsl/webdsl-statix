@@ -8,7 +8,7 @@ rules
   declareBuiltIns : scope
   declareBuiltIns(s) :-
     declareDateBuiltIns(s).
-    
+
   declareDateBuiltIns : scope
   declareDateBuiltIns(s) :-
     s -> Function{"now"}      with typeOfDecl FUNCTION([], DATETIME()),
