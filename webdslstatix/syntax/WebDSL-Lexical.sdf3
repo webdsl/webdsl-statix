@@ -51,9 +51,9 @@ context-free sorts
 syntax
   
   %% string literal as expression
-  String-CF.StringRaw = QMLex-LEX StringLex-LEX QMLex-LEX
-  String-CF.StringInterpRaw = QMLex-LEX StringPart-CF* QMLex-LEX {avoid}
-  
+  String-CF.String = "\"" StringLex-LEX "\""
+  String-CF.StringInterp = "\"" StringPart-CF* "\"" {avoid}
+
   StringPart-CF = SimpleStringPart-CF
   StringPart-CF = StringLexInterp-LEX 
   SimpleStringPart-CF.InterpSimpleExp = "~" SimpleExp-CF 
@@ -89,7 +89,7 @@ context-free syntax
 
 lexical sorts
 
-  QMLex StringLex StringLexInterp StringChar HexPart STRING
+  QMLex StringLex StringLexInterp StringChar HexPart
 
 lexical syntax
 
@@ -99,7 +99,7 @@ lexical syntax
   StringChar = ~[\"\n\~\\] 
   StringChar = "\\" [0-9btnfr\'\"\\\~] 
   HexPart = [0-9a-fA-F] 
-  StringChar = "\\u" HexPart HexPart HexPart HexPart 
+  StringChar = "\\u" HexPart HexPart HexPart HexPart
 
 lexical restrictions
 

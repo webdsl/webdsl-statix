@@ -202,9 +202,8 @@ context-free syntax
 
 syntax
 
-  %% string literal as template element
-  TemplateElement-CF.TextRaw = QMLex-LEX StringLex-LEX QMLex-LEX
-  TemplateElement-CF.TextInterpRaw = QMLex-LEX StringPart-CF* QMLex-LEX {avoid} 
+  TemplateElement-CF.Text = "\"" StringLex-LEX "\""
+  TemplateElement-CF.TextInterp = "\"" StringPart-CF* "\"" {avoid}
 
 lexical syntax
 
