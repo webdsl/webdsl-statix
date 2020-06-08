@@ -72,9 +72,9 @@ context-free syntax
   Annotation.AllowedAnno = "allowed" "=" Exp 
   Annotation.DefaultAnno = "default" "=" Exp 
   Annotation.LengthAnno = "length" "=" Int 
-  Annotation.FormatAnno = "format" "=" String 
+  Annotation.FormatAnno = "format" "=" StringValue
   Annotation.IndexAnno = "index" "(" ")" 
   Annotation.IndexAnno = "index" "(" Int ")" 
   Annotation.CollationAnno = "collation" "(" Id ")" 
-  Annotation.IdErrorAnno = "iderror" "=" String 
-  Annotation.IdEmptyErrorAnno = "idemptyerror" "=" String 
+  Annotation.IdErrorAnno = "iderror" "=" StringValue
+  Annotation.IdEmptyErrorAnno = "idemptyerror" "=" StringValue

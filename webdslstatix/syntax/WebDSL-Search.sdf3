@@ -32,7 +32,7 @@ context-free syntax
   Tokenizer.TokenizerNoArgs = "tokenizer" "=" TOKENIZERNAME 
   TokenFilter.TokenFilter = "token filter" "=" TOKENFILTERNAME "(" {Argument ","}* ")" 
   TokenFilter.TokenFilterNoArgs = "token filter" "=" TOKENFILTERNAME 
-  Argument.Argument = Id "=" String 
+  Argument.Argument = Id "=" StringValue
   CHARFILTERNAME = Id 
   TOKENIZERNAME = Id 
   TOKENFILTERNAME = Id 

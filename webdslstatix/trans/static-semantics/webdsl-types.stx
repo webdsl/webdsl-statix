@@ -44,7 +44,7 @@ rules // types of constant expressions
   typeOfExp(_, ConstValue2Exp(Int(_))) = INT().
   typeOfExp(_, ConstValue2Exp(Long(_))) = LONG().
   typeOfExp(_, ConstValue2Exp(Float(_))) = FLOAT().
-  typeOfExp(_, ConstValue2Exp(String(_))) = STRING().
+  typeOfExp(_, ConstValue2Exp(StringValue(_))) = STRING().
   typeOfExp(_, True()) = BOOL().
   typeOfExp(_, False()) = BOOL().
 

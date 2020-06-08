@@ -11,4 +11,4 @@ context-free sorts
 context-free syntax
 
   Definition.Enum = "enum" Id "{" {EnumValue ","}* "}" 
-  EnumValue.EnumValue = Id "(" String ")" 
+  EnumValue.EnumValue = Id "(" StringValue ")"

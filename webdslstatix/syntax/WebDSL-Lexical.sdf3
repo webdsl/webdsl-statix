@@ -44,15 +44,15 @@ lexical restrictions
 
 context-free sorts
 
-  String StringPart SimpleStringPart
+  StringValue StringPart SimpleStringPart
 
 %% Kernel syntax is required here since we do not want LAYOUT to be parsed between
 %% the first QMLex and StringLex
 syntax
   
   %% string literal as expression
-  String-CF.String = "\"" StringLex-LEX "\""
-  String-CF.StringInterp = "\"" StringPart-CF* "\"" {avoid}
+  StringValue-CF.StringValue = "\"" StringLex-LEX "\""
+  StringValue-CF.StringInterp = "\"" StringPart-CF* "\"" {avoid}
 
   StringPart-CF = SimpleStringPart-CF
   StringPart-CF = StringLexInterp-LEX 
