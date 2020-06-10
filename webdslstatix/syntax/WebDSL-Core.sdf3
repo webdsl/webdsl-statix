@@ -48,7 +48,7 @@ context-free syntax %% Types
 
 context-free sorts
 
-  Application Module Unit Section Definition Description
+  Unit Section Definition Description
 
 syntax
 
@@ -56,16 +56,14 @@ syntax
 
 context-free syntax
 
-  Application.ApplicationDefs = "application" QId Definition+ Section* 
-  Application.Application = "application" QId Section* 
+  Unit.ApplicationDefs = "application" QId Definition+ Section* 
+  Unit.Application = "application" QId Section* 
   Description.Description = "description" "{" Word* "}" 
   Description.Note = "note" "{" Word* "}" 
   Definition = Description 
-  Module.Module = "module" ModuleName Section* 
-  Module.ModuleDefs = "module" ModuleName Definition+ Section* 
-  Definition.Imports = "imports" ModuleName 
-  Unit = Application 
-  Unit = Module 
+  Unit.Module = "module" ModuleName Section* 
+  Unit.ModuleDefs = "module" ModuleName Definition+ Section* 
+  Definition.Imports = "imports" ModuleName
 
 context-free sorts
 

@@ -36,11 +36,11 @@ signature
 rules // application and module
 
   programOk : scope * Unit
-  programOk(s, Application2Unit(ApplicationDefs(appName, defs, sections))) :-
+  programOk(s, ApplicationDefs(appName, defs, sections)) :-
     defsOk(s, defs),
     sectionsOk(s, sections).
 
-  programOk(s, Application2Unit(Application(appName, sections))) :-
+  programOk(s, Application(appName, sections)) :-
     sectionsOk(s, sections).
 
 rules // declare common rules and mappings

@@ -102,7 +102,7 @@ context-free syntax
   ConstValue.Float = Float 
   ConstValue = StringValue
   Exp = ConstValue 
-  Exp.Var = VarId 
+  Exp.Var = VarId // TO-DO: rewrite varId to lexical
   VarId = Id 
   SimpleVar.SimpleVar = VarId
   Exp = "in" {reject}
@@ -116,7 +116,7 @@ context-free syntax
   ObjectPropertyAssignment.ObjectPropertyAssignment = Id ":=" Exp 
   ObjectPropertyAssignment.IncompleteObjectPropertyAssignment = Id 
   Assignment.Assignment = Exp ":=" Exp 
-  Exp = Assignment 
+  Exp = Assignment // TO-DO: is this necessary having assignments as exp?
   Exp.MapCreation = "[" Mapping* "]" {avoid}
   Mapping.Mapping = Exp "->" Exp 
   Exp.ListCreation = "[" {Exp ","}* "]" 
