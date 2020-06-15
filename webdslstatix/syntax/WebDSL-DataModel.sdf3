@@ -14,7 +14,6 @@ context-free syntax
   Definition.Entity = "entity" Id ":" Id "{" EntityBodyDeclaration* "}" 
   Definition.EntityNoSuper = "entity" Id "{" EntityBodyDeclaration* "}" 
   Definition.SessionEntity = "session" Id "{" EntityBodyDeclaration* "}" 
-  EntityBodyDeclaration = Property 
   EntityBodyDeclaration = Function 
   EntityBodyDeclaration = StaticEntityFunction 
   EntityBodyDeclaration.CachedEntity = "cache" 
@@ -27,7 +26,7 @@ context-free restrictions
 
 context-free sorts
 
-  Property Sort Annotation GlobalsDef GlobalVarDecl
+  Sort Annotation GlobalsDef GlobalVarDecl
 
 context-free syntax
 
@@ -48,8 +47,8 @@ context-free sorts
 
 context-free syntax
 
-  Property.Property = Id PropKind Sort OptPropAnnos 
-  Property.DerivedProperty = Id PropKind Sort OptPropAnnos ":=" Exp 
+  EntityBodyDeclaration.Property = Id PropKind Sort OptPropAnnos 
+  EntityBodyDeclaration.DerivedProperty = Id PropKind Sort OptPropAnnos ":=" Exp 
   OptPropAnnos = "(" {Annotation ","}* ")"
   OptPropAnnos.OptPropAnnosNone = <>
   PropKind.Simple = "::" 
