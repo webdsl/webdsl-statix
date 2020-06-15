@@ -5,24 +5,26 @@ imports
 
 rules // entity declaration 
 
-  defOk(s_global, Entity2Definition(EntityNoSuper(x, bodydecs))) :- {s_entity}
+  defOk(s_global, EntityNoSuper(x, bodydecs)) :- {s_entity}
     new s_entity,
     s_entity -IMPORTS-> s_global,
-    s_global -> Entity{x} with typeOfDecl ENTITY(s_entity),
-    typeOfDecl of Entity{x} in s_global |-> [(_, (_, ENTITY(s_entity)))]
-        | error $[Entity [x] is defined multiple times].
+    declEntity(s_global, s_entity, x).
     // TO-DO: check entity body declarations
 
-  defOk(s_global, Entity2Definition(Entity(x, super, bodydecs))) :- {s_entity s_super}
-    typeOfDecl of Entity{super} in s_global |-> [(_, (_, ENTITY(s_super)))]
-        | error $[Entity [super] is not defined],
+  defOk(s_global, Entity(x, super, bodydecs)) :- {s_entity s_super}
     new s_entity,
     s_entity -IMPORTS-> s_global,
-    s_entity -EXTENDS-> s_super,
-    s_global -> Entity{x} with typeOfDecl ENTITY(s_entity),
-    typeOfDecl of Entity{x} in s_global |-> [(_, (_, ENTITY(s_entity)))]
-        | error $[Entity [x] is defined multiple times].
+    declEntity(s_global, s_entity, x),
+    typeOfDecl of Entity{super} in s_global |-> [(_, (_, ENTITY(s_super)))]
+        | error $[Entity [super] is not defined],
+    s_entity -EXTENDS-> s_super.
     // TO-DO: check entity body declarations
+
+  declEntity : scope * scope * string
+  declEntity(s_global, s_entity, entity_name) :-
+    s_global -> Entity{entity_name} with typeOfDecl ENTITY(s_entity),
+    typeOfDecl of Entity{entity_name} in s_global |-> [(_, (_, ENTITY(s_entity)))]
+        | error $[Entity [entity_name] is defined multiple times].
 
 rules // object creation
 
