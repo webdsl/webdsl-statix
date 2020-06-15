@@ -9,10 +9,16 @@ signature
     FUNCTION : list(TYPE) * TYPE -> TYPE // list of arguments and return type
     ENTITY   : scope             -> TYPE 
 
+    LIST : TYPE -> TYPE
+    SET  : TYPE -> TYPE
+    REF  : TYPE -> TYPE
+
     // numeric types
     INT           : TYPE
     FLOAT         : TYPE
     LONG          : TYPE
+    DOUBLE        : TYPE
+    TIMEINTERVAL  : TYPE
 
     // string types
     STRING      : TYPE
@@ -30,13 +36,18 @@ signature
     TIME      : TYPE
 
     // other
-    REGEX   : TYPE
-    BOOL    : TYPE
-    VOID    : TYPE
-    UUID    : TYPE
+    REGEX            : TYPE
+    BOOL             : TYPE
+    VOID             : TYPE
+    UUID             : TYPE
+    TEMPLATEELEMENTS : TYPE
+    FILE             : TYPE
+    IMAGE            : TYPE
+    OBJECT           : TYPE
 
-    NULL    : TYPE
-    UNTYPED : TYPE
+    NULL            : TYPE
+    ABSTRACTENTITY  : TYPE
+    UNTYPED         : TYPE
 
 rules // types of constant expressions
 
@@ -88,3 +99,65 @@ rules // utils
   isStringCompatibleType(TEXT()).
   isStringCompatibleType(PATCH()).
   isStringCompatibleType(PLACEHOLDER()).
+
+rules // map sorts to semantic types
+
+  typeOfSort : scope * Sort -> TYPE
+  typeOfSort(_, _) = UNTYPED(). // untyped by default
+  typeOfSort(_, SimpleSort("Int")) = INT().
+  typeOfSort(_, SimpleSort("Float")) = FLOAT().
+  typeOfSort(_, SimpleSort("Long")) = LONG().
+  typeOfSort(_, SimpleSort("TimeInterval")) = TIMEINTERVAL().
+
+  typeOfSort(_, SimpleSort("String")) = STRING().
+  typeOfSort(_, SimpleSort("Secret")) = SECRET().
+  typeOfSort(_, SimpleSort("Email")) = EMAIL().
+  typeOfSort(_, SimpleSort("URL")) = URL().
+  typeOfSort(_, SimpleSort("WikiText")) = WIKITEXT().
+  typeOfSort(_, SimpleSort("Text")) = TEXT().
+  typeOfSort(_, SimpleSort("Patch")) = PATCH().
+  typeOfSort(_, SimpleSort("Placeholder")) = PLACEHOLDER().
+
+  typeOfSort(_, SimpleSort("Date")) = DATE().
+  typeOfSort(_, SimpleSort("DateTime")) = DATETIME().
+  typeOfSort(_, SimpleSort("Time")) = TIME().
+
+  typeOfSort(_, SimpleSort("Regex")) = REGEX().
+  typeOfSort(_, SimpleSort("Void")) = VOID().
+  typeOfSort(_, SimpleSort("UUID")) = UUID().
+  typeOfSort(_, SimpleSort("TemplateElements")) = TEMPLATEELEMENTS().
+  typeOfSort(_, SimpleSort("File")) = FILE().
+  typeOfSort(_, SimpleSort("Image")) = IMAGE().
+  typeOfSort(_, SimpleSort("Object")) = OBJECT().
+
+  typeOfSort(_, SimpleSort("Null")) = NULL().
+  typeOfSort(_, SimpleSort("Entity")) = ABSTRACTENTITY().
+
+  typeOfSort(s, SimpleSort(x)) = getEntityType(s, x).
+
+rules // definition of "simple sort" according to webdsl compiler
+
+  isSimpleSort : TYPE -> BOOL
+  isSimpleSort(_) = FALSE(). // false by default
+  isSimpleSort(TEMPLATEELEMENTS()) = TRUE().
+  isSimpleSort(BOOL()) = TRUE().
+  isSimpleSort(DATE()) = TRUE().
+  isSimpleSort(DATETIME()) = TRUE().
+  isSimpleSort(TIME()) = TRUE().
+  isSimpleSort(EMAIL()) = TRUE().
+  isSimpleSort(FILE()) = TRUE().
+  isSimpleSort(FLOAT()) = TRUE().
+  isSimpleSort(IMAGE()) = TRUE().
+  isSimpleSort(INT()) = TRUE().
+  isSimpleSort(LONG()) = TRUE().
+  isSimpleSort(NULL()) = TRUE().
+  isSimpleSort(OBJECT()) = TRUE().
+  isSimpleSort(PATCH()) = TRUE().
+  isSimpleSort(PLACEHOLDER()) = TRUE().
+  isSimpleSort(SECRET()) = TRUE().
+  isSimpleSort(STRING()) = TRUE().
+  isSimpleSort(TEXT()) = TRUE().
+  isSimpleSort(TIMEINTERVAL()) = TRUE().
+  isSimpleSort(URL()) = TRUE().
+  isSimpleSort(UUID()) = TRUE().
+  isSimpleSort(WIKITEXT()) = TRUE().
