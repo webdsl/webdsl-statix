@@ -1,6 +1,7 @@
 module static-semantics/webdsl-actions
 
 imports
+  static-semantics/actions/binops
   static-semantics/webdsl
 
 rules

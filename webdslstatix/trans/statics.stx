@@ -1,30 +1,24 @@
 module statics
 
 imports
-//  signatures/WebDSL-Core-sig
-//
-//  static-semantics/webdsl
-//  static-semantics/actions/built-ins
+  signatures/WebDSL-Core-sig
+
+  static-semantics/webdsl
+  static-semantics/actions/built-ins
 
 // see README.md for details on how to switch to multi-file analysis
-//
-
-signature
-
-  sorts Unit
 
 rules // single-file entry point
 
   applicationOk : Unit
-  applicationOk(_).
-//  applicationOk(u) :- {s_init}
-//    new s_init,
-//    init(s_init),
-//    programOk(s_init, u).
-//
-//  init : scope
-//  init(s) :-
-//    declareBuiltIns(s).
+  applicationOk(u) :- {s_init}
+    new s_init,
+    init(s_init),
+    programOk(s_init, u).
+
+  init : scope
+  init(s) :-
+    declareBuiltIns(s).
 
 //rules // multi-file entry point
 //

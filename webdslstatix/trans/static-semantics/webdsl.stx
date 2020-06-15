@@ -3,6 +3,9 @@ module static-semantics/webdsl
 imports
   signatures/WebDSL-Core-sig
 
+  static-semantics/webdsl-actions
+  static-semantics/webdsl-entities
+  static-semantics/webdsl-functions
   static-semantics/webdsl-types
 
 signature
