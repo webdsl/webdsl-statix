@@ -49,7 +49,7 @@ rules // application and module
 rules // declare common rules and mappings
 
   sectionOk : scope * Section
-  sectionOk(_,_).
+  sectionOk(_,_) :- false | error $[Sections are not yet implemented].
   sectionsOk maps sectionOk(*, list(*))
 
   defOk : scope * Definition

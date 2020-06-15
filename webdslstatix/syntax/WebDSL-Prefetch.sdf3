@@ -35,14 +35,14 @@ context-free syntax
   PrefetchWhere.PrefetchWhere = "where" PrefetchWhereMod* "(" PrefetchCond ")" 
   PrefetchWhereMod.Hint = "hint"
   OptPrefetchOwnerCast.OptPrefetchOwnerCastNone = <>
-  OptPrefetchOwnerCast.OptPrefetchOwnerCastSome = SimpleSort "."
+  OptPrefetchOwnerCast.OptPrefetchOwnerCastSome = SIMPLESORT "."
   PrefetchCondVal.PrefetchTrue = "true" {prefer}
   PrefetchCondVal.PrefetchFalse = "false" {prefer}
   PrefetchCondVal.PrefetchNull = "null" {prefer}
   PrefetchCondVal = ConstValue {prefer}
   PrefetchCondVal.PretchCondVar = Id 
   OptSimpleSort.OptSimpleSortNone = <>
-  OptSimpleSort = SimpleSort
+  OptSimpleSort.OptSimpleSortSome = SIMPLESORT
   PrefetchCondVal.RelativeFieldAccess = OptSimpleSort "." Id 
   PrefetchCondVal.PrefetchMul = PrefetchCondVal "*" PrefetchCondVal {assoc}
   PrefetchCondVal.PrefetchDiv = PrefetchCondVal "/" PrefetchCondVal {assoc}

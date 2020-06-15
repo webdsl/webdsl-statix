@@ -28,7 +28,7 @@ rules // entity declaration
 
 rules // object creation
 
-  typeOfExp(s, ObjectCreation2Exp(ObjectCreation(SimpleSort2Sort(SimpleSort(x)), prop_assignments))) = ENTITY(s_entity) :-
+  typeOfExp(s, ObjectCreation2Exp(ObjectCreation(SimpleSort(x), prop_assignments))) = ENTITY(s_entity) :-
     typeOfDecl of Entity{x} in s |-> [(_, (_, ENTITY(s_entity)))]
         | error $[Entity [x] is not defined].
     // TO-DO: check prop assignments

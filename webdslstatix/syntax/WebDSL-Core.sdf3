@@ -6,7 +6,7 @@ imports
 
 context-free sorts
 
-  QId FormalArg OptFormalArgs SimpleSort GenericSort RefSort ListSort SetSort FunctionSort FunctionSortParams Arg
+  QId FormalArg OptFormalArgs FunctionSortParams Arg
   FunctionSortParam FunctionSortReturn
 
 context-free syntax
@@ -16,24 +16,15 @@ context-free syntax
 
 context-free syntax %% Types
 
-  Sort = SimpleSort 
-  Sort = GenericSort 
-  Sort = RefSort 
-  Sort = ListSort 
-  Sort = SetSort 
-  Sort = FunctionSort 
-  SimpleSort.SimpleSort = Id 
-  GenericSort.GenericSort = Id "<" {Sort ","}+ ">" 
-  RefSort.RefSortAlt = "Ref" "<" Sort ">" 
-  RefSort.RefSort = "ref" Sort 
-  GenericSort = "Ref" "<" Sort ">" {reject}
-  
-  %% List type '[Type]' and Set type '{Type}' notation
-  ListSort.ListSort = "[" Sort "]"
-  SetSort.SetSort = "{" Sort "}"
-  
+  Sort.SimpleSort   = SIMPLESORT
+  Sort.GenericSort  = GENERICSORT "<" {Sort ","}+ ">"
+  Sort.ListSort     = "[" Sort "]"
+  Sort.SetSort      = "{" Sort "}"
+  Sort.RefSort      = "ref" Sort
+  Sort.RefSortAlt   = "Ref" "<" Sort ">"
+  Sort.FunctionSort = "function" FunctionSortParams FunctionSortReturn
+
   %% function type; optionally specify (named) args and return type
-  FunctionSort.FunctionSort = "function" FunctionSortParams FunctionSortReturn
   FunctionSortParams = "(" {FunctionSortParam ","}* ")"
   FunctionSortParams.FunctionSortParamsNone = <>
   FunctionSortParam.UnnamedArg = Sort 
@@ -41,10 +32,20 @@ context-free syntax %% Types
   FunctionSortParam = Arg
   FunctionSortReturn = ":" Sort
   FunctionSortReturn.FunctionSortReturnNone = <>
-  SimpleSort = "function" {reject}
   FormalArg = Arg
   OptFormalArgs = "(" {FormalArg ","}* ")"
   OptFormalArgs.OptFormalArgsNone = <>
+
+lexical sorts
+
+  SIMPLESORT GENERICSORT
+
+lexical syntax
+
+  SIMPLESORT = Id
+  SIMPLESORT = "function" {reject}
+  GENERICSORT = Id
+  GENERICSORT = "Ref" {reject}
 
 context-free sorts
 
