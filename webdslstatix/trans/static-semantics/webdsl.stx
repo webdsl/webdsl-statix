@@ -12,7 +12,7 @@ signature
 
   sorts
     TYPE // semantic type
-    BOOL
+    BOOL // used as return values of functional constraints
 
   constructors
     TRUE : BOOL
@@ -75,6 +75,7 @@ rules // typing
 
 rules // utils
 
-  or : BOOL * BOOL
-  or(TRUE(), _).
-  or(FALSE(), TRUE()).
+  orB : BOOL * BOOL -> BOOL
+  orB(_, _) = FALSE().
+  orB(TRUE(), _) = TRUE().
+  orB(FALSE(), TRUE()) = TRUE().

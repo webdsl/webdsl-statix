@@ -17,7 +17,6 @@ signature
     INT           : TYPE
     FLOAT         : TYPE
     LONG          : TYPE
-    DOUBLE        : TYPE
     TIMEINTERVAL  : TYPE
 
     // string types
@@ -133,31 +132,48 @@ rules // map sorts to semantic types
   typeOfSort(_, SimpleSort("Null")) = NULL().
   typeOfSort(_, SimpleSort("Entity")) = ABSTRACTENTITY().
 
+  // in case it's not a built in simple sort, it must be an entity
   typeOfSort(s, SimpleSort(x)) = getEntityType(s, x).
 
-rules // definition of "simple sort" according to webdsl compiler
+  typeOfSort(s, GenericSort("List", [innerSort])) = LIST(typeOfSort(s, innerSort)).
+  typeOfSort(s, GenericSort(_, _)) = UNTYPED() :- false | error $[Only lists and sets with one type parameter are supported].
+  typeOfSort(s, GenericSort("Set", [innerSort])) = SET(typeOfSort(s, innerSort)).
 
-  isSimpleSort : TYPE -> BOOL
-  isSimpleSort(_) = FALSE(). // false by default
-  isSimpleSort(TEMPLATEELEMENTS()) = TRUE().
-  isSimpleSort(BOOL()) = TRUE().
-  isSimpleSort(DATE()) = TRUE().
-  isSimpleSort(DATETIME()) = TRUE().
-  isSimpleSort(TIME()) = TRUE().
-  isSimpleSort(EMAIL()) = TRUE().
-  isSimpleSort(FILE()) = TRUE().
-  isSimpleSort(FLOAT()) = TRUE().
-  isSimpleSort(IMAGE()) = TRUE().
-  isSimpleSort(INT()) = TRUE().
-  isSimpleSort(LONG()) = TRUE().
-  isSimpleSort(NULL()) = TRUE().
-  isSimpleSort(OBJECT()) = TRUE().
-  isSimpleSort(PATCH()) = TRUE().
-  isSimpleSort(PLACEHOLDER()) = TRUE().
-  isSimpleSort(SECRET()) = TRUE().
-  isSimpleSort(STRING()) = TRUE().
-  isSimpleSort(TEXT()) = TRUE().
-  isSimpleSort(TIMEINTERVAL()) = TRUE().
-  isSimpleSort(URL()) = TRUE().
-  isSimpleSort(UUID()) = TRUE().
-  isSimpleSort(WIKITEXT()) = TRUE().
+rules // WebDSL definition of being a simple type: built-in simple sort (no generics, no ref, no entity etc)
+
+  isSimpleType: TYPE -> BOOL
+  isSimpleType(_) = FALSE(). // false by default
+
+  isSimpleType(INT()) = TRUE().
+  isSimpleType(FLOAT()) = TRUE().
+  isSimpleType(LONG()) = TRUE().
+
+  isSimpleType(STRING()) = TRUE().
+  isSimpleType(SECRET()) = TRUE().
+  isSimpleType(EMAIL()) = TRUE().
+  isSimpleType(URL()) = TRUE().
+  isSimpleType(WIKITEXT()) = TRUE().
+  isSimpleType(TEXT()) = TRUE().
+  isSimpleType(PATCH()) = TRUE().
+  isSimpleType(PLACEHOLDER()) = TRUE().
+
+  isSimpleType(DATE()) = TRUE().
+  isSimpleType(DATETIME()) = TRUE().
+  isSimpleType(TIME()) = TRUE().
+
+  isSimpleType(REGEX()) = TRUE().
+  isSimpleType(BOOL()) = TRUE().
+  isSimpleType(VOID()) = TRUE().
+  isSimpleType(UUID()) = TRUE().
+  isSimpleType(FILE()) = TRUE().
+  isSimpleType(IMAGE()) = TRUE().
+  isSimpleType(OBJECT()) = TRUE().
+
+  isSimpleType(NULL()) = TRUE().
+
+rules // resolve entity references
+
+  getEntityType : scope * string -> TYPE
+  getEntityType(s, entity) = entity_type :-
+    typeOfDecl of Entity{entity} in s |-> [(_, (_, entity_type))]
+        | error $[Entity [entity] is not defined].

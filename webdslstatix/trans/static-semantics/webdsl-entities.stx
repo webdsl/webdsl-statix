@@ -32,33 +32,47 @@ rules // entity body declaration
   declEntityBodyDeclaration(_, _) :- false | error $[This entity body declaration is not yet implemented].
   declEntityBody maps declEntityBodyDeclaration(*, list(*))
 
-  declEntityBodyDeclaration(s, Property(x, propkind, sort, annos)) :- {sortType innerSortType}
+  declEntityBodyDeclaration(s, Property(x, propkind, sort, annos)) :- {sortType}
     sortType == typeOfSort(s, sort),
-    sortType != UNTYPED(), sortType != NULL(), sortType != VOID(), sortType != REF(innerSortType),
-    x != "id", x != "version", x != "created", x != "modified", x != "class",
-    isValidTypeForPropKind(propkind, sortType).
+    sortType != UNTYPED() | error $[Cannot resolve type [sort]] @sort,
+    sortType != NULL() | error $[Property type 'Null' not allowed] @sort,
+    sortType != VOID() | error $[Property type 'Void' not allowed] @sort,
+    sortType != REF(_) | error $[Reference type is not allowed in property] @sort,
+    x != "id"       | error $[Cannot override the builtin property [x]] @x,
+    x != "version"  | error $[Cannot override the builtin property [x]] @x,
+    x != "created"  | error $[Cannot override the builtin property [x]] @x,
+    x != "modified" | error $[Cannot override the builtin property [x]] @x,
+    x != "class"    | error $[Cannot override the builtin property [x]] @x,
+    isValidTypeForPropKind(propkind, sort, sortType).
     // TO-DO: declare `x` in scope `s` with typeOfDecl `sortType`
 
-  isValidTypeForPropKind : PropKind * TYPE
-  isValidTypeForPropKind(Simple(), sortType) :- isSimpleSort(sortType) == TRUE().
-  isValidTypeForPropKind(Ref(), sortType) :- isSimpleSort(sortType) == FALSE().
-  isValidTypeForPropKind(Comp(), sortType) :- isSimpleSort(sortType) == FALSE().
-  isValidTypeForPropKind(AnyProp(), _).
-  isValidTypeForPropKind(AnyProp(), LIST(sortType)) :- {s} sortType == ENTITY(s).
-  isValidTypeForPropKind(AnyProp(), SET(sortType)) :- {s} sortType == ENTITY(s).
-  isValidTypeForPropKind(_, LIST(sortType)) :- {s} sortType == ENTITY(s).
-  isValidTypeForPropKind(_, SET(sortType)) :- {s} sortType == ENTITY(s).
+  isValidTypeForPropKind : PropKind * Sort * TYPE
+  isValidTypeForPropKind(Simple(), sort, sortType) :-
+    isSimpleType(sortType) == TRUE() | error $[Expected simple type] @sort.
+
+  isValidTypeForPropKind(Ref(), _, ENTITY(_)).
+  isValidTypeForPropKind(Ref(), _, LIST(ENTITY(_))).
+  isValidTypeForPropKind(Ref(), _, SET(ENTITY(_))).
+  isValidTypeForPropKind(Ref(), sort, _) :-
+    false | error $[Expected entity type or collection of an entity type] @sort.
+
+  isValidTypeForPropKind(Comp(), _, ENTITY(_)).
+  isValidTypeForPropKind(Comp(), _, LIST(ENTITY(_))).
+  isValidTypeForPropKind(Comp(), _, SET(ENTITY(_))).
+  isValidTypeForPropKind(Comp(), sort, _) :-
+    false | error $[Expected entity type or collection of an entity type] @sort.
+
+  isValidTypeForPropKind(AnyProp(), _, ENTITY(_)).
+  isValidTypeForPropKind(AnyProp(), _, LIST(ENTITY(_))).
+  isValidTypeForPropKind(AnyProp(), _, SET(ENTITY(_))).
+  isValidTypeForPropKind(AnyProp(), sort, sortType) :-
+    isSimpleType(sortType) == TRUE() | error $[Expected simple type or entity type or a collection of an entity type] @sort.
 
 rules // entity resolving
 
   typeOfExp(s, ObjectCreation2Exp(ObjectCreation(SimpleSort(x), prop_assignments))) = ENTITY(s_entity) :-
     getEntityType(s, x) == ENTITY(s_entity).
     // TO-DO: check prop assignments
-
-  getEntityType : scope * string -> TYPE
-  getEntityType(s, entity) = entity_type :-
-    typeOfDecl of Entity{entity} in s |-> [(_, (_, entity_type))]
-        | error $[Entity [entity] is not defined].
 
 rules // subtyping
 
