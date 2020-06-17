@@ -8,16 +8,16 @@ rules // entity declaration
 
   defOk(s_global, EntityNoSuper(x, bodydecs)) :- {s_entity}
     new s_entity,
-    s_entity -IMPORTS-> s_global,
+    s_entity -IMPORT-> s_global,
     declEntity(s_global, s_entity, x, bodydecs).
 
   defOk(s_global, Entity(x, super, bodydecs)) :- {s_entity s_super}
     new s_entity,
-    s_entity -IMPORTS-> s_global,
+    s_entity -IMPORT-> s_global,
     declEntity(s_global, s_entity, x, bodydecs),
     typeOfDecl of Entity{super} in s_global |-> [(_, (_, ENTITY(s_super)))]
         | error $[Entity [super] is not defined],
-    s_entity -EXTENDS-> s_super.
+    s_entity -INHERIT-> s_super.
 
   declEntity : scope * scope * string * list(EntityBodyDeclaration)
   declEntity(s_global, s_entity, entity_name, bodydecs) :-
@@ -76,15 +76,15 @@ rules // entity resolving
 
 rules // subtyping
 
-  typeCompatible(ENTITY(s_sub), ENTITY(s_super)) = extends(s_sub, s_super).
+  typeCompatible(ENTITY(s_sub), ENTITY(s_super)) = inherits(s_sub, s_super).
 
-  extends : scope * scope -> BOOL
-  extends(s_sub, s_super) = result :- {query_result}
-    query () filter EXTENDS* and { s :- s == s_super }
-             min $ < EXTENDS
+  inherits : scope * scope -> BOOL
+  inherits(s_sub, s_super) = result :- {query_result}
+    query () filter INHERIT* and { s :- s == s_super }
+             min $ < INHERIT
              in s_sub |-> query_result,
-    result == extendsHelper(query_result).
+    result == inheritsHelper(query_result).
 
-  extendsHelper : list((path * scope)) -> BOOL
-  extendsHelper(_) = FALSE().
-  extendsHelper([(_,_)]) = TRUE().
+  inheritsHelper : list((path * scope)) -> BOOL
+  inheritsHelper(_) = FALSE().
+  inheritsHelper([(_,_)]) = TRUE().

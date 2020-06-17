@@ -173,7 +173,7 @@ rules // WebDSL definition of being a simple type: built-in simple sort (no gene
 
   isSimpleType(NULL()).
 
-rules // resolve entity references
+rules // resolve reference types
 
   getEntityType : scope * string -> TYPE
   getEntityType(s, entity) = entity_type :-

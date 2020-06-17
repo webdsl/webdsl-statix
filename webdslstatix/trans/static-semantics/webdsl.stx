@@ -21,17 +21,22 @@ signature
   namespaces
     Entity : string
     Function : string
+    Variable : string
 
   name-resolution
-    labels EXTENDS IMPORTS
+    labels P INHERIT IMPORT
     resolve
       Entity
-      filter EXTENDS* IMPORTS*
-      min $ < EXTENDS, $ < IMPORTS, EXTENDS < IMPORTS
+      filter P* IMPORT*
+      min $ < P, $ < IMPORT, P < IMPORT
     resolve
       Function
-      filter EXTENDS* IMPORTS*
-      min $ < EXTENDS, $ < IMPORTS, EXTENDS < IMPORTS
+      filter P* INHERIT* IMPORT*
+      min $ < P, $ < INHERIT, $ < IMPORT, P < INHERIT, P < IMPORT, INHERIT < IMPORT
+    resolve
+      Variable
+      filter P* INHERIT* IMPORT*
+      min $ < P, $ < INHERIT, $ < IMPORT, P < INHERIT, P < IMPORT, INHERIT < IMPORT
 
   relations
     typeOfDecl : occurrence -> TYPE
