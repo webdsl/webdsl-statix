@@ -45,7 +45,8 @@ rules // entity body declaration
     x != "modified" | error $[Cannot override the builtin property [x]] @x,
     x != "class"    | error $[Cannot override the builtin property [x]] @x,
     isValidTypeForPropKind(propkind, sort, typeOfSort(s, sort)),
-    declVar(s, x, sortType).
+    declVar(s, x, sortType),
+    noDuplicateVarDefsInSuper(s, x) | error $[Cannot override inherited property [x]] @x.
 
   isValidTypeForPropKind : PropKind * Sort * TYPE
   isValidTypeForPropKind(Simple(), sort, sortType) :-

@@ -2,6 +2,7 @@ module static-semantics/webdsl-actions
 
 imports
   static-semantics/actions/binops
+  static-semantics/webdsl-types
   static-semantics/webdsl
 
 rules // functions
@@ -20,6 +21,13 @@ rules // statements
 
 rules // variables
 
+  typeOfExp(s, Var(Id2VarId(x))) = getVariableType(s, x).
+
+  defOk(s, GlobalVarDecl2Definition(GlobalVarDeclInit(x, sort, exp))) :- {sortType}
+    sortType == typeOfSort(s, sort),
+    equalType(sortType, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [sort]],
+    declVar(s, x, sortType).
+
   declVar : scope * string * TYPE
   declVar(s, x, t) :-
     s -> Variable{x} with typeOfDecl t,
@@ -30,3 +38,13 @@ rules // variables
     query typeOfDecl filter P* and { Variable{x'} :- x' == x }
                      min $ < P
                      in s |-> [_].
+
+  noDuplicateVarDefsInSuper : scope * string
+  noDuplicateVarDefsInSuper(s_sub, x) :-
+    query typeOfDecl filter P* INHERIT* and { Variable{x'} :- x' == x }
+                     min $ < P, $ < INHERIT, P < INHERIT
+                     in s_sub |-> [_].
+
+  getVariableType : scope * string -> TYPE
+  getVariableType(s, x) = t :-
+    typeOfDecl of Variable{x} in s |-> [(_, (_, t))|_] | error $[Variable [x] is not defined].

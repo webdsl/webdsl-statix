@@ -185,3 +185,7 @@ rules // utils
   inequalType : TYPE * TYPE
   inequalType(T, T) :- false.
   inequalType(_, _).
+
+  equalType : TYPE * TYPE
+  equalType(T, T).
+  equalType(_, _) :- false.

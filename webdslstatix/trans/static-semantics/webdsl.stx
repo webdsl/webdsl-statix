@@ -30,8 +30,8 @@ signature
       IMPORT  // import edge label for importing the global scope and other modules
     resolve
       Entity
-      filter P* IMPORT*
-      min $ < P, $ < IMPORT, P < IMPORT
+      filter P* INHERIT* IMPORT*
+      min $ < P, $ < INHERIT, $ < IMPORT, P < INHERIT, P < IMPORT, INHERIT < IMPORT
     resolve
       Function
       filter P* INHERIT* IMPORT*

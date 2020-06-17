@@ -1,16 +1,19 @@
-application MaxTest
+application variable_references
 
   var a : Ent1 := b
   var b : Ent1 := a
   var c : Ent1 := c
 
-  var other : Ent1
+  var d : Ent1 := Ent1{}
+  var d : Ent1 := Ent1{}
+
+  var other : Ent1 := Ent1{}
 
   entity Ent1 {
     name   : String
     name2  : String // error: Property 'name2' of entity 'Ent1' is defined multiple times
     name2  : String // error: Property 'name2' of entity 'Ent1' is defined multiple times
-    name3  : String // error: Property 'name3' of entity 'Ent1' is defined multiple times
+    name3  : String
     others : List<Ent1>
   }
 
@@ -22,7 +25,7 @@ application MaxTest
       var other : Ent1; // error: Variable 'other' is already defined in this context
       var x : String := "asd";
 
-      var int2 : Int := int1; // error: Variable 'int1' not defined 
+      var int2 : Int := int1; // error: Variable 'int1' is not defined 
       var int1 : Int := int2;
 
       int1 := int1 + int1;
