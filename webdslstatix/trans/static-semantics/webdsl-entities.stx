@@ -33,22 +33,22 @@ rules // entity body declaration
   declEntityBody maps declEntityBodyDeclaration(*, list(*))
 
   declEntityBodyDeclaration(s, Property(x, propkind, sort, annos)) :- {sortType}
-    sortType == typeOfSort(s, sort),
-    sortType != UNTYPED() | error $[Cannot resolve type [sort]] @sort,
-    sortType != NULL() | error $[Property type 'Null' not allowed] @sort,
-    sortType != VOID() | error $[Property type 'Void' not allowed] @sort,
-    sortType != REF(_) | error $[Reference type is not allowed in property] @sort,
+    sortType == typeOfSort(s, sort), // Used predicate inequalType here instead of sortType != ... to improve error messages (enforce which constraint fails)
+    inequalType(sortType, UNTYPED()) | error $[Cannot resolve type [sort]] @sort,
+    inequalType(sortType, NULL()) | error $[Property type 'Null' not allowed] @sort,
+    inequalType(sortType, VOID()) | error $[Property type 'Void' not allowed] @sort,
+    inequalType(sortType, REF(_)) | error $[Reference type is not allowed in property] @sort,
     x != "id"       | error $[Cannot override the builtin property [x]] @x,
     x != "version"  | error $[Cannot override the builtin property [x]] @x,
     x != "created"  | error $[Cannot override the builtin property [x]] @x,
     x != "modified" | error $[Cannot override the builtin property [x]] @x,
     x != "class"    | error $[Cannot override the builtin property [x]] @x,
-    isValidTypeForPropKind(propkind, sort, sortType).
+    isValidTypeForPropKind(propkind, sort, typeOfSort(s, sort)).
     // TO-DO: declare `x` in scope `s` with typeOfDecl `sortType`
 
   isValidTypeForPropKind : PropKind * Sort * TYPE
   isValidTypeForPropKind(Simple(), sort, sortType) :-
-    isSimpleType(sortType) == TRUE() | error $[Expected simple type] @sort.
+    isSimpleType(sortType) | error $[Expected simple type] @sort.
 
   isValidTypeForPropKind(Ref(), _, ENTITY(_)).
   isValidTypeForPropKind(Ref(), _, LIST(ENTITY(_))).
@@ -66,7 +66,7 @@ rules // entity body declaration
   isValidTypeForPropKind(AnyProp(), _, LIST(ENTITY(_))).
   isValidTypeForPropKind(AnyProp(), _, SET(ENTITY(_))).
   isValidTypeForPropKind(AnyProp(), sort, sortType) :-
-    isSimpleType(sortType) == TRUE() | error $[Expected simple type or entity type or a collection of an entity type] @sort.
+    isSimpleType(sortType) | error $[Expected simple type or entity type or a collection of an entity type] @sort.
 
 rules // entity resolving
 

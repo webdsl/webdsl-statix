@@ -139,37 +139,39 @@ rules // map sorts to semantic types
   typeOfSort(s, GenericSort(_, _)) = UNTYPED() :- false | error $[Only lists and sets with one type parameter are supported].
   typeOfSort(s, GenericSort("Set", [innerSort])) = SET(typeOfSort(s, innerSort)).
 
+  typeOfSort(s, RefSort(innerSort)) = REF(typeOfSort(s, innerSort)).
+
 rules // WebDSL definition of being a simple type: built-in simple sort (no generics, no ref, no entity etc)
 
-  isSimpleType: TYPE -> BOOL
-  isSimpleType(_) = FALSE(). // false by default
+  isSimpleType: TYPE
+  isSimpleType(_) :- false. // not a simple type by default
 
-  isSimpleType(INT()) = TRUE().
-  isSimpleType(FLOAT()) = TRUE().
-  isSimpleType(LONG()) = TRUE().
+  isSimpleType(INT()).
+  isSimpleType(FLOAT()).
+  isSimpleType(LONG()).
 
-  isSimpleType(STRING()) = TRUE().
-  isSimpleType(SECRET()) = TRUE().
-  isSimpleType(EMAIL()) = TRUE().
-  isSimpleType(URL()) = TRUE().
-  isSimpleType(WIKITEXT()) = TRUE().
-  isSimpleType(TEXT()) = TRUE().
-  isSimpleType(PATCH()) = TRUE().
-  isSimpleType(PLACEHOLDER()) = TRUE().
+  isSimpleType(STRING()).
+  isSimpleType(SECRET()).
+  isSimpleType(EMAIL()).
+  isSimpleType(URL()).
+  isSimpleType(WIKITEXT()).
+  isSimpleType(TEXT()).
+  isSimpleType(PATCH()).
+  isSimpleType(PLACEHOLDER()).
 
-  isSimpleType(DATE()) = TRUE().
-  isSimpleType(DATETIME()) = TRUE().
-  isSimpleType(TIME()) = TRUE().
+  isSimpleType(DATE()).
+  isSimpleType(DATETIME()).
+  isSimpleType(TIME()).
 
-  isSimpleType(REGEX()) = TRUE().
-  isSimpleType(BOOL()) = TRUE().
-  isSimpleType(VOID()) = TRUE().
-  isSimpleType(UUID()) = TRUE().
-  isSimpleType(FILE()) = TRUE().
-  isSimpleType(IMAGE()) = TRUE().
-  isSimpleType(OBJECT()) = TRUE().
+  isSimpleType(REGEX()).
+  isSimpleType(BOOL()).
+  isSimpleType(VOID()).
+  isSimpleType(UUID()).
+  isSimpleType(FILE()).
+  isSimpleType(IMAGE()).
+  isSimpleType(OBJECT()).
 
-  isSimpleType(NULL()) = TRUE().
+  isSimpleType(NULL()).
 
 rules // resolve entity references
 
@@ -177,3 +179,9 @@ rules // resolve entity references
   getEntityType(s, entity) = entity_type :-
     typeOfDecl of Entity{entity} in s |-> [(_, (_, entity_type))]
         | error $[Entity [entity] is not defined].
+
+rules // utils
+
+  inequalType : TYPE * TYPE
+  inequalType(T, T) :- false.
+  inequalType(_, _).
