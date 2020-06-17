@@ -24,7 +24,10 @@ signature
     Variable : string
 
   name-resolution
-    labels P INHERIT IMPORT
+    labels
+      P       // parent edge label for embedding functions in entities
+      INHERIT // inherit edge label for subclasses and embedding functions in entities
+      IMPORT  // import edge label for importing the global scope and other modules
     resolve
       Entity
       filter P* IMPORT*

@@ -10,7 +10,6 @@ context-free sorts
 
 context-free syntax
 
-  Definition.GlobalsDefinition = "globals" "{" GlobalsDef* "}" {prefer, deprecated("'globals{ }' block is no longer necessary around global variables and functions")}
   Definition.Entity = "entity" Id ":" Id "{" EntityBodyDeclaration* "}" 
   Definition.EntityNoSuper = "entity" Id "{" EntityBodyDeclaration* "}" 
   Definition.SessionEntity = "session" Id "{" EntityBodyDeclaration* "}" 
@@ -26,20 +25,16 @@ context-free restrictions
 
 context-free sorts
 
-  Sort Annotation GlobalsDef GlobalVarDecl
+  Sort Annotation GlobalVarDecl
 
 context-free syntax
 
   GlobalVarDecl.GlobalVarDecl = "var" Id ":" Sort 
   GlobalVarDecl.GlobalVarDeclInit = "var" Id ":" Sort ":=" Exp 
   GlobalVarDecl.GlobalVarDeclInitInferred = "var" Id ":=" Exp 
-  GlobalVarDecl.GlobalVarDeclDepr = "var" Id ":" Sort ";" {deprecated("remove ';' from global variable declaration")}
-  GlobalVarDecl.GlobalVarDeclInitDepr = "var" Id ":" Sort ":=" Exp ";" {deprecated("remove ';' from global variable declaration")}
-  GlobalVarDecl.GlobalVarDeclInitInferredDepr = "var" Id ":=" Exp ";" {deprecated("remove ';' from global variable declaration")}
   Definition.RequestScope = "request" GlobalVarDecl 
-  GlobalsDef = GlobalVarDecl 
-  GlobalsDef = Function 
-  Definition = GlobalsDef 
+  Definition = GlobalVarDecl
+  Definition.GlobalFunction = Function
 
 context-free sorts
 

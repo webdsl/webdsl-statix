@@ -4,10 +4,29 @@ imports
   static-semantics/actions/binops
   static-semantics/webdsl
 
-rules
+rules // functions
 
-  defOk(s, GlobalsDef2Definition(Function2GlobalsDef(Function(_, args, returntype, Block(stmts))))) :-
-    stmtsOk(s, stmts).
+  defOk(s, GlobalFunction(f)) :- functionOk(s, f).
+
+  functionOk : scope * Function
+  functionOk(s, Function(_, args, returntype, Block(stmts))) :- {s_function}
+    new s_function, s_function -INHERIT-> s,
+    stmtsOk(s_function, stmts).
+
+rules // statements
 
   stmtOk(s, Stat(exp)) :-
     expOk(s, exp).
+
+rules // variables
+
+  declVar : scope * string * TYPE
+  declVar(s, x, t) :-
+    s -> Variable{x} with typeOfDecl t,
+    noDuplicateVarDefs(s, x) | error $[Duplicate defition of [x] in this context].
+
+  noDuplicateVarDefs : scope * string
+  noDuplicateVarDefs(s, x) :-
+    query typeOfDecl filter P* and { Variable{x'} :- x' == x }
+                     min $ < P
+                     in s |-> [_].

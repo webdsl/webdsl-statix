@@ -16,10 +16,10 @@ context-free syntax
   OptSort.OptSortNone = <>
   OptSort = ":" Sort
   EntityBodyDeclaration.CachedFunction = "cached" Function 
-  GlobalsDef.CachedGlobalFunction = "cached" Function 
+  Definition.CachedGlobalFunction = "cached" Function 
   ExtendFunction.ExtendFunction = "extend" Function 
   EntityBodyDeclaration = ExtendFunction 
-  GlobalsDef = ExtendFunction 
+  Definition.ExtendGlobalFunction = ExtendFunction 
   StaticEntityFunction.StaticEntityFunction = "static" "function" Id OptFormalArgs ReturnType Block 
   ReturnType.ReturnType = ":" Sort
   ReturnType.ReturnTypeNone = <>

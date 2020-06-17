@@ -1,6 +1,7 @@
 module static-semantics/webdsl-entities
 
 imports
+  static-semantics/webdsl-actions
   static-semantics/webdsl-types
   static-semantics/webdsl
 
@@ -43,8 +44,8 @@ rules // entity body declaration
     x != "created"  | error $[Cannot override the builtin property [x]] @x,
     x != "modified" | error $[Cannot override the builtin property [x]] @x,
     x != "class"    | error $[Cannot override the builtin property [x]] @x,
-    isValidTypeForPropKind(propkind, sort, typeOfSort(s, sort)).
-    // TO-DO: declare `x` in scope `s` with typeOfDecl `sortType`
+    isValidTypeForPropKind(propkind, sort, typeOfSort(s, sort)),
+    declVar(s, x, sortType).
 
   isValidTypeForPropKind : PropKind * Sort * TYPE
   isValidTypeForPropKind(Simple(), sort, sortType) :-
