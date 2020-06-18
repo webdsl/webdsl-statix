@@ -7,26 +7,45 @@ imports
 
 rules // functions
 
-  defOk(s, GlobalFunction(f)) :- functionOk(s, f).
+  defOk(s, GlobalFunction(f)) :- {s_function}
+    new s_function, s_function -IMPORT-> s,
+    functionOk(s_function, f).
+
+  defOk(s, ExtendGlobalFunction(f)) :- {s_function}
+    new s_function, s_function -IMPORT-> s,
+    functionOk(s_function, f).
 
   functionOk : scope * Function
-  functionOk(s, Function(_, args, returntype, Block(stmts))) :- {s_function}
-    new s_function, s_function -INHERIT-> s,
-    stmtsOk(s_function, stmts).
+  functionOk(s_function, Function(_, FormalArgs(args), returntype, Block(stmts))) :- {s_body}
+    declArgs(s_function, args),
+    new s_body, s_body -P-> s_function,
+    stmtsOk(s_body, stmts).
+
+  declArgs maps declArg(*, list(*))
+  declArg : scope * FormalArg
+  declArg(s, Arg(x, sort)) :- {t}
+    t == typeOfSort(s, sort),
+    inequalType(t, UNTYPED()) | error $[Unknown type [sort]],
+    declVar(s, x, t).
 
 rules // statements
 
   stmtOk(s, Stat(exp)) :-
     expOk(s, exp).
 
+  stmtOk(s, VarDeclInit(x, sort, exp)) :- {t}
+    t == typeOfSort(s, sort),
+    equalType(t, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [sort]] @exp,
+    declVar(s, x, t).
+
 rules // variables
 
-  typeOfExp(s, Var(Id2VarId(x))) = getVariableType(s, x).
+  typeOfExp(s, Var(x)) = getVariableType(s, x).
 
-  defOk(s, GlobalVarDecl2Definition(GlobalVarDeclInit(x, sort, exp))) :- {sortType}
-    sortType == typeOfSort(s, sort),
-    equalType(sortType, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [sort]],
-    declVar(s, x, sortType).
+  defOk(s, GlobalVarDecl2Definition(GlobalVarDeclInit(x, sort, exp))) :- {t}
+    t == typeOfSort(s, sort),
+    equalType(t, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [sort]],
+    declVar(s, x, t).
 
   declVar : scope * string * TYPE
   declVar(s, x, t) :-
@@ -44,7 +63,3 @@ rules // variables
     query typeOfDecl filter P* INHERIT* and { Variable{x'} :- x' == x }
                      min $ < P, $ < INHERIT, P < INHERIT
                      in s_sub |-> [_].
-
-  getVariableType : scope * string -> TYPE
-  getVariableType(s, x) = t :-
-    typeOfDecl of Variable{x} in s |-> [(_, (_, t))|_] | error $[Variable [x] is not defined].
