@@ -1,0 +1,12 @@
+routing {
+  receive (list : [String])  {
+    var x := list[1];
+    var args : List<String> := urlComponents();
+    var conf := from ConferenceMapping where domain = x; 
+    return [page,conf.conference.id];
+  }
+  construct  (appurl : String, page : String, args : [String])  {
+    return [appurl,page,args[0]];
+  }
+}
+

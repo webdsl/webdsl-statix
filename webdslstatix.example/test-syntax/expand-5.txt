@@ -1,0 +1,6 @@
+page root {
+  var list := [ expand foo bar y to x { "x" } ]
+  var set  := { expand foo bar y to x { "x" } }
+  div[ expand foo bar y to x { class = "x" } ]
+  <div expand foo bar y to x { class = "x" } ></div>
+}

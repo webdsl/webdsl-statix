@@ -4,7 +4,7 @@ application test
 
 section functions
 
-// globals {
+globals {
   function f(i : Int) : Void {
     var a : Bool := true;
     var b : Bool := true;
@@ -14,4 +14,4 @@ section functions
       var z : Int := 2;
     }
   }
-// }
+}

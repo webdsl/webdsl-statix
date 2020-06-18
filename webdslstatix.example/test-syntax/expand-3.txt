@@ -1,0 +1,9 @@
+expandtemplate mult to first second third fourth {
+  template first(){
+    "first"
+    "second"
+    "third"
+    var fourth := "fourth"
+    output( fourth )
+  }
+}
