@@ -6,7 +6,7 @@ imports
 rules
 
   normalize-ui : DefineEmail(_, x, fargs, targs, telements) -> Define([Email()], x, fargs, targs, telements)
-  normalize-ui : OptFormalArgsNone() -> []
+  normalize-ui : OptFormalArgsNone() -> FormalArgs([])
   normalize-ui : OptTCallArgsNone() -> []
   normalize-ui : OptTCallPropAssignsNone() -> []
   normalize-ui : TemplateBodyNone() -> TemplateBody([])

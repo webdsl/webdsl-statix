@@ -13,8 +13,6 @@ context-free syntax
   Definition.Entity = "entity" Id ":" Id "{" EntityBodyDeclaration* "}" 
   Definition.EntityNoSuper = "entity" Id "{" EntityBodyDeclaration* "}" 
   Definition.SessionEntity = "session" Id "{" EntityBodyDeclaration* "}" 
-  EntityBodyDeclaration = Function 
-  EntityBodyDeclaration = StaticEntityFunction 
   EntityBodyDeclaration.CachedEntity = "cache" 
   Definition.ExtendEntity = "extend" "entity" Id "{" EntityBodyDeclaration* "}" 
   Definition.ExtendSessionEntity = "extend" "session" Id "{" EntityBodyDeclaration* "}" 

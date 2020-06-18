@@ -6,8 +6,7 @@ imports
 
 context-free sorts
 
-  QId FormalArg OptFormalArgs FunctionSortParams Arg
-  FunctionSortParam FunctionSortReturn
+  QId FormalArg OptFormalArgs FunctionSortParams FunctionSortParam FunctionSortReturn
 
 context-free syntax
 
@@ -27,13 +26,12 @@ context-free syntax %% Types
   %% function type; optionally specify (named) args and return type
   FunctionSortParams = "(" {FunctionSortParam ","}* ")"
   FunctionSortParams.FunctionSortParamsNone = <>
-  FunctionSortParam.UnnamedArg = Sort 
-  Arg.Arg = Id ":" Sort
-  FunctionSortParam = Arg
+  FunctionSortParam.UnnamedArg = Sort
+  FunctionSortParam.NamedArg = Id ":" Sort
   FunctionSortReturn = ":" Sort
   FunctionSortReturn.FunctionSortReturnNone = <>
-  FormalArg = Arg
-  OptFormalArgs = "(" {FormalArg ","}* ")"
+  FormalArg.Arg = Id ":" Sort
+  OptFormalArgs.FormalArgs = "(" {FormalArg ","}* ")"
   OptFormalArgs.OptFormalArgsNone = <>
 
 lexical sorts

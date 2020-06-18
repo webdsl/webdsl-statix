@@ -285,7 +285,10 @@ context-free sorts
 context-free syntax
 
   TemplateId.TemplateId = "id" 
-  Exp = TemplateId 
+  Exp = TemplateId
+
+lexical syntax
+
   VarId = "id" {reject}
 
 context-free restrictions

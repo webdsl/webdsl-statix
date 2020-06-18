@@ -8,19 +8,19 @@ imports
 
 context-free sorts
 
-  OptSort Block Function ExtendFunction ReturnType StaticEntityFunction
+  OptSort Block Function ReturnType
 
 context-free syntax
 
   Function.Function = "function" Id OptFormalArgs OptSort Block
   OptSort.OptSortNone = <>
-  OptSort = ":" Sort
-  EntityBodyDeclaration.CachedFunction = "cached" Function 
-  Definition.CachedGlobalFunction = "cached" Function 
-  ExtendFunction.ExtendFunction = "extend" Function 
-  EntityBodyDeclaration = ExtendFunction 
-  Definition.ExtendGlobalFunction = ExtendFunction 
-  StaticEntityFunction.StaticEntityFunction = "static" "function" Id OptFormalArgs ReturnType Block 
+  OptSort.OptSortSome = ":" Sort
+  Definition.CachedGlobalFunction = "cached" Function
+  Definition.ExtendGlobalFunction = "extend" Function
+  EntityBodyDeclaration.EntityFunction = Function
+  EntityBodyDeclaration.CachedFunction = "cached" Function
+  EntityBodyDeclaration.ExtendFunction = "extend" Function
+  EntityBodyDeclaration.StaticEntityFunction = "static" Function
   ReturnType.ReturnType = ":" Sort
   ReturnType.ReturnTypeNone = <>
 
@@ -49,16 +49,11 @@ context-free syntax
   Statement.Schedule = "schedule" Exp "for" Exp ";" 
   Statement.ScheduleNoFor = "schedule" Exp ";" 
 
-context-free sorts
-
-  VarDeclStat
-
 context-free syntax
 
-  VarDeclStat.VarDecl = "var" Id ":" Sort ";" 
-  VarDeclStat.VarDeclInit = "var" Id ":" Sort ":=" Exp ";" 
-  VarDeclStat.VarDeclInitInferred = "var" Id ":=" Exp ";" 
-  Statement = VarDeclStat 
+  Statement.VarDecl = "var" Id ":" Sort ";"
+  Statement.VarDeclInit = "var" Id ":" Sort ":=" Exp ";"
+  Statement.VarDeclInitInferred = "var" Id ":=" Exp ";"
 
 context-free sorts
 
@@ -93,7 +88,7 @@ context-free syntax
 
 context-free sorts
 
-  ConstValue Exp VarId ObjectCreation ObjectPropertyAssignment Assignment Mapping
+  ConstValue Exp ObjectCreation ObjectPropertyAssignment Assignment Mapping
 
 context-free syntax
 
@@ -102,8 +97,7 @@ context-free syntax
   ConstValue.Float = Float 
   ConstValue = StringValue
   Exp = ConstValue 
-  Exp.Var = VarId // TO-DO: rewrite varId to lexical
-  VarId = Id 
+  Exp.Var = VarId
   SimpleVar.SimpleVar = VarId
   Exp = "in" {reject}
   Exp.GlobalVar = "global" "." Id {prefer}
