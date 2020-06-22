@@ -5,11 +5,11 @@ imports
   static-semantics/webdsl-types
   static-semantics/webdsl
 
-rules // entity declaration 
+rules // entity declaration
 
   // entity x : super { ... }
   defOk(s_global, Entity(x, super, bodydecs)) :- {s_entity s_super entity_scopes}
-    typeOfDecl of Entity{super} in s_global |-> [(_, (_, ENTITY(s_super)))] | error $[Entity [super] is not defined],
+    typeOfDecl of Entity{super} in s_global |-> [(_, (_, ENTITY(s_super)))] | error $[Entity [super] is not defined] @super,
     new s_entity, s_entity -INHERIT-> s_super,
     declEntity(s_global, s_entity, x, bodydecs).
 
@@ -26,8 +26,8 @@ rules // entity declaration
   declEntity : scope * scope * string * list(EntityBodyDeclaration)
   declEntity(s_global, s_entity, entity_name, bodydecs) :- {entity_scopes}
     validEntityName(s_entity, entity_name),
-    s_global -> Entity{entity_name} with entity s_entity, // declare entity scope linked to entity name for entity extensions
-    entity of Entity{entity_name} in s_global |-> entity_scopes, // get all other linked scopes to this name
+    s_global -> ExtendEntity{entity_name} with entity s_entity, // declare entity scope linked to entity name for entity extensions
+    entity of ExtendEntity{entity_name} in s_global |-> entity_scopes, // get all other linked scopes to this name
     extendEntityScopes(entity_scopes, s_entity),
     s_global -> Entity{entity_name} with typeOfDecl ENTITY(s_entity),
     typeOfDecl of Entity{entity_name} in s_global |-> [(_, (_, ENTITY(s_entity)))] | error $[Entity [entity_name] is defined multiple times] @entity_name,
@@ -54,8 +54,8 @@ rules // entity declaration
   declExtendEntity(s_global, entity_name, bodydecs) :- {s_extend_entity entity_scopes}
     typeOfDecl of Entity{entity_name} in s_global |-> [(_, (_, ENTITY(_)))] | error $[Entity [entity_name] is not defined],
     new s_extend_entity,
-    s_global -> Entity{entity_name} with entity s_extend_entity, // declare entity scope linked to entity name for entity extensions
-    entity of Entity{entity_name} in s_global |-> entity_scopes, // get all other linked scopes to this name
+    s_global -> ExtendEntity{entity_name} with entity s_extend_entity, // declare entity scope linked to entity name for entity extensions
+    entity of ExtendEntity{entity_name} in s_global |-> entity_scopes, // get all other linked scopes to this name
     extendEntityScopes(entity_scopes, s_extend_entity),
     declEntityBody(s_extend_entity, bodydecs).
 

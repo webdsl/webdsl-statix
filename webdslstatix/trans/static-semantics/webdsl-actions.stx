@@ -82,5 +82,5 @@ rules // variables
   noDuplicateVarDefsInSuper : scope * string
   noDuplicateVarDefsInSuper(s_sub, x) :-
     query typeOfDecl filter EXTEND? (INHERIT EXTEND?)* and { Variable{x'} :- x' == x }
-                     min $ < P, $ < INHERIT, P < INHERIT
+                     min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
                      in s_sub |-> [_].

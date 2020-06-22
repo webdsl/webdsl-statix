@@ -21,7 +21,7 @@ context-free syntax
   EntityBodyDeclaration.CachedFunction = "cached" Function
   EntityBodyDeclaration.ExtendFunction = "extend" Function
   EntityBodyDeclaration.StaticEntityFunction = "static" Function
-  ReturnType.ReturnType = ":" Sort
+  ReturnType.ReturnTypeSome = ":" Sort
   ReturnType.ReturnTypeNone = <>
 
 context-free sorts
@@ -65,7 +65,7 @@ context-free syntax
   Statement.IfNoElse = "if" "(" Exp ")" Block 
   Statement.IfWithElseIf = "if" "(" Exp ")" Block ElseIfStatement+ OptElse 
   ElseIfStatement.ElseIf = "else" "if" "(" Exp ")" Block 
-  OptElse = "else" Block
+  OptElse.OptElseSome = "else" Block
   OptElse.OptElseNone = <>
   Statement.CaseStmt = "case" "(" {Exp ","}+ ")" "{" Case* "}" 
   Case.CaseStmtAlt = {Exp ","}+ Block 

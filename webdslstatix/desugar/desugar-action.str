@@ -5,9 +5,9 @@ imports
 
 rules
 
-  normalize-action : OptSortNone() -> SimpleSort("Void")
-  normalize-action : ReturnTypeNone() -> ReturnType(SimpleSort("Void"))
-  normalize-action : OptElseNone() -> Block([])
+  normalize-action : OptSortNone() -> OptSortSome(SimpleSort("Void"))
+  normalize-action : ReturnTypeNone() -> ReturnTypeSome(SimpleSort("Void"))
+  normalize-action : OptElseNone() -> OptElseSome(Block([]))
   normalize-action : ForExpAlt(x, sort, exp, filter, groupby) -> ForExp(Var(x), x, sort, exp, filter, groupby)
   normalize-action : GoToAlt(pagecall) -> GoTo(pagecall)
   normalize-action : ObjectCreationAlt(sort, assignments) -> ObjectCreation(sort, assignments)
