@@ -23,15 +23,16 @@ context-free restrictions
 
 context-free sorts
 
-  Sort Annotation GlobalVarDecl
+  Sort Annotation
 
 context-free syntax
 
-  GlobalVarDecl.GlobalVarDecl = "var" Id ":" Sort 
-  GlobalVarDecl.GlobalVarDeclInit = "var" Id ":" Sort ":=" Exp 
-  GlobalVarDecl.GlobalVarDeclInitInferred = "var" Id ":=" Exp 
-  Definition.RequestScope = "request" GlobalVarDecl 
-  Definition = GlobalVarDecl
+  Definition.GlobalVarDecl = "var" Id ":" Sort
+  Definition.GlobalVarDeclInit = "var" Id ":" Sort ":=" Exp 
+  Definition.GlobalVarDeclInitInferred = "var" Id ":=" Exp
+  Definition.RequestVarDecl = "request" "var" Id ":" Sort
+  Definition.RequestVarDeclInit = "request" "var" Id ":" Sort ":=" Exp
+  Definition.RequestVarDeclInitInferred = "request" "var" Id ":=" Exp
   Definition.GlobalFunction = Function
 
 context-free sorts

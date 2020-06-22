@@ -88,7 +88,7 @@ context-free syntax
 
 context-free sorts
 
-  ConstValue Exp ObjectCreation ObjectPropertyAssignment Assignment Mapping
+  ConstValue Exp ObjectCreation ObjectPropertyAssignment Mapping
 
 context-free syntax
 
@@ -109,8 +109,7 @@ context-free syntax
   Exp = ObjectCreation 
   ObjectPropertyAssignment.ObjectPropertyAssignment = Id ":=" Exp 
   ObjectPropertyAssignment.IncompleteObjectPropertyAssignment = Id 
-  Assignment.Assignment = Exp ":=" Exp 
-  Exp = Assignment // TO-DO: is this necessary having assignments as exp?
+  Statement.Assignment = Exp ":=" Exp ";"
   Exp.MapCreation = "[" Mapping* "]" {avoid}
   Mapping.Mapping = Exp "->" Exp 
   Exp.ListCreation = "[" {Exp ","}* "]" 
@@ -199,7 +198,6 @@ context-free priorities
     Exp.SmallerThanOrEqual } > 
   {left : Exp.And } > 
   {left : Exp.Or } > 
-  { Assignment.Assignment } > 
   Exp.IfExp
 
 context-free sorts

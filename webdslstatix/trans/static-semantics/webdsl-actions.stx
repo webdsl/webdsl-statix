@@ -38,13 +38,34 @@ rules // statements
     equalType(t, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [sort]] @exp,
     declVar(s, x, t).
 
+  stmtOk(s, Assignment(_, exp)) :- false | error $[Left-hand side of assignment should be a variable].
+  stmtOk(s, Assignment(Var(x), exp)) :- {varType}
+    varType == getVariableType(s, x),
+    equalType(varType, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [varType]].
+
+  stmtOk(s, If(c, Block(then), Block(else))) :- {s_then s_else}
+    equalType(typeOfExp(s, c), BOOL()) | error $[Condition should be of type bool],
+    new s_then, s_then -P-> s,
+    stmtsOk(s_then, then),
+    new s_else, s_else -P-> s,
+    stmtsOk(s_else, else).
+
 rules // variables
 
   typeOfExp(s, Var(x)) = getVariableType(s, x).
 
-  defOk(s, GlobalVarDecl2Definition(GlobalVarDeclInit(x, sort, exp))) :- {t}
+  defOk(s, GlobalVarDecl(x, sort)) :- {t}
+    t == typeOfSort(s, sort),
+    declVar(s, x, t).
+
+  defOk(s, GlobalVarDeclInit(x, sort, exp)) :- {t}
     t == typeOfSort(s, sort),
     equalType(t, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [sort]],
+    declVar(s, x, t).
+
+  defOk(s, GlobalVarDeclInitInferred(x, exp)) :- {t}
+    t == typeOfExp(s, exp),
+    inequalType(t, UNTYPED()) | error $[Cannot resolve type of expression [exp]],
     declVar(s, x, t).
 
   declVar : scope * string * TYPE
