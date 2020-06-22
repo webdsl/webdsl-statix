@@ -143,35 +143,35 @@ rules // map sorts to semantic types
 
 rules // WebDSL definition of being a simple type: built-in simple sort (no generics, no ref, no entity etc)
 
-  isSimpleType: TYPE
-  isSimpleType(_) :- false. // not a simple type by default
+  isSimpleType: TYPE -> BOOL
+  isSimpleType(_) = FALSE(). // not a simple type by default
 
-  isSimpleType(INT()).
-  isSimpleType(FLOAT()).
-  isSimpleType(LONG()).
+  isSimpleType(INT()) = TRUE().
+  isSimpleType(FLOAT()) = TRUE().
+  isSimpleType(LONG()) = TRUE().
 
-  isSimpleType(STRING()).
-  isSimpleType(SECRET()).
-  isSimpleType(EMAIL()).
-  isSimpleType(URL()).
-  isSimpleType(WIKITEXT()).
-  isSimpleType(TEXT()).
-  isSimpleType(PATCH()).
-  isSimpleType(PLACEHOLDER()).
+  isSimpleType(STRING()) = TRUE().
+  isSimpleType(SECRET()) = TRUE().
+  isSimpleType(EMAIL()) = TRUE().
+  isSimpleType(URL()) = TRUE().
+  isSimpleType(WIKITEXT()) = TRUE().
+  isSimpleType(TEXT()) = TRUE().
+  isSimpleType(PATCH()) = TRUE().
+  isSimpleType(PLACEHOLDER()) = TRUE().
 
-  isSimpleType(DATE()).
-  isSimpleType(DATETIME()).
-  isSimpleType(TIME()).
+  isSimpleType(DATE()) = TRUE().
+  isSimpleType(DATETIME()) = TRUE().
+  isSimpleType(TIME()) = TRUE().
 
-  isSimpleType(REGEX()).
-  isSimpleType(BOOL()).
-  isSimpleType(VOID()).
-  isSimpleType(UUID()).
-  isSimpleType(FILE()).
-  isSimpleType(IMAGE()).
-  isSimpleType(OBJECT()).
+  isSimpleType(REGEX()) = TRUE().
+  isSimpleType(BOOL()) = TRUE().
+  isSimpleType(VOID()) = TRUE().
+  isSimpleType(UUID()) = TRUE().
+  isSimpleType(FILE()) = TRUE().
+  isSimpleType(IMAGE()) = TRUE().
+  isSimpleType(OBJECT()) = TRUE().
 
-  isSimpleType(NULL()).
+  isSimpleType(NULL()) = TRUE().
 
 rules // resolve reference types
 

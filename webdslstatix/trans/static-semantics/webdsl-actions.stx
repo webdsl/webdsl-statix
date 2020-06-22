@@ -8,11 +8,11 @@ imports
 rules // functions
 
   defOk(s, GlobalFunction(f)) :- {s_function}
-    new s_function, s_function -IMPORT-> s,
+    new s_function, s_function -F-> s,
     functionOk(s_function, f).
 
   defOk(s, ExtendGlobalFunction(f)) :- {s_function}
-    new s_function, s_function -IMPORT-> s,
+    new s_function, s_function -F-> s,
     functionOk(s_function, f).
 
   functionOk : scope * Function
@@ -81,6 +81,6 @@ rules // variables
 
   noDuplicateVarDefsInSuper : scope * string
   noDuplicateVarDefsInSuper(s_sub, x) :-
-    query typeOfDecl filter P* INHERIT* and { Variable{x'} :- x' == x }
+    query typeOfDecl filter EXTEND? (INHERIT EXTEND?)* and { Variable{x'} :- x' == x }
                      min $ < P, $ < INHERIT, P < INHERIT
                      in s_sub |-> [_].

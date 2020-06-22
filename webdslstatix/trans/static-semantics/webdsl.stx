@@ -20,29 +20,33 @@ signature
 
   namespaces
     Entity : string
+    ExtendEntity : string
     Function : string
     Variable : string
 
   name-resolution
     labels
-      P       // parent edge label for embedding functions in entities
-      INHERIT // inherit edge label for subclasses and embedding functions in entities
+      P       // parent edge label for consecutive statements
+      F       // function edge label for embedding functions in a scope
+      EXTEND  // extend edge label for extending entities
+      INHERIT // inherit edge label for subclasses
       IMPORT  // import edge label for importing the global scope and other modules
     resolve
       Entity
-      filter P* INHERIT* IMPORT*
-      min $ < P, $ < INHERIT, $ < IMPORT, P < INHERIT, P < IMPORT, INHERIT < IMPORT
+      filter P* F* EXTEND* INHERIT* IMPORT*
+      min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
     resolve
       Function
-      filter P* INHERIT* IMPORT*
-      min $ < P, $ < INHERIT, $ < IMPORT, P < INHERIT, P < IMPORT, INHERIT < IMPORT
+      filter P* F* EXTEND* INHERIT* IMPORT*
+      min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
     resolve
       Variable
-      filter P* INHERIT* IMPORT*
-      min $ < P, $ < INHERIT, $ < IMPORT, P < INHERIT, P < IMPORT, INHERIT < IMPORT
+      filter P* F* EXTEND* INHERIT* IMPORT*
+      min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
 
   relations
     typeOfDecl : occurrence -> TYPE
+    entity : occurrence -> scope
 
 rules // application and module
 
@@ -57,8 +61,10 @@ rules // application and module
 rules // declare common rules and mappings
 
   sectionOk : scope * Section
-  sectionOk(_,_) :- false | error $[Sections are not yet implemented].
+  sectionOk(s,_) :- false | error $[Sections are not yet implemented].
   sectionsOk maps sectionOk(*, list(*))
+
+  sectionOk(s, Section(_, defs)) :- defsOk(s, defs).
 
   defOk : scope * Definition
   defOk(_,_) :- false | error $[This definition is not yet implemented].
@@ -93,3 +99,7 @@ rules // utils
   orB(_, _) = FALSE().
   orB(TRUE(), _) = TRUE().
   orB(FALSE(), TRUE()) = TRUE().
+
+  equalB : BOOL * BOOL
+  equalB(b, b).
+  equalB(_, _) :- false.
