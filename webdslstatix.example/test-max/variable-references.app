@@ -7,13 +7,13 @@ application variable_references
   var d : Ent1 := Ent1{}
   var d : Ent1 := Ent1{}
 
-  var other : Ent1
+  var other : Ent1 := Ent1{}
 
   entity Ent1 {
     name   : String
     name2  : String // error: Property 'name2' of entity 'Ent1' is defined multiple times
     name2  : String // error: Property 'name2' of entity 'Ent1' is defined multiple times
-    name3  : String // error: Property 'name3' of entity 'Ent1' is defined multiple times
+    name3  : String
     others : List<Ent1>
   }
 
@@ -39,7 +39,7 @@ application variable_references
         y := y + y;
       }
 
-      var z : String := x + y;  // error: Variable 'z' is already defined in this context
+      var z : String := x + y;  // error: Variable 'y' is not defined
       z := z + z;
       return other;
     }
