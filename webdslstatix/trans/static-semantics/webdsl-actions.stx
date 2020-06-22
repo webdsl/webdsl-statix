@@ -7,16 +7,15 @@ imports
 
 rules // functions
 
-  defOk(s, GlobalFunction(f)) :- {s_function}
-    new s_function, s_function -F-> s,
-    functionOk(s_function, f).
-
-  defOk(s, ExtendGlobalFunction(f)) :- {s_function}
-    new s_function, s_function -F-> s,
-    functionOk(s_function, f).
+  defOk(s, GlobalFunction(f)) :- functionOk(s, f).
+  defOk(s, ExtendGlobalFunction(f)) :- functionOk(s, f).
+  defOk(s, CachedGlobalFunction(f)) :-
+    canBeCached(s, f),
+    functionOk(s, f).
 
   functionOk : scope * Function
-  functionOk(s_function, Function(_, FormalArgs(args), returntype, Block(stmts))) :- {s_body}
+  functionOk(s_outer, Function(_, FormalArgs(args), returnSort, Block(stmts))) :- {s_function s_body}
+    new s_function, s_function -F-> s_outer,
     declArgs(s_function, args),
     new s_body, s_body -P-> s_function,
     stmtsOk(s_body, stmts).
@@ -25,8 +24,16 @@ rules // functions
   declArg : scope * FormalArg
   declArg(s, Arg(x, sort)) :- {t}
     t == typeOfSort(s, sort),
-    inequalType(t, UNTYPED()) | error $[Unknown type [sort]],
+    inequalType(t, UNTYPED()) | error $[Unknown type [sort]] @sort,
     declVar(s, x, t).
+
+  canBeCached : scope * Function
+  canBeCached(s, Function(function_name, FormalArgs([]), OptSortSome(returnSort), _)) :- 
+    inequalType(typeOfSort(s, returnSort), VOID())
+        | error $[Only functions that have a return type can be cached] @function_name.
+
+  canBeCached(s, Function(function_name, FormalArgs([_|_]), _, _)) :- false
+        | error $[Only functions without arguments can be cached] @function_name.
 
 rules // statements
 

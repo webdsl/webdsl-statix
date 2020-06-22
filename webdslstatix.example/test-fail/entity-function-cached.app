@@ -6,25 +6,30 @@ application test
   entity User{
     name :: String
     cached function test1(i : Int) : Bool{
-    	return true;
+      return true;
     }
-    cached function test1() {
-    	
+
+    cached function test2() {}
+    cached function test3() : String {
+      return "";
     }
   }
-  
+
   extend entity User{
 
-    cached function test2(i : Int) : Bool{
-    	return true;
+    cached function test4(i : Int) : Bool{
+      return true;
     }
-    cached function test2() {
-    	
+
+    cached function test5() {}
+
+    cached function test6() : List<String> {
+      return [""];
     }
   }
 
   define page root(){
-    var u:User := User{};
+    var u:User := User{}
     output(u.name)
    }
 
