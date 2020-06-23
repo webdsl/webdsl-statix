@@ -122,6 +122,7 @@ rules // map sorts to semantic types
   typeOfSort(_, SimpleSort("Time")) = TIME().
 
   typeOfSort(_, SimpleSort("Regex")) = REGEX().
+  typeOfSort(_, SimpleSort("Bool")) = BOOL().
   typeOfSort(_, SimpleSort("Void")) = VOID().
   typeOfSort(_, SimpleSort("UUID")) = UUID().
   typeOfSort(_, SimpleSort("TemplateElements")) = TEMPLATEELEMENTS().

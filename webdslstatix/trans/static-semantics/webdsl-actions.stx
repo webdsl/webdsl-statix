@@ -14,11 +14,12 @@ rules // functions
     functionOk(s, f).
 
   functionOk : scope * Function
-  functionOk(s_outer, Function(_, FormalArgs(args), returnSort, Block(stmts))) :- {s_function s_body}
+  functionOk(s_outer, Function(_, FormalArgs(args), OptSortSome(returnSort), Block(stmts))) :- {returnType s_function s_body}
+    returnType == typeOfSort(s_outer, returnSort),
     new s_function, s_function -F-> s_outer,
     declArgs(s_function, args),
     new s_body, s_body -P-> s_function,
-    stmtsOk(s_body, stmts).
+    stmtsOk(s_body, stmts, returnType).
 
   declArgs maps declArg(*, list(*))
   declArg : scope * FormalArg
@@ -37,25 +38,35 @@ rules // functions
 
 rules // statements
 
-  stmtOk(s, Stat(exp)) :-
+  stmtOk(s, Stat(exp), _) :-
     expOk(s, exp).
 
-  stmtOk(s, VarDeclInit(x, sort, exp)) :- {t}
+  stmtOk(s, VarDeclInit(x, sort, exp), _) :- {t}
     t == typeOfSort(s, sort),
     equalType(t, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [sort]] @exp,
     declVar(s, x, t).
 
-  stmtOk(s, Assignment(_, exp)) :- false | error $[Left-hand side of assignment should be a variable].
-  stmtOk(s, Assignment(Var(x), exp)) :- {varType}
+  stmtOk(s, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a variable].
+  stmtOk(s, Assignment(Var(x), exp), _) :- {varType}
     varType == getVariableType(s, x),
     equalType(varType, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [varType]].
 
-  stmtOk(s, If(c, Block(then), Block(else))) :- {s_then s_else}
+  stmtOk(s, If(c, Block(then), Block(else)), rt) :- {s_then s_else}
     equalType(typeOfExp(s, c), BOOL()) | error $[Condition should be of type bool],
     new s_then, s_then -P-> s,
-    stmtsOk(s_then, then),
+    stmtsOk(s_then, then, rt),
     new s_else, s_else -P-> s,
-    stmtsOk(s_else, else).
+    stmtsOk(s_else, else, rt).
+
+  stmtOk(s, r@Return(exp), returnType) :- {returnExpType}
+    inequalType(returnType, UNTYPED()) | error $[Return statement not allowed here] @r,
+    inequalType(returnType, VOID()) | error $[No return type specified in this context] @exp,
+    returnExpType == typeOfExp(s, exp),
+    equalType(returnExpType, returnType) | error $[Must return an expression of type [returnType], [returnExpType] given] @exp.
+
+  stmtOk(s, r@ReturnEmpty(), returnType) :-
+    inequalType(returnType, UNTYPED()) | error $[Return statement not allowed here] @r,
+    equalType(returnType, VOID()) | error $[Must return an expression of type [returnType]] @r.
 
 rules // variables
 
