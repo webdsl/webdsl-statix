@@ -129,7 +129,6 @@ rules // map sorts to semantic types
   typeOfSort(_, SimpleSort("Image")) = IMAGE().
   typeOfSort(_, SimpleSort("Object")) = OBJECT().
 
-  typeOfSort(_, SimpleSort("Null")) = NULL().
   typeOfSort(_, SimpleSort("Entity")) = ABSTRACTENTITY().
 
   // in case it's not a built in simple sort, it must be an entity

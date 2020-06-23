@@ -67,6 +67,7 @@ rules // entity body declaration
 
   // entity function
   declEntityBodyDeclaration(s, EntityFunction(f)) :- functionOk(s, f).
+  declEntityBodyDeclaration(s, StaticEntityFunction(f)) :- functionOk(s, f).
   declEntityBodyDeclaration(s, CachedFunction(f)) :-
     canBeCached(s, f),
     functionOk(s, f).
@@ -75,7 +76,6 @@ rules // entity body declaration
   declEntityBodyDeclaration(s, Property(x, propkind, sort, annos)) :- {sortType}
     sortType == typeOfSort(s, sort),
     inequalType(sortType, UNTYPED()) | error $[Cannot resolve type [sort]] @sort,
-    inequalType(sortType, NULL()) | error $[Property type 'Null' not allowed] @sort,
     inequalType(sortType, VOID()) | error $[Property type 'Void' not allowed] @sort,
     inequalType(sortType, REF(_)) | error $[Reference type is not allowed in property] @sort,
     isValidTypeForPropKind(propkind, sort, sortType),
