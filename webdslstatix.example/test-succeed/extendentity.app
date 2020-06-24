@@ -21,7 +21,7 @@ section datamodel
   
   define page root(){
     main()
-    var u:User := User{};
+    var u:User := User{}
     define body()
     {
       output(u.name)

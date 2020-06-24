@@ -22,10 +22,10 @@ section datamodel
       this.children := [fr | fr : User in this.children];
     }    
   }
-  var u:User := User{name := "bob" };
-  var u1:User := User{name := "alice"};
-  var u2:User := User{name := "charlie"};
-  var u3:User := User{name := "dave"};
+  var u:User := User{name := "bob" }
+  var u1:User := User{name := "alice"}
+  var u2:User := User{name := "charlie"}
+  var u3:User := User{name := "dave"}
   
   define page root(){
     main()

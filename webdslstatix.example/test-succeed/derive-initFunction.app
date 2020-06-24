@@ -5,7 +5,7 @@ application derive
     function init() { }
   }
 
-  var cost := CostSheet{ };
+  var cost := CostSheet{ }
     
   define page root() {
     derive initFunction from cost

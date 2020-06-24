@@ -13,8 +13,8 @@ application test
     t1.save();
   }
   define page root(){
-    var t :=(from TextEntity)[0];
-    var t1 :=(from TextEntity2)[0];
+    var t :=(from TextEntity)[0]
+    var t1 :=(from TextEntity2)[0]
     navigate edit(t.text) { "go" }
     navigate edit((from TextEntity2)[0].text) { "go" }
   }

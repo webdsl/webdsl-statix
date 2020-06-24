@@ -4,9 +4,9 @@
  
 application test
  
-  var p1 := Publication{ title := "p1" };
-  var p2 := Publication{ title := "p2" };
-  var p3 := Publication{ title := "p3" };
+  var p1 := Publication{ title := "p1" }
+  var p2 := Publication{ title := "p2" }
+  var p3 := Publication{ title := "p3" }
   
   define page root(){
     table{

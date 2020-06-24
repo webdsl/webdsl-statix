@@ -23,8 +23,8 @@ application test
   }
 
   define page searchPage(){
-    var dynamicSearchField := "Pepe Roni-field";
-    var zeroCount := (search Person matching ~dynamicSearchField: "notfound").count();
+    var dynamicSearchField := "Pepe Roni-field"
+    var zeroCount := (search Person matching ~dynamicSearchField: "notfound").count()
     
     output("Search page:")
     output(( search Person matching ~dynamicSearchField: "myval" ).results()[0].name)

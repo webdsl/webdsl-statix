@@ -6,7 +6,7 @@ section datamodel
     storedimage :: Image
   }
   
-  var u3_img := ImageStore{ };
+  var u3_img := ImageStore{ }
   
   define page root(){
     form{

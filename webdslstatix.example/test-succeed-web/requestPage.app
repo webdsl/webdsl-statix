@@ -1,6 +1,6 @@
 application test
 
-  var u1 := User{ name := "testuser"};
+  var u1 := User{ name := "testuser"}
 
   define page root(){
     title{ "root" }

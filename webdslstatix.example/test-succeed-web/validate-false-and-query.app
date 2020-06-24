@@ -20,7 +20,7 @@ application canceltest
   }
   
   define qu(){
-    var a := from SomeEnt;
+    var a := from SomeEnt
   }
 
   test cancelfunc {

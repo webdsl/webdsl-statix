@@ -12,7 +12,7 @@ application test
     "default body"
   }
   
-  var u:User := User{username := "0"};
+  var u:User := User{username := "0"}
   
   define page root() {
     main()

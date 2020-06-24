@@ -10,7 +10,7 @@ section principal
     name :: String
   }
 
-  var u1 : User := User{ name := "Bob" };
+  var u1 : User := User{ name := "Bob" }
 
   principal is User with credentials name
   

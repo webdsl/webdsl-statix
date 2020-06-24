@@ -24,10 +24,10 @@ section datamodel
     
   }
   
-  var u1:User := User{name := "bob" };
-  var u2:User := User{name := "alice"};
-  var u3:User := User{name := "charlie"};
-  var u4:User := User{name := "dave"};
+  var u1:User := User{name := "bob" }
+  var u2:User := User{name := "alice"}
+  var u3:User := User{name := "charlie"}
+  var u4:User := User{name := "dave"}
   
   entity SubUser : User{
   
@@ -151,8 +151,8 @@ section datamodel
   define page root(){
     main()
     define body() {
-      var i: Int := 0;
-      var j: Int := 0;
+      var i: Int := 0
+      var j: Int := 0
      
       table{
       

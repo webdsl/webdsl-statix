@@ -4,7 +4,7 @@ section pages
 
 define page root() {
   "ik ben de body2"
-  var s: String := "hoi";
+  var s: String := "hoi"
  
   label("ik ben een input") { input(s) }
   label("en ik ben oko een input") { input(s) }

@@ -2,7 +2,7 @@
 application test
 
   define page root() {
-    var list : List<String> := [ entity | i : String in [1,2,3] ];
+    var list : List<String> := [ entity | i : String in [1,2,3] ]
     for(item : String in list) {
       output(item)
     } 

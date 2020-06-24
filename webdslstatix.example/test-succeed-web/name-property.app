@@ -69,7 +69,7 @@ application test
     
   define page root(){
   
-    var nn : NoName := NoName{};
+    var nn : NoName := NoName{}
     output("1:") output(nn.name)
     var wa : WithAnno := WithAnno{title := "thename"}
     output("2:") output(wa.name)

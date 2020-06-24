@@ -12,14 +12,14 @@ section datamodel
   
   define page root(){
     
-    var u:User;
-    var u1:User;
-    var u2:User2;
-    var u3:User2;
-    var s:String;
-    var i:Int;
-    var f:Float;
-    var b:Bool;    
+    var u:User
+    var u1:User
+    var u2:User2
+    var u3:User2
+    var s:String
+    var i:Int
+    var f:Float
+    var b:Bool    
     
     output(u.name)
     output(u1.name)

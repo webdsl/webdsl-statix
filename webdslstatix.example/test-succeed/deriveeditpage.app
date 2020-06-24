@@ -32,7 +32,7 @@ section data model
 section pages
 
   define page root() {
-    var item : NewsItem;
+    var item : NewsItem
     init {
       item := NewsItem{};
       item.save();

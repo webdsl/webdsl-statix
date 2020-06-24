@@ -21,7 +21,7 @@ section entities
   
   define page root() {
     header { "news" }
-    var n: List<News> :=  select a from News as a;
+    var n: List<News> :=  select a from News as a
     list {
       for (u1: News in n) {
         listitem { output(u1.caption) }
@@ -32,7 +32,7 @@ section entities
     
     header { "via search function"}
     var s: String := "hallo"
-    var u: User := User{ name := "michel" }; //u added for missing behaviour
+    var u: User := User{ name := "michel" } //u added for missing behaviour
     /*
     block[id:= target, onclick := action { dosearch(s, u); }] {
        "click me to expand"

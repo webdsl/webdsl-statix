@@ -10,7 +10,7 @@ section datamodel
     username :: String
   }
 
-  var bob : User := User { };
+  var bob : User := User { }
 
   init{
     bob.username := "Bob";

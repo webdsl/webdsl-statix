@@ -11,16 +11,16 @@ entity SubClassTwo : SuperClass{}
 entity SubClassThree : SubClassOne{}
 
 
-var super1 := SuperClass{ name := "super1"};
-var super2 := SuperClass{ name := "super2"};
-var subclass1 := SubClassOne{name := "sub1"};
-var subclass2 := SubClassTwo{name := "sub2"};
-var subclass3 := SubClassThree{name := "sub3"};
+var super1 := SuperClass{ name := "super1"}
+var super2 := SuperClass{ name := "super2"}
+var subclass1 := SubClassOne{name := "sub1"}
+var subclass2 := SubClassTwo{name := "sub2"}
+var subclass3 := SubClassThree{name := "sub3"}
 
 define page root(){
-  var super3 := SuperClass{name := "super"};
-  var sub1 := SubClassOne{name := "sub1"};
-  var sub2 := SubClassTwo{name := "sub2"};
+  var super3 := SuperClass{name := "super"}
+  var sub1 := SubClassOne{name := "sub1"}
+  var sub2 := SubClassTwo{name := "sub2"}
 
   temp(4)
   temp("bla")

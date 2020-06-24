@@ -35,8 +35,8 @@ define page root(){
     submit("save",action{})
   }
   
-  var teammates := [u3];
-  var groups := {g3};
+  var teammates := [u3]
+  var groups := {g3}
   form{
     table{
       for(u:User){

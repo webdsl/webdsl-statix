@@ -12,7 +12,7 @@ section datamodel
       "users: " output(u.name)
     }
  
-    var name : String := "bob";
+    var name : String := "bob"
    
     "test page"
 

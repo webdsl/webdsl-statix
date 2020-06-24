@@ -6,7 +6,7 @@ application datepicker
     date :: Date (not null)
   }
 
-  var dh := DateHolder{ datetime := null time := null date := null };
+  var dh := DateHolder{ datetime := null time := null date := null }
 
   define page root() {
     form {

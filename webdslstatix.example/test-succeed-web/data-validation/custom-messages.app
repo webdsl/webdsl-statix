@@ -3,8 +3,8 @@ application messages
   entity User{
     name :: String
   }
-  var u0 : User := User{ name := "bob" };
-  var u1 : User := User{ name := "alice" };
+  var u0 : User := User{ name := "bob" }
+  var u1 : User := User{ name := "alice" }
   
   define page root(){
     for(u:User) {

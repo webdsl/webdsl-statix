@@ -7,7 +7,7 @@ section datamodel
     password :: Secret
   }
 
-  var bob : User := User { username := "Bob" };
+  var bob : User := User { username := "Bob" }
 
   define page root(){
     output(bob.username)

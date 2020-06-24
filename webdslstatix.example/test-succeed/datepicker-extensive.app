@@ -59,10 +59,10 @@ define page testTimePicker() {
 
 }
 
-var dateTest := DateTest{};
+var dateTest := DateTest{}
 
 define page testDatePicker(format : Int) {
-  var date : Date := today();
+  var date : Date := today()
   main()
   
   define body() {

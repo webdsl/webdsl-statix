@@ -9,7 +9,7 @@ application test
   }
 
   define page root(){
-      var e : Role;
+      var e : Role
       init{
           e := Role{};
           e.save();

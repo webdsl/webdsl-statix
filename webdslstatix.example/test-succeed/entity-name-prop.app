@@ -57,7 +57,7 @@ application entitynameprop
     
     standardmenu()
     
-    var set : List<NameAnno> := from NameAnno;
+    var set : List<NameAnno> := from NameAnno
     var e : NameAnno
     
     form {

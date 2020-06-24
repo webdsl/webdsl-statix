@@ -7,7 +7,7 @@ section datamodel
 
   }
   
-  var globalLink : Link := Link { url := "http://webdsl.org" };
+  var globalLink : Link := Link { url := "http://webdsl.org" }
   
   define page root(){
     

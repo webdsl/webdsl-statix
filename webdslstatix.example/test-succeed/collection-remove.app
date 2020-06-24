@@ -13,12 +13,12 @@ section datamodel
     users -> List<User>
   }
   
-  var u1:User := User{name := "bob" };
-  var u2:User := User{name := "alice"};
-  var u3:User := User{name := "charlie"};
-  var u4:User := User{name := "dave"};
+  var u1:User := User{name := "bob" }
+  var u2:User := User{name := "alice"}
+  var u3:User := User{name := "charlie"}
+  var u4:User := User{name := "dave"}
   
-  var ulist := UserList{users := [u1,u2,u3,u4,u1,u1,u2]};
+  var ulist := UserList{users := [u1,u2,u3,u4,u1,u1,u2]}
   
   define page root(){
     main()

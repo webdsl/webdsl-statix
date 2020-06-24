@@ -24,7 +24,7 @@ define page root () { }
 
 entity User {}
 
-var globalVarNoInit : User;
+var globalVarNoInit : User
 
 var globalVarDouble : User := User {}
 var globalVarDouble : User := User {}

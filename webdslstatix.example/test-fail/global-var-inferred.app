@@ -4,6 +4,6 @@ application test
 
 define page root() {}
 
-var one := two;
-var two := one;
+var one := two
+var two := one
 

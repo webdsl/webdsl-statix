@@ -12,7 +12,7 @@ application test
     for(u:User){
       "users: " output(u.firstname)
     }
-    var enteredname : String := "enter firstname here";
+    var enteredname : String := "enter firstname here"
     form{
       input(enteredname)
       action("save",save())

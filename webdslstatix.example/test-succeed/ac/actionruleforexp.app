@@ -38,7 +38,7 @@ section somesection
   
   define templ(a:Int)
   {
-    var f: Int := 10;
+    var f: Int := 10
     output(a)
     action("Confirm", save(f))
     action save(c:Int)

@@ -83,10 +83,10 @@ application test
   }
 
   define page searchPage(){
-    var pubSearcher := PublicationSearcher();
-    var authorSearcher := AuthorSearcher();
-    var tagSearcher := TagSearcher();
-    var bibSearcher := BibliographySearcher();
+    var pubSearcher := PublicationSearcher()
+    var authorSearcher := AuthorSearcher()
+    var tagSearcher := TagSearcher()
+    var bibSearcher := BibliographySearcher()
     output("Search page:")
 
     "pub1:" output(pubSearcher.field("authors.name").query("auth1").results()[0].title)

@@ -3,7 +3,7 @@ application test
 //issue on yellowgrass: http://yellowgrass.org/issue/WebDSL/709
 
   define page root(){    
-    var someString := "old";
+    var someString := "old"
     
     placeholder "MYPH" { showString( someString ) }
     inputTemplate( someString )

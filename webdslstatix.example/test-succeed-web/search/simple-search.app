@@ -18,7 +18,7 @@ application test
   }
 
   define page searchPage(){
-    var searcher := PersonSearcher();
+    var searcher := PersonSearcher()
     output("Search page:")
     output(searcher.query("pepe").results()[0].name)
   }

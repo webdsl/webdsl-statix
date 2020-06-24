@@ -10,9 +10,7 @@ section datamodel
     username :: String
   }
 
-  globals {
-    var bob : User := User { username := "Bob" };
-  }
+  var bob : User := User { username := "Bob" }
   
   define main() 
   {

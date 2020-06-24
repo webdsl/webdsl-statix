@@ -37,7 +37,7 @@ section datamodel
     return s;
   }
 
-  var an : AnEntity := AnEntity {};
+  var an : AnEntity := AnEntity {}
   
   define page root(){
     output(an.a(0))

@@ -4,7 +4,7 @@ application test
     prop :: URL
   }
   
-  var t_1 := Test {};
+  var t_1 := Test {}
 
   define page root(){
     output(t_1.prop)

@@ -1,6 +1,6 @@
 application exampleapp
 
-var pAlice := Person{username := "Alice"};
+var pAlice := Person{username := "Alice"}
 init {
   var p := Person{username := "Bob"};
   p.save();

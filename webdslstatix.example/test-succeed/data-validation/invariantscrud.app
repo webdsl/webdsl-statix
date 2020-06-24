@@ -7,10 +7,10 @@ application messages
     , validateupdate(name != "", "name should not be empty before user can be updated")
     )
   }
-  var u : User := User{ name := "bob" };
-  var u1 : User := User{ name := "alice" };
-  var u2 : User := User{ name := "charlie" };
-  var u3 : User := User{ name := "dave" };
+  var u : User := User{ name := "bob" }
+  var u1 : User := User{ name := "alice" }
+  var u2 : User := User{ name := "charlie" }
+  var u3 : User := User{ name := "dave" }
   
   define page root(){
     for(user:User) {
@@ -25,7 +25,7 @@ application messages
       }
     }
 
-    var newuser := User{};
+    var newuser := User{}
         
     form{
       input(newuser.name)

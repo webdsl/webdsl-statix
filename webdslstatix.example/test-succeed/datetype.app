@@ -8,7 +8,7 @@ section datamodel
     datetime :: DateTime 
   }
   
-  var globalDT : DateTest := DateTest{};
+  var globalDT : DateTest := DateTest{}
   
   define page root(){
     " date: " output(globalDT.date) 

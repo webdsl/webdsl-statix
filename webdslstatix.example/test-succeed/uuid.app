@@ -7,10 +7,10 @@ section datamodel
     uuid :: UUID
   }
 
-  var global_u : User := User { username := "Dave" };
-  var global_default : User := User {};
-  var global_null : User := User {uuid := null};
-  var global_string : User := User {uuid := UUIDFromString("12345678-90ab-cdef-1234-567890abcdef")};
+  var global_u : User := User { username := "Dave" }
+  var global_default : User := User {}
+  var global_null : User := User {uuid := null}
+  var global_string : User := User {uuid := UUIDFromString("12345678-90ab-cdef-1234-567890abcdef")}
 
   define page root(){
     action test1()

@@ -11,14 +11,14 @@ section bla
   }
 
   
-  var e1 := Entity2 { name := "e1" };
-  var e2 := Entity2 { name := "e2" };
-  var e3 := Entity2 { name := "e3" };
-  var e4 := Entity2 { name := "e4" };
-  var e5 := Entity2 { name := "e5" };
-  var e6 := Entity2 { name := "e6" };
-  var e7 := Entity2 { name := "e7" };
-  var thelist := Entity2List{ list := [e1,e2,e3,e4,e5,e6,e7] };  
+  var e1 := Entity2 { name := "e1" }
+  var e2 := Entity2 { name := "e2" }
+  var e3 := Entity2 { name := "e3" }
+  var e4 := Entity2 { name := "e4" }
+  var e5 := Entity2 { name := "e5" }
+  var e6 := Entity2 { name := "e6" }
+  var e7 := Entity2 { name := "e7" }
+  var thelist := Entity2List{ list := [e1,e2,e3,e4,e5,e6,e7] }  
   
   
   define page root(){

@@ -6,10 +6,10 @@ section datamodel
     username :: String
   }
 
-  var alice : User := User { username := "Alice" };
-  var bob : User := User { username := "Bob" };
-  var charlie : User := User { username := "Charlie" };
-  var dave : User := User { username := "Dave" };
+  var alice : User := User { username := "Alice" }
+  var bob : User := User { username := "Bob" }
+  var charlie : User := User { username := "Charlie" }
+  var dave : User := User { username := "Dave" }
   
   define sitemenu1()
   {

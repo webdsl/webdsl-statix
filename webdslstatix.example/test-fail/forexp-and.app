@@ -2,5 +2,5 @@
 application test
 
   define page root() {
-    var list : Bool := And [ i | i : String in ["1","2"] ];
+    var list : Bool := And [ i | i : String in ["1","2"] ]
   }

@@ -32,7 +32,7 @@ section datamodel
       }
     }
     "test page"
-    var user : User := User{ name := "bob" };
+    var user : User := User{ name := "bob" }
     form{
       input(user.name)
       input(user.storedfile)
@@ -73,7 +73,7 @@ section datamodel
       }
     }
     "test page"
-    var u : User2 := User2{ name := "alice" };
+    var u : User2 := User2{ name := "alice" }
     form{
       group("image"){
         row{column{input(u.name)}}
@@ -94,7 +94,7 @@ section datamodel
     storedimage :: Image
   }
   
-  var u3_img := ImageStore{ };
+  var u3_img := ImageStore{ }
   define page home3(){
     navigation()
     form{

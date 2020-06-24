@@ -11,25 +11,25 @@ section datamodel
   }
   
   define page root(){
-    var us:User;
-    var us1:User;
-    var us2:User;
-    var us3:User;
+    var us:User
+    var us1:User
+    var us2:User
+    var us3:User
   
-    var users:Set<User> := {us,us1,us2,us3};
+    var users:Set<User> := {us,us1,us2,us3}
   
-    var u:User := User{};
-    var u1:User;
-    var u2:User2 := User2{};
-    var u3:User2;
-    var s:String;
-    var i:Int;
-    var f:Float;
-    var b:Bool;    
-    var s1:String := "jdfhskjsf";
-    var i1:Int := 445;
-    var f1:Float := 435.345;
-    var b1:Bool := false; 
+    var u:User := User{}
+    var u1:User
+    var u2:User2 := User2{}
+    var u3:User2
+    var s:String
+    var i:Int
+    var f:Float
+    var b:Bool
+    var s1:String := "jdfhskjsf"
+    var i1:Int := 445
+    var f1:Float := 435.345
+    var b1:Bool := false
     
     input(u.name)
     output(u.name)

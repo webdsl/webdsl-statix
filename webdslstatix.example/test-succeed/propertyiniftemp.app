@@ -18,7 +18,7 @@ section datamodel
   
   define page root(){
     main()
-    var u: User := User { username := "Bob" check := true };
+    var u: User := User { username := "Bob" check := true }
     define body()
     {
       if(u.check)

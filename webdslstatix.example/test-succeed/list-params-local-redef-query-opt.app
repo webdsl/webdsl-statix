@@ -14,7 +14,7 @@ page root(){
 }
 
 define selectPersonFromList() {
-  var lst := (search Person matching "name").results();
+  var lst := (search Person matching "name").results()
     
   var groups := toGroups( lst )
   for ( g : List<Person> in groups){

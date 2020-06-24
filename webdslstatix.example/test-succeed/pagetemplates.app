@@ -8,7 +8,7 @@ section datamodel
 
 
   define page root(){
-    var u:User := User{name := "bob"};
+    var u:User := User{name := "bob"}
     var s:String := "dgfdfgd"
     "homepage"
     output(u.name)

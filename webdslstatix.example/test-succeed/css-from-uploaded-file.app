@@ -1,7 +1,7 @@
 application cssApp
 
 page root(){
-	var cssfs := from CSSFile;
+	var cssfs := from CSSFile
 	
 	if(cssfs.length > 0){
 	  includeCSS( navigate( cssDownload( cssfs.get(0), cssfs.get(0).name +".css" ) ) )

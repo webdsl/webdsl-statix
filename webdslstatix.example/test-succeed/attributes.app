@@ -17,7 +17,7 @@ define page root() {
   //rndButton("click text above",true)[onclick := action { return bla(); }, style:="background-color:yellow;", class:="classtest", testattr := "testattrvalue"]
 }
   define attrtest2(){
-    var s := "style";
+    var s := "style"
      container[
         class ="scopediv border rndButton "+attribute("class",""), 
         onclick = ""+attribute("onclick",""),

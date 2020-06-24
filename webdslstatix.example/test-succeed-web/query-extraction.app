@@ -96,8 +96,8 @@ init {
 }
 
 define page root(){
-  var a1 : Auction := (from Auction)[0];
-  var u1 : User := (from User as u order by u.name asc)[0];
+  var a1 : Auction := (from Auction)[0]
+  var u1 : User := (from User as u order by u.name asc)[0]
 
 	<div> "a1: " <span id="a1">output("" + a1.id)</span></div>
 	<div> "u1: " <span id="u1">output("" + u1.id)</span></div>
@@ -129,12 +129,12 @@ define page showAuction(a : Auction) {
 }
 
 define page conditionExtraction() {
-  var stats : Statistics := HibernateUtilConfigured.getSessionFactory().getStatistics();
+  var stats : Statistics := HibernateUtilConfigured.getSessionFactory().getStatistics()
   init{
   stats.setStatisticsEnabled(true);
   }
-  var entFetch : Long := stats.getEntityFetchCount();
-  var entLoaded : Long := stats.getEntityLoadCount();
+  var entFetch : Long := stats.getEntityFetchCount()
+  var entLoaded : Long := stats.getEntityLoadCount()
   for(b : Bid) {
     if(b.auction.item.name == "Item 1" && b.buyer.name == "User 2") {
       output(b)
@@ -170,12 +170,12 @@ define page showProfile(u : User) {
 }
 
 define page preloadCalledTemplate() {
-  var stats : Statistics := HibernateUtilConfigured.getSessionFactory().getStatistics();
+  var stats : Statistics := HibernateUtilConfigured.getSessionFactory().getStatistics()
   init{
   stats.setStatisticsEnabled(true);
   }
-  var entFetch : Long := stats.getEntityFetchCount();
-  var entLoaded : Long := stats.getEntityLoadCount();
+  var entFetch : Long := stats.getEntityFetchCount()
+  var entLoaded : Long := stats.getEntityLoadCount()
   for(i : Item) {
     shouldPreload1(i)
     shouldPreload2(i)
@@ -203,8 +203,8 @@ define template shouldPreload3(printItem : Item) {
 }
 
 define page preloadEntityFunctions(u : User) {
-  var stats : Statistics := HibernateUtilConfigured.getSessionFactory().getStatistics();
-  var entFetch : Long;
+  var stats : Statistics := HibernateUtilConfigured.getSessionFactory().getStatistics()
+  var entFetch : Long
   init{
   stats.setStatisticsEnabled(true);
   u.touch(); // make sure the user is fetched before getEntityFetchCount
@@ -220,12 +220,12 @@ define page localRedefine(u : User) {
 }
 
 define localRedefineTempl(u : User) {
-  var users : List<User> := (from User);
-  var stats : Statistics := HibernateUtilConfigured.getSessionFactory().getStatistics();
+  var users : List<User> := (from User)
+  var stats : Statistics := HibernateUtilConfigured.getSessionFactory().getStatistics()
   init{
   stats.setStatisticsEnabled(true);
   }
-  var entFetch : Long := stats.getEntityFetchCount();
+  var entFetch : Long := stats.getEntityFetchCount()
   main()
   define body(s : String) {
     for(a : Auction in u.auctions) {

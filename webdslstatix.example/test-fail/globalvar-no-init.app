@@ -5,6 +5,6 @@ application test
 entity Test {
 }
 
-var one : Test;
+var one : Test
 
 define page root(){}

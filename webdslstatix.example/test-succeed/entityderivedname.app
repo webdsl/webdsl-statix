@@ -19,8 +19,8 @@ section datamodel
     }
   }
   
-  var u1 : User := User { name := "the user" };
-  var p1 : PdpMeeting := PdpMeeting { employee := u1 };
+  var u1 : User := User { name := "the user" }
+  var p1 : PdpMeeting := PdpMeeting { employee := u1 }
   
   define page root() {
     output(u1.name)

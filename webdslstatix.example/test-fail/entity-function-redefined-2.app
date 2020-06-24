@@ -22,6 +22,6 @@ application test
   }
   
   define page root(){
-    var u:User := User{};
+    var u:User := User{}
     output(u.name)
    }

@@ -34,7 +34,7 @@ section datamodel
   define page root(){
     main()
    
-    var u:User := User{name := "Alice"};
+    var u:User := User{name := "Alice"}
   
     init{ 
       u.extendMe();

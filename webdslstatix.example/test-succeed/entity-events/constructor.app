@@ -25,7 +25,7 @@ application constructor
   }
   
   // test both global vars and init, handled differently in back-end
-  var u1 := User{ name := "Alice" };
+  var u1 := User{ name := "Alice" }
   init{
     var u2 := User{ name := "Bob" };
     u2.save();
@@ -39,8 +39,8 @@ application constructor
     assert(u1.page != u2.page);
   }
     
-  var p1 := Page { name := "p1" content := "This is page 1." };
-  var p2 := Page { name := "p2" content := "This is page 2." };
+  var p1 := Page { name := "p1" content := "This is page 1." }
+  var p2 := Page { name := "p2" content := "This is page 2." }
   
   define page root(){
     action save(u:User){

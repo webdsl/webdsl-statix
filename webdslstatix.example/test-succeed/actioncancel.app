@@ -16,7 +16,7 @@ section datamodel
     "default body"
   }
   
-  var bob : User := User { username := "Bob"  email := "bob@gmail.com"};
+  var bob : User := User { username := "Bob"  email := "bob@gmail.com"}
   
   define page root()
   {

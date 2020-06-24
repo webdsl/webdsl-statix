@@ -12,9 +12,9 @@ application test
   
   }
   
-  var p1 := Publication{ name := "p1" };
-  var p2 := Publication{ name := "p2" };
-  var p3 := Publication{ name := "p3" };
+  var p1 := Publication{ name := "p1" }
+  var p2 := Publication{ name := "p2" }
+  var p3 := Publication{ name := "p3" }
  
   define page root(){
     for(p:Publication){

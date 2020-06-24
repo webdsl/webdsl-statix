@@ -29,10 +29,6 @@ rules
   normalize-ui : DownloadLinkNoProps(action, elems) -> DownloadLink(action, [], elems)
   normalize-ui : OutputImageNoProps(action, elems) -> OutputImage(action, [], elems)
 
-  normalize-ui : TemplateVarDeclDepr(x, sort) -> TemplateVarDecl(x, sort)
-  normalize-ui : TemplateVarDeclInitDepr(x, sort, exp) -> TemplateVarDeclInit(x, sort, exp)
-  normalize-ui : TemplateVarDeclInitInferredDepr(x, exp) -> TemplateVarDeclInitInferred(x, exp)
-
   normalize-ui : PropertySubmitColon(prop, call) -> PropertySubmit(prop, call)
   normalize-ui : PropertySubmitAssign(prop, call) -> PropertySubmit(prop, call)
 

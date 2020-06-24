@@ -11,8 +11,8 @@ section datamodel
   }
   
   define page root(){
-    var u:User := User{};
-    var u1:User2 := User2{};
+    var u:User := User{}
+    var u1:User2 := User2{}
   
     navigate(viewUser(u,u1)) { "view" }
     

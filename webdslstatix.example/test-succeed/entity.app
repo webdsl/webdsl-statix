@@ -8,8 +8,8 @@ application test
     bla :: String
   }
 
-  var one := Bib { title := "Bib one" };
-  var two := Test { bla := "Test two" };
+  var one := Bib { title := "Bib one" }
+  var two := Test { bla := "Test two" }
 
   define page root(){
     test(one)

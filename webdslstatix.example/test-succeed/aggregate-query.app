@@ -24,8 +24,7 @@ section datamodel
     fval:=1.0
   }
   
-  define page root(){
-  }
+  define page root(){}
 
   test aggregatehql {
     var intResult : Int := 3;

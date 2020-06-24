@@ -3,7 +3,7 @@ application test
 define page root(){
   main()
   define body() {
-    var aa := Patient{ } ;
+    var aa := Patient{ }
     init {
       aa.name := "1"; 
     }

@@ -21,7 +21,7 @@ section datamodel
 
 
   define page root(){
-    var u:User := User{};
+    var u:User := User{}
     output(u.name2)
     "expects 7 : " output(u.test(2, 3))
    }

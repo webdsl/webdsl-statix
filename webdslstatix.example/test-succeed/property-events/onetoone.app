@@ -31,10 +31,10 @@ section datamodel
     body()
   }
 
-  var u:User := User{name := "Alice"};
-  var u1:User := User{name := "Bob"};
-  var u2:User := User{name := "Charlie"};
-  var u3:User := User{name := "Dave"};
+  var u:User := User{name := "Alice"}
+  var u1:User := User{name := "Bob"}
+  var u2:User := User{name := "Charlie"}
+  var u3:User := User{name := "Dave"}
   
   define page user(user:User){
     derive viewPage from user

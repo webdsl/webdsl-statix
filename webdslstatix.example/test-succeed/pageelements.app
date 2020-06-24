@@ -8,7 +8,7 @@ section datamodel
   
   define page pagearg(u:User,s:String,i:Int,f:Float,b:Bool)
   {
-    var temp: Int := i;
+    var temp: Int := i
     form{
       if(true)
       {
@@ -24,11 +24,11 @@ section datamodel
   }
 
   define page root(){
-    var u:User := User{};
-    var s:String;
-    var i:Int;
-    var f:Float;
-    var b:Bool;    
+    var u:User := User{}
+    var s:String
+    var i:Int
+    var f:Float
+    var b:Bool    
  
     output(u.name)
     input(s)

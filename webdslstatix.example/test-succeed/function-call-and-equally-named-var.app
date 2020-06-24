@@ -5,8 +5,8 @@ define page root() {
 }
 
 define page home(max : Int) {  
-  var min := min(1, 2);
-  var r := max(1, 2);  
+  var min := min(1, 2)
+  var r := max(1, 2)  
 }
    
 function max(i : Int, j : Int) : Int {

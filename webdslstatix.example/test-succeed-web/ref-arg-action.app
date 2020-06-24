@@ -13,13 +13,13 @@ application test
     t1.save();
   }
   define page root(){
-    var t :=(from TextEntity)[0];
-    var t1 :=(from TextEntity2)[0];
+    var t :=(from TextEntity)[0]
+    var t1 :=(from TextEntity2)[0]
     navigate show(t.text) { "go" }
   }
 
   define page show(text : Ref<Text>) {
-   var type:= text.getEntity();
+   var type:= text.getEntity()
    
    if (type is a TextEntity){ submitlink action{ 
       return root();

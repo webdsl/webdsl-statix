@@ -6,5 +6,5 @@ section datamodel
 entity Test {
 }
 
-var globalstr : String := "Hallo!";
-var testlist : Set<Test> := { Test {} };
+var globalstr : String := "Hallo!"
+var testlist : Set<Test> := { Test {} }

@@ -3,6 +3,6 @@
 application test
 
 define page root() {
-  var amount := something;
+  var amount := something
   showPriceReception(amount)
 }

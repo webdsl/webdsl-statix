@@ -41,7 +41,7 @@ application test
   }
   
   define page root(){
-    var x : Int;
+    var x : Int
     
     init {
       x := 3;

@@ -51,8 +51,8 @@ application test
     init{
       IndexManager.indexSuggestions();
     }
-    var personSearcher := PersonSearcher();
-    var livingThingSearcher := LivingThingSearcher();
+    var personSearcher := PersonSearcher()
+    var livingThingSearcher := LivingThingSearcher()
 
     "male-1:" output(personSearcher.query("John").setNamespace("male").count())
     "male-2:" output(personSearcher.results()[0].name)

@@ -11,7 +11,7 @@ section datamodel
       "users: " output(u.name)
     }
  
-    var name : String := "test-cache";
+    var name : String := "test-cache"
 
     form{
       action("save",save())

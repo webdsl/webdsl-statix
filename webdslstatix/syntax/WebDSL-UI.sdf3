@@ -60,9 +60,6 @@ context-free syntax
   VarDecl.TemplateVarDeclInit = "var" Id ":" Sort ":=" Exp 
   VarDecl.TemplateVarDeclInitInferred = "var" Id ":=" Exp 
   TemplateElement = VarDecl 
-  VarDecl.TemplateVarDeclDepr = "var" Id ":" Sort ";" {deprecated("remove ';'")}
-  VarDecl.TemplateVarDeclInitDepr = "var" Id ":" Sort ":=" Exp ";" {deprecated("remove ';'")}
-  VarDecl.TemplateVarDeclInitInferredDepr = "var" Id ":=" Exp ";" {deprecated("remove ';'")}
   TemplateElement.RequestScopeTemplate = "request" VarDecl 
   TemplateElement.LocalScopeTemplate = "local" VarDecl 
   TemplateElement = TemplateDefinition 

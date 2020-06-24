@@ -63,7 +63,7 @@ analyzer testSyntaxAnalyzer{
 
 
   define page root(){
-      var d : DateThingy;
+    var d : DateThingy
     init{
         d := DateThingy{date := Date("01/02/2003") datetime := now() time := Time("12:34")}; //DateTime("01/02/2003 12:34")
           var p := Person{name := "Pepe Roni" birthday := Date("05/05/1955")};
@@ -90,16 +90,16 @@ analyzer testSyntaxAnalyzer{
   }
 
   define page searchPageNativeJava(){
-    var personSearcher := PersonSearcher();
-    var personSearcher2 := PersonSearcher();
-    var personSearcher3 := PersonSearcher();
-    var itemSearcher := ItemSearcher();
-    var itemSearcher1 := ItemSearcher();
-    var itemSearcher2 := ItemSearcher();
-    var itemSearcher3 := ItemSearcher();
-    var itemSearcher4 := ItemSearcher();
+    var personSearcher := PersonSearcher()
+    var personSearcher2 := PersonSearcher()
+    var personSearcher3 := PersonSearcher()
+    var itemSearcher := ItemSearcher()
+    var itemSearcher1 := ItemSearcher()
+    var itemSearcher2 := ItemSearcher()
+    var itemSearcher3 := ItemSearcher()
+    var itemSearcher4 := ItemSearcher()
     var name := "Bottle of dr Pepper"
-    var drPepperItems := from Item as i where i.name = ~name;
+    var drPepperItems := from Item as i where i.name = ~name
     output("Search page:")
 
 
@@ -135,8 +135,8 @@ analyzer testSyntaxAnalyzer{
   }
 
   define page BooleanResultPage(ps : PersonSearcher){
-      var count := ps.count();
-      var p := if (count > 0) ps.results()[0] else null;
+      var count := ps.count()
+      var p := if (count > 0) ps.results()[0] else null
       "searcherPageArg:" output(ps.count())
       navigate searchPageDSL() {"click"}
       submit action{
@@ -153,16 +153,16 @@ analyzer testSyntaxAnalyzer{
 
   define page searchPageDSL(){
 
-    var personSearcher := search Person;
-    var personSearcher2 := search Person;
-    var personSearcher3 := search Person;
-    var itemSearcher := search Item;
-    var itemSearcher1 := search Item;
-    var itemSearcher2 := search Item;
-    var itemSearcher3 := search Item;
-    var itemSearcher4 := search Item;
+    var personSearcher := search Person
+    var personSearcher2 := search Person
+    var personSearcher3 := search Person
+    var itemSearcher := search Item
+    var itemSearcher1 := search Item
+    var itemSearcher2 := search Item
+    var itemSearcher3 := search Item
+    var itemSearcher4 := search Item
     var name := "Bottle of dr Pepper"
-    var drPepperItems := from Item as i where i.name = ~name;
+    var drPepperItems := from Item as i where i.name = ~name
     output("Search page:")
 
 

@@ -37,7 +37,7 @@ section datamodel
       }
     }
     "test page"
-    var u : User := User{ name := "bob" address := "somewhere 1" };
+    var u : User := User{ name := "bob" address := "somewhere 1" }
     form{
       input(u.name)
       input(u.address)
@@ -118,9 +118,9 @@ section datamodel
   }
 
   page p() {
-    var a : List<User> := select u from Moderator as u where u.class='Admin';
-    var ms : List<User> := from Moderator order by name asc;
-    var m : List<User> := select u from User as u where u.class='Moderator' order by u.name asc;
+    var a : List<User> := select u from Moderator as u where u.class='Admin'
+    var ms : List<User> := from Moderator order by name asc
+    var m : List<User> := select u from User as u where u.class='Moderator' order by u.name asc
     section {
       header { "Admin" }
       output(a)
