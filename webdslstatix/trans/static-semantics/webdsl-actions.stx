@@ -81,6 +81,9 @@ rules // statements
 rules // variables
 
   typeOfExp(s, Var(x)) = getVariableType(s, x).
+  typeOfExp(s, FieldAccess(exp, x)) = fieldType :- {s_entity}
+    typeOfExp(s, exp) == ENTITY(s_entity) | error $[Cannot resolve [exp] to an entity] @exp,
+    getFieldType(s_entity, x) == fieldType.
 
   defOk(s, GlobalVarDecl(x, sort)) :- {t}
     t == typeOfSort(s, sort),
