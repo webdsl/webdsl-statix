@@ -47,6 +47,7 @@ context-free syntax
   TemplateCallIdLex = "init" {reject}
   TemplateCallIdLex = "databind" {reject}
   TemplateCallIdLex = "derive" {reject}
+  TemplateCallIdLex = "rules" {reject}
   TemplateCallIdLex = "actionLink" {reject}
   TemplateCallIdLex = "submitlink" {reject}
   TemplateCallIdLex = "downloadlink" {reject}
