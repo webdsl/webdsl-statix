@@ -41,9 +41,19 @@ rules // statements
   stmtOk(s, Stat(exp), _) :-
     expOk(s, exp).
 
+  stmtOk(s, VarDecl(x, sort), _) :- {t}
+    t == typeOfSort(s, sort),
+    inequalType(t, UNTYPED()) | error $[Unknown type [sort]] @sort,
+    declVar(s, x, t).
+
   stmtOk(s, VarDeclInit(x, sort, exp), _) :- {t}
     t == typeOfSort(s, sort),
     equalType(t, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [sort]] @exp,
+    declVar(s, x, t).
+
+  stmtOk(s, VarDeclInitInferred(x, exp), _) :- {t}
+    t == typeOfExp(s, exp),
+    inequalType(t, UNTYPED()) | error $[Unable to infer type of [exp]] @exp,
     declVar(s, x, t).
 
   stmtOk(s, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a variable].

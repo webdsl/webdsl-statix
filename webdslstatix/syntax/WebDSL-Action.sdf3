@@ -98,7 +98,6 @@ context-free syntax
   ConstValue = StringValue
   Exp = ConstValue 
   Exp.Var = VarId
-  SimpleVar.SimpleVar = VarId
   Exp = "in" {reject}
   Exp.GlobalVar = "global" "." Id {prefer}
   Exp.SessionVar = "session" "." Id {prefer}

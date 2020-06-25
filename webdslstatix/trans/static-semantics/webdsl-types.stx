@@ -55,6 +55,7 @@ rules // types of constant expressions
   typeOfExp(_, ConstValue2Exp(Long(_))) = LONG().
   typeOfExp(_, ConstValue2Exp(Float(_))) = FLOAT().
   typeOfExp(_, ConstValue2Exp(StringValue2ConstValue(StringValue(_)))) = STRING().
+  typeOfExp(_, ConstValue2Exp(StringValue2ConstValue(StringInterp(_)))) = STRING().
   typeOfExp(_, True()) = BOOL().
   typeOfExp(_, False()) = BOOL().
 
