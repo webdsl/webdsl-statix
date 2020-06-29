@@ -67,12 +67,12 @@ rules // functions
   getTypeCompatibleFunDecls(s, f, args) = result :- {nameCompatibleFuncs funSigsZippedWithTypeCompatibility}
     typeOfFunDecl of Function{f} in s |-> nameCompatibleFuncs,
     funSigsZippedWithTypeCompatibility == zipFunSigsWithTypesCompatible(args, nameCompatibleFuncs),
-    result == filterCompatibleArgTypes_acc(funSigsZippedWithTypeCompatibility, []).
+    result == filterCompatibleArgTypes(funSigsZippedWithTypeCompatibility).
 
-  filterCompatibleArgTypes_acc : list((BOOL * (list(TYPE) * TYPE))) * list((list(TYPE) * TYPE)) -> list((list(TYPE) * TYPE))
-  filterCompatibleArgTypes_acc([], acc) = acc.
-  filterCompatibleArgTypes_acc([(TRUE() , f) | fs], acc) = filterCompatibleArgTypes_acc(fs, [f | acc]).
-  filterCompatibleArgTypes_acc([(FALSE(), _) | fs], acc) = filterCompatibleArgTypes_acc(fs, acc).
+  filterCompatibleArgTypes : list((BOOL * (list(TYPE) * TYPE))) -> list((list(TYPE) * TYPE))
+  filterCompatibleArgTypes([]) = [].
+  filterCompatibleArgTypes([(TRUE() , f) | fs]) = [f | filterCompatibleArgTypes(fs)].
+  filterCompatibleArgTypes([(FALSE(), _) | fs]) = filterCompatibleArgTypes(fs).
 
   zipFunSigsWithTypesCompatible maps zipFunSigWithTypesCompatible(*, list(*)) = list(*)
   zipFunSigWithTypesCompatible : list(TYPE) * (path * (occurrence * (list(TYPE) * TYPE))) -> (BOOL * (list(TYPE) * TYPE))
