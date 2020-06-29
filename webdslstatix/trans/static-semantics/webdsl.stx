@@ -5,7 +5,6 @@ imports
 
   static-semantics/webdsl-actions
   static-semantics/webdsl-entities
-  static-semantics/webdsl-functions
   static-semantics/webdsl-types
 
 signature
@@ -91,8 +90,15 @@ rules // declare common rules and mappings
 
 rules // typing
 
+  typesOfExps maps typeOfExp(*, list(*)) = list(*)
   typeOfExp : scope * Exp  -> TYPE
   typeOfExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
+
+  typesCompatible : list(TYPE) * list(TYPE) -> BOOL
+  typesCompatible([], []) = TRUE().
+  typesCompatible([], [_|_]) = FALSE().
+  typesCompatible([_|_], []) = FALSE().
+  typesCompatible([t1|t1s], [t2|t2s]) = andB(typeCompatible(t1, t2), typesCompatible(t1s, t2s)).
 
   typeCompatible : TYPE * TYPE -> BOOL
   typeCompatible(T1, T2) = FALSE(). //default
@@ -104,6 +110,10 @@ rules // utils
   orB(_, _) = FALSE().
   orB(TRUE(), _) = TRUE().
   orB(FALSE(), TRUE()) = TRUE().
+
+  andB : BOOL * BOOL -> BOOL
+  andB(_, _) = FALSE().
+  andB(TRUE(), TRUE()) = TRUE().
 
   equalB : BOOL * BOOL
   equalB(b, b).

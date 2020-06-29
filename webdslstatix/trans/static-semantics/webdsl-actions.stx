@@ -7,6 +7,12 @@ imports
 
 rules // functions
 
+  typeOfExp(s, c@ThisCall(f, argExps)) = t :- {argTypes}
+    argTypes == typesOfExps(s, argExps),
+    getTypeCompatibleFunDecls(s, f, argTypes) == [(_, t)] | error $[Zero or multiple function definition compatible with given argument types for function [f]] @c.
+    // TO-DO: support multiple compatible function declarations, choose correct overloaded version
+    //  as reference
+
   defOk(s, GlobalFunction(f)) :- functionOk(s, f).
   defOk(s, ExtendGlobalFunction(f)) :- functionOk(s, f).
   defOk(s, CachedGlobalFunction(f)) :-
@@ -54,8 +60,23 @@ rules // functions
 
   amountOfFunDeclsWithArgs : list((path * (occurrence * (list(TYPE) * TYPE)))) * list(TYPE) * int -> int
   amountOfFunDeclsWithArgs([], _, n) = n.
-  amountOfFunDeclsWithArgs([(_, (_, (types, _)))|tail], types, n) = amountOfFunDeclsWithArgs(tail, types, i) :- i #= n + 1.
-  amountOfFunDeclsWithArgs([(_, (_, (_    , _)))|tail], types, n) = amountOfFunDeclsWithArgs(tail, types, n).
+  amountOfFunDeclsWithArgs([(_, (_, (types, _))) | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, i) :- i #= n + 1.
+  amountOfFunDeclsWithArgs([(_, (_, (_    , _))) | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, n).
+
+  getTypeCompatibleFunDecls : scope * string * list(TYPE) -> list((list(TYPE) * TYPE))
+  getTypeCompatibleFunDecls(s, f, args) = result :- {nameCompatibleFuncs funSigsZippedWithTypeCompatibility}
+    typeOfFunDecl of Function{f} in s |-> nameCompatibleFuncs,
+    funSigsZippedWithTypeCompatibility == zipFunSigsWithTypesCompatible(args, nameCompatibleFuncs),
+    result == filterCompatibleArgTypes_acc(funSigsZippedWithTypeCompatibility, []).
+
+  filterCompatibleArgTypes_acc : list((BOOL * (list(TYPE) * TYPE))) * list((list(TYPE) * TYPE)) -> list((list(TYPE) * TYPE))
+  filterCompatibleArgTypes_acc([], acc) = acc.
+  filterCompatibleArgTypes_acc([(TRUE() , f) | fs], acc) = filterCompatibleArgTypes_acc(fs, [f | acc]).
+  filterCompatibleArgTypes_acc([(FALSE(), _) | fs], acc) = filterCompatibleArgTypes_acc(fs, acc).
+
+  zipFunSigsWithTypesCompatible maps zipFunSigWithTypesCompatible(*, list(*)) = list(*)
+  zipFunSigWithTypesCompatible : list(TYPE) * (path * (occurrence * (list(TYPE) * TYPE))) -> (BOOL * (list(TYPE) * TYPE))
+  zipFunSigWithTypesCompatible(args, (_, (_, f@(funArgs, _)))) = (typesCompatible(args, funArgs), f).
 
 rules // statements
 
