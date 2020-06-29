@@ -50,6 +50,7 @@ signature
 
   relations
     typeOfDecl : occurrence -> TYPE
+    typeOfFunDecl : occurrence -> (list(TYPE) * TYPE)
     entity : occurrence -> scope
 
 rules // application and module

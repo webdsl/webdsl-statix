@@ -14,27 +14,48 @@ rules // functions
     functionOk(s, f).
 
   functionOk : scope * Function
-  functionOk(s_outer, Function(_, FormalArgs(args), OptSortSome(returnSort), Block(stmts))) :- {returnType s_function s_body}
+  functionOk(s_outer, Function(name, FormalArgs(args), OptSortSome(returnSort), Block(stmts))) :- {argTypes returnType s_function s_body}
     returnType == typeOfSort(s_outer, returnSort),
     new s_function, s_function -F-> s_outer,
-    declArgs(s_function, args),
+    argTypes == typesOfArgs(s_outer, args),
+    declVars(s_function, zipArgTypes(args, argTypes)),
     new s_body, s_body -P-> s_function,
-    stmtsOk(s_body, stmts, returnType).
-
-  declArgs maps declArg(*, list(*))
-  declArg : scope * FormalArg
-  declArg(s, Arg(x, sort)) :- {t}
-    t == typeOfSort(s, sort),
-    inequalType(t, UNTYPED()) | error $[Unknown type [sort]] @sort,
-    declVar(s, x, t).
+    stmtsOk(s_body, stmts, returnType),
+    declFunction(s_outer, name, argTypes, returnType).
 
   canBeCached : scope * Function
-  canBeCached(s, Function(function_name, FormalArgs([]), OptSortSome(returnSort), _)) :- 
+  canBeCached(s, Function(function_name, FormalArgs([]), OptSortSome(returnSort), _)) :-
     inequalType(typeOfSort(s, returnSort), VOID())
         | error $[Only functions that have a return type can be cached] @function_name.
 
   canBeCached(s, Function(function_name, FormalArgs([_|_]), _, _)) :- false
         | error $[Only functions without arguments can be cached] @function_name.
+
+  declFunction : scope * string * list(TYPE) * TYPE
+  declFunction(s, name, argTypes, returnType) :-
+    s -> Function{name} with typeOfFunDecl (argTypes, returnType),
+    noDuplicateFunDefs(s, name, argTypes).
+
+  typesOfArgs maps typeOfArg(*, list(*)) = list(*)
+  typeOfArg : scope * FormalArg -> TYPE
+  typeOfArg(s, Arg(_, sort)) = t :-
+    t == typeOfSort(s, sort),
+    inequalType(t, UNTYPED()) | error $[Unknown type [sort]] @sort.
+
+  zipArgTypes maps zipArgType(list(*), list(*)) = list(*)
+  zipArgType : FormalArg * TYPE -> (string * TYPE)
+  zipArgType(Arg(x, _), t) = (x, t).
+
+  noDuplicateFunDefs : scope * string * list(TYPE)
+  noDuplicateFunDefs(s, name, types) :- {result}
+    typeOfFunDecl of Function{name} in s |-> result,
+    amountOfFunDeclsWithArgs(result, types, 0) == 1
+        | error $[Duplicate definition of function [name] with argument types [types]] @name.
+
+  amountOfFunDeclsWithArgs : list((path * (occurrence * (list(TYPE) * TYPE)))) * list(TYPE) * int -> int
+  amountOfFunDeclsWithArgs([], _, n) = n.
+  amountOfFunDeclsWithArgs([(_, (_, (types, _)))|tail], types, n) = amountOfFunDeclsWithArgs(tail, types, i) :- i #= n + 1.
+  amountOfFunDeclsWithArgs([(_, (_, (_    , _)))|tail], types, n) = amountOfFunDeclsWithArgs(tail, types, n).
 
 rules // statements
 
@@ -98,6 +119,12 @@ rules // variables
     t == typeOfExp(s, exp),
     inequalType(t, UNTYPED()) | error $[Cannot resolve type of expression [exp]],
     declVar(s, x, t).
+
+  declVars : scope * list((string * TYPE))
+  declVars(s, []).
+  declVars(s, [(x, t)|tail]) :-
+    declVar(s, x, t),
+    declVars(s, tail).
 
   declVar : scope * string * TYPE
   declVar(s, x, t) :-
