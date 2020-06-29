@@ -190,7 +190,7 @@ rules // resolve reference types
 
   getFieldType : scope * string -> TYPE
   getFieldType(s_entity, x) = t :- {x'}
-    query typeOfDecl filter e and { Variable{v} :- v == x } min in s_entity |-> [(_, (x', t))] 
+    query typeOfDecl filter INHERIT* and { Variable{v} :- v == x } min in s_entity |-> [(_, (Variable{x'}, t))] 
         | error $[Field [x] is not defined] @x,
     @x.ref := x',
     @x.type := t.
