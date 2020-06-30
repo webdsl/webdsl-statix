@@ -7,11 +7,11 @@ imports
 
 rules // functions
 
-  typeOfExp(s, c@ThisCall(f, argExps)) = t :- {argTypes}
+  typeOfExp(s, c@ThisCall(f, argExps)) = t :- {argTypes compatibleFunSigs}
     argTypes == typesOfExps(s, argExps),
-    getTypeCompatibleFunDecls(s, f, argTypes) == [(_, t)] | error $[Zero or multiple function definition compatible with given argument types for function [f]] @c.
-    // TO-DO: support multiple compatible function declarations, choose correct overloaded version
-    //  as reference
+    compatibleFunSigs == getTypeCompatibleFunSigs(s, f, argTypes),
+    compatibleFunSigs != [] | error $[No function definitions compatible with function [f] with given argument types],
+    getMostSpecificFunSigs(argTypes, compatibleFunSigs) == [(_, t)] | error $[Multiple function definition equally specific for function [f] with given argument types] @c.
 
   defOk(s, GlobalFunction(f)) :- functionOk(s, f).
   defOk(s, ExtendGlobalFunction(f)) :- functionOk(s, f).
@@ -63,8 +63,8 @@ rules // functions
   amountOfFunDeclsWithArgs([(_, (_, (types, _))) | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, i) :- i #= n + 1.
   amountOfFunDeclsWithArgs([(_, (_, (_    , _))) | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, n).
 
-  getTypeCompatibleFunDecls : scope * string * list(TYPE) -> list((list(TYPE) * TYPE))
-  getTypeCompatibleFunDecls(s, f, args) = result :- {nameCompatibleFuncs funSigsZippedWithTypeCompatibility}
+  getTypeCompatibleFunSigs : scope * string * list(TYPE) -> list((list(TYPE) * TYPE))
+  getTypeCompatibleFunSigs(s, f, args) = result :- {nameCompatibleFuncs funSigsZippedWithTypeCompatibility}
     typeOfFunDecl of Function{f} in s |-> nameCompatibleFuncs,
     funSigsZippedWithTypeCompatibility == zipFunSigsWithTypesCompatible(args, nameCompatibleFuncs),
     result == filterCompatibleArgTypes(funSigsZippedWithTypeCompatibility).
@@ -77,6 +77,24 @@ rules // functions
   zipFunSigsWithTypesCompatible maps zipFunSigWithTypesCompatible(*, list(*)) = list(*)
   zipFunSigWithTypesCompatible : list(TYPE) * (path * (occurrence * (list(TYPE) * TYPE))) -> (BOOL * (list(TYPE) * TYPE))
   zipFunSigWithTypesCompatible(args, (_, (_, f@(funArgs, _)))) = (typesCompatible(args, funArgs), f).
+
+  getMostSpecificFunSigs : list(TYPE) * list((list(TYPE) * TYPE)) -> list((list(TYPE) * TYPE))
+  getMostSpecificFunSigs(args, [])=  [].     // In case no functions are compatible, return empty list
+  getMostSpecificFunSigs(args, fs@[_]) = fs. // In case of only one compatible signature, return that
+  getMostSpecificFunSigs(args, sigs) = getMostSpecificFunSigs_helper(args, sigs, existsMatchingFunSig(args, sigs)).
+
+  getMostSpecificFunSigs_helper : list(TYPE) * list((list(TYPE) * TYPE)) * BOOL -> list((list(TYPE) * TYPE))
+  getMostSpecificFunSigs_helper(args, sigs, TRUE())   = [getMatchingFunSig(args, sigs)].
+  getMostSpecificFunSigs_helper(args, sigs, FALSE())  = sigs. // TO-DO : compare amount of inheritance edges from args to sigs and prune based on that.
+
+  existsMatchingFunSig : list(TYPE) * list((list(TYPE) * TYPE)) -> BOOL
+  existsMatchingFunSig(args, []) = FALSE().
+  existsMatchingFunSig(args, [(args, _) | _]) = TRUE().
+  existsMatchingFunSig(args, [_ | fs]) = existsMatchingFunSig(args, fs).
+
+  getMatchingFunSig : list(TYPE) * list((list(TYPE) * TYPE)) -> (list(TYPE) * TYPE)
+  getMatchingFunSig(args, [f@(args, _) | _]) = f.
+  getMatchingFunSig(args, [_ | fs]) = getMatchingFunSig(args, fs).
 
 rules // statements
 
