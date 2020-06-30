@@ -2,16 +2,18 @@ module static-semantics/webdsl-actions
 
 imports
   static-semantics/actions/binops
+  static-semantics/webdsl-entities
   static-semantics/webdsl-types
   static-semantics/webdsl
 
 rules // functions
 
-  typeOfExp(s, c@ThisCall(f, argExps)) = t :- {argTypes compatibleFunSigs f'}
+  typeOfExp(s, c@ThisCall(f, argExps)) = t :- {argTypes mostSpecificFunSigs f'}
     argTypes == typesOfExps(s, argExps),
-    compatibleFunSigs == getTypeCompatibleFunSigs(s, f, argTypes),
-    compatibleFunSigs != [] | error $[No function definitions compatible with function [f] with given argument types],
-    getMostSpecificFunSigs(argTypes, compatibleFunSigs) == [(Function{f'}, (_, t))] | error $[Multiple function definition equally specific for function [f] with given argument types] @c,
+    mostSpecificFunSigs == getMostSpecificFunSigs(argTypes, getTypeCompatibleFunSigs(s, f, argTypes)),
+    mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @c,
+    mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @c,
+    mostSpecificFunSigs == [(Function{f'}, (_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @c,
     @f.ref := f'.
 
   // global functions
@@ -108,7 +110,8 @@ rules  // rules and functions for function overloading
   // else return the most specific (least inheritance) signatures
   getMostSpecificFunSigs_helper : list(TYPE) * list((occurrence * (list(TYPE) * TYPE))) * BOOL -> list((occurrence * (list(TYPE) * TYPE)))
   getMostSpecificFunSigs_helper(args, sigs, TRUE())   = [getMatchingFunSig(args, sigs)].
-  getMostSpecificFunSigs_helper(args, sigs, FALSE())  = sigs. // TO-DO : compare amount of inheritance edges from args to sigs and prune based on that.
+  getMostSpecificFunSigs_helper(args, sigs, FALSE())  = filterLeastInheritanceAmount(minOfList(inheritanceAmounts), zipInheritanceAmountWithFunSig(inheritanceAmounts, sigs)) :-
+    inheritanceAmounts == getInheritanceAmounts(args, sigs).
 
   // helper function for getMostSpecificFunSigs that returns
   // whether an exactly matching function signature exists
@@ -121,6 +124,30 @@ rules  // rules and functions for function overloading
   getMatchingFunSig : list(TYPE) * list((occurrence * (list(TYPE) * TYPE))) -> (occurrence * (list(TYPE) * TYPE))
   getMatchingFunSig(args, [f@(_, (args, _)) | _]) = f.
   getMatchingFunSig(args, [_ | fs]) = getMatchingFunSig(args, fs).
+
+  // function that computes the total amount of inheritance edges from caller arguments to defined arguments
+  getInheritanceAmounts maps getInheritanceAmount(*, list(*)) = list(*)
+  getInheritanceAmount : list(TYPE) * (occurrence * (list(TYPE) * TYPE)) -> int
+  getInheritanceAmount(args, (_, (sigTypes, _))) = getInheritanceAmount_helper(args, sigTypes).
+
+  // helper function for getInheritanceAmount that computers the total amount of inheritance edges
+  getInheritanceAmount_helper : list(TYPE) * list(TYPE) -> int
+  getInheritanceAmount_helper([], []) = 0.
+  getInheritanceAmount_helper([ENTITY(s_arg) | argtl], [ENTITY(s_sig) | sigtl]) = x :- {y z}
+    y == getInheritEdgesAmount(s_arg, s_sig),
+    z == getInheritanceAmount_helper(argtl, sigtl),
+    x #= y + z.
+
+  // function that zips the inheritance amount with the function signature
+  zipInheritanceAmountWithFunSig : list(int) * list((occurrence * (list(TYPE) * TYPE))) -> list((int * (occurrence * (list(TYPE) * TYPE))))
+  zipInheritanceAmountWithFunSig([], []) = [].
+  zipInheritanceAmountWithFunSig([x|xs], [y|ys]) = [(x, y) | zipInheritanceAmountWithFunSig(xs, ys)].
+
+  // funciton that prunes the function signatures to only keep the lowest inheritance amount
+  filterLeastInheritanceAmount : int * list((int * (occurrence * (list(TYPE) * TYPE)))) -> list((occurrence * (list(TYPE) * TYPE)))
+  filterLeastInheritanceAmount(_, []) = [].
+  filterLeastInheritanceAmount(x, [(x, sig) | sigtl]) = [sig | filterLeastInheritanceAmount(x, sigtl)].
+  filterLeastInheritanceAmount(x, [_        | sigtl]) = filterLeastInheritanceAmount(x, sigtl).
 
 rules // statements
 

@@ -118,3 +118,15 @@ rules // utils
   equalB : BOOL * BOOL
   equalB(b, b).
   equalB(_, _) :- false.
+
+  minOfList : list(int) -> int
+  minOfList([]) = 100000.
+  minOfList([x|xs]) = z :- {y}
+    y == minOfList(xs),
+    z #= min(x,y).
+
+  pathLength : path -> int
+  pathLength(_PathEmpty(_)) = 0.
+  pathLength(_PathStep(p, _, _)) = x :- {x'}
+    x' == pathLength(p),
+    x #= x' + 1.
