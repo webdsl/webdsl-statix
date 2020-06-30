@@ -8,9 +8,10 @@ imports
 rules // entity declaration
 
   // entity x : super { ... }
-  defOk(s_global, Entity(x, super, bodydecs)) :- {s_entity s_super entity_scopes}
+  defOk(s_global, e@Entity(x, super, bodydecs)) :- {s_entity s_super entity_scopes}
     typeOfDecl of Entity{super} in s_global |-> [(_, (_, ENTITY(s_super)))] | error $[Entity [super] is not defined] @super,
     new s_entity, s_entity -INHERIT-> s_super,
+    noCircularInheritance(s_entity) | error $[Circular inhertitance detected] @e,
     declEntity(s_global, s_entity, x, bodydecs).
 
   // entity x { ... }
@@ -58,6 +59,13 @@ rules // entity declaration
     entity of ExtendEntity{entity_name} in s_global |-> entity_scopes, // get all other linked scopes to this name
     extendEntityScopes(entity_scopes, s_extend_entity),
     declEntityBody(s_extend_entity, bodydecs).
+
+  noCircularInheritance : scope
+  noCircularInheritance(s_ent) :- {res}
+    query () filter INHERIT+ and { s :- s == s_ent }
+             min $ < INHERIT
+             in s_ent |-> res,
+    res == [].
 
 rules // entity body declaration
 
