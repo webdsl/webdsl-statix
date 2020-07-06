@@ -32,19 +32,19 @@ signature
       IMPORT  // import edge label for importing the global scope and other modules
     resolve
       Entity
-      filter P* F* EXTEND* INHERIT* IMPORT*
+      filter P* F* EXTEND? INHERIT* IMPORT*
       min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
     resolve
       ExtendEntity
-      filter P* F* EXTEND* INHERIT* IMPORT*
+      filter P* F* EXTEND? INHERIT* IMPORT*
       min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
     resolve
       Function
-      filter P* F* EXTEND* INHERIT* IMPORT*
+      filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
       min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
     resolve
       Variable
-      filter P* F* EXTEND* INHERIT* IMPORT*
+      filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
       min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
 
   relations
