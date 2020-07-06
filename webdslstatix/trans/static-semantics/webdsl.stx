@@ -42,7 +42,6 @@ signature
     resolve
       Function
       filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-      min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
     resolve
       Variable
       filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*

@@ -82,7 +82,7 @@ rules  // rules and functions for function overloading
   getTypeCompatibleFunSigs : scope * string * list(TYPE) -> list((occurrence * FUNSIG))
   getTypeCompatibleFunSigs(s, f, args) = result :- {nameCompatibleFuncs funSigsZippedWithTypeCompatibility}
     typeOfFunDecl of Function{f} in s |-> nameCompatibleFuncs,
-    funSigsZippedWithTypeCompatibility == zipFunSigsWithTypesCompatible(args, nameCompatibleFuncs),
+    funSigsZippedWithTypeCompatibility == zipFunSigsWithTypesCompatible(args, dropPaths(nameCompatibleFuncs)),
     result == filterCompatibleArgTypes(funSigsZippedWithTypeCompatibility).
 
   // helper function for getTypeCompatibleFunSigs that prunes the list
@@ -95,13 +95,13 @@ rules  // rules and functions for function overloading
   // helper function for getTypeCompatibleFunSigs that zips the
   // function signatures with whether the types are compatible with given argument types
   zipFunSigsWithTypesCompatible maps zipFunSigWithTypesCompatible(*, list(*)) = list(*)
-  zipFunSigWithTypesCompatible : list(TYPE) * (path * (occurrence * FUNSIG)) -> (BOOL * (occurrence * FUNSIG))
-  zipFunSigWithTypesCompatible(args, (_, f@(_, (funArgs, _)))) = (typesCompatible(args, funArgs), f).
+  zipFunSigWithTypesCompatible : list(TYPE) * (occurrence * FUNSIG) -> (BOOL * (occurrence * FUNSIG))
+  zipFunSigWithTypesCompatible(args, f@(_, (funArgs, _))) = (typesCompatible(args, funArgs), f).
 
   // function that prunes the list of compatible function signatures
   // to a list of most specific function signatures
   getMostSpecificFunSigs : list(TYPE) * list((occurrence * FUNSIG)) -> list((occurrence * FUNSIG))
-  getMostSpecificFunSigs(args, [])=  [].     // In case no functions are compatible, return empty list
+  getMostSpecificFunSigs(args, []) = [].     // In case no functions are compatible, return empty list
   getMostSpecificFunSigs(args, fs@[_]) = fs. // In case of only one compatible signature, return that
   getMostSpecificFunSigs(args, sigs) = getMostSpecificFunSigs_helper(args, sigs, existsMatchingFunSig(args, sigs)).
 
@@ -148,6 +148,10 @@ rules  // rules and functions for function overloading
   filterLeastInheritanceAmount(_, []) = [].
   filterLeastInheritanceAmount(x, [(x, sig) | sigtl]) = [sig | filterLeastInheritanceAmount(x, sigtl)].
   filterLeastInheritanceAmount(x, [_        | sigtl]) = filterLeastInheritanceAmount(x, sigtl).
+
+  dropPaths maps dropPath(list(*)) = list(*)
+  dropPath : (path * (occurrence * FUNSIG)) -> (occurrence * FUNSIG)
+  dropPath((_, x)) = x.
 
 rules // statements
 
