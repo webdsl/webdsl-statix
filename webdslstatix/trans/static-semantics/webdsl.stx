@@ -12,6 +12,7 @@ signature
   sorts
     TYPE // semantic type
     BOOL // used as return values of functional constraints
+    FUNSIG = (list(TYPE) * TYPE) // type alias for a function signature
 
   constructors
     TRUE : BOOL
@@ -48,9 +49,9 @@ signature
       min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
 
   relations
-    typeOfDecl : occurrence -> TYPE
-    typeOfFunDecl : occurrence -> (list(TYPE) * TYPE)
-    entity : occurrence -> scope
+    typeOfDecl    : occurrence -> TYPE
+    typeOfFunDecl : occurrence -> FUNSIG
+    entity        : occurrence -> scope
 
 rules // application and module
 
