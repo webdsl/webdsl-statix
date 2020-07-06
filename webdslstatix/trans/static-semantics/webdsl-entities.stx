@@ -74,11 +74,11 @@ rules // entity body declaration
   declEntityBody maps declEntityBodyDeclaration(*, list(*))
 
   // entity function
-  declEntityBodyDeclaration(s, EntityFunction(f)) :- functionOk(s, f).
-  declEntityBodyDeclaration(s, StaticEntityFunction(f)) :- functionOk(s, f).
+  declEntityBodyDeclaration(s, EntityFunction(f)) :- entityFunctionOk(s, f).
+  declEntityBodyDeclaration(s, StaticEntityFunction(f)) :- entityFunctionOk(s, f).
   declEntityBodyDeclaration(s, CachedFunction(f)) :-
     canBeCached(s, f),
-    functionOk(s, f).
+    entityFunctionOk(s, f).
 
   // entity property
   declEntityBodyDeclaration(s, Property(x, propkind, sort, annos)) :- {sortType}

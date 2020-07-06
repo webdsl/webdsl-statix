@@ -17,10 +17,10 @@ rules // functions
     @f.ref := f'.
 
   // global functions
-  defOk(s, GlobalFunction(f)) :- functionOk(s, f).
+  defOk(s, GlobalFunction(f)) :- globalFunctionOk(s, f).
   defOk(s, CachedGlobalFunction(f)) :-
     canBeCached(s, f),
-    functionOk(s, f).
+    globalFunctionOk(s, f).
 
   // defOk(s, ExtendGlobalFunction(f)) :- functionOk(s, f). TO-DO: support function extensions
 
@@ -29,15 +29,25 @@ rules // functions
   // - declare arguments as variables in function scope
   // - analyze function body
   // - declare function in given scope
-  functionOk : scope * Function
-  functionOk(s_outer, Function(name, FormalArgs(args), OptSortSome(returnSort), Block(stmts))) :- {argTypes returnType s_function s_body}
+  globalFunctionOk : scope * Function
+  globalFunctionOk(s_outer, Function(name, FormalArgs(args), OptSortSome(returnSort), Block(stmts))) :- {argTypes returnType s_function s_body}
     returnType == typeOfSort(s_outer, returnSort),
     new s_function, s_function -F-> s_outer,
     argTypes == typesOfArgs(s_outer, args),
     declVars(s_function, zipArgTypes(args, argTypes)),
     new s_body, s_body -P-> s_function,
     stmtsOk(s_body, stmts, returnType),
-    declFunction(s_outer, name, argTypes, returnType).
+    declFunctionGlobal(s_outer, name, argTypes, returnType).
+
+  entityFunctionOk : scope * Function
+  entityFunctionOk(s_outer, Function(name, FormalArgs(args), OptSortSome(returnSort), Block(stmts))) :- {argTypes returnType s_function s_body}
+    returnType == typeOfSort(s_outer, returnSort),
+    new s_function, s_function -F-> s_outer,
+    argTypes == typesOfArgs(s_outer, args),
+    declVars(s_function, zipArgTypes(args, argTypes)),
+    new s_body, s_body -P-> s_function,
+    stmtsOk(s_body, stmts, returnType),
+    declFunctionEntity(s_outer, name, argTypes, returnType).
 
   // predicate that defines when a function can be cached
   canBeCached : scope * Function
@@ -46,10 +56,15 @@ rules // functions
 
   // declare a function in a given scope
   // and define the relation typeOfFunDecl with signature (argument types  * return type)
-  declFunction : scope * string * list(TYPE) * TYPE
-  declFunction(s, name, argTypes, returnType) :-
+  declFunctionGlobal : scope * string * list(TYPE) * TYPE
+  declFunctionGlobal(s, name, argTypes, returnType) :-
     s -> Function{name} with typeOfFunDecl (argTypes, returnType),
-    noDuplicateFunDefs(s, name, argTypes).
+    noDuplicateFunDefsGlobal(s, name, argTypes).
+
+  declFunctionEntity : scope * string * list(TYPE) * TYPE
+  declFunctionEntity(s, name, argTypes, returnType) :-
+    s -> Function{name} with typeOfFunDecl (argTypes, returnType),
+    noDuplicateFunDefsEntity(s, name, argTypes).
 
   // map syntactic types to semantic types
   typesOfArgs maps typeOfArg(*, list(*)) = list(*)
@@ -64,11 +79,19 @@ rules // functions
   zipArgType(Arg(x, _), t) = (x, t).
 
   // predicate that defines when there are overlapping function signatures
-  noDuplicateFunDefs : scope * string * list(TYPE)
-  noDuplicateFunDefs(s, name, types) :- {result}
+  noDuplicateFunDefsGlobal : scope * string * list(TYPE)
+  noDuplicateFunDefsGlobal(s, name, types) :- {result}
     typeOfFunDecl of Function{name} in s |-> result,
     amountOfFunDeclsWithArgs(result, types, 0) == 1
         | error $[Duplicate definition of function [name] with argument types [types]] @name.
+
+  noDuplicateFunDefsEntity : scope * string * list(TYPE)
+  noDuplicateFunDefsEntity(s, f, types) :- {result}
+    query typeOfFunDecl filter EXTEND?
+                        and { Function{f'} :- f' == f }
+                        in s |-> result,
+    amountOfFunDeclsWithArgs(result, types, 0) == 1
+        | error $[Duplicate definition of function [f] with argument types [types]] @f.
 
   // helper function for noDuplicateFunDefs that counts the amount of function with a given name and argument types
   amountOfFunDeclsWithArgs : list((path * (occurrence * FUNSIG))) * list(TYPE) * int -> int
