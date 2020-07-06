@@ -8,12 +8,24 @@ imports
 
 rules // functions
 
-  typeOfExp(s, c@ThisCall(f, argExps)) = t :- {argTypes mostSpecificFunSigs f'}
+  typeOfExp(s, c@ThisCall(f, argExps)) = t :- {argTypes nameCompatibleFunSigs mostSpecificFunSigs f'}
     argTypes == typesOfExps(s, argExps),
-    mostSpecificFunSigs == getMostSpecificFunSigs(argTypes, getTypeCompatibleFunSigs(s, f, argTypes)),
+    nameCompatibleFunSigs == getNameCompatibleFunSigs(s, f),
+    mostSpecificFunSigs == getMostSpecificFunSigs(argTypes, getTypeCompatibleFunSigs(nameCompatibleFunSigs, argTypes)),
     mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @c,
     mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @c,
     mostSpecificFunSigs == [(Function{f'}, (_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @c,
+    @f.ref := f'.
+
+  typeOfExp(s, c@Call(exp, f, argExps)) = t :- {argTypes s_entity nameCompatibleFunSigs mostSpecificFunSigs f'}
+    argTypes == typesOfExps(s, argExps),
+    typeOfExp(s, exp) == ENTITY(s_entity),
+    nameCompatibleFunSigs == getNameCompatibleFunSigsInEntity(s_entity, f),
+    mostSpecificFunSigs == getMostSpecificFunSigs(argTypes, getTypeCompatibleFunSigs(nameCompatibleFunSigs, argTypes)),
+    mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @c,
+    mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @c,
+    mostSpecificFunSigs == [(Function{f'}, (_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @c,
+    //TO-DO: filter mostSpecificFunSigs for correct overriding according to known subtype at compile time
     @f.ref := f'.
 
   // global functions
@@ -101,10 +113,19 @@ rules // functions
 
 rules  // rules and functions for function overloading
 
+  getNameCompatibleFunSigs : scope * string -> list((path * (occurrence * FUNSIG)))
+  getNameCompatibleFunSigs(s, f) = res :-
+    typeOfFunDecl of Function{f} in s |-> res.
+
+  getNameCompatibleFunSigsInEntity : scope * string -> list((path * (occurrence * FUNSIG)))
+  getNameCompatibleFunSigsInEntity(s, f) = res :-
+    query typeOfFunDecl filter EXTEND? (INHERIT EXTEND?)*
+                        and { Function{f'} :- f' == f }
+                        in s |-> res.
+
   // function that gets all functions with matching name and compatible argument types
-  getTypeCompatibleFunSigs : scope * string * list(TYPE) -> list((occurrence * FUNSIG))
-  getTypeCompatibleFunSigs(s, f, args) = result :- {nameCompatibleFuncs funSigsZippedWithTypeCompatibility}
-    typeOfFunDecl of Function{f} in s |-> nameCompatibleFuncs,
+  getTypeCompatibleFunSigs : list((path * (occurrence * FUNSIG))) * list(TYPE) -> list((occurrence * FUNSIG))
+  getTypeCompatibleFunSigs(nameCompatibleFuncs, args) = result :- {funSigsZippedWithTypeCompatibility}
     funSigsZippedWithTypeCompatibility == zipFunSigsWithTypesCompatible(args, dropPaths(nameCompatibleFuncs)),
     result == filterCompatibleArgTypes(funSigsZippedWithTypeCompatibility).
 
