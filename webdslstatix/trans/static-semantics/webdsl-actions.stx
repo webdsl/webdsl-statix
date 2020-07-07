@@ -199,43 +199,43 @@ rules  // rules and functions for function overloading
 
 rules // statements
 
-  stmtOk(s, Stat(exp), _) :-
+  stmtOk(s, _, Stat(exp), _) :-
     expOk(s, exp).
 
-  stmtOk(s, VarDecl(x, sort), _) :- {t}
+  stmtOk(s, s_decl, VarDecl(x, sort), _) :- {t}
     t == typeOfSort(s, sort),
     inequalType(t, UNTYPED()) | error $[Unknown type [sort]] @sort,
-    declVar(s, x, t).
+    declVar(s_decl, x, t).
 
-  stmtOk(s, VarDeclInit(x, sort, exp), _) :- {t}
+  stmtOk(s, s_decl, VarDeclInit(x, sort, exp), _) :- {t}
     t == typeOfSort(s, sort),
     equalType(t, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [sort]] @exp,
-    declVar(s, x, t).
+    declVar(s_decl, x, t).
 
-  stmtOk(s, VarDeclInitInferred(x, exp), _) :- {t}
+  stmtOk(s, s_decl, VarDeclInitInferred(x, exp), _) :- {t}
     t == typeOfExp(s, exp),
     inequalType(t, UNTYPED()) | error $[Unable to infer type of [exp]] @exp,
-    declVar(s, x, t).
+    declVar(s_decl, x, t).
 
-  stmtOk(s, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a variable].
-  stmtOk(s, Assignment(Var(x), exp), _) :- {varType}
+  stmtOk(s, _, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a variable].
+  stmtOk(s, _, Assignment(Var(x), exp), _) :- {varType}
     varType == getVariableType(s, x),
     equalType(varType, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [varType]].
 
-  stmtOk(s, If(c, Block(then), Block(else)), rt) :- {s_then s_else}
+  stmtOk(s, _, If(c, Block(then), Block(else)), rt) :- {s_then s_else}
     equalType(typeOfExp(s, c), BOOL()) | error $[Condition should be of type bool],
     new s_then, s_then -P-> s,
     stmtsOk(s_then, then, rt),
     new s_else, s_else -P-> s,
     stmtsOk(s_else, else, rt).
 
-  stmtOk(s, r@Return(exp), returnType) :- {returnExpType}
+  stmtOk(s, _, r@Return(exp), returnType) :- {returnExpType}
     inequalType(returnType, UNTYPED()) | error $[Return statement not allowed here] @r,
     inequalType(returnType, VOID()) | error $[No return type specified in this context] @exp,
     returnExpType == typeOfExp(s, exp),
     equalType(returnExpType, returnType) | error $[Must return an expression of type [returnType], [returnExpType] given] @exp.
 
-  stmtOk(s, r@ReturnEmpty(), returnType) :-
+  stmtOk(s, _, r@ReturnEmpty(), returnType) :-
     inequalType(returnType, UNTYPED()) | error $[Return statement not allowed here] @r,
     equalType(returnType, VOID()) | error $[Must return an expression of type [returnType]] @r.
 
