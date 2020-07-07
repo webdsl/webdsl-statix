@@ -10,60 +10,60 @@ rules // binary operators
   typeOfExp(s, Add(e1, e2)) = T :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    getLUBForAdd(T1, T2) == T,
+    lubForAdd(T1, T2) == T,
     T != UNTYPED() | error $[Wrong operand types for operator Add: [e1] has type [T1],[e2] has type [T2]].
 
   // (e1 - e2)
   typeOfExp(s, Sub(e1, e2)) = T :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    getEqualNumericType(T1, T2) == T,
+    equalNumericType(T1, T2) == T,
     T != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
 
   // (e1 * e2)
   typeOfExp(s, Mul(e1, e2)) = T :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    getEqualNumericType(T1, T2) == T,
+    equalNumericType(T1, T2) == T,
     T != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
 
   // (e1 / e2)
   typeOfExp(s, Div(e1, e2)) = T :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    getEqualNumericType(T1, T2) == T,
+    equalNumericType(T1, T2) == T,
     T != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
 
   // (e1 % e2)
   typeOfExp(s, Mod(e1, e2)) = T :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    getEqualNumericType(T1, T2) == T,
+    equalNumericType(T1, T2) == T,
     T != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
 
   // (e1 > e2)
   typeOfExp(s, LargerThan(e1, e2)) = BOOL() :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    getEqualNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
+    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
 
   // (e1 >= e2)
   typeOfExp(s, LargerThanOrEqual(e1, e2)) = BOOL() :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    getEqualNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
+    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
 
   // (e1 < e2)
   typeOfExp(s, SmallerThan(e1, e2)) = BOOL() :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    getEqualNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
+    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
 
   // (e1 <= e2)
   typeOfExp(s, SmallerThanOrEqual(e1, e2)) = BOOL() :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    getEqualNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
+    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]].
 
   // (e1 && e2)
   typeOfExp(s, And(e1, e2)) = BOOL() :- {T1 T2} 
@@ -102,15 +102,15 @@ rules // unary operators
 
 rules // utils
 
-  getLUBForAdd : TYPE * TYPE -> TYPE
-  getLUBForAdd(T1, T2) = getEqualNumericType(T1, T2).
-  getLUBForAdd(STRING(), _) = STRING().
-  getLUBForAdd(_, STRING()) = STRING().
+  lubForAdd : TYPE * TYPE -> TYPE
+  lubForAdd(T1, T2) = equalNumericType(T1, T2).
+  lubForAdd(STRING(), _) = STRING().
+  lubForAdd(_, STRING()) = STRING().
 
-  getEqualNumericType : TYPE * TYPE -> TYPE
-  getEqualNumericType(_, _) = UNTYPED().
-  getEqualNumericType(INT(), INT()) = INT().
-  getEqualNumericType(INT(), LONG()) = LONG().
-  getEqualNumericType(LONG(), INT()) = LONG().
-  getEqualNumericType(LONG(), LONG()) = LONG().
-  getEqualNumericType(FLOAT(), FLOAT()) = FLOAT().
+  equalNumericType : TYPE * TYPE -> TYPE
+  equalNumericType(_, _) = UNTYPED().
+  equalNumericType(INT(), INT()) = INT().
+  equalNumericType(INT(), LONG()) = LONG().
+  equalNumericType(LONG(), INT()) = LONG().
+  equalNumericType(LONG(), LONG()) = LONG().
+  equalNumericType(FLOAT(), FLOAT()) = FLOAT().

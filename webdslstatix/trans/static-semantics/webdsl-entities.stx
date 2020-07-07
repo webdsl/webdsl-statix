@@ -136,7 +136,7 @@ rules // entity body declaration
 rules // entity resolving
 
   typeOfExp(s, ObjectCreation2Exp(ObjectCreation(SimpleSort(x), prop_assignments))) = ENTITY(s_entity) :-
-    getEntityType(s, x) == ENTITY(s_entity).
+    entityType(s, x) == ENTITY(s_entity).
     // TO-DO: check prop assignments
 
 rules // subtyping
@@ -154,8 +154,8 @@ rules // subtyping
   inheritsHelper(_) = FALSE().
   inheritsHelper([(_,_)]) = TRUE().
 
-  getInheritEdgesAmount : scope * scope -> int
-  getInheritEdgesAmount(s_sub, s_super) = pathLength(p) :-
+  inheritEdgesAmount : scope * scope -> int
+  inheritEdgesAmount(s_sub, s_super) = pathLength(p) :-
     query () filter INHERIT* and { s :- s == s_super }
              min $ < INHERIT
              in s_sub |-> [(p, _)].

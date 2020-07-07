@@ -134,7 +134,7 @@ rules // map sorts to semantic types
   typeOfSort(_, SimpleSort("Entity")) = ABSTRACTENTITY().
 
   // in case it's not a built in simple sort, it must be an entity
-  typeOfSort(s, SimpleSort(x)) = getEntityType(s, x).
+  typeOfSort(s, SimpleSort(x)) = entityType(s, x).
 
   typeOfSort(s, GenericSort("List", [innerSort])) = LIST(typeOfSort(s, innerSort)).
   typeOfSort(s, GenericSort(_, _)) = UNTYPED() :- false | error $[Only lists and sets with one type parameter are supported].
@@ -176,20 +176,20 @@ rules // WebDSL definition of being a simple type: built-in simple sort (no gene
 
 rules // resolve reference types
 
-  getEntityType : scope * string -> TYPE
-  getEntityType(s, e) = entity_type :- {e'}
+  entityType : scope * string -> TYPE
+  entityType(s, e) = entity_type :- {e'}
     typeOfDecl of Entity{e} in s |-> [(_, (Entity{e'}, entity_type))|_] | error $[Entity [e] is not defined],
     @e.ref := e',
     @e.type := entity_type.
 
-  getVariableType : scope * string -> TYPE
-  getVariableType(s, x) = t :- {x'}
+  variableType : scope * string -> TYPE
+  variableType(s, x) = t :- {x'}
     typeOfDecl of Variable{x} in s |-> [(_, (Variable{x'}, t))|_] | error $[Variable [x] is not defined],
     @x.ref := x',
     @x.type := t. // This doesn't seem to work yet; need to implement stx-editor-hover in Stratego I think
 
-  getFieldType : scope * string -> TYPE
-  getFieldType(s_entity, x) = t :- {x'}
+  fieldType : scope * string -> TYPE
+  fieldType(s_entity, x) = t :- {x'}
     query typeOfDecl filter EXTEND? (INHERIT EXTEND?)* and { Variable{v} :- v == x } min in s_entity |-> [(_, (Variable{x'}, t))] 
         | error $[Field [x] is not defined] @x,
     @x.ref := x',
