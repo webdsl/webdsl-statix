@@ -1,6 +1,7 @@
 module static-semantics/webdsl-entities
 
 imports
+  static-semantics/actions/functions
   static-semantics/webdsl-actions
   static-semantics/webdsl-types
   static-semantics/webdsl
