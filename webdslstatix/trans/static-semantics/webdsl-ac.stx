@@ -1,0 +1,30 @@
+module static-semantics/webdsl-ac
+
+imports
+  static-semantics/webdsl-types
+  static-semantics/webdsl
+
+rules
+
+  sectionOk(s, AccessControlDefinition(_, defs)) :- acDefsOk(s, defs).
+
+  acDefsOk maps acDefOk(*, list(*))
+  acDefOk : scope * AccessControlDefinition
+  acDefOk(_,_) :- false | error $[This access control definition is not yet supported].
+
+  defOk(s, AccessControlPrincipalDef(ent, fields)) :- principalDefOk(s, ent, fields).
+  acDefOk(s, AccessControlPrincipalAcDef(ent, fields)) :- principalDefOk(s, ent, fields).
+
+  principalDefOk : scope * string * list(string)
+  principalDefOk(s, ent, fields) :- {s_ent credential_types}
+    entityType(s, ent) == ENTITY(s_ent),
+    fieldTypes(s_ent, fields) == credential_types.
+
+  declSecurityContext : scope * string * list(string)
+  //TO-DO
+
+  acDefOk(s, Rule(AccessControlRule(_, _, _, exp, _))) :-
+    equalType(typeOfExp(s, exp), BOOL()) | error $[Rule should result in a boolean expression].
+
+  acDefOk(s, Rule(SpecialAccessControlRule(exp))) :-
+    equalType(typeOfExp(s, exp), BOOL()) | error $[Rule should result in a boolean expression].

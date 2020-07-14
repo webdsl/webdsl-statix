@@ -12,19 +12,24 @@ context-free sorts
   OptMatchArgs OptId OptWildCardArg
 
   // Access control sorts
-  AccessControlDefinition AccessControlPrincipal AccessControlRule AccessControlCheck
+  AccessControlDefinition AccessControlRule
   AccessControlPointcutElement AccessControlPointcut AccessControlImportRulesArg
   PolicyExp Predicate MatchArgs
 
 lexical sorts
 
-  MatchId WildCardArg
+  MatchId WildCardArg AccessControlRuleType
 
 lexical syntax
 
   MatchId = [a-zA-Z] [a-zA-Z0-9\_\-]* [\*]? 
   MatchId = [\*] 
   WildCardArg = [\*] 
+  AccessControlRuleType = "page"
+  AccessControlRuleType = "action"
+  AccessControlRuleType = "template"
+  AccessControlRuleType = "ajaxtemplate"
+  AccessControlRuleType = "pointcut"
 
 context-free syntax
 
@@ -32,17 +37,15 @@ context-free syntax
   Section.AccessControlDefinitionAlt = "access" "control" "rules" "{" OptId AccessControlDefinition* "}"
   OptId.OptIdNone = <>
   OptId.OptIdSome = Id
-  AccessControlPrincipal.AccessControlPrincipal = "principal" "is" Id "with" "credentials" {Id ","}+ 
-  Definition = AccessControlPrincipal
-  AccessControlDefinition = AccessControlPrincipal
-  AccessControlDefinition = AccessControlRule 
-  AccessControlRule.AccessControlRule = "rule" Id MatchId OptMatchArgs "{" AccessControlCheck AccessControlRule* "}" 
+  Definition.AccessControlPrincipalDef                = "principal" "is" Id "with" "credentials" {Id ","}+
+  AccessControlDefinition.AccessControlPrincipalAcDef = "principal" "is" Id "with" "credentials" {Id ","}+
+  AccessControlDefinition.Rule = AccessControlRule 
+  AccessControlRule.AccessControlRule = "rule" AccessControlRuleType MatchId OptMatchArgs "{" Exp AccessControlRule* "}"
+  AccessControlRule.SpecialAccessControlRule = "rule" "logsql" "{" Exp "}"
   OptMatchArgs.OptMatchArgsSome = "(" MatchArgs ")"
   OptMatchArgs.OptMatchArgsNone = <>
   MatchArgs.MatchArgs = {FormalArg ","}* OptWildCardArg {prefer}
-  MatchArgs.MatchArgsExps = {Exp ","}* OptWildCardArg 
-  AccessControlCheck = Exp 
-  AccessControlRule.SpecialAccessControlRule = "rule" Id "{" AccessControlCheck "}" 
+  MatchArgs.MatchArgsExps = {Exp ","}* OptWildCardArg
   Predicate.Predicate = "predicate" Id OptFormalArgs "{" Exp "}"
   Definition = Predicate
   AccessControlDefinition = Predicate

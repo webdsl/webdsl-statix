@@ -2,9 +2,11 @@ module static-semantics/webdsl
 
 imports
   signatures/WebDSL-Core-sig
+  signatures/WebDSL-AccessControl-sig
 
   static-semantics/actions/binops
   static-semantics/actions/functions
+  static-semantics/webdsl-ac
   static-semantics/webdsl-actions
   static-semantics/webdsl-entities
   static-semantics/webdsl-types

@@ -86,11 +86,13 @@ rules // type compatibility of constants
 rules // utils
 
   isDateCompatibleType : TYPE
+  isDateCompatibleType(_) :- false.
   isDateCompatibleType(DATE()).
   isDateCompatibleType(DATETIME()).
   isDateCompatibleType(TIME()).
 
   isStringCompatibleType : TYPE
+  isStringCompatibleType(_) :- false.
   isStringCompatibleType(STRING()).
   isStringCompatibleType(SECRET()).
   isStringCompatibleType(EMAIL()).
@@ -188,6 +190,7 @@ rules // resolve reference types
     @x.ref := x',
     @x.type := t. // This doesn't seem to work yet; need to implement stx-editor-hover in Stratego I think
 
+  fieldTypes maps fieldType(*, list(*)) = list(*)
   fieldType : scope * string -> TYPE
   fieldType(s_entity, x) = t :- {x'}
     query typeOfDecl filter EXTEND? (INHERIT EXTEND?)* and { Variable{v} :- v == x } min in s_entity |-> [(_, (Variable{x'}, t))] 
