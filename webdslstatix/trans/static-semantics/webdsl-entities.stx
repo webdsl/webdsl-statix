@@ -97,6 +97,7 @@ rules // entity body declaration
     equalType(sortType, typeOfExp(s, exp)) | error $[Expression [exp] must be of type [sort]] @exp,
     declProperty(s, x, sortType).
 
+  declProperties maps declProperty(*, list(*), list(*))
   declProperty : scope * string * TYPE
   declProperty(s, x, sortType) :-
     validPropertyName(x),

@@ -190,11 +190,11 @@ rules // resolve reference types
     @x.ref := x',
     @x.type := t. // This doesn't seem to work yet; need to implement stx-editor-hover in Stratego I think
 
-  fieldTypes maps fieldType(*, list(*)) = list(*)
-  fieldType : scope * string -> TYPE
-  fieldType(s_entity, x) = t :- {x'}
+  propertyTypes maps propertyType(*, list(*)) = list(*)
+  propertyType : scope * string -> TYPE
+  propertyType(s_entity, x) = t :- {x'}
     query typeOfDecl filter EXTEND? (INHERIT EXTEND?)* and { Variable{v} :- v == x } min in s_entity |-> [(_, (Variable{x'}, t))] 
-        | error $[Field [x] is not defined] @x,
+        | error $[Property [x] is not defined] @x,
     @x.ref := x',
     @x.type := t.
 

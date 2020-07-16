@@ -1,6 +1,8 @@
 module static-semantics/webdsl-ac
 
 imports
+  static-semantics/webdsl-actions
+  static-semantics/webdsl-entities
   static-semantics/webdsl-types
   static-semantics/webdsl
 
@@ -12,16 +14,29 @@ rules
   acDefOk : scope * AccessControlDefinition
   acDefOk(_,_) :- false | error $[This access control definition is not yet supported].
 
-  defOk(s, AccessControlPrincipalDef(ent, fields)) :- principalDefOk(s, ent, fields).
-  acDefOk(s, AccessControlPrincipalAcDef(ent, fields)) :- principalDefOk(s, ent, fields).
+  defOk(s, AccessControlPrincipalDef(ent, properties)) :- principalDefOk(s, ent, properties).
+  acDefOk(s, AccessControlPrincipalAcDef(ent, properties)) :- principalDefOk(s, ent, properties).
 
   principalDefOk : scope * string * list(string)
-  principalDefOk(s, ent, fields) :- {s_ent credential_types}
+  principalDefOk(s, ent, properties) :- {s_ent credential_types}
     entityType(s, ent) == ENTITY(s_ent),
-    fieldTypes(s_ent, fields) == credential_types.
+    propertyTypes(s_ent, properties) == credential_types,
+    compatibleCredentialTypes(properties, credential_types),
+    declSecurityContext(s, properties, credential_types).
 
-  declSecurityContext : scope * string * list(string)
-  //TO-DO
+  compatibleCredentialTypes maps compatibleCredentialType(list(*), list(*))
+  compatibleCredentialType : string * TYPE
+  compatibleCredentialType(x, s) :-
+    isStringCompatibleType(s) | error $[Credential types should be compatible with String type] @x.
+
+  declSecurityContext : scope * list(string) * list(TYPE)
+  declSecurityContext(s, properties, types) :- {s_security_context s_principal}
+    new s_principal,
+    declProperties(s_principal, properties, types),
+    new s_security_context,
+    declProperty(s_security_context, "principal", ENTITY(s_principal)),
+    declProperty(s_security_context, "loggedIn", BOOL()),
+    declVar(s, "securityContext", ENTITY(s_security_context)).
 
   acDefOk(s, Rule(AccessControlRule(_, _, _, exp, _))) :-
     equalType(typeOfExp(s, exp), BOOL()) | error $[Rule should result in a boolean expression].
