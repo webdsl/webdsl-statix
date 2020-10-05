@@ -38,8 +38,13 @@ rules
     declProperty(s_security_context, "loggedIn", BOOL()),
     declVar(s, "securityContext", ENTITY(s_security_context)).
 
-  acDefOk(s, Rule(AccessControlRule(_, _, _, exp, _))) :-
-    equalType(typeOfExp(s, exp), BOOL()) | error $[Rule should result in a boolean expression].
+  acDefOk(s, Rule(AccessControlRule(_, _, _, exp, nested))) :-
+    nestedAcRulesOk(s, nested),
+    equalType(typeOfExp(s, exp), BOOL()) | error $[Rule should result in a boolean expression] @exp.
 
   acDefOk(s, Rule(SpecialAccessControlRule(exp))) :-
-    equalType(typeOfExp(s, exp), BOOL()) | error $[Rule should result in a boolean expression].
+    equalType(typeOfExp(s, exp), BOOL()) | error $[Rule should result in a boolean expression] @exp.
+
+  nestedAcRulesOk maps nestedAcRuleOk(*, list(*))
+  nestedAcRuleOk : scope * AccessControlRule
+  nestedAcRuleOk(_, _) :- false | error $[Nested access control rules are not supported yet].
