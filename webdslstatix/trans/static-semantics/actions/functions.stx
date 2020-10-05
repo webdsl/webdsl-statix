@@ -15,7 +15,8 @@ rules // functions
     mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @c,
     mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @c,
     mostSpecificFunSigs == [(Function{f'}, (_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @c,
-    @f.ref := f'.
+    @f.ref := f',
+    @f.type := t.
 
   typeOfExp(s, c@Call(exp, f, argExps)) = t :- {argTypes s_entity nameCompatibleFunSigs mostSpecificFunSigs f'}
     argTypes == typesOfExps(s, argExps),
@@ -26,7 +27,8 @@ rules // functions
     mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @c,
     mostSpecificFunSigs == [(Function{f'}, (_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @c,
     //TO-DO: filter mostSpecificFunSigs for correct overriding according to known subtype at compile time
-    @f.ref := f'.
+    @f.ref := f',
+    @f.type := t.
 
   // global functions
   defOk(s, GlobalFunction(f)) :- globalFunctionOk(s, f).

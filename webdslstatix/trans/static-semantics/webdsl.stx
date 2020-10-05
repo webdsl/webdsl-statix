@@ -95,7 +95,7 @@ rules // declare common rules and mappings
 rules // typing
 
   typesOfExps maps typeOfExp(*, list(*)) = list(*)
-  typeOfExp : scope * Exp  -> TYPE
+  typeOfExp : scope * Exp -> TYPE
   typeOfExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
 
   typesCompatible : list(TYPE) * list(TYPE) -> BOOL
