@@ -8,18 +8,47 @@ imports
 rules // page definitions
 
   defOk(s, TemplateDefinition(DefinePage(mods, x, FormalArgs(fargs), TemplateArgs(targs), elements))) :-
-    // TO-DO: implement analysis for mods
+    // TO-DO: analyse mods
     targs == [] | error $[Template arguments are not allowed on page definitions] @targs,
     declPage(s, x, typesOfArgs(s, fargs)).
     // TO-DO: analyse elements
 
   declPage : scope * string * list(TYPE)
-  declPage(s, x, args) :-
-    s -> Ui{x} with typeOfDecl PAGE(args),
-    typeOfDecl of Ui{x} in s |-> [(_, (_, PAGE(args)))] | error $[Page [x] is defined multiple times] @x.
+  declPage(s, p, args) :-
+    s -> Ui{p} with typeOfDecl PAGE(args),
+    typeOfDecl of Ui{p} in s |-> [(_, (_, PAGE(args)))] | error $[Page [p] is defined multiple times] @p.
 
-rules // resolving
+rules // template definitions
+
+  defOk(s, TemplateDefinition(DefineTemplate(mods, t, FormalArgs(fargs), TemplateArgs(targs), elements))) :-
+    // TO-DO: analyse mods
+    declTemplate(s, t, typesOfArgs(s, fargs), typesOfTemplateArgs(s, targs)).
+    // TO-DO: analyse elements
+
+
+  declTemplate : scope * string * list(TYPE) * list((string * list(TYPE)))
+  declTemplate(s, t, args, targs) :- {result}
+    s -> Ui{t} with typeOfDecl TEMPLATE(args, targs),
+    typeOfDecl of Ui{t} in s |-> result,
+    amountOfTemplateDeclsWithArgs(typesOfQueryResult(result), args, 0) == 1
+      | error $[Duplicate definition of template [t] with argument types [args]] @t.
+
+  // helper function that results in the amount of template definitions with the given argument types
+  amountOfTemplateDeclsWithArgs : list(TYPE) * list(TYPE) * int -> int
+  amountOfTemplateDeclsWithArgs([], _, n) = n.
+  amountOfTemplateDeclsWithArgs([ TEMPLATE(args, _) | tail], args, n) = amountOfTemplateDeclsWithArgs(tail, args, i) :- i #= n + 1.
+  amountOfTemplateDeclsWithArgs([ _ | tail], args, n) = amountOfTemplateDeclsWithArgs(tail, args, n).
+
+rules // utils
 
   rootPageDefined : scope * QId
   rootPageDefined(s, errorLoc) :-
     typeOfDecl of Ui{"root"} in s |-> [(_, (_, PAGE(_)))|_] | error $[No root page defined] @errorLoc.
+
+  typesOfTemplateArgs maps typeOfTemplateArg(*, list(*)) = list(*)
+  typeOfTemplateArg : scope * TemplateArg -> (string * list(TYPE))
+  typeOfTemplateArg(s, TemplateArg(x, argSorts)) = (x, typesOfSorts(s, argSorts)).
+
+  typesOfQueryResult : list((path * (occurrence * TYPE))) -> list(TYPE)
+  typesOfQueryResult([]) = [].
+  typesOfQueryResult([(_, (_, t)) | tail]) = [t | typesOfQueryResult(tail)].

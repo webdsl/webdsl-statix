@@ -6,9 +6,10 @@ imports
 signature
 
   constructors // semantic types
-    FUNCTION : list(TYPE) * TYPE -> TYPE // list of arguments and return type
-    ENTITY   : scope             -> TYPE
-    PAGE     : list(TYPE)        -> TYPE
+    FUNCTION : list(TYPE) * TYPE                        -> TYPE // list of arguments and return type
+    ENTITY   : scope                                    -> TYPE
+    PAGE     : list(TYPE)                               -> TYPE
+    TEMPLATE : list(TYPE) * list((string * list(TYPE))) -> TYPE
 
     LIST : TYPE -> TYPE
     SET  : TYPE -> TYPE
@@ -121,6 +122,7 @@ rules // utils
 
 rules // map sorts to semantic types
 
+  typesOfSorts maps typeOfSort(*, list(*)) = list(*)
   typeOfSort : scope * Sort -> TYPE
   typeOfSort(_, _) = UNTYPED(). // untyped by default
   typeOfSort(_, SimpleSort("Int")) = INT().
