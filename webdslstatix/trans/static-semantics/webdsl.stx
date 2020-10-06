@@ -10,6 +10,7 @@ imports
   static-semantics/webdsl-actions
   static-semantics/webdsl-entities
   static-semantics/webdsl-types
+  static-semantics/webdsl-ui
 
 signature
 
@@ -27,6 +28,7 @@ signature
     ExtendEntity : string
     Function : string
     Variable : string
+    Ui : string
 
   name-resolution
     labels
@@ -50,6 +52,10 @@ signature
       Variable
       filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
       min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
+    resolve
+      Ui
+      filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
+      min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
 
   relations
     typeOfDecl    : occurrence -> TYPE
@@ -61,10 +67,12 @@ rules // application and module
   programOk : scope * Unit
   programOk(s, ApplicationDefs(appName, defs, sections)) :-
     defsOk(s, defs),
-    sectionsOk(s, sections).
+    sectionsOk(s, sections),
+    rootPageDefined(s, appName).
 
   programOk(s, Application(appName, sections)) :-
-    sectionsOk(s, sections).
+    sectionsOk(s, sections),
+    rootPageDefined(s, appName).
 
 rules // declare common rules and mappings
 

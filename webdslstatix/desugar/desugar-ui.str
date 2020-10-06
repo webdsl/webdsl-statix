@@ -5,7 +5,21 @@ imports
 
 rules
 
-  normalize-ui : DefineEmail(_, x, fargs, targs, telements) -> Define([Email()], x, fargs, targs, telements)
+  normalize-ui : Define(mods, x, fargs, targs, telements) -> DefinePage(newMods, x, fargs, targs, telements)
+    where
+        <elem> (Page(), mods)
+      ; newMods := <filter(not(?Page()))> mods
+
+  normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineTemplate(newMods, x, fargs, targs, telements)
+    where
+        <elem> (Template(), mods)
+      ; newMods := <filter(not(?Template()))> mods
+
+  normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineEmail(newMods, x, fargs, targs, telements)
+    where
+        <elem> (Email(), mods)
+      ; newMods := <filter(not(?Email()))> mods
+
   normalize-ui : OptFormalArgsNone() -> FormalArgs([])
   normalize-ui : OptTCallArgsNone() -> []
   normalize-ui : OptTCallPropAssignsNone() -> []

@@ -1,0 +1,26 @@
+module static-semantics/webdsl-ui
+
+imports
+  static-semantics/actions/functions
+  static-semantics/webdsl-types
+  static-semantics/webdsl
+
+rules
+
+  defOk(s, TemplateDefinition(DefinePage(mods, x, FormalArgs(fargs), targs, elements))) :-
+    declPage(s, x, typesOfArgs(s, fargs)).
+
+  declPage : scope * string * list(TYPE)
+  declPage(s, x, args) :-
+    s -> Ui{x} with typeOfDecl PAGE(args),
+    typeOfDecl of Ui{x} in s |-> [(_, (_, PAGE(args)))] | error $[Page [x] is defined multiple times] @x.
+
+  rules // resolving
+
+  rootPageDefined : scope * QId
+  rootPageDefined(s, errorLoc) :-
+    equalTypes(pageSignature(s, "root"), []) | error $[No root page root() defined] @errorLoc.
+
+  pageSignature : scope * string -> list(TYPE)
+  pageSignature(s, p) = args :- {p'}
+    typeOfDecl of Ui{p} in s |-> [(_, (Ui{p'}, PAGE(args)))|_] | error $[Page [p] not defined].

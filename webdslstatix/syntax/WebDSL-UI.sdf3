@@ -19,7 +19,7 @@ lexical sorts
 
 context-free syntax
 
-  Definition = TemplateDefinition 
+  Definition.TemplateDefinition = TemplateDefinition
   TemplateDefinition.Define = "define" Modifier* Id OptFormalArgs TemplateArgs "{" TemplateElement* "}" 
   TemplateArgs.TemplateArgs = "requires" {TemplateArg ","}* {prefer}
   TemplateArg.TemplateArg = Id "(" {Sort ","}* ")" 

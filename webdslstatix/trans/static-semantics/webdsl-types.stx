@@ -7,7 +7,8 @@ signature
 
   constructors // semantic types
     FUNCTION : list(TYPE) * TYPE -> TYPE // list of arguments and return type
-    ENTITY   : scope             -> TYPE 
+    ENTITY   : scope             -> TYPE
+    PAGE     : list(TYPE)        -> TYPE
 
     LIST : TYPE -> TYPE
     SET  : TYPE -> TYPE
@@ -217,6 +218,7 @@ rules // utils
   inequalType(T, T) :- false.
   inequalType(_, _).
 
+  equalTypes maps equalType(list(*), list(*))
   equalType : TYPE * TYPE
   equalType(T, T).
   equalType(_, _) :- false.
