@@ -5,22 +5,21 @@ imports
   static-semantics/webdsl-types
   static-semantics/webdsl
 
-rules
+rules // page definitions
 
-  defOk(s, TemplateDefinition(DefinePage(mods, x, FormalArgs(fargs), targs, elements))) :-
+  defOk(s, TemplateDefinition(DefinePage(mods, x, FormalArgs(fargs), TemplateArgs(targs), elements))) :-
+    // TO-DO: implement analysis for mods
+    targs == [] | error $[Template arguments are not allowed on page definitions] @targs,
     declPage(s, x, typesOfArgs(s, fargs)).
+    // TO-DO: analyse elements
 
   declPage : scope * string * list(TYPE)
   declPage(s, x, args) :-
     s -> Ui{x} with typeOfDecl PAGE(args),
     typeOfDecl of Ui{x} in s |-> [(_, (_, PAGE(args)))] | error $[Page [x] is defined multiple times] @x.
 
-  rules // resolving
+rules // resolving
 
   rootPageDefined : scope * QId
   rootPageDefined(s, errorLoc) :-
-    equalTypes(pageSignature(s, "root"), []) | error $[No root page root() defined] @errorLoc.
-
-  pageSignature : scope * string -> list(TYPE)
-  pageSignature(s, p) = args :- {p'}
-    typeOfDecl of Ui{p} in s |-> [(_, (Ui{p'}, PAGE(args)))|_] | error $[Page [p] not defined].
+    typeOfDecl of Ui{"root"} in s |-> [(_, (_, PAGE(_)))|_] | error $[No root page defined] @errorLoc.

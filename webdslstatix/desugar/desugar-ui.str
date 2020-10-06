@@ -21,6 +21,7 @@ rules
       ; newMods := <filter(not(?Email()))> mods
 
   normalize-ui : OptFormalArgsNone() -> FormalArgs([])
+  normalize-ui : OptTemplateArgsNone() -> TemplateArgs([])
   normalize-ui : OptTCallArgsNone() -> []
   normalize-ui : OptTCallPropAssignsNone() -> []
   normalize-ui : TemplateBodyNone() -> TemplateBody([])

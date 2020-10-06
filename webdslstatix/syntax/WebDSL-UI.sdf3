@@ -10,7 +10,7 @@ imports
 context-free sorts
 
   TemplateDefinition Modifier TemplateElement OptFilter PageCall TemplateCall PropertyAssignment
-  TemplateArgExp TemplateCaseAlt TemplateTypeCaseAlt TemplateArgs TemplateArg OptLocalRedefineArgs
+  TemplateArgExp TemplateCaseAlt TemplateTypeCaseAlt OptTemplateArgs TemplateArg OptLocalRedefineArgs
   LocalRedefineArg
 
 lexical sorts
@@ -20,17 +20,17 @@ lexical sorts
 context-free syntax
 
   Definition.TemplateDefinition = TemplateDefinition
-  TemplateDefinition.Define = "define" Modifier* Id OptFormalArgs TemplateArgs "{" TemplateElement* "}" 
-  TemplateArgs.TemplateArgs = "requires" {TemplateArg ","}* {prefer}
-  TemplateArg.TemplateArg = Id "(" {Sort ","}* ")" 
-  TemplateArgs.TemplateArgsNone = <>
+  TemplateDefinition.Define = "define" Modifier* Id OptFormalArgs OptTemplateArgs "{" TemplateElement* "}"
+  OptTemplateArgs.TemplateArgs = "requires" {TemplateArg ","}* {prefer}
+  OptTemplateArgs.OptTemplateArgsNone = <>
+  TemplateArg.TemplateArg = Id "(" {Sort ","}* ")"
   TemplateDefinition.LocalRedefine = "define" Modifier* Id "(" {FormalArg ","}* ")" "=" Id OptLocalRedefineArgs 
   OptLocalRedefineArgs.OptLocalRedefineArgsNone = <>
   OptLocalRedefineArgs.LocalRedefineArgs = "(" "*" "," {LocalRedefineArg ","}+ ")" 
   LocalRedefineArg.LocalRedefineArg = Id 
-  TemplateDefinition.DefinePage = Modifier* "page" PageId OptFormalArgs TemplateArgs "{" TemplateElement* "}" 
-  TemplateDefinition.DefineTemplate = Modifier* "template" Id OptFormalArgs TemplateArgs "{" TemplateElement* "}"
-  TemplateDefinition.DefineEmail = Modifier* "email" Id OptFormalArgs TemplateArgs "{" TemplateElement* "}"
+  TemplateDefinition.DefinePage = Modifier* "page" PageId OptFormalArgs OptTemplateArgs "{" TemplateElement* "}"
+  TemplateDefinition.DefineTemplate = Modifier* "template" Id OptFormalArgs OptTemplateArgs "{" TemplateElement* "}"
+  TemplateDefinition.DefineEmail = Modifier* "email" Id OptFormalArgs OptTemplateArgs "{" TemplateElement* "}"
   Modifier.Page = "page" 
   Modifier.Email = "email" 
   Modifier.AjaxTemplate = "ajax" 

@@ -212,13 +212,17 @@ rules // resolve reference types
         | error $[Property [x] is not defined] @x,
     @x.ref := x'.
 
+  pageType : scope * string -> TYPE
+  pageType(s, p) = t :- {p'}
+    typeOfDecl of Ui{p} in s |-> [(_, (Ui{p'}, t))|_] | error $[Page [p] not defined],
+    @p.ref := p'.
+
 rules // utils
 
   inequalType : TYPE * TYPE
   inequalType(T, T) :- false.
   inequalType(_, _).
 
-  equalTypes maps equalType(list(*), list(*))
   equalType : TYPE * TYPE
   equalType(T, T).
   equalType(_, _) :- false.
