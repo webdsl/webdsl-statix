@@ -56,9 +56,12 @@ context-free sorts
 
 context-free syntax
 
-  VarDecl.TemplateVarDecl = "var" Id ":" Sort 
-  VarDecl.TemplateVarDeclInit = "var" Id ":" Sort ":=" Exp 
-  VarDecl.TemplateVarDeclInitInferred = "var" Id ":=" Exp 
+  VarDecl.TemplateVarDecl = "var" Id ":" Sort
+  VarDecl.TemplateVarDeclDepr = "var" Id ":" Sort ";"
+  VarDecl.TemplateVarDeclInit = "var" Id ":" Sort ":=" Exp
+  VarDecl.TemplateVarDeclInitDepr = "var" Id ":" Sort ":=" Exp ";"
+  VarDecl.TemplateVarDeclInitInferred = "var" Id ":=" Exp
+  VarDecl.TemplateVarDeclInitInferredDepr = "var" Id ":=" Exp ";"
   TemplateElement = VarDecl 
   TemplateElement.RequestScopeTemplate = "request" VarDecl 
   TemplateElement.LocalScopeTemplate = "local" VarDecl 

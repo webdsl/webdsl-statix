@@ -11,6 +11,14 @@ rules
   normalize-data : FunctionSortParamsNone() -> []
   normalize-data : FunctionSortReturnNone() -> SimpleSort("Void")
 
+  normalize-data : GlobalVarDeclDepr(x, sort) -> GlobalVarDecl(x, sort)
+  normalize-data : GlobalVarDeclInitDepr(x, sort, exp) -> GlobalVarDeclInit(x, sort, exp)
+  normalize-data : GlobalVarDeclInitInferredDepr(x, exp) -> GlobalVarDeclInitInferred(x, exp)
+
+  normalize-data : RequestVarDeclDepr(x, sort) -> RequestVarDecl(x, sort)
+  normalize-data : RequestVarDeclInitDepr(x, sort, exp) -> RequestVarDeclInit(x, sort, exp)
+  normalize-data : RequestVarDeclInitInferredDepr(x, exp) -> RequestVarDeclInitInferred(x, exp)
+
   // All rules and signatures below are copied directly from the WebDSL compiler.
   // Some concrete syntax transformations have been rewritten as abstract syntax transformations
 

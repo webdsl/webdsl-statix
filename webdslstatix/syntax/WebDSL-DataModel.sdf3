@@ -28,11 +28,17 @@ context-free sorts
 context-free syntax
 
   Definition.GlobalVarDecl = "var" Id ":" Sort
-  Definition.GlobalVarDeclInit = "var" Id ":" Sort ":=" Exp 
+  Definition.GlobalVarDeclDepr = "var" Id ":" Sort ";"
+  Definition.GlobalVarDeclInit = "var" Id ":" Sort ":=" Exp
+  Definition.GlobalVarDeclInitDepr = "var" Id ":" Sort ":=" Exp ";"
   Definition.GlobalVarDeclInitInferred = "var" Id ":=" Exp
+  Definition.GlobalVarDeclInitInferredDepr = "var" Id ":=" Exp ";"
   Definition.RequestVarDecl = "request" "var" Id ":" Sort
+  Definition.RequestVarDeclDepr = "request" "var" Id ":" Sort ";"
   Definition.RequestVarDeclInit = "request" "var" Id ":" Sort ":=" Exp
+  Definition.RequestVarDeclInitDepr = "request" "var" Id ":" Sort ":=" Exp ";"
   Definition.RequestVarDeclInitInferred = "request" "var" Id ":=" Exp
+  Definition.RequestVarDeclInitInferredDepr = "request" "var" Id ":=" Exp ";"
   Definition.GlobalFunction = Function
 
 context-free sorts
