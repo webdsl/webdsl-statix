@@ -9,9 +9,9 @@ rules
   // Some concrete syntax transformations have been rewritten as abstract syntax transformations 
 
   desugar-all = topdown(try(normalize))
-  
+
   normalize: ScheduleNoFor(e) -> Schedule(e, ThisCall("now", []))
-  
+
   normalize = normalize-accesscontrol
   normalize = normalize-action
   normalize = normalize-core
@@ -21,3 +21,4 @@ rules
   normalize = normalize-native
   normalize = normalize-test
   normalize = normalize-ui
+  normalize = normalize-hql

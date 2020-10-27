@@ -1,0 +1,10 @@
+module desugar/desugar-hql
+
+imports
+  src-gen/signatures/-
+
+rules
+
+  normalize-hql : AscendingAbbr() -> Ascending()
+  normalize-hql : DescendingAbbr() -> Descending()
+  normalize-hql : HQLQueryRuleAlt(q) -> HQLQueryRule(q)
