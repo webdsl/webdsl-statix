@@ -116,7 +116,6 @@ context-free syntax
   Exp.TypedListCreation = "List" "<" Sort ">" "(" {Exp ","}* ")" {prefer}
   Exp.TypedSetCreation = "Set" "<" Sort ">" "(" {Exp ","}* ")" {prefer}
   Exp.ThisCall = Id "(" {Exp ","}* ")" 
-  Exp = "!" "(" {Exp ","}* ")" {reject}
   Exp.Call = Exp "." Id "(" {Exp ","}* ")" 
   Exp.IsA = Exp "is" "a" Sort 
   Exp.Cast = Exp "as" Sort {avoid}
