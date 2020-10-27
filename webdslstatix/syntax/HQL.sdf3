@@ -1,5 +1,9 @@
 module HQL
 
+imports
+
+  WebDSL-Action
+
 lexical sorts
 
   HQLIdentifier HQLIdParameter HQLNumParameter HQLNumInt HQLQuotedString HQLQuotedStringChar
@@ -22,13 +26,16 @@ lexical restrictions
 
 context-free sorts
 
-  HQLStatement HQLSelectClause HQLFromClause HQLQueryRule HQLSelectFrom HQLDistinct
-  HQLSelection HQLFromRangeJoin HQLFromJoin HQLJoinType HQLFetch HQLWithClause HQLFromRange
+  HQLStatement HQLDeleteStatement HQLSelectClause HQLFromClause HQLQueryRule HQLSelectFrom
+  HQLDistinct HQLSelection HQLFromRangeJoin HQLFromJoin HQLJoinType HQLFetch HQLWithClause
+  HQLFromRange
 
 context-free syntax
 
-  HQLStatement.DeleteStatement = <delete <HQLFromClause> <HQLWhereClause?>>
+  HQLStatement.DeleteStatement = HQLDeleteStatement
   HQLStatement.SelectStatement = HQLQueryRule
+
+  HQLDeleteStatement.HQLDeleteStatement = <delete <HQLFromClause> <HQLWhereClause?>>
 
   HQLQueryRule.QueryRule = <<HQLSelectFrom> <HQLWhereClause?> <HQLGroupByClause?> <HQLOrderByClause?>>
 
@@ -105,6 +112,8 @@ context-free sorts
   HQLExpression HQLConstant
 
 context-free syntax
+
+  HQLExpression.HQLDslExp = DslExp
 
   HQLExpression.HQLPath = HQLPath
 

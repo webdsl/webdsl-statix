@@ -5,6 +5,7 @@ imports
   WebDSL-DataModel
   WebDSL-Lexical
   WebDSL-UI
+  HQL
 
 context-free sorts
 
@@ -168,6 +169,27 @@ context-free syntax
   Exp.Add = Exp "+" Exp {assoc}
   Exp.Sub = Exp "-" Exp {assoc}
 
+context-free sorts
+
+  HqlExp LimitValueExp DslExp
+
+context-free syntax
+
+  Exp.HqlExp = HqlExp
+
+  HqlExp.HqlQuery             = <<HQLQueryRule>>
+  HqlExp.HqlQueryLimit        = <<HQLQueryRule> limit <LimitValueExp>>
+  HqlExp.HqlQueryLimitOffset  = <<HQLQueryRule> limit <LimitValueExp> , <LimitValueExp>>
+
+  LimitValueExp.LimitValueExp     = <<Exp>>
+  LimitValueExp.LimitValueDslExp  = <<DslExp>>
+
+  DslExp.DslExp = <~ <Exp>>
+
+  Statement.HqlStatement = <<HQLDeleteStatement> ;>
+
+  Exp = <<HQLQueryRule> . <Id>> {reject}
+
 context-free priorities
 
   {left :
@@ -196,6 +218,7 @@ context-free priorities
     Exp.SmallerThanOrEqual } > 
   {left : Exp.And } > 
   {left : Exp.Or } > 
+  Exp.HqlExp >
   Exp.IfExp
 
 context-free sorts
