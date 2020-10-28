@@ -5,6 +5,6 @@ imports
 
 rules
 
-  normalize-hql : AscendingAbbr() -> Ascending()
-  normalize-hql : DescendingAbbr() -> Descending()
+  normalize-hql : HQLAscendingAbbr() -> HQLAscending()
+  normalize-hql : HQLDescendingAbbr() -> HQLDescending()
   normalize-hql : HQLQueryRuleAlt(q) -> HQLQueryRule(q)

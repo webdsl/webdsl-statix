@@ -10,7 +10,7 @@ lexical sorts
 
 lexical syntax
 
-  HQLIdentifier = [a-zA-Z\_][a-zA-Z0-9\_]*
+  HQLIdentifier = [a-zA-Z\_] [a-zA-Z0-9\_]*
   HQLIdParameter = ":" HQLIdentifier
   HQLNumParameter = "?" HQLNumInt
   HQLNumInt = [0-9]+
@@ -26,77 +26,89 @@ lexical restrictions
 
 context-free sorts
 
-  HQLStatement HQLDeleteStatement HQLSelectClause HQLFromClause HQLQueryRule HQLSelectFrom
-  HQLDistinct HQLSelection HQLFromRangeJoin HQLFromJoin HQLJoinType HQLFetch HQLWithClause
-  HQLFromRange
+  HQLStatement HQLDeleteStatement HQLSelectClauseOpt HQLFromClause HQLQueryRule HQLSelectFrom
+  HQLDistinctOpt HQLSelection HQLFromRangeJoin HQLFromJoin HQLJoinTypeOpt HQLFetchOpt
+  HQLWithClauseOpt HQLFromRange
 
 context-free syntax
 
   HQLStatement.DeleteStatement = HQLDeleteStatement
   HQLStatement.SelectStatement = HQLQueryRule
 
-  HQLDeleteStatement.HQLDeleteStatement = <delete <HQLFromClause> <HQLWhereClause?>>
+  HQLDeleteStatement.HQLDeleteStatement = <delete <HQLFromClause> <HQLWhereClauseOpt>>
 
-  HQLQueryRule.QueryRule = <<HQLSelectFrom> <HQLWhereClause?> <HQLGroupByClause?> <HQLOrderByClause?>>
+  HQLQueryRule.QueryRule = <<HQLSelectFrom> <HQLWhereClauseOpt> <HQLGroupByClauseOpt> <HQLOrderByClauseOpt>>
 
-  HQLSelectFrom.SelectFrom = <<HQLSelectClause?> <HQLFromClause>>
+  HQLSelectFrom.SelectFrom = <<HQLSelectClauseOpt> <HQLFromClause>>
 
-  HQLSelectClause.Select = <select <HQLDistinct?> <HQLSelection>>
+  HQLSelectClauseOpt.Select     = <select <HQLDistinctOpt> <HQLSelection>>
+  HQLSelectClauseOpt.SelectNone = <>
 
-  HQLDistinct.Distinct = <distinct>
+  HQLDistinctOpt.Distinct     = <distinct>
+  HQLDistinctOpt.NoneDistinct = <>
 
-  HQLSelection.NewExpression = <new <HQLPath> ( <{HQLAliasedExpression ","}+> )>
-  HQLSelection.SelectObject = <object ( <HQLIdentifier> )>
+  HQLSelection.NewExpression      = <new <HQLPath> ( <{HQLAliasedExpression ","}+> )>
+  HQLSelection.SelectObject       = <object ( <HQLIdentifier> )>
   HQLSelection.SelectedProperties = <<{HQLAliasedExpression ","}+>>
 
   HQLFromClause.FromClause = <from <{HQLFromRangeJoin ","}+>>
 
   HQLFromRangeJoin.FromRangeJoin = <<HQLFromRange> <HQLFromJoin*>>
 
-  HQLFromJoin.FromJoin = <<HQLJoinType?> join <HQLFetch?> <HQLPath> <HQLPropertyFetch?> <HQLWithClause>>
+  HQLFromJoin.FromJoin = <<HQLJoinTypeOpt> join <HQLFetchOpt> <HQLPath> <HQLAsAliasOpt> <HQLPropertyFetchOpt> <HQLWithClauseOpt>>
+  HQLJoinTypeOpt.LeftJoin       = <left>
+  HQLJoinTypeOpt.RightJoin      = <right>
+  HQLJoinTypeOpt.LeftOuterJoin  = <left outer>
+  HQLJoinTypeOpt.RightOuterJoin = <right outer>
+  HQLJoinTypeOpt.FullJoin       = <full>
+  HQLJoinTypeOpt.InnerJoin      = <inner>
+  HQLJoinTypeOpt.JoinTypeNone   = <>
 
-  HQLJoinType.LeftJoin        = <left>
-  HQLJoinType.RightJoin       = <right>
-  HQLJoinType.LeftOuterJoin   = <left outer>
-  HQLJoinType.RightOuterJoin  = <right outer>
-  HQLJoinType.FullJoin        = <full>
-  HQLJoinType.InnerJoin       = <inner>
+  HQLFetchOpt.Fetch     = <fetch>
+  HQLFetchOpt.FetchNone = <>
 
-  HQLFetch.Fetch = <fetch>
+  HQLWithClauseOpt.WithClause     = <with <HQLExpression>>
+  HQLWithClauseOpt.WithClauseNone = <>
 
-  HQLWithClause.WithClause = <with <HQLExpression>>
-
-  HQLFromRange.FromClassOrOuterQueryPath        = <<HQLPath> <HQLAsAlias?> <HQLPropertyFetch?>>
+  HQLFromRange.FromClassOrOuterQueryPath        = <<HQLPath> <HQLAsAliasOpt> <HQLPropertyFetchOpt>>
   HQLFromRange.InClassDeclaration               = <<HQLAlias> in class <HQLPath>>
   HQLFromRange.InCollectionDeclaration          = <in ( <HQLPath> ) <HQLAlias>>
   HQLFromRange.InCollectionElementsDeclaration  = <<HQLAlias> in elements ( <HQLPath> )>
 
 context-free sorts
 
-  HQLPropertyFetch HQLAlias HQLAsAlias HQLGroupByClause HQLOrderElement HQLAscOrDesc
-  HQLHavingClause HQLWhereClause HQLAliasedExpression HQLPath
+  HQLPropertyFetchOpt HQLAlias HQLAsAliasOpt HQLGroupByClauseOpt HQLOrderByClauseOpt
+  HQLOrderElement HQLAscOrDescOpt HQLHavingClauseOpt HQLWhereClauseOpt HQLAliasedExpression
+  HQLPath
 
 context-free syntax
 
-  HQLAsAlias.AsAlias = <as <HQLAlias>>
+  HQLAsAliasOpt.AsAlias     = <as <HQLAlias>>
+  HQLAsAliasOpt.AsAliasNone = <>
   HQLAlias.Alias = <<HQLIdentifier>>
 
-  HQLPropertyFetch.PropertyFetch = <fetch all properties>
+  HQLPropertyFetchOpt.PropertyFetch     = <fetch all properties>
+  HQLPropertyFetchOpt.PropertyFetchNone = <>
 
-  HQLGroupByClause.GroupBy = <group by <{HQLExpression ","}+> <HQLHavingClause?>>
+  HQLGroupByClauseOpt.GroupBy     = <group by <{HQLExpression ","}+> <HQLHavingClauseOpt>>
+  HQLGroupByClauseOpt.GroupByNone = <>
 
-  HQLOrderByClause.OrderByClause = <order by <{HQLOrderElement ","}+>>
-  HQLOrderElement.OrderElement = <<HQLExpression> <HQLAscOrDesc?>>
-  HQLAscOrDesc.Ascending      = <ascending>
-  HQLAscOrDesc.AscendingAbbr  = <asc>
-  HQLAscOrDesc.Descending     = <descending>
-  HQLAscOrDesc.DescendingAbbr = <desc>
+  HQLOrderByClauseOpt.OrderByClause = <order by <{HQLOrderElement ","}+>>
+  HQLOrderByClauseOpt.OrderByClauseNone = <>
+  HQLOrderElement.OrderElement = <<HQLExpression> <HQLAscOrDescOpt>>
+  HQLAscOrDescOpt.HQLAscending      = <ascending>
+  HQLAscOrDescOpt.HQLAscendingAbbr  = <asc>
+  HQLAscOrDescOpt.HQLDescending     = <descending>
+  HQLAscOrDescOpt.HQLDescendingAbbr = <desc>
+  HQLAscOrDescOpt.AscOrDescNone     = <>
 
-  HQLHavingClause.HavingClause = <having <HQLExpression>>
+  HQLHavingClauseOpt.HavingClause     = <having <HQLExpression>>
+  HQLHavingClauseOpt.HavingClauseNone = <>
 
-  HQLWhereClause.WhereClause = <where <HQLExpression>>
+  HQLWhereClauseOpt.WhereClause     = <where <HQLExpression>>
+  HQLWhereClauseOpt.WhereClauseNone = <>
 
-  HQLAliasedExpression.AliasedExpression = <<HQLExpression> <HQLAsAlias?>>
+  HQLAliasedExpression.AliasedExpression = <<HQLExpression> <HQLAsAliasOpt>>
 
   HQLPath.Path = <<{HQLIdentifier "."}+>>
 
@@ -128,7 +140,7 @@ context-free syntax
   HQLExpression.QueryEq       = <<HQLExpression> = <HQLExpression>>
   HQLExpression.QueryIs       = <<HQLExpression> is <HQLExpression>>
   HQLExpression.QueryNe       = <<HQLExpression> != <HQLExpression>>
-  HQLExpression.QuerySqlNe    = <<HQLExpression> <> <HQLExpression>>
+  HQLExpression.QuerySqlNe    = <<HQLExpression> \<\> <HQLExpression>>
   HQLExpression.QueryLike     = <<HQLExpression> like <HQLExpression>>
   HQLExpression.QueryNotLike  = <<HQLExpression> not like <HQLExpression>>
 
@@ -182,6 +194,7 @@ context-free syntax
   HQLConstant.HQLEmpty  = <empty>
   HQLConstant.HQLNull   = <null>
   HQLConstant.HQLString = HQLQuotedString
+  HQLConstant.HQLNumInt = HQLNumInt
 
 lexical syntax
 
@@ -238,11 +251,3 @@ context-free priorities
   > HQLExpression.QueryNot
   > {left: HQLExpression.QueryAnd}
   > {left: HQLExpression.QueryOr}
-
-
-
-
-
-
-
-
