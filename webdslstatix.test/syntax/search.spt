@@ -1,0 +1,239 @@
+module search
+
+language webdsl-statix
+
+fixture [[
+  application test_search
+
+  [[...]]
+]]
+
+test default analyzer [[
+  default analyzer sc {
+    tokenizer = StandardTokenizerFactory
+    token filter = StandardFilterFactory
+    token filter = LowerCaseFilterFactory
+    token filter = StopFilterFactory(words = "hallo")
+  }
+]] parse succeeds
+
+test analyzer index query [[
+  analyzer synonym{
+    index{
+      tokenizer = StandardTokenizer
+      token filter = StandardFilter
+      token filter = SynonymFilter(ignoreCase="false", expand="true", synonyms="analyzerfiles/synonyms.txt")
+      token filter = LowerCaseFilter
+      token filter = StopFilter (words="analyzerfiles/stopwords.txt")
+      token filter = SnowballPorterFilter(language="English")
+    }
+    query{
+      tokenizer = StandardTokenizer
+      token filter = StandardFilter
+      token filter = LowerCaseFilter
+      token filter = StopFilter (words="analyzerfiles/stopwords.txt")
+      token filter = SnowballPorterFilter(language="English")
+    }
+  }
+]] parse succeeds
+
+test entity search mapping [[
+  entity Publication {
+
+    title         :: String (id, name)
+    doubleTitle :: String := title + authors.list().get(0).name
+    authors        -> Set<Author>
+    description :: WikiText
+    creationDate :: Date
+    someNumber  :: Int
+
+    search mapping{
+      +title using snowball as title ^ 1.5;
+      title using suggest as suggest;
+      authors depth 3;
+      authors with depth 3 as duplicateAuthors;
+      +description using snowball
+      description as description_suggest
+      creationdate
+      someNumber;
+      namespace by someNumber;
+    }
+  }
+]] parse succeeds
+
+test search mapping [[
+  search mapping OtherPublication {
+    title using snowball as title ^ 1.5;
+    title using suggest as suggest;
+    authors;
+    description using snowball
+    description as description_suggest
+    creationdate;
+    someNumber;
+    referencePub for subclass Book as referedBook
+    otherNumber
+  }
+]] parse succeeds
+
+test searchable entity property [[
+  entity Book {
+    title -> Title (
+      searchable,
+      searchable^1.0,
+      searchable(),
+      searchable()^2.0,
+      searchable(name=test),
+      searchable(default),
+      searchable(default, autocomplete, spellcheck),
+      searchable(name=test)^3.0,
+      searchable(name=test, analyzer=no),
+      searchable(name=test, analyzer=no)^4.0,
+      search namespace,
+      searchable(subclass=TechnicalTitle)
+    )
+  }
+]] parse succeeds
+
+test search statement 1 [[
+  function x() {
+    var x2 := search Movie matching title,abstract: (+"hello" -"goodbye");
+  }
+]] parse succeeds
+
+test search statement 2 [[
+  function x() {
+    search Entity;
+  }
+]] parse succeeds
+
+test search statement 3 [[
+  function x() {
+    search Entity matching title: "T E R M S";
+  }
+]] parse succeeds
+
+test search statement 4 [[
+  function x() {
+    search Entity matching title, description: "T E R M S";
+  }
+]] parse succeeds
+
+test search statement 5 [[
+  function x() {
+    search Entity matching title: "T E R M S" [no lucene, strict matching];
+  }
+]] parse succeeds
+
+test search statement 6 [[
+  function x() {
+    search Entity matching date: date1 to date2;
+  }
+]] parse succeeds
+
+test search statement 7 [[
+  function x() {
+    search Entry limit 25 in namespace {};
+  }
+]] parse succeeds
+
+test search statement 8 [[
+  function x() {
+    search Entity matching title: "a" to "b";
+  }
+]] parse succeeds
+
+test search statement 9 [[
+  function x() {
+    search Entity matching title: "T E R M S" with filter author:"Junior";
+  }
+]] parse succeeds
+
+test search statement 10 [[
+  function x() {
+    search Entity with facet title(10);
+  }
+]] parse succeeds
+
+test search statement 11 [[
+  function x() {
+    search Entity [loose matching, lucene] with facets title(10), author(10);
+  }
+]] parse succeeds
+
+test search statement 12 [[
+  function x() {
+    search Entity matching title: "T E R M S" start 0 limit 10;
+  }
+]] parse succeeds
+
+test search statement 13 [[
+  function x() {
+    search Entity matching title: "T E R M S" sort by title;
+  }
+]] parse succeeds
+
+test search statement 14 [[
+  function x() {
+    search Entity matching title: "T E R M S" sort by title, author;
+  }
+]] parse succeeds
+
+test search statement 15 [[
+  function x() {
+    search Entity matching title: (+"glasses" -"pair" "bril") matching material: -"glass";
+  }
+]] parse succeeds
+
+test search statement 16 [[
+  function x() {
+    search Entity matching title: (-(+"glasses" -"pair") "bril");
+  }
+]] parse succeeds
+
+test search statement 17 [[
+  function x() {
+    highlight entity.text for mySearcher on ~description surround with ("<b>","</b>");
+  }
+]] parse succeeds
+
+test search statement 18 [[
+  function x() {
+    author facets from mySearcher;
+  }
+]] parse succeeds
+
+test search statement 19 [[
+  function x() {
+    results from mySearcher;
+  }
+]] parse succeeds
+
+test search statement 20 [[
+  function x() {
+    count from mySearcher;
+  }
+]] parse succeeds
+
+test search statement 21 [[
+  function x() {
+    search Entry matching +"TERM" "alaaf" title, desc: -"noTerm";
+  }
+]] parse succeeds
+
+test search statement 22 [[
+  function x() {
+    searchtime from mySearcher;
+  }
+]] parse succeeds
+
+test search statement 23 [[
+  function x() {
+    Publication completions matching author.name: userQueryToComplete limit 10 in namespace "WebDSL";
+  }
+]] parse succeeds
+
+test search statement 24 [[
+  function x() {
+    Item corrections matching title: userQueryToCorrect limit 20 in namespace list[1];
+  }
+]] parse succeeds

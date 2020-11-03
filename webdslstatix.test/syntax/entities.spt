@@ -1,0 +1,127 @@
+module entities
+
+language webdsl-statix
+
+fixture [[
+  application test_entities
+
+  [[...]]
+]]
+
+test entity with static and cached functions [[
+  entity A{
+    static function a(){}
+    static function a(s:Int):String{}
+    cache function b() : Bool {}
+  }
+]] parse succeeds
+
+test entity derive 1 [[
+  template test(u: e with p){
+    foreach p {
+      output(u.p)
+    }
+    test(e with name pass)
+    action bla(){
+      foreach p {
+        log(u.p);
+      }
+    }
+  }
+]] parse succeeds
+
+test entity derive 2 [[
+  template test(u: e with p(label: String, ph : Int)){
+    foreach p {
+      output(u.p)
+      output(label)
+      output(ph)
+    }
+    test(e with name("label","foo") pass("label2","bar"))
+    action bla(){
+      foreach p {
+        log(u.p);
+        log(label);
+        log(ph);
+      }
+    }
+  }
+]] parse succeeds
+
+test entity derive 3 [[
+  define highlightedSummary(s : Searcher, fld : String, txt : String) {
+    var decorated := highlightHTML ~fld: txt from s with tags ("HLOPENTAG","HLCLOSETAG");
+    test(e with name("label","foo") pass("label2","bar"))
+  }
+]] parse succeeds
+
+test entity derive 4 [[
+  template test(){
+    filterFacets(
+      search ProgramSlot
+        matching program.key:+program.key
+        with facet location.name(40)
+        with facet startDate(20), allowedRooms, minDate.getTime(), maxDate.getTime()
+     )
+  }
+]] parse succeeds
+
+test native class 1 [[
+  native class utils.PageServlet as PageServlet : Object {
+    pageTitle : String
+    sectionDepth : Int
+
+    getPageTitle() : String
+    setPageTitle(String)
+    getSectionDepth() : Int
+    constructor()
+    constructor(String,Int)
+
+    constructor()
+    utils.bla.foo as constructor( String )
+    utils.bla.foo as static foo(): Bool
+
+    static bla()
+  }
+]] parse succeeds
+
+test native class 2 [[
+  native class a.b.c.d as bla {
+    pageTitle : List<String>
+    setPageTitle(List<String>)
+  }
+]] parse succeeds
+
+test native class 3 [[
+  native class a.b.c.d as bla {
+    pageTitle : [String]
+    setPageTitle([String])
+    pageTitle : {String}
+    setPageTitle({String})
+    pageTitle : List<String>
+    setPageTitle(List<String>)
+    pageTitle : Set<String>
+    setPageTitle(Set<String>)
+  }
+]] parse succeeds
+
+test native class 4 [[
+  native class com.google.gson.JsonObject as JSONObject {
+    constructor()
+    utils.JSONType.parse as constructor( String )
+    NULL: Object
+    get( String ): Object
+    utils.JSONType.getBoolean as getBoolean( String ): Bool
+    getDouble( String ): Double
+    getInt( String ): Int
+    getLong( String ): Long
+    getJSONArray( String ): JSONArray
+    getJSONObject( String ): JSONObject
+    getString( String ): String
+    has( String ): Bool
+    names(): JSONArray
+    put( String, Object )
+    toString(): String
+    toString( Int ): String
+  }
+]] parse succeeds

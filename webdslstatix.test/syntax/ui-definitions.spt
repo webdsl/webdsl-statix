@@ -1,0 +1,273 @@
+module ui_definitions
+
+language webdsl-statix
+
+fixture [[
+  application test_ui_definitions
+
+  [[...]]
+]]
+
+test ac import rules [[
+  define foo(u:User, i : Int){
+
+    apply ac rules bar(i)
+
+    submit save("dfgdfg",User{}){"save"}
+    action save(s:String, u2:User){
+      var test := "" + (s.length() + i) + (u == u2);
+    }
+  }
+]] parse succeeds
+
+test attributes [[
+  attributes navigate {
+    class = "btn btn-default"
+    style = "display:inline;"
+  }
+]] parse succeeds
+
+test override attributes [[
+  override attributes navigate {
+    class = "btn btn-default"
+    style = "display:inline;"
+  }
+]] parse succeeds
+
+test override more attributes [[
+  override attributes navigate {
+    class = "btn btn-default"
+    input attributes ignore class style
+    style = "display:inline;"
+    foo = "bar"
+  }
+]] parse succeeds
+
+test attributes colorsubmit [[
+  attributes colorsubmit {
+    class = "btn btn-default"
+    ignore submit attributes
+
+    class = "btn btn-default"
+    style = "test"
+    unknownattr attributes
+    ignore foo attributes
+  }
+]] parse succeeds
+
+test define inline body [[
+  define inline body(){}
+]] parse succeeds
+
+test define page [[
+  define page foo(){}
+]] parse succeeds
+
+test define page span [[
+  define page span root(){
+    action root(){
+      return root();
+    }
+  }
+]] parse succeeds
+
+test define page with all blocks [[
+  define page span root(){
+    action root(){
+      return root();
+    }
+    databind{
+      var s := "fdfd";
+    }
+    validate{
+      var sf := "fdfd";
+    }
+    render{
+      var sf := "fdfd";
+    }
+    render(6)
+    render("45345"){"fgdg"}
+  }
+]] parse succeeds
+
+test define page with vars [[
+  define page span root(){
+    request var a := "234234"
+    var g := from TestEnt as x where s.confirmedTrack is null and s.confirmedTrack.track.master.showInitialTrackSelection
+    var h := from TestEnt as x where x.derived is null
+  }
+]] parse succeeds
+
+test define page with vars, comments and blocks [[
+  define page root() {
+    var s: String := "hoi2"
+    //block[id := target] {}
+    placeholder target {}
+    form { action("do",do2())[ajax] }
+    action do2 () {
+      replace (target, templ(s));
+      append  (target, templ(s));
+
+      relocate (apage(s));
+
+      visibility (target, hide);
+      visibility (target, show);
+      visibility (target, toggle);
+
+      restyle (target, "aclass");
+      clear (target); 
+    }
+  }
+]] parse succeeds
+
+test define page with var, render and output [[
+  define page root() {
+    var s: String := "hoi2"
+    render{
+      var i := 6;
+      s := ""+6+i;
+    }
+    output(s)
+  }
+]] parse succeeds
+
+test define override [[
+  define override output(s:String) {
+    output(s+"!")
+  }
+]] parse succeeds
+
+test define ajax [[
+  define ajax bla(){}
+]] parse succeeds
+
+test define ajax with button elements [[
+  define ajax bla(){ 
+    submit action{  runscript("alert('hi');"); } {"run" }
+    submitlink action{  runscript("alert('hi');"); } {"run" }
+  }
+]] parse succeeds
+
+test expand 1 [[
+  expandtemplate pages to Ent {
+    page ent(x:Ent){
+      output(x)
+    }
+    page createEnt(){
+      var tmp := Ent{}
+      form{
+        input(tmp)
+        submit action{ tmp.save(); return ent(x); } { "save" }
+      }
+    }
+  }
+]] parse succeeds
+
+test expand 2 [[
+  expand Test to pages
+]] parse succeeds
+
+test expand 3 [[
+  derive CRUD Test
+]] parse succeeds
+
+test expand 4 [[
+  expandtemplate mult to first second third fourth {
+    template first(){
+      "first"
+      "second"
+      "third"
+      var fourth := "fourth"
+      output( fourth )
+    }
+  }
+]] parse succeeds
+
+test expand 5 [[
+  expand testone 2 3 varname4 to mult
+]] parse succeeds
+
+test expand 6 [[
+  page root {
+    var list := [ expand foo bar y to x { "x" } ]
+    var set  := { expand foo bar y to x { "x" } }
+    div[ expand foo bar y to x { class = "x" } ]
+    <div expand foo bar y to x { class = "x" } ></div>
+  }
+]] parse succeeds
+
+test expand 7 [[
+entity Foo {
+  expand foo bar y to x {
+    x: String
+    xCache:String
+  }
+  function x(){
+    expand foo bar y to x {
+      log(x);
+      log(xCache);
+    }
+  }
+}
+]] parse succeeds
+
+test expand 8 [[
+  expandtemplate x to y {
+    entity Foo {
+      expand foo bar y to x y z {
+        xyz: String
+        xyzCache:String
+      }
+    }
+
+    expand 1 2 3 to bla
+
+    expandtemplate bla to x y z {
+
+    }
+  }
+]] parse succeeds
+
+test expand 9 [[
+  expandtemplate pages to Ent {
+    page ent( x: Ent ){}
+  }
+]] parse succeeds
+
+test page [[
+  page root(){"foo"}
+]] parse succeeds
+
+test secure page [[
+  secure page root(){"foo"}
+]] parse succeeds
+
+test template [[
+  template root(){"foo"}
+]] parse succeeds
+
+test ajax template [[
+  ajax template foo(){"bar"}
+]] parse succeeds
+
+test secure template [[
+  secure template root(){"foo"}
+]] parse succeeds
+
+test ref arg [[
+  define bla(a: Ref<String>){ output(a + "!") }
+]] parse succeeds
+
+test routing [[
+  routing {
+    receive (list : [String])  {
+      var x := list[1];
+      var args : List<String> := urlComponents();
+      var conf := from ConferenceMapping where domain = x; 
+      return [page,conf.conference.id];
+    }
+    construct  (appurl : String, page : String, args : [String])  {
+      return [appurl,page,args[0] ];
+    }
+  }
+]] parse succeeds
