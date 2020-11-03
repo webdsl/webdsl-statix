@@ -18,6 +18,7 @@ debug:
   typesmart: false
 language:
   sdf:
+    jsglr-version: v2
     pretty-print: webdsl-statix
     sdf2table: java
     placeholder:
