@@ -1,0 +1,81 @@
+module original-tests-expressions
+
+language webdsl-statix
+
+fixture [[
+  application test_expressions
+
+  function f() {
+    var x := [[...]];
+  }
+]]
+
+test ref session var [[ session.securityContext ]] parse succeeds
+test ref global var [[ global.bla ]] parse succeeds
+
+test hql weird syntax [[
+  selectnewTag(t._name,t._project)fromIssueasileftjoini.tagsast
+]] parse succeeds
+
+test hql query 1 [[
+  select new Tag('t._name', 't._project')
+  from Issue as i left join i.tags as t
+  where (t in i.tags) and (t._project = ~this) and (t._name not like ~"@%")
+  group by t
+  order by count(i) desc
+  limit ~nr
+]] parse succeeds
+
+test hql query 2 [[
+  from Ent where current_date()>current_time() and current_time()=current_timestamp() and
+  second(start) > 1 and minute(start)>2 and hour(start)>2 and day(start)>2 and month(start)>2 and year(start)>2
+]] parse succeeds
+
+test if expression 1 [[ if(true) "1" else "2" ]] parse succeeds
+test if expression 2 [[ if(true)"1"else"2"=="1" ]] parse succeeds
+
+test list comprehension 1 [[ [ x | x in test ] ]] parse succeeds
+test list comprehension 2 [[ [x.field | x: Ent in collection where x.y > 10 order by x.value group by x.field] ]] parse succeeds
+test list comprehension 3 [[ [ x in xs where x > 4 ] ]] parse succeeds
+
+test nested object creation [[
+  Person{
+    key        := key
+    initials   := initials
+    lastname   := last
+    firstnames := first
+    portrait   := Photo{ title := normalizeName(first + " " + last) }
+    reviewer   := false
+  }
+]] parse succeeds
+
+test rendertemplate [[ rendertemplate(output(elements())) ]] parse succeeds
+test rendertemplate 2 [[ rendertemplate(ffsdf("fghfghf",4)) ]] parse succeeds
+
+test string interpolation exp 1  [[ "abc(~(a))dgfd" ]] parse succeeds
+test string interpolation exp 2  [[ "abc~a dgfd" ]] parse succeeds
+test string interpolation exp 3  [[ "dsfafsd" ]] parse succeeds
+test string interpolation exp 4  [[ "dsf~(a.b) fsd" ]] parse succeeds
+test string interpolation exp 5  [[ "dsf~a.b fsd" ]] parse succeeds
+test string interpolation exp 6  [[ "dsf~a+c.b fsd" ]] parse succeeds
+test string interpolation exp 7  [[ "dsf~a.b.f.dsf.sdf.s fsd" ]] parse succeeds
+test string interpolation exp 8  [[ "fdf~sfd()sdffs" ]] parse succeeds
+test string interpolation exp 9  [[ "fdf~sf.d.f()sdffs" ]] parse succeeds
+test string interpolation exp 10 [[ "d~sdfs~sdfsdf~sdfsdf~sdfgdfkjh~a.b(c.d,e.f+g))hud" ]] parse succeeds
+test string interpolation exp 11 [[ "\~" ]] parse succeeds
+
+test inline action [[ action{} ]] parse fails
+
+test regex 1 [[ /[0-9]/ /.find("sfsdddfs") ]] parse succeeds
+test regex 2 [[ /[0-9a-zA-z]*testtest[345]+5?/.find("sfsdddfs") ]] parse succeeds
+test regex 3 [[ / / /.find("sfsdddfs") ]] parse succeeds
+
+test set creation [[ Set<String>{} ]] parse succeeds
+test list access [[ bla[4] ]] parse succeeds
+test list access with nested function [[ ar[some.getIndex()] ]] parse succeeds
+
+test sendemail [[ sendemail(ffsdf("fghfghf",4)) ]] parse succeeds
+test email function call [[ email ffsdf("fghfghf",4) ]] parse succeeds
+test renderemail [[ renderemail(ffsdf("fghfghf",4)) ]] parse succeeds
+test function ref [[ function.iamnotoverloaded(String):String("cd") ]] parse succeeds
+test template id [[ id ]] parse succeeds

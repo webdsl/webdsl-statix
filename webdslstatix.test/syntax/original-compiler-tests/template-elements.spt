@@ -1,0 +1,487 @@
+module original-tests-template-elements
+
+language webdsl-statix
+
+fixture [[
+  application test_template_elements
+
+  template x {
+    [[...]]
+  }
+]]
+
+test action [[
+  action testAction() {
+
+  }
+]] parse succeeds
+
+test action ignore validation [[
+  action ignore-validation testAction() {
+
+  }
+]] parse succeeds
+
+test ajax statements 1 [[
+  action testAction() {
+    replace("1"+"2",test());
+    append("1"+"2",test());
+    visibility("1"+"2",show);
+    restyle("1"+"2","gfhfg");
+    clear("1"+"2");
+  }
+]] parse succeeds
+
+test ajax statements 2 [[
+  action testAction() {
+    replace(bla,test());
+    append(bla,test());
+    visibility(bla,show);
+    restyle(bla,"gfhfg");
+    clear(bla);
+  }
+]] parse succeeds
+
+test ajax statements 3 [[
+  action testAction() {
+    replace("dsfdgdg",test());
+    append("dsfdgdg",test());
+    visibility("dsfdgdg",show);
+    restyle("dsfdgdg","gfhfg");
+    clear("dsfdgdg");
+  }
+]] parse succeeds
+
+test ajax statements 4 [[
+  action testAction() {
+    replace(a.b,test());
+    append(a.b,test());
+    visibility(a.b,show);
+    restyle(a.b,"gfhfg");
+    clear(a.b);
+  }
+]] parse succeeds
+
+test select attributes [[
+  div[input attributes, all attributes]{}
+  <div
+  input attributes
+  all attributes
+  ignore default class
+  >
+  </div>
+]] parse succeeds
+
+test attributes template call [[
+  container[
+    class ="scopediv border rndButton "+attribute("class",""),
+    onclick = ""+attribute("onclick",""),
+    style  = attribute("style"),  
+    all attributes,
+    attributes "style",
+    attributes ["style"],
+    all attributes except ["style", "class"],
+    all attributes except "style"
+  ] {
+
+  }
+]] parse succeeds
+
+test attributes html tag [[
+  <div
+    class="scopediv border rndButton "+attribute("class","")
+    onclick= ""+attribute("onclick","")
+    style = attribute("style")
+    all attributes
+    attributes "style"
+    attributes ["style"]
+    all attributes except ["style", "class"]
+    all attributes except "style"
+  >
+
+  </div>
+]] parse succeeds
+
+test style tag [[
+  <style>
+    p {
+      text-align: center;
+      color: yellow;
+    }
+  </style>
+]] parse succeeds
+
+test style tag with variables [[
+  <style foo=bar>
+    p {
+      text-align: ~a;
+      color: ~color;
+    }
+  </style>
+]] parse succeeds
+
+test databind [[  databind{ var p := "24242"; }]] parse succeeds
+
+test htmlwrapper 1 [[  htmlwrapper gridContainerFluid gridrow[class="container-fluid" role=""]]] parse succeeds
+test htmlwrapper 2 [[  htmlwrapper gridContainerFluid gridrow[class="container-fluid", role=""]]] parse succeeds
+test htmlwrapper 3 [[  htmlwrapper gridContainerFluid gridrow]] parse succeeds
+test htmlwrapper 4 [[
+  htmlwrapper {
+    gridContainerFluid gridrow[class="container-fluid" role=""]
+    header h1
+      h1 h1
+      h2 h2
+      h3 h3
+      h4 h4
+      h5 h5
+      h6 h6
+      br br
+      break br
+      div div
+      span span
+      table table
+      row tr
+      column td
+      par p
+      pre pre
+      spacer hr
+      list ul[class="block"]
+      listitem li[class="block"]
+      block div[class="block"]
+      container span[class="container"]
+      groupitem tr
+  }
+]] parse succeeds
+
+test multiple actions calls [[  bla[class="123", onkeyup=validator();""+attribute("onkeyup"), onchange=bla()] ]] parse succeeds
+
+test navigate 1 [[ navigate bla("dfgdf",45,45,45.5)[sdfsf := "fdgdfgdf", dfsf := 3]{"1" "3rwef" bla() }]] parse succeeds
+test navigate 2 [[ navigate(bla("dfgdf",45,45,45.5))[]{}]] parse succeeds
+
+test onclick element [[ nlksddslak()[onclick := asjdna()] ]] parse succeeds
+
+test placeholder 1 [[ placeholder "1"+"2" {}]] parse succeeds
+test placeholder 2 [[ placeholder bla {}]] parse succeeds
+test placeholder 3 [[ placeholder "23424234" {}]] parse succeeds
+test placeholder 4 [[ placeholder a.b {}]] parse succeeds
+test placeholder 5 [[ placeholder adsf dfgd()]] parse succeeds
+test placeholder 6 [[ placeholder "adsf" dfg() ]] parse succeeds
+test placeholder 7 [[ placeholder target{} ]] parse succeeds
+test placeholder 8 [[ placeholdervar phtest ]] parse succeeds
+
+test redefine template [[ define b(i:Int) = a(*,st) ]] parse succeeds
+
+test string interpolation output 1  [[ "abc" ]] parse succeeds
+test string interpolation output 2  [[ "abc(" ]] parse succeeds
+test string interpolation output 3  [[ ~(a) ]] parse succeeds
+test string interpolation output 4  [[ ~a ]] parse succeeds
+test string interpolation output 5  [[ output(a) ]] parse succeeds
+test string interpolation output 6  [[ ")dgfd" ]] parse succeeds
+test string interpolation output 7  [[ ~(a.b) ]] parse succeeds
+test string interpolation output 8  [[ ~a.b ]] parse succeeds
+test string interpolation output 9  [[ ~a.b.f.dsf.sdf.s ]] parse succeeds
+test string interpolation output 10 [[ ~sfd() ]] parse succeeds
+test string interpolation output 11 [[ ~sf.d.f() ]] parse succeeds
+test string interpolation output 12 [[ ~sdfs~sdfsdf~sdfsdf~sdfgdfkjh~a.b(c.d,e.f+g) ]] parse succeeds
+test string interpolation output 13 [[ "\n" ]] parse succeeds
+test string interpolation output 14 [[ "\~[dad]" ]] parse succeeds
+test string interpolation output 15 [[ "aaa~a\~a" //a"\~" ]] parse succeeds
+test string interpolation output 16 [[ "a\~hsdio\nuhod" ]] parse succeeds
+test string interpolation output 17 [[ "\\" ]] parse succeeds
+test string interpolation output 18 [[ "\\\\" ]] parse succeeds
+test string interpolation output 19 [[ "\\\\\\\\\\\\\\" ]] parse succeeds
+test string interpolation output 20 [[ "\~" ]] parse succeeds
+test string interpolation output 21 [[ "bla.foo1\~x.foo1\~t1t11" ]] parse succeeds
+test string interpolation output 22 [[ "bla.foo1~x.foo1\~t1t11" ]] parse succeeds
+test string interpolation output 23 [[ "bla.foo1\~x.foo1~t1t11" ]] parse succeeds
+test string interpolation output 24 [[ "bla.foo1~x.foo1~t1t11" ]] parse succeeds
+test string interpolation output 25 [[ "abc(~(a))dgfd" ]] parse succeeds
+test string interpolation output 26 [[ "abc~a dgfd" ]] parse succeeds
+test string interpolation output 27 [[ "dsf~(a.b) fsd" ]] parse succeeds
+test string interpolation output 28 [[ "dsf~a.b fsd" ]] parse succeeds
+test string interpolation output 29 [[ "dsf~a+c.b fsd" ]] parse succeeds
+test string interpolation output 30 [[ "dsf~a.b.f.dsf.sdf.s fsd" ]] parse succeeds
+test string interpolation output 31 [[ "fdf~sfd()sdffs" ]] parse succeeds
+test string interpolation output 32 [[ "fdf~sf.d.f()sdffs" ]] parse succeeds
+test string interpolation output 33 [[ "d~sdfs~sdfsdf~sdfsdf~sdfgdfkjh~a.b(c.d,e.f+g))hud" ]] parse succeeds
+test string interpolation output 34 [[ "\~dsfsdf~avbc" ]] parse succeeds
+test string interpolation output 35 [[ "\u5Ff4\0\56\5456\b\t\n\f\r\'\"\\\~" ]] parse succeeds
+
+test submit 1 [[ action("fdd",sdfdf())[sfdfs:="3eewr",sdfsf:=344] ]] parse succeeds
+test submit 2 [[ actionLink("fdd",sdfdf()) ]] parse succeeds
+test submit 3 [[ submit("fdd",sdfdf(345)) ]] parse succeeds
+test submit 4 [[ submitlink("fdd",sdfdf(sdfs,"3453t"))[sfdfs:="3eewr",sdfsf:=344] ]] parse succeeds
+test submit 5 [[ submitlink("fdd",action{ var dfdsf := fddsfd; })[sfdfs:="3eewr",sdfsf:=344] ]] parse succeeds
+test submit 6 [[ submit("fdd",action{ var dfdsf := fddsfd; })[ajax] ]] parse succeeds
+test submit prop 1 [[ block[onmouseup:action{doit();}] ]] parse succeeds
+test submit prop 2 [[ block[onchange := action{}] ]] parse succeeds
+
+test template call [[
+testcall{
+  threeColumns(
+    "title1",
+    { "123" box(title){ icon{  body  } } },
+    "title2",
+    { input(i) box(title){ icon{  body  } } }
+  )
+
+  template threeColumns(
+     t1:String,
+     tmpl1 : TemplateElements,
+     t2:String,
+     tmpl2 : TemplateElements
+  )
+  {
+    tmpl1
+    tmpl2
+  }
+}
+]] parse succeeds
+
+test template element case 1 [[
+  case(""+true,5,f>fd){
+    1+r<2 { "" }
+    fd-4,5,f,f,g,e { "" }
+    default { "" }
+  }
+]] parse succeeds
+
+test template element case 2 [[
+  case(""+true,5,f>fd){
+    Tmp{} {}
+    Tmp{} {}
+    default { "" }
+  }
+]] parse succeeds
+
+test template element for [[
+  for(i in b){ for(i in b where i > 0 order by i.name desc){ bla } }
+]] parse succeeds
+
+test template element mod [[
+  submit action{ e.slots.add(Slot{}); } [ignore-validation, secure, not-secure] {"add slot"}
+]] parse succeeds
+
+test template element typecase 1 [[
+  typecase( a.b as y ){
+    String { }
+    Foo { }
+    default { "" }
+  }
+]] parse succeeds
+
+test template element typecase 2 [[
+  typecase( a.b ){
+    String { }
+    Foo { }
+    default { "" }
+  }
+]] parse succeeds
+
+test template call variable length template element arg 1 [[
+  tabs(
+    "Events",
+    "Event Utilities",
+    [
+      /*for(e : Event in eventsList){
+        (e.title,
+          {  editEvent(eventsList[i], false) })
+          }*/
+      ("Event Utilities",
+      { 
+          transformRoles(eventsList)
+          migrateEvents(track, eventsList)
+      }),
+      ("newevent",
+      {
+          addNewEvent( track.events )
+          par{"Only managers can create new events"}
+      })
+    ]
+  )
+]] parse succeeds
+
+test template call variable length template element arg 2 [[
+  tabs(
+    "Events",
+    "Event Utilities",
+    [
+      for(e : Event in eventsList){
+        (
+          e.title,
+          {  editEvent(eventsList[i], false) }
+        )
+      },
+      ("Event Utilities", { 
+            transformRoles(eventsList)
+            migrateEvents(track, eventsList)
+        }),
+      ("newevent", {
+          addNewEvent( track.events )
+          par{"Only managers can create new events"}
+      })
+    ]
+  )
+]] parse succeeds
+
+test template call variable length template element arg 3 [[
+  tabs(
+      "Events",
+      "Event Utilities",
+      [
+      for(e : Event in eventsList){
+        (
+          e.title,
+            {  editEvent(eventsList[i], false) }
+          ),
+          (
+          e.title,
+            {  editEvent(eventsList[i], false) }
+          )
+          },
+          ("Event Utilities",
+      { 
+          transformRoles(eventsList)
+          migrateEvents(track, eventsList)
+      }),
+        for(e in eventsList){
+        (
+          e.title,
+            {  editEvent(eventsList[i], false) }
+          ),
+          (
+          e.title,
+            {  editEvent(eventsList[i], false) }
+          )
+          },
+          for(i:Int from 0 to 6){
+        (
+          e.title,
+            {  editEvent(eventsList[i], false) }
+          ),
+          (
+          e.title,
+            {  editEvent(eventsList[i], false) }
+          )
+          },
+      ("newevent",
+      {
+          addNewEvent( track.events )
+          par{"Only managers can create new events"}
+      }),
+        for(e : User){
+        (
+          e.title,
+            {  editEvent(eventsList[i], false) }
+          ),
+          (
+          e.title,
+            {  editEvent(eventsList[i], false) }
+          )
+          }
+        ]
+  )
+]] parse succeeds
+
+test template call variable length template element arg 4 [[ tabs("", "", [], {}) ]] parse succeeds
+
+test prefetch [[
+  prefetch-for subA {
+    subs if(.propB > 2)
+    {
+      propC templates [showSubs(EntB,this as EntA,EntC,this)] if(.propD>4)
+    }
+    propE
+    propF fetch-early no-empty-batch where hint ( a == b && c == d || e == f && g == h )
+    propG templates [showSubs(this as EntA),showSubs(this)]
+    EntD.propH if(.propB > 2)
+    {
+      EntD.propI if(EntD.propJ==1)
+    }
+  }
+]] parse succeeds
+
+test validate template element 1 [[
+  validate{ var a := 1 + 2; }
+]] parse succeeds
+
+test validate template element 2 [[
+  validate(s == u.name,"Entered values differ.")
+]] parse succeeds
+
+test vardecl in template elements [[
+  form{
+    var a : Int
+    var b : Int := 1
+    var c := 1
+
+    render{
+      var a : Int;
+      var b : Int := 1;
+      var c := 1;
+    }
+  }
+]] parse succeeds
+
+test xml template element 1 [[
+  <!-- sfdji
+  aoje-dfdafsd--fsaff>asfdd->dsafa
+  -
+  --
+  ->
+  sdf-->
+]] parse succeeds
+
+test xml template element 2 [[
+  <area class="block" id="1">
+]] parse succeeds
+
+test xml template element 3 [[
+  <br class="block" id="1"/>
+]] parse succeeds
+
+test xml template element 4 [[
+  <div class="block" id="1"></div>
+]] parse succeeds
+
+test xml template element 5 [[
+  test{
+    head{
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>"Bootstrap 101 Template"</title>
+    }
+  }
+]] parse succeeds
+
+test xml template element 6 [[
+  test{
+    head{
+
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+      <title>"Bootstrap 101 Template"</title>
+
+      <!-- Bootstrap -->
+      <link href="css/bootstrap.min.css" rel="stylesheet">
+
+      <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+      <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+      <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+
+    }
+
+    <h1>"Hello, world!"</h1>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+
+  }
+]] parse succeeds

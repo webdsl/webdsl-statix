@@ -1,9 +1,9 @@
-module ui_definitions
+module original-tests-definitions
 
 language webdsl-statix
 
 fixture [[
-  application test_ui_definitions
+  application test_definitions
 
   [[...]]
 ]]
@@ -19,6 +19,15 @@ test ac import rules [[
     }
   }
 ]] parse succeeds
+
+test global function def [[ cached function x(){} ]] parse succeeds
+
+test global var def inferred init [[ var x := 12 ]] parse succeeds
+test global var def init          [[ var x : Int := 12 ]] parse succeeds
+test global var def               [[ var x :Int ]] parse succeeds
+
+test request var inferred init  [[ request var fddf:=User{} ]] parse succeeds
+test request var                [[ request var fddf: String ]] parse succeeds
 
 test attributes [[
   attributes navigate {
@@ -234,40 +243,122 @@ test expand 9 [[
   }
 ]] parse succeeds
 
-test page [[
-  page root(){"foo"}
-]] parse succeeds
-
-test secure page [[
-  secure page root(){"foo"}
-]] parse succeeds
-
-test template [[
-  template root(){"foo"}
-]] parse succeeds
-
-test ajax template [[
-  ajax template foo(){"bar"}
-]] parse succeeds
-
-test secure template [[
-  secure template root(){"foo"}
-]] parse succeeds
-
-test ref arg [[
-  define bla(a: Ref<String>){ output(a + "!") }
-]] parse succeeds
+test page [[  page root(){"foo"}]] parse succeeds
+test secure page [[  secure page root(){"foo"}]] parse succeeds
+test template [[  template root(){"foo"}]] parse succeeds
+test ajax template [[  ajax template foo(){"bar"}]] parse succeeds
+test secure template [[  secure template root(){"foo"}]] parse succeeds
+test ref arg [[  define bla(a: Ref<String>){ output(a + "!") }]] parse succeeds
 
 test routing [[
   routing {
     receive (list : [String])  {
       var x := list[1];
       var args : List<String> := urlComponents();
-      var conf := from ConferenceMapping where domain = x; 
+      var conf := from ConferenceMapping where domain = x;
       return [page,conf.conference.id];
     }
     construct  (appurl : String, page : String, args : [String])  {
       return [appurl,page,args[0] ];
     }
   }
+]] parse succeeds
+
+test variable length template arg definition [[
+  template tabs(title:String, selected: String, contents : [title:String, tabcontentelems: TemplateElements]) { }
+]] parse succeeds
+
+test variable length template arg implementation [[
+  template tabs(title: String, selected: String, contents : [title: String, tabcontentelems: TemplateElements]) {
+    output(title)
+    for(c in contents){
+      output(c.title)
+      c.tabcontentelems 
+    }
+  }
+]] parse succeeds
+
+test type definition 1 [[
+  type String { validate(this.length() <= 255 , "input too long (max 255 characters)") }
+]] parse succeeds
+
+test type definition 2 [[
+  type String {
+    validate(this.length() <= 255 , "input too long (max 255 characters)")
+      lastIndexOf(Int) : Int
+      static valueOf(Int):String
+  }
+]] parse succeeds
+
+test type definition 3 [[
+  type String {
+    utils.StringType.splitWithSeparator as split(String)
+  }
+]] parse succeeds
+
+test test block [[
+  section foo
+  test bar { assert(true); }
+  test {assert(false); }
+]] parse succeeds
+
+test test definition [[
+  test one {
+    var d : WebDriver := HtmlUnitDriver();
+    /*d.get(navigate(root()));
+    log(d.getPageSource());
+    var element : WebElement := d.findElement(By.name("q"));
+    */
+    d.get("http://www.google.com");
+    log(d.getPageSource());
+    var e : WebElement := d.findElement(By.name("q"));
+    e.sendKeys("Cheese!");
+    e.submit();
+    log(d.getTitle());
+  }
+]] parse succeeds
+
+test template definition 1 [[
+  define bla(){
+    var choice := ec_1
+    var allChoices := from EffectChoice as ec
+    var skillChoices := from EffectChoice as ec
+  }
+]] parse succeeds
+
+test template definition 2 [[
+  define test(){
+    output([].length)
+  }
+]] parse succeeds
+
+test template definition 3 [[
+  define ignore-access-control page pagenotfound(){
+    <h3>"404 Not Found"</h3>
+  }
+]] parse succeeds
+
+test template definition 4 [[
+  define test(){
+    <script>
+      registerOnload( function() { scalaEditor('~idAttr', ~readonly) } );
+    </script>
+    action save(){
+      if( ideas != null ){}
+    }
+
+    <script>
+      alert('~ph input');
+    </script>
+
+    <script>
+      b < 10;
+    </script>
+  }
+]] parse succeeds
+
+test ac rule [[
+  access control rules
+
+    rule logsql { loggedIn && true }
 ]] parse succeeds

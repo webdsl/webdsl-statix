@@ -1,0 +1,107 @@
+module original-tests-action-code
+
+language webdsl-statix
+
+fixture [[
+  application test_action_code
+
+  function f() {
+    [[...]]
+  }
+]]
+
+test throw exception string [[ throw "43t"; ]] parse succeeds
+test throw exception object [[ throw ValidationException{ message := "bla" }; ]] parse succeeds
+
+test try catch [[
+  try {
+    ghghd();
+    ertertert();
+  }
+  catch(v:ValidationException){
+    jdfgkjdgjkdf(v);
+  }
+]] parse succeeds
+
+test try double catch [[
+  try {
+    ghghd();
+    ertertert();
+  }
+  catch(v:ValidationException){
+    jdfgkjdgjkdf(v);
+  }
+  catch(v:List<ValidationException>){
+    jdfgkjdgjkdf(v);
+  }
+]] parse succeeds
+
+test try catch return [[
+  try{
+    log("1");
+    throw SomethingHappened{ whatHappened := "an exception" };
+    log("2");
+    return "error";
+  }
+  catch(sh:SomethingHappened){
+    return "ok " + sh.whatHappened;
+  }
+]] parse succeeds
+
+test statement case 1 [[
+  case(""+true,5,f>fd){
+    1+r<2 { ""; }
+    fd-4,5,f,f,g,e { ""; }
+    default { ""; }
+  }
+]] parse succeeds
+
+test statement case 2 [[
+  case(""+true,5,f>fd){
+    Tmp{} {}
+    Tmp{} {}
+    default { ""; }
+  }
+]] parse succeeds
+
+test statement typecase 1 [[
+  typecase( a.b as x ){
+    String { ""; }
+    Foo { ""; }
+    default { ""; }
+  }
+]] parse succeeds
+
+test statement typecase 2 [[
+  typecase( a.b ){
+    String { ""; }
+    Foo { ""; }
+    default { ""; }
+  }
+]] parse succeeds
+
+test statement if else [[
+  if(true){}
+  else{}
+]] parse succeeds
+
+test statement if elseif else [[
+  if(true){}
+  else if(false){}
+  else if(false){}
+  else{}
+]] parse succeeds
+
+test statement if elseif [[
+  if(true){}
+  else if(false){}
+]] parse succeeds
+
+test statement for [[
+  for(i in b){ for(i in b where i > 0 order by i.name desc){ var b := 1+1; } }
+]] parse succeeds
+
+test type list [[ var x : List<String>; ]] parse succeeds
+test type list short [[ var x : [String]; ]] parse succeeds
+test type set [[ var x : Set<User>; ]] parse succeeds
+test type set short [[ var x : {User}; ]] parse succeeds
