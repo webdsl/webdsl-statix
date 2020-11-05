@@ -15,7 +15,7 @@ test access control rules section unnamed [[
 
 test access control rules section [[
   access control rules ac
-]] parse to AccessControlDefinition(OptIdSome("ac"), [])
+]] parse to AccessControlDefinition(Id("ac"), [])
 
 test access control rules section alt unnamed [[
   access control rules {
@@ -28,7 +28,7 @@ test access control rules section alt [[
     ac
 
   }
-]] parse to AccessControlDefinitionAlt(OptIdSome("ac"), [])
+]] parse to AccessControlDefinitionAlt(Id("ac"), [])
 
 test access control rules section alt name before block [[
   access control rules ac {
@@ -71,9 +71,26 @@ test access control rule outside of ac section [[
 ]] parse fails
 
 // predicate outside of ac section
-test predicate outside of ac section [[
-  predicate isAdmin() {
-    false
-  }
-]] parse to Predicate("isAdmin", FormalArgs([]), False())
+test outside ac predicate [[
+  predicate isAdmin { true }
+]] parse to Predicate("isAdmin", OptFormalArgsNone(), True())
 
+test outside ac predicate single argument [[
+  predicate isAdmin(u : User) { true }
+]] parse to Predicate("isAdmin", FormalArgs([Arg("u", SimpleSort("User"))]), True())
+
+test outside ac predicate multiple arguments [[
+  predicate isAdmin(u : User, x : Int) { true }
+]] parse to Predicate("isAdmin", FormalArgs([Arg("u", SimpleSort("User")), Arg("x", SimpleSort("Int"))]), True())
+
+test outside ac predicate more than one exp [[
+  predicate isAdmin { true false }
+]] parse fails
+
+test outside ac predicate no exp [[
+  predicate isAdmin {  }
+]] parse fails
+
+test outside ac predicate nested exp [[
+  predicate isAdmin { (1+2) == (2+1) }
+]] parse to Predicate("isAdmin", OptFormalArgsNone(), Eq(Add(Int("1"), Int("2")), Add(Int("2"), Int("1"))))

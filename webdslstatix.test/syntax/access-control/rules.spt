@@ -67,27 +67,27 @@ test match args none [[
 
 test match args empty [[
   rule page root() { true }
-]] parse to Rule(AccessControlRule("page", "root", OptMatchArgsSome(MatchArgs([], OptWildCardArgNone())), True(), []))
+]] parse to Rule(AccessControlRule("page", "root", MatchArgs([], OptWildCardArgNone()), True(), []))
 
 test match args single [[
   rule page home(x : Int) { true }
-]] parse to Rule(AccessControlRule("page", "home", OptMatchArgsSome(MatchArgs([Arg("x", SimpleSort("Int"))], OptWildCardArgNone())), True(), []))
+]] parse to Rule(AccessControlRule("page", "home", MatchArgs([Arg("x", SimpleSort("Int"))], OptWildCardArgNone()), True(), []))
 
 test match args multiple [[
   rule page home(x : Int, y : String) { true }
-]] parse to Rule(AccessControlRule("page", "home", OptMatchArgsSome(MatchArgs([Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("String"))], OptWildCardArgNone())), True(), []))
+]] parse to Rule(AccessControlRule("page", "home", MatchArgs([Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("String"))], OptWildCardArgNone()), True(), []))
 
 test match args single wildcard [[
   rule page home(x : Int *) { true }
-]] parse to Rule(AccessControlRule("page", "home", OptMatchArgsSome(MatchArgs([Arg("x", SimpleSort("Int"))], WildCardArg())), True(), []))
+]] parse to Rule(AccessControlRule("page", "home", MatchArgs([Arg("x", SimpleSort("Int"))], WildCardArg()), True(), []))
 
 test match args multiple wildcard [[
   rule page home(x : Int, y : String *) { true }
-]] parse to Rule(AccessControlRule("page", "home", OptMatchArgsSome(MatchArgs([Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("String"))], WildCardArg())), True(), []))
+]] parse to Rule(AccessControlRule("page", "home", MatchArgs([Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("String"))], WildCardArg()), True(), []))
 
 test match args only wildcard [[
   rule page home(*) { true }
-]] parse to Rule(AccessControlRule("page", "home", OptMatchArgsSome(MatchArgs([], WildCardArg())), True(), []))
+]] parse to Rule(AccessControlRule("page", "home", MatchArgs([], WildCardArg()), True(), []))
 
 // predicates
 test predicate [[

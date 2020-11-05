@@ -6,4 +6,4 @@ imports
 rules
 
   normalize-accesscontrol : AccessControlDefinitionAlt(x, acdefs) -> AccessControlDefinition(x, acdefs)
-  normalize-accesscontrol : AccessControlRule(x, y, OptMatchArgsNone(), check, acrules) -> AccessControlRule(x, y, OptMatchArgsSome(MatchArgs([],None())), check, acrules)
+  normalize-accesscontrol : AccessControlRule(x, y, OptMatchArgsNone(), check, acrules) -> AccessControlRule(x, y, MatchArgs([],None()), check, acrules)

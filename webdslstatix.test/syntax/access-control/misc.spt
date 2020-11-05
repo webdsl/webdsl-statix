@@ -30,9 +30,13 @@ test access control policy OR left assoc [[
   access control policy p1 OR p2 OR p3
 ]] parse to ACPolicy(PolicyOr(PolicyOr(Name("p1"), Name("p2")), Name("p3")))
 
-test access control policy priority [[
+test access control policy priority 1 [[
   access control policy p1 AND p2 OR p3
-]] parse to ACPolicy(PolicyAnd(Name("p1"), PolicyOr(Name("p2"), Name("p3"))))
+]] parse to ACPolicy(PolicyOr(PolicyAnd(Name("p1"), Name("p2")), Name("p3")))
+
+test access control policy priority 2 [[
+  access control policy p1 OR p2 AND p3
+]] parse to ACPolicy(PolicyOr(Name("p1"), PolicyAnd(Name("p2"), Name("p3"))))
 
 // ignore access control modifier
 
@@ -43,3 +47,40 @@ test ignore ac mod page [[
 test ignore ac mod template [[
   ignore-access-control template content { }
 ]] parse to TemplateDefinition(DefineTemplate([IgnoreAccessControl()], "content", OptFormalArgsNone(), OptTemplateArgsNone(), []))
+
+// entity body declaration predicate
+test entity predicate [[
+  entity User {
+    predicate isAdmin { true }
+  }
+]] parse to EntityNoSuper("User", [PredicateInEntity("isAdmin", OptFormalArgsNone(), True())])
+
+test entity predicate single argument [[
+  entity User {
+    predicate isAdmin(u : User) { true }
+  }
+]] parse to EntityNoSuper("User", [PredicateInEntity("isAdmin", FormalArgs([Arg("u", SimpleSort("User"))]), True())])
+
+test entity predicate multiple arguments [[
+  entity User {
+    predicate isAdmin(u : User, x : Int) { true }
+  }
+]] parse to EntityNoSuper("User", [PredicateInEntity("isAdmin", FormalArgs([Arg("u", SimpleSort("User")), Arg("x", SimpleSort("Int"))]), True())])
+
+test entity predicate more than one exp [[
+  entity User {
+    predicate isAdmin { true false }
+  }
+]] parse fails
+
+test entity predicate no exp [[
+  entity User {
+    predicate isAdmin {  }
+  }
+]] parse fails
+
+test entity predicate nested exp [[
+  entity User {
+    predicate isAdmin { (1+2) == (2+1) }
+  }
+]] parse to EntityNoSuper("User", [PredicateInEntity("isAdmin", OptFormalArgsNone(), Eq(Add(Int("1"), Int("2")), Add(Int("2"), Int("1"))))])

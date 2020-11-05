@@ -13,7 +13,7 @@ context-free sorts
 
   // Access control sorts
   AccessControlDefinition AccessControlRule AccessControlPointcutElement
-  AccessControlImportRulesArg PolicyExp MatchArgs
+  AccessControlImportRulesArg PolicyExp
 
 lexical sorts
 
@@ -21,8 +21,8 @@ lexical sorts
 
 lexical syntax
 
-  MatchId = [a-zA-Z] [a-zA-Z0-9\_\-]* [\*]? 
-  MatchId = [\*] 
+  MatchId = [a-zA-Z] [a-zA-Z0-9\_\-]* [\*]?
+  MatchId = [\*]
   AccessControlType = "page"
   AccessControlType = "action"
   AccessControlType = "template"
@@ -30,38 +30,87 @@ lexical syntax
   AccessControlType = "pointcut"
 
 context-free syntax
+  Section.AccessControlDefinition = <
+    access control rules <OptId>
+      <AccessControlDefinition*>
+  >
+  Section.AccessControlDefinitionAlt = <
+    access control rules { <OptId>
+      <AccessControlDefinition*>
+    }
+  >
 
-  Section.AccessControlDefinition = "access" "control" "rules" OptId AccessControlDefinition* 
-  Section.AccessControlDefinitionAlt = "access" "control" "rules" "{" OptId AccessControlDefinition* "}"
-  OptId.OptIdNone = <>
-  OptId.OptIdSome = Id
-  Definition.AccessControlPrincipalDef                = "principal" "is" Id "with" "credentials" {Id ","}+
-  AccessControlDefinition.AccessControlPrincipalAcDef = "principal" "is" Id "with" "credentials" {Id ","}+
-  AccessControlDefinition.Rule = AccessControlRule 
-  AccessControlRule.AccessControlRule = "rule" AccessControlType MatchId OptMatchArgs "{" Exp AccessControlRule* "}"
-  AccessControlRule.SpecialAccessControlRule = "rule" "logsql" "{" Exp "}"
-  OptMatchArgs.OptMatchArgsSome = "(" MatchArgs ")"
+  Definition.Predicate = <
+    predicate <Id> <OptFormalArgs> {
+      <Exp>
+    }
+  >
+  Definition.AccessControlPrincipalDef = <
+    principal is <Id> with credentials <{Id ","}+>
+  >
+
+  AccessControlDefinition.PredicateAc = <
+    predicate <Id> <OptFormalArgs> {
+      <Exp>
+    }
+  >
+  AccessControlDefinition.AccessControlPrincipalAcDef = <
+    principal is <Id> with credentials <{Id ","}+>
+  >
+  AccessControlDefinition.AccessControlPointcut = <
+    pointcut <Id> ( <{FormalArg ","}*> ) {
+      <{AccessControlPointcutElement ","}*>
+    }
+  >
+  AccessControlDefinition.Rule = AccessControlRule
+
+  AccessControlRule.AccessControlRule = <
+    rule <AccessControlType> <MatchId> <OptMatchArgs> {
+      <Exp> <AccessControlRule*>
+    }
+  >
+  AccessControlRule.SpecialAccessControlRule = <
+    rule logsql {
+      <Exp>
+    }
+  >
+
+  AccessControlPointcutElement.AccessControlPointcutElement = <
+    <AccessControlType> <MatchId> ( <{Id ","}*> <OptWildCardArg> )
+  >
+
+  Section.ACPolicy = <
+    access control policy <PolicyExp>
+  >
+  PolicyExp.Name = Id
+  PolicyExp = <( <PolicyExp> )> {bracket}
+  PolicyExp.PolicyAnd = <<PolicyExp> AND <PolicyExp>>
+  PolicyExp.PolicyOr = <<PolicyExp> OR <PolicyExp>>
+
+  EntityBodyDeclaration.PredicateInEntity = <
+    predicate <Id> <OptFormalArgs> {
+      <Exp>
+    }
+  >
+
+  Modifier.IgnoreAccessControl = <ignore-access-control>
+
+  TemplateElement.AccessControlImportRules = <
+    apply ac rules <Id> ( <{AccessControlImportRulesArg ","}*> )
+  > {prefer}
+
+  AccessControlImportRulesArg.ACVar = Id
+
+  OptMatchArgs.MatchArgs = <( <{FormalArg ","}*> <OptWildCardArg> )> {prefer}
   OptMatchArgs.OptMatchArgsNone = <>
-  MatchArgs.MatchArgs = {FormalArg ","}* OptWildCardArg {prefer}
-  Definition.Predicate = "predicate" Id OptFormalArgs "{" Exp "}"
-  AccessControlDefinition.PredicateAc = "predicate" Id OptFormalArgs "{" Exp "}"
-  EntityBodyDeclaration.PredicateInEntity = "predicate" Id OptFormalArgs "{" Exp "}" 
-  AccessControlDefinition.AccessControlPointcut = "pointcut" Id "(" {FormalArg ","}* ")" "{" {AccessControlPointcutElement ","}* "}"
-  AccessControlPointcutElement.AccessControlPointcutElement = AccessControlType MatchId "(" {Id ","}* OptWildCardArg ")"
-  TemplateElement.AccessControlImportRules = "apply ac rules" Id "(" {AccessControlImportRulesArg ","}* ")" {prefer}
-  AccessControlImportRulesArg.ACVar = Id 
 
+  OptId.Id = Id
+  OptId.OptIdNone = <>
+
+  OptWildCardArg.WildCardArg = <*>
   OptWildCardArg.OptWildCardArgNone = <>
-  OptWildCardArg.WildCardArg = "*"
 
-context-free syntax
+context-free priorities
 
-  Section.ACPolicy = "access" "control" "policy" PolicyExp 
-  PolicyExp.Name = Id 
-  PolicyExp = "(" PolicyExp ")" {bracket}
-  PolicyExp.PolicyAnd = PolicyExp "AND" PolicyExp {assoc}
-  PolicyExp.PolicyOr = PolicyExp "OR" PolicyExp {assoc}
-
-context-free syntax
-
-  Modifier.IgnoreAccessControl = "ignore-access-control" 
+  {left: PolicyExp.PolicyAnd} >
+  {left: PolicyExp.PolicyOr}
