@@ -1,4 +1,4 @@
-module original-tests-search
+module original-compiler-tests/search
 
 language webdsl-statix
 

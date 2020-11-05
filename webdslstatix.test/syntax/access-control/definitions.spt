@@ -1,0 +1,79 @@
+module access-control/definitions
+
+language webdsl-statix
+
+fixture [[
+  application access_control_definitions
+
+  [[...]]
+]]
+
+// Access control sections
+test access control rules section unnamed [[
+  access control rules
+]] parse to AccessControlDefinition(OptIdNone(), [])
+
+test access control rules section [[
+  access control rules ac
+]] parse to AccessControlDefinition(OptIdSome("ac"), [])
+
+test access control rules section alt unnamed [[
+  access control rules {
+
+  }
+]] parse to AccessControlDefinitionAlt(OptIdNone(), [])
+
+test access control rules section alt [[
+  access control rules {
+    ac
+
+  }
+]] parse to AccessControlDefinitionAlt(OptIdSome("ac"), [])
+
+test access control rules section alt name before block [[
+  access control rules ac {
+  }
+]] parse fails
+
+// principal definitions
+test ac principal def [[
+  principal is User with credentials email
+]]  parse to AccessControlPrincipalDef("User", ["email"])
+
+test ac principal def multiple credentials [[
+  principal is User with credentials email, password
+]] parse to AccessControlPrincipalDef("User", ["email", "password"])
+
+test ac principal def no credentials [[
+  principal is User with credentials
+]] parse fails
+
+test ac principal def in ac section [[
+  access control rules
+    principal is User with credentials email
+]] parse to AccessControlDefinition(OptIdNone(), [ AccessControlPrincipalAcDef("User", ["email"]) ])
+
+test ac principal def multiple credentials [[
+  access control rules
+    principal is User with credentials email, password
+]] parse to AccessControlDefinition(OptIdNone(), [ AccessControlPrincipalAcDef("User", ["email", "password"]) ])
+
+test ac principal def no credentials [[
+  access control rules
+    principal is User with credentials
+]] parse fails
+
+// access control rule definition outside of ac section
+test access control rule outside of ac section [[
+  rule page root() {
+    true
+  }
+]] parse fails
+
+// predicate outside of ac section
+test predicate outside of ac section [[
+  predicate isAdmin() {
+    false
+  }
+]] parse to Predicate("isAdmin", FormalArgs([]), False())
+

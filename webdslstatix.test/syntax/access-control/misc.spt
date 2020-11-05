@@ -1,0 +1,45 @@
+module access-control/misc
+
+language webdsl-statix
+
+fixture [[
+  application access_control_misc
+
+  [[...]]
+]]
+
+
+// access control policy
+test access control policy [[
+  access control policy p1
+]] parse to ACPolicy(Name("p1"))
+
+test access control policy AND [[
+  access control policy p1 AND p2
+]] parse to ACPolicy(PolicyAnd(Name("p1"), Name("p2")))
+
+test access control policy OR [[
+  access control policy p1 OR p2
+]] parse to ACPolicy(PolicyOr(Name("p1"), Name("p2")))
+
+test access control policy and left assoc [[
+  access control policy p1 AND p2 AND p3
+]] parse to ACPolicy(PolicyAnd(PolicyAnd(Name("p1"), Name("p2")), Name("p3")))
+
+test access control policy OR left assoc [[
+  access control policy p1 OR p2 OR p3
+]] parse to ACPolicy(PolicyOr(PolicyOr(Name("p1"), Name("p2")), Name("p3")))
+
+test access control policy priority [[
+  access control policy p1 AND p2 OR p3
+]] parse to ACPolicy(PolicyAnd(Name("p1"), PolicyOr(Name("p2"), Name("p3"))))
+
+// ignore access control modifier
+
+test ignore ac mod page [[
+  ignore-access-control page root { }
+]] parse to TemplateDefinition(DefinePage([IgnoreAccessControl()], "root", OptFormalArgsNone(), OptTemplateArgsNone(), []))
+
+test ignore ac mod template [[
+  ignore-access-control template content { }
+]] parse to TemplateDefinition(DefineTemplate([IgnoreAccessControl()], "content", OptFormalArgsNone(), OptTemplateArgsNone(), []))

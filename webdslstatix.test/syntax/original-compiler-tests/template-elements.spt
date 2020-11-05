@@ -1,4 +1,4 @@
-module original-tests-template-elements
+module original-compiler-tests/template-elements
 
 language webdsl-statix
 
@@ -122,8 +122,8 @@ test style tag with variables [[
 
 test databind [[  databind{ var p := "24242"; }]] parse succeeds
 
-test htmlwrapper 1 [[  htmlwrapper gridContainerFluid gridrow[class="container-fluid" role=""]]] parse succeeds
-test htmlwrapper 2 [[  htmlwrapper gridContainerFluid gridrow[class="container-fluid", role=""]]] parse succeeds
+test htmlwrapper 1 [[  htmlwrapper gridContainerFluid gridrow[class="container-fluid" role=""] ]] parse succeeds
+test htmlwrapper 2 [[  htmlwrapper gridContainerFluid gridrow[class="container-fluid", role=""] ]] parse succeeds
 test htmlwrapper 3 [[  htmlwrapper gridContainerFluid gridrow]] parse succeeds
 test htmlwrapper 4 [[
   htmlwrapper {

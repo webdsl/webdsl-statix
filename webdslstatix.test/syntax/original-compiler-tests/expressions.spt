@@ -1,4 +1,4 @@
-module original-tests-expressions
+module original-compiler-tests/expressions
 
 language webdsl-statix
 
@@ -12,10 +12,6 @@ fixture [[
 
 test ref session var [[ session.securityContext ]] parse succeeds
 test ref global var [[ global.bla ]] parse succeeds
-
-test hql weird syntax [[
-  selectnewTag(t._name,t._project)fromIssueasileftjoini.tagsast
-]] parse succeeds
 
 test hql query 1 [[
   select new Tag('t._name', 't._project')

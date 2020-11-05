@@ -1,4 +1,4 @@
-module original-tests-entities
+module original-compiler-tests/entities
 
 language webdsl-statix
 

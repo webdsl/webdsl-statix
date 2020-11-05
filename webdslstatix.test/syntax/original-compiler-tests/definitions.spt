@@ -1,4 +1,4 @@
-module original-tests-definitions
+module original-compiler-tests/definitions
 
 language webdsl-statix
 

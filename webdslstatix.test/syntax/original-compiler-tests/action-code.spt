@@ -1,4 +1,4 @@
-module original-tests-action-code
+module original-compiler-tests/action-code
 
 language webdsl-statix
 

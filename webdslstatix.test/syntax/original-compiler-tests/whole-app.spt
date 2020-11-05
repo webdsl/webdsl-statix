@@ -1,4 +1,4 @@
-module original-tests-whole-app
+module original-compiler-tests/whole-app
 
 language webdsl-statix
 
