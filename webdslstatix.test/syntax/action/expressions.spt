@@ -1,0 +1,80 @@
+module action/expressions
+
+language webdsl-statix
+
+fixture [[
+  application action_expressions
+
+  var x := [[...]];
+]]
+
+
+// inline if expression
+test inline else required [[
+  if (false) 1
+]] parse fails
+
+test inline if [[
+  if (false) 1 else 2
+]] parse to IfExp(False(), Int("1"), Int("2"))
+
+test nested inline if [[
+  if (false) if (false) 1 else 2 else 3
+]] parse to IfExp(False(), IfExp(False(), Int("1"), Int("2")), Int("3"))
+
+test nested inline if else if [[
+  if (false) 1 else if (false) 2 else 3
+]] parse to IfExp(False(), Int("1"), IfExp(False(), Int("2"), Int("3")))
+
+
+// number constants
+test simple int [[ 1 ]] parse to Int("1")
+test int multiple digits [[ 123 ]] parse to Int("123")
+test negative int [[ -1 ]] parse to Int("-1")
+test negative int no layout between [[ - 1 ]] parse fails
+test negative int at least one character [[ - ]] parse fails
+test int no layout between [[ 1 2 3 ]] parse fails
+
+test simple long [[ 1L ]] parse to Long("1L")
+test long multiple digits [[ 123123L ]] parse to Long("123123L")
+test negative long [[ -1L ]] parse to Long("-1L")
+test long no layout between L [[ 1 L ]] parse fails
+test long no layout between [[ 1 2 3L ]] parse fails
+test long at least one character [[ -L ]] parse fails
+
+test simple float f [[ 1f ]] parse to Float("1f")
+test simple float F [[ 1F ]] parse to Float("1F")
+test simple float d [[ 1d ]] parse to Float("1d")
+test simple float D [[ 1D ]] parse to Float("1D")
+test simple float no layout [[ 1 f ]] parse fails
+test float decimal [[ 0.5 ]] parse to Float("0.5")
+test float decimal [[ 0.5f ]] parse to Float("0.5f")
+test float multiple suffixes [[ 1fF ]] parse fails
+test float multiple digits [[ 123f ]] parse to Float("123f")
+test negative float [[ -1f ]] parse to Float("-1f")
+test float exponent e [[ 1e10 ]] parse to Float("1e10")
+test float exponent E [[ 1E10 ]] parse to Float("1E10")
+test float f after exponent [[ 1e10f ]] parse to Float("1e10f")
+test float exponent negative [[ 1e-10 ]] parse to Float("1e-10")
+test float exponent positive [[ 1e+10 ]] parse to Float("1e+10")
+test float exponent multiple signs [[ 1e+-10 ]] parse fails
+test float exponent no integer after sign [[ 1e- ]] parse fails
+test float exponent no layout before [[ 1 e10 ]] parse fails
+test float exponent no layout after [[ 1e 10 ]] parse fails
+test float exponent no integer after [[ 1e ]] parse fails
+
+
+// strings
+test empty string [[ "" ]] parse to StringValue("")
+test string single word [[ "hello" ]] parse to StringValue("hello")
+test string multiple words [[ "hello world" ]] parse to StringValue("hello world")
+test string escapeable characters [[ "\0 \1 \2 \3 \4 \5 \6 \7 \8 \9 \b \t \n \f \r \' \" \\ \~" ]] parse succeeds
+
+// string disallowed characters
+test string disallow escaping random characters [[ "\g \- \= \." ]] parse fails
+test string no single quotes [[ 'hello world' ]] parse fails
+test string no unescaped double quote [[ """ ]] parse fails
+test string no linebreak [["hello
+world"]] parse fails
+test string no unescaped tilde [[ "~" ]] parse fails
+test string no unescaped backslash [[ "\" ]] parse fails

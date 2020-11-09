@@ -3,7 +3,7 @@ module action/function-signatures
 language webdsl-statix
 
 fixture [[
-  application action_functions
+  application action_function_signatures
 
   [[...]]
 ]]

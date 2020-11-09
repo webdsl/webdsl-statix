@@ -53,7 +53,7 @@ context-free syntax
 
 context-free sorts
 
-  ElseIfStatement OptElse Case TypeCaseAlt
+  ElseIfStatement OptElse Case TypeCaseAlt OptTypeAlias
 
 context-free syntax
 
@@ -64,11 +64,13 @@ context-free syntax
   OptElse.OptElseSome = "else" Block
   OptElse.OptElseNone = <>
   Statement.CaseStmt = "case" "(" {Exp ","}+ ")" "{" Case* "}" 
-  Case.CaseStmtAlt = {Exp ","}+ Block 
-  Case.CaseStmtDefault = "default" Block {prefer}
-  Statement.TypeCaseStmt = "typecase" "(" Exp "as" Id ")" "{" TypeCaseAlt* "}" 
-  TypeCaseAlt.TypeCaseStmtAlt = Sort Block 
-  TypeCaseAlt.TypeCaseStmtDefault = "default" Block {prefer}
+  Case.CaseAlt = {Exp ","}+ Block
+  Case.CaseAltDefault = "default" Block {prefer}
+  Statement.TypeCaseStmt = "typecase" "(" Exp OptTypeAlias ")" "{" TypeCaseAlt* "}"
+  OptTypeAlias.TypeAlias = "as" Id
+  OptTypeAlias.OptTypeAliasNone = <>
+  TypeCaseAlt.TypeCaseAlt = Sort Block
+  TypeCaseAlt.TypeCaseAltDefault = "default" Block {prefer}
 
 context-free syntax
 

@@ -87,7 +87,7 @@ context-free syntax
   Limit.Limit = "limit" Exp "offset" Exp 
   Limit.LimitNoOffset = "limit" Exp 
   Limit.LimitNoLimit = "offset" Exp 
-  OptFilter = Filter 
+  OptFilter.OptFilterSome = Filter
   OptFilter.OptFilterNone = <> 
 
 context-free sorts
