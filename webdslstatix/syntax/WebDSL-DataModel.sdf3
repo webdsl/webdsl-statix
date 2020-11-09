@@ -39,7 +39,6 @@ context-free syntax
   Definition.RequestVarDeclInitDepr = "request" "var" Id ":" Sort ":=" Exp ";"
   Definition.RequestVarDeclInitInferred = "request" "var" Id ":=" Exp
   Definition.RequestVarDeclInitInferredDepr = "request" "var" Id ":=" Exp ";"
-  Definition.GlobalFunction = Function
 
 context-free sorts
 

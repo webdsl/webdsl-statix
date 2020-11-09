@@ -1,0 +1,85 @@
+module action/function-expressions
+
+language webdsl-statix
+
+fixture [[
+  application action_function_expressions
+
+  var x : Int := [[...]];
+]]
+
+
+// function expressions
+test named function expression [[
+  function f { }
+]] parse fails
+
+test function expression no args no return [[
+  function { }
+]] parse to FunctionExp(OptFormalArgsNone(), OptSortNone(), Block([]))
+
+test function expression empty args [[
+  function() { }
+]] parse to FunctionExp(FormalArgs([]), OptSortNone(), Block([]))
+
+test function expression single arg [[
+  function(x : Int) { }
+]] parse to FunctionExp(FormalArgs([Arg("x", SimpleSort("Int"))]), OptSortNone(), Block([]))
+
+test function expression multiple args [[
+  function(x : Int, y : String) { }
+]] parse to FunctionExp(FormalArgs([Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("String"))]), OptSortNone(), Block([]))
+
+test function expression return [[
+  function : Int { }
+]] parse to FunctionExp(OptFormalArgsNone(), OptSortSome(SimpleSort("Int")), Block([]))
+
+
+// function ref expressions
+test function ref no args no return [[
+  function.f()
+]] parse to FunctionRef("f", [], OptSortNone())
+
+test function ref single arg [[
+  function.f(Int)
+]] parse to FunctionRef("f", [SimpleSort("Int")], OptSortNone())
+
+test function ref multiple args [[
+  function.f(Int, String)
+]] parse to FunctionRef("f", [SimpleSort("Int"), SimpleSort("String")], OptSortNone())
+
+test function ref return [[
+  function.f() : Int
+]] parse to FunctionRef("f", [], OptSortSome(SimpleSort("Int")))
+
+test function ref multiple args return [[
+  function.f(Int, String) : Int
+]] parse to FunctionRef("f", [SimpleSort("Int"), SimpleSort("String")], OptSortSome(SimpleSort("Int")))
+
+
+// function ref call
+test function ref call no return empty args [[
+  function.f()()
+]] parse to FunctionRefCall("f", [], OptSortNone(), [])
+
+test function ref call single arg [[
+  function.f(Int)(1)
+]] parse to FunctionRefCall("f", [SimpleSort("Int")], OptSortNone(), [Int("1")])
+
+test function ref call multiple args arg [[
+  function.f(Int, Int)(1, 2)
+]] parse to FunctionRefCall("f", [SimpleSort("Int"), SimpleSort("Int")], OptSortNone(), [Int("1"), Int("2")])
+
+test function ref call return [[
+  function.f() : Int ()
+]] parse to FunctionRefCall("f", [], OptSortSome(SimpleSort("Int")), [])
+
+
+// function ref partial call
+test function ref partial call no return [[
+  function.f(Int, Int)(*, 2)
+]] parse to FunctionRefCallPartial("f", [SimpleSort("Int"), SimpleSort("Int")], OptSortNone(), [Int("2")])
+
+test function ref partial call [[
+  function.f(Int, Int) : Int (*, 2)
+]] parse to FunctionRefCallPartial("f", [SimpleSort("Int"), SimpleSort("Int")], OptSortSome(SimpleSort("Int")), [Int("2")])

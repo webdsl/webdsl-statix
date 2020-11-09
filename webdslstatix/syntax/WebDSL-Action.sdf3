@@ -16,6 +16,7 @@ context-free syntax
   Function.Function = "function" Id OptFormalArgs OptSort Block
   OptSort.OptSortNone = <>
   OptSort.OptSortSome = ":" Sort
+  Definition.GlobalFunction       = Function
   Definition.CachedGlobalFunction = "cached" Function
   Definition.ExtendGlobalFunction = "extend" Function
   EntityBodyDeclaration.EntityFunction = Function
@@ -25,18 +26,12 @@ context-free syntax
   ReturnType.ReturnTypeSome = ":" Sort
   ReturnType.ReturnTypeNone = <>
 
-context-free sorts
-
-  FunctionExp FunctionRef
-
 context-free syntax
 
-  Exp = FunctionExp 
-  FunctionExp.FunctionExp = "function" OptFormalArgs OptSort Block 
-  Exp = FunctionRef 
-  FunctionRef.FunctionRef = "function." Id "(" {Sort ","}* ")" OptSort 
-  Exp.FunctionRefCall = FunctionRef "(" {Exp ","}* ")" 
-  Exp.FunctionRefCallPartial = FunctionRef "(" "*" "," {Exp ","}* ")" 
+  Exp.FunctionExp = "function" OptFormalArgs OptSort Block
+  Exp.FunctionRef             = "function." Id "(" {Sort ","}* ")" OptSort
+  Exp.FunctionRefCall         = "function." Id "(" {Sort ","}* ")" OptSort "(" {Exp ","}* ")"
+  Exp.FunctionRefCallPartial  = "function." Id "(" {Sort ","}* ")" OptSort "(" "*" "," {Exp ","}* ")"
 
 context-free syntax
 
