@@ -6,8 +6,8 @@ imports
 
 context-free syntax
 
-  TemplateElement.JSElement = "<" "script" Attribute* ">" JSPart* "</" "script" ">" {prefer}
-  TemplateElement.StyleElement = "<" "style" Attribute* ">" JSPart* "</" "style" ">" {prefer}
+  TemplateElement.JSElement = "<" "script" Attribute* ">" JSPart* "</" "script" ">"
+  TemplateElement.StyleElement = "<" "style" Attribute* ">" JSPart* "</" "style" ">"
 
 context-free sorts
 
@@ -28,8 +28,10 @@ lexical syntax
   JSString = JSChar+ 
   JSChar = ~[\<\~] 
   JSChar = SmallerThan 
-  SmallerThan = [\<] 
-  JSString = [\<] JSChar* {reject}
+  SmallerThan = [\<]
+
+  NCName = "script" {reject}
+  NCName = "style" {reject}
 
 lexical restrictions
 
