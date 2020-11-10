@@ -19,27 +19,27 @@ test function invalid name numbers [[
 
 test function valid name [[
   function F_1_a { }
-]] parse to GlobalFunction(Function("F_1_a", OptFormalArgsNone(), OptSortNone(), Block([])))
+]] parse succeeds parse to GlobalFunction(Function("F_1_a", OptFormalArgsNone(), OptSortNone(), Block([])))
 
 test function signature no args no return [[
   function f { }
-]] parse to GlobalFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))
+]] parse succeeds parse to GlobalFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))
 
 test function signature empty args [[
   function f() { }
-]] parse to GlobalFunction(Function("f", FormalArgs([]), OptSortNone(), Block([])))
+]] parse succeeds parse to GlobalFunction(Function("f", FormalArgs([]), OptSortNone(), Block([])))
 
 test function signature single arg [[
   function f(x : Int) { }
-]] parse to GlobalFunction(Function("f", FormalArgs([Arg("x", SimpleSort("Int"))]), OptSortNone(), Block([])))
+]] parse succeeds parse to GlobalFunction(Function("f", FormalArgs([Arg("x", SimpleSort("Int"))]), OptSortNone(), Block([])))
 
 test function signature multiple args [[
   function f(x : Int, y : String) { }
-]] parse to GlobalFunction(Function("f", FormalArgs([Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("String"))]), OptSortNone(), Block([])))
+]] parse succeeds parse to GlobalFunction(Function("f", FormalArgs([Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("String"))]), OptSortNone(), Block([])))
 
 test function signature return [[
   function f : Int { }
-]] parse to GlobalFunction(Function("f", OptFormalArgsNone(), OptSortSome(SimpleSort("Int")), Block([])))
+]] parse succeeds parse to GlobalFunction(Function("f", OptFormalArgsNone(), OptSortSome(SimpleSort("Int")), Block([])))
 
 // functions in different contexts
 
@@ -49,36 +49,36 @@ test unknown function modifier [[
 
 test global function [[
   function f { }
-]] parse to GlobalFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))
+]] parse succeeds parse to GlobalFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))
 
 test cached global function [[
   cached function f { }
-]] parse to CachedGlobalFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))
+]] parse succeeds parse to CachedGlobalFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))
 
 test extend global function [[
   extend function f { }
-]] parse to ExtendGlobalFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))
+]] parse succeeds parse to ExtendGlobalFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))
 
 test entity function [[
   entity Ent {
     function f { }
   }
-]] parse to EntityNoSuper("Ent", [EntityFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))])
+]] parse succeeds parse to EntityNoSuper("Ent", [EntityFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))])
 
 test entity function [[
   entity Ent {
     cached function f { }
   }
-]] parse to EntityNoSuper("Ent", [CachedFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))])
+]] parse succeeds parse to EntityNoSuper("Ent", [CachedFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))])
 
 test entity function [[
   entity Ent {
     extend function f { }
   }
-]] parse to EntityNoSuper("Ent", [ExtendFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))])
+]] parse succeeds parse to EntityNoSuper("Ent", [ExtendFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))])
 
 test entity function [[
   entity Ent {
     static function f { }
   }
-]] parse to EntityNoSuper("Ent", [StaticEntityFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))])
+]] parse succeeds parse to EntityNoSuper("Ent", [StaticEntityFunction(Function("f", OptFormalArgsNone(), OptSortNone(), Block([])))])

@@ -12,15 +12,15 @@ fixture [[
 
 test apply ac rules [[
   apply ac rules header()
-]] parse to AccessControlImportRules("header", [])
+]] parse succeeds parse to AccessControlImportRules("header", [])
 
 test apply ac rules single argument [[
   apply ac rules header(x)
-]] parse to AccessControlImportRules("header", [ACVar("x")])
+]] parse succeeds parse to AccessControlImportRules("header", [ACVar("x")])
 
 test apply ac rules multiple arguments [[
   apply ac rules header(x, y)
-]] parse to AccessControlImportRules("header", [ACVar("x"), ACVar("y")])
+]] parse succeeds parse to AccessControlImportRules("header", [ACVar("x"), ACVar("y")])
 
 test apply ac rules argument expression [[
   apply ac rules header(1, 2)

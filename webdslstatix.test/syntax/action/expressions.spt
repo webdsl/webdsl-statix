@@ -16,47 +16,47 @@ test inline else required [[
 
 test inline if [[
   if (false) 1 else 2
-]] parse to IfExp(False(), Int("1"), Int("2"))
+]] parse succeeds parse to IfExp(False(), Int("1"), Int("2"))
 
 test nested inline if [[
   if (false) if (false) 1 else 2 else 3
-]] parse to IfExp(False(), IfExp(False(), Int("1"), Int("2")), Int("3"))
+]] parse succeeds parse to IfExp(False(), IfExp(False(), Int("1"), Int("2")), Int("3"))
 
 test nested inline if else if [[
   if (false) 1 else if (false) 2 else 3
-]] parse to IfExp(False(), Int("1"), IfExp(False(), Int("2"), Int("3")))
+]] parse succeeds parse to IfExp(False(), Int("1"), IfExp(False(), Int("2"), Int("3")))
 
 
 // number constants
-test simple int [[ 1 ]] parse to Int("1")
-test int multiple digits [[ 123 ]] parse to Int("123")
-test negative int [[ -1 ]] parse to Int("-1")
+test simple int [[ 1 ]] parse succeeds parse to Int("1")
+test int multiple digits [[ 123 ]] parse succeeds parse to Int("123")
+test negative int [[ -1 ]] parse succeeds parse to Int("-1")
 test negative int no layout between [[ - 1 ]] parse fails
 test negative int at least one character [[ - ]] parse fails
 test int no layout between [[ 1 2 3 ]] parse fails
 
-test simple long [[ 1L ]] parse to Long("1L")
-test long multiple digits [[ 123123L ]] parse to Long("123123L")
-test negative long [[ -1L ]] parse to Long("-1L")
+test simple long [[ 1L ]] parse succeeds parse to Long("1L")
+test long multiple digits [[ 123123L ]] parse succeeds parse to Long("123123L")
+test negative long [[ -1L ]] parse succeeds parse to Long("-1L")
 test long no layout between L [[ 1 L ]] parse fails
 test long no layout between [[ 1 2 3L ]] parse fails
 test long at least one character [[ -L ]] parse fails
 
-test simple float f [[ 1f ]] parse to Float("1f")
-test simple float F [[ 1F ]] parse to Float("1F")
-test simple float d [[ 1d ]] parse to Float("1d")
-test simple float D [[ 1D ]] parse to Float("1D")
+test simple float f [[ 1f ]] parse succeeds parse to Float("1f")
+test simple float F [[ 1F ]] parse succeeds parse to Float("1F")
+test simple float d [[ 1d ]] parse succeeds parse to Float("1d")
+test simple float D [[ 1D ]] parse succeeds parse to Float("1D")
 test simple float no layout [[ 1 f ]] parse fails
-test float decimal [[ 0.5 ]] parse to Float("0.5")
-test float decimal [[ 0.5f ]] parse to Float("0.5f")
+test float decimal [[ 0.5 ]] parse succeeds parse to Float("0.5")
+test float decimal [[ 0.5f ]] parse succeeds parse to Float("0.5f")
 test float multiple suffixes [[ 1fF ]] parse fails
-test float multiple digits [[ 123f ]] parse to Float("123f")
-test negative float [[ -1f ]] parse to Float("-1f")
-test float exponent e [[ 1e10 ]] parse to Float("1e10")
-test float exponent E [[ 1E10 ]] parse to Float("1E10")
-test float f after exponent [[ 1e10f ]] parse to Float("1e10f")
-test float exponent negative [[ 1e-10 ]] parse to Float("1e-10")
-test float exponent positive [[ 1e+10 ]] parse to Float("1e+10")
+test float multiple digits [[ 123f ]] parse succeeds parse to Float("123f")
+test negative float [[ -1f ]] parse succeeds parse to Float("-1f")
+test float exponent e [[ 1e10 ]] parse succeeds parse to Float("1e10")
+test float exponent E [[ 1E10 ]] parse succeeds parse to Float("1E10")
+test float f after exponent [[ 1e10f ]] parse succeeds parse to Float("1e10f")
+test float exponent negative [[ 1e-10 ]] parse succeeds parse to Float("1e-10")
+test float exponent positive [[ 1e+10 ]] parse succeeds parse to Float("1e+10")
 test float exponent multiple signs [[ 1e+-10 ]] parse fails
 test float exponent no integer after sign [[ 1e- ]] parse fails
 test float exponent no layout before [[ 1 e10 ]] parse fails
@@ -65,9 +65,9 @@ test float exponent no integer after [[ 1e ]] parse fails
 
 
 // strings
-test empty string [[ "" ]] parse to StringValue("")
-test string single word [[ "hello" ]] parse to StringValue("hello")
-test string multiple words [[ "hello world" ]] parse to StringValue("hello world")
+test empty string [[ "" ]] parse succeeds parse to StringValue("")
+test string single word [[ "hello" ]] parse succeeds parse to StringValue("hello")
+test string multiple words [[ "hello world" ]] parse succeeds parse to StringValue("hello world")
 test string escapeable characters [[ "\0 \1 \2 \3 \4 \5 \6 \7 \8 \9 \b \t \n \f \r \' \" \\ \~" ]] parse succeeds
 
 // string disallowed characters
@@ -78,3 +78,209 @@ test string no linebreak [["hello
 world"]] parse fails
 test string no unescaped tilde [[ "~" ]] parse fails
 test string no unescaped backslash [[ "\" ]] parse fails
+
+// string interpolation
+test string interpolation simple var [[ "hello ~x" ]] parse succeeds parse to StringInterp(["hello ", InterpSimpleExp(SimpleVar("x"))])
+test string interpolation simple field access [[ "hello ~x.y" ]] parse succeeds parse to StringInterp(["hello ", InterpSimpleExp(SimpleFieldAccess(SimpleVar("x"),"y"))])
+test dot after string interpolation [[ "hello ~x." ]] parse fails
+test string interpolation simple this call no args [[ "hello ~f()" ]] parse succeeds parse to StringInterp(["hello ", InterpSimpleExp(SimpleThisCall("f", []))])
+test string interpolation simple this call single arg [[ "hello ~f(x)" ]] parse succeeds parse to StringInterp(["hello ", InterpSimpleExp(SimpleThisCall("f", [Var("x")]))])
+test string interpolation simple this call multiple args [[ "hello ~f(x, 2)" ]] parse succeeds parse to StringInterp(["hello ", InterpSimpleExp(SimpleThisCall("f", [Var("x"), Int("2")]))])
+test opening parenthesis after string interp this call [[ "hello ~f(" ]] parse fails
+test string interpolation simple call no args [[ "hello ~a.f()" ]] parse succeeds parse to StringInterp(["hello ", InterpSimpleExp(SimpleCall(SimpleVar("a"), "f", []))])
+test string interpolation simple call single arg [[ "hello ~a.f(x)" ]] parse succeeds parse to StringInterp(["hello ", InterpSimpleExp(SimpleCall(SimpleVar("a"), "f", [Var("x")]))])
+test string interpolation simple call multiple args [[ "hello ~a.f(x, 2)" ]] parse succeeds parse to StringInterp(["hello ", InterpSimpleExp(SimpleCall(SimpleVar("a"), "f", [Var("x"), Int("2")]))])
+test opening parenthesis after string interp call [[ "hello ~a.f(" ]] parse fails
+
+// var ids
+test var [[ x ]] parse succeeds parse to Var("x")
+test var multiple characters [[ aaaaaaaaaa ]] parse succeeds parse to Var("aaaaaaaaaa")
+test var layout between characters [[ a a ]] parse fails
+test var upper case [[ AAAAAAA ]] parse succeeds parse to Var("AAAAAAA")
+test var lower and uppercase  [[ aAaAaA ]] parse succeeds parse to Var("aAaAaA")
+test var underscores and numbers [[ x1_A_3_a ]] parse succeeds parse to Var("x1_A_3_a")
+test var start with number [[ 2x ]] parse fails
+test var start with underscore [[ _x ]] parse fails
+test var id not valid [[ id ]] parse succeeds parse to TemplateId()
+
+test global var [[ global.x ]] parse succeeds parse to GlobalVar("x")
+test id in global var [[ global.id ]] parse succeeds parse to GlobalVar("id")
+test session var [[ session.x ]] parse succeeds parse to SessionVar("x")
+test id in session var [[ session.id ]] parse succeeds parse to SessionVar("id")
+
+// field accesss
+test field access [[ x.y ]] parse succeeds parse to FieldAccess(Var("x"), "y")
+test field access exp [[ x.y.z ]] parse succeeds parse to FieldAccess(FieldAccess(Var("x"), "y"), "z")
+
+// collection index
+test collection index [[ x[1] ]] parse succeeds parse to CollectionIndex(Var("x"), Int("1"))
+test collection index exp [[ x.y[x.z] ]] parse succeeds parse to CollectionIndex(FieldAccess(Var("x"), "y"), FieldAccess(Var("x"), "z"))
+
+// object creation
+test object creation [[ Ent{} ]] parse succeeds parse to ObjectCreation(SimpleSort("Ent"), [])
+test object creation single assignment [[ Ent{ x := 1 } ]] parse succeeds parse to ObjectCreation(SimpleSort("Ent"), [ObjectPropertyAssignment("x", Int("1"))])
+test object creation exp as assignment [[ Ent{ x := y.z } ]] parse succeeds parse to ObjectCreation(SimpleSort("Ent"), [ObjectPropertyAssignment("x", FieldAccess(Var("y"), "z"))])
+test object creation multiple assignments [[ Ent{ x := 1, y := 2 } ]] parse succeeds parse to ObjectCreation(SimpleSort("Ent"), [ObjectPropertyAssignment("x", Int("1")), ObjectPropertyAssignment("y", Int("2"))])
+test object creation multiple assignments alternative [[ Ent{ x := 1 y := 2 } ]] parse succeeds parse to ObjectCreationAlt(SimpleSort("Ent"), [ObjectPropertyAssignment("x", Int("1")), ObjectPropertyAssignment("y", Int("2"))])
+test object creation incomplete property assignment [[ Ent{ x } ]] parse succeeds parse to ObjectCreation(SimpleSort("Ent"), [IncompleteObjectPropertyAssignment("x")])
+
+// map creation
+test map creation single assignment [[ [1 -> 2] ]] parse succeeds parse to MapCreation([Mapping(Int("1"), Int("2"))])
+test map creation exps [[ [x.y -> x.y] ]] parse succeeds parse to MapCreation([Mapping(FieldAccess(Var("x"), "y"), FieldAccess(Var("x"), "y"))])
+test map creation multiple assignments [[ [1 -> 2 3 -> 4] ]] parse succeeds parse to MapCreation([Mapping(Int("1"), Int("2")), Mapping(Int("3"), Int("4"))])
+test map creation multiple assignments with linebreak [[
+  [
+    1 -> 2
+    3 -> 4
+  ]
+]] parse succeeds parse to MapCreation([Mapping(Int("1"), Int("2")), Mapping(Int("3"), Int("4"))])
+
+// list creation
+test empty list [[ [] ]] parse succeeds parse to ListCreation([])
+test list single element [[ [1] ]] parse succeeds parse to ListCreation([Int("1")])
+test list multiple elements [[ [1, 2] ]] parse succeeds parse to ListCreation([Int("1"), Int("2")])
+test empty typed list [[ List<Int>() ]] parse succeeds parse to TypedListCreation(SimpleSort("Int"), [])
+test typed list single element [[ List<Int>(1) ]] parse succeeds parse to TypedListCreation(SimpleSort("Int"), [Int("1")])
+test typed list multiple elements [[ List<Int>(1, 2) ]] parse succeeds parse to TypedListCreation(SimpleSort("Int"), [Int("1"), Int("2")])
+
+// set creation
+test empty set not allowed [[ {} ]] parse fails
+test set single element [[ {1} ]] parse succeeds parse to SetCreation([Int("1")])
+test set multiple elements [[ {1, 2} ]] parse succeeds parse to SetCreation([Int("1"), Int("2")])
+
+// function call
+test this call no args [[ f() ]] parse succeeds parse to ThisCall("f", [])
+test this call single arg [[ f(x.y) ]] parse succeeds parse to ThisCall("f", [FieldAccess(Var("x"), "y")])
+test this call multiple args [[ f(x, y) ]] parse succeeds parse to ThisCall("f", [Var("x"), Var("y")])
+
+test call no args [[ x.f() ]] parse succeeds parse to Call(Var("x"), "f", [])
+test call on exp [[ Ent{}.f() ]] parse succeeds parse to Call(ObjectCreation(SimpleSort("Ent"), []), "f", [])
+test call single arg [[ x.f(x.y) ]] parse succeeds parse to Call(Var("x"), "f", [FieldAccess(Var("x"), "y")])
+test call multiple args [[ x.f(x, y) ]] parse succeeds parse to Call(Var("x"), "f", [Var("x"), Var("y")])
+
+// type check
+test is a [[ x is a Ent ]] parse succeeds parse to IsA(Var("x"), SimpleSort("Ent"))
+test isa [[ x isa Ent ]] parse succeeds parse to IsA(Var("x"), SimpleSort("Ent"))
+test is a nested [[ (x is a Ent) is a Bool ]] parse succeeds parse to IsA(IsA(Var("x"), SimpleSort("Ent")), SimpleSort("Bool"))
+
+// casting
+test cast [[ x as Bool ]] parse succeeds parse to Cast(Var("x"), SimpleSort("Bool"))
+test nested cast [[ (x as Bool) as Bool ]] parse succeeds parse to Cast(Cast(Var("x"), SimpleSort("Bool")), SimpleSort("Bool"))
+
+// element of collection
+test in collection [[ 1 in x ]] parse succeeds parse to InColl(Int("1"), Var("x"))
+test nested in collection [[ (1 in x) in xs ]] parse succeeds parse to InColl(InColl(Int("1"), Var("x")), Var("xs"))
+
+// booleans and constants
+test true [[ true ]] parse succeeds parse to True()
+test false [[ false ]] parse succeeds parse to False()
+test null [[ null ]] parse succeeds parse to Null()
+
+// unary operations
+test not [[ !true ]] parse succeeds parse to Not(True())
+test not with layout [[ ! true ]] parse succeeds parse to Not(True())
+test not nested expression [[ !!x ]] parse succeeds parse to Not(Not(Var("x")))
+test not bracket [[ (!(true)) ]] parse succeeds parse to Not(True())
+
+// binary operations
+test eq [[ 1 == 2 ]] parse succeeds parse to Eq(Int("1"), Int("2"))
+test eq left assoc [[ 1 == 2 == false ]] parse succeeds parse to Eq(Eq(Int("1"), Int("2")), False())
+
+test not eq [[ 1 != 2 ]] parse succeeds parse to NotEq(Int("1"), Int("2"))
+test not eq left assoc [[ 1 != 2 != false ]] parse succeeds parse to NotEq(NotEq(Int("1"), Int("2")), False())
+
+test larger than [[ 1 > 2 ]] parse succeeds parse to LargerThan(Int("1"), Int("2"))
+test larger than or equal [[ 1 >= 2 ]] parse succeeds parse to LargerThanOrEqual(Int("1"), Int("2"))
+test smaller than [[ 1 < 2 ]] parse succeeds parse to SmallerThan(Int("1"), Int("2"))
+test smaller than or equal [[ 1 <= 2 ]] parse succeeds parse to SmallerThanOrEqual(Int("1"), Int("2"))
+
+test and [[ false && true ]] parse succeeds parse to And(False(), True())
+test and assoc [[ false && false && true ]] parse succeeds parse to And(And(False(), False()), True())
+
+test or [[ false || true ]] parse succeeds parse to Or(False(), True())
+test or assoc [[ false || false || true ]] parse succeeds parse to Or(Or(False(), False()), True())
+
+test multiplication [[ 1 * 2 ]] parse succeeds parse to Mul(Int("1"), Int("2"))
+test multiplication assoc [[ 1 * 2 * 3 ]] parse succeeds parse to Mul(Mul(Int("1"), Int("2")), Int("3"))
+
+test division [[ 1 / 2 ]] parse succeeds parse to Div(Int("1"), Int("2"))
+test division assoc [[ 1 / 2 / 3 ]] parse succeeds parse to Div(Div(Int("1"), Int("2")), Int("3"))
+
+test mod [[ 1 % 2 ]] parse succeeds parse to Mod(Int("1"), Int("2"))
+test mod assoc [[ 1 % 2 % 3 ]] parse succeeds parse to Mod(Mod(Int("1"), Int("2")), Int("3"))
+
+test addition [[ 1 + 2 ]] parse succeeds parse to Add(Int("1"), Int("2"))
+test addition assoc [[ 1 + 2 + 3 ]] parse succeeds parse to Add(Add(Int("1"), Int("2")), Int("3"))
+
+test substraction [[ 1 - 2 ]] parse succeeds parse to Sub(Int("1"), Int("2"))
+test substraction assoc [[ 1 - 2 - 3 ]] parse succeeds parse to Sub(Sub(Int("1"), Int("2")), Int("3"))
+
+// for expressions
+test for expression [[ [ x | x in xs] ]] parse succeeds parse to ForExp(Var("x"), "x", OptSortNone(), Var("xs"), OptFilterNone(), OptGroupByNone())
+test for expression exp [[ [ x.y | x in xs] ]] parse succeeds parse to ForExp(FieldAccess(Var("x"), "y"), "x", OptSortNone(), Var("xs"), OptFilterNone(), OptGroupByNone())
+test for expression sort decl [[ [ x | x : Int in xs] ]] parse succeeds parse to ForExp(Var("x"), "x", OptSortSome(SimpleSort("Int")), Var("xs"), OptFilterNone(), OptGroupByNone())
+test for expression collection exp [[ [ x | x in y.ys] ]] parse succeeds parse to ForExp(Var("x"), "x", OptSortNone(), FieldAccess(Var("y"), "ys"), OptFilterNone(), OptGroupByNone())
+test for expression filter [[ [ x | x in xs where true] ]] parse succeeds parse to ForExp(Var("x"), "x", OptSortNone(), Var("xs"), OptFilterSome(FilterNoOrderByNoLimit(True())), OptGroupByNone())
+test for expression group by [[ [ x | x in xs group by x.y] ]] parse succeeds parse to ForExp(Var("x"), "x", OptSortNone(), Var("xs"), OptFilterNone(), GroupBy(FieldAccess(Var("x"), "y")))
+
+test alternative for expression [[ [x in xs] ]] parse succeeds parse to ForExpAlt("x", OptSortNone(), Var("xs"), OptFilterNone(), OptGroupByNone())
+test alternative for expression sort decl [[ [ x : Int in xs] ]] parse succeeds parse to ForExpAlt("x", OptSortSome(SimpleSort("Int")), Var("xs"), OptFilterNone(), OptGroupByNone())
+test alternative for expression collection exp [[ [ x in y.ys] ]] parse succeeds parse to ForExpAlt("x", OptSortNone(), FieldAccess(Var("y"), "ys"), OptFilterNone(), OptGroupByNone())
+test alternative for expression filter [[ [ x in xs where true] ]] parse succeeds parse to ForExpAlt("x", OptSortNone(), Var("xs"), OptFilterSome(FilterNoOrderByNoLimit(True())), OptGroupByNone())
+test alternative for expression group by [[ [ x in xs group by x.y] ]] parse succeeds parse to ForExpAlt("x", OptSortNone(), Var("xs"), OptFilterNone(), GroupBy(FieldAccess(Var("x"), "y")))
+
+test for expression conjunction [[ And [ x | x in xs] ]] parse succeeds parse to AndForExp(ForExp(Var("x"), "x", OptSortNone(), Var("xs"), OptFilterNone(), OptGroupByNone()))
+test for expression disjunction [[ Or [ x | x in xs] ]] parse succeeds parse to OrForExp(ForExp(Var("x"), "x", OptSortNone(), Var("xs"), OptFilterNone(), OptGroupByNone()))
+
+// binary operations priority
+test exp bracket rule [[ (((1))) ]] parse succeeds parse to Int("1")
+
+test function call prio [[ 2*x.f() ]] parse succeeds parse to Mul(Int("2"), Call(Var("x"), "f", []))
+test collection index prio [[ 2*x[1] ]] parse succeeds parse to Mul(Int("2"), CollectionIndex(Var("x"), Int("1")))
+test field access prio [[ 2*x.y ]] parse succeeds parse to Mul(Int("2"), FieldAccess(Var("x"), "y"))
+test call collection index field access same prio [[ a.b[0].c().d ]] parse succeeds parse to FieldAccess(Call(CollectionIndex(FieldAccess(Var("a"), "b"), Int("0")), "c", []), "d")
+
+test is a prio [[ a&&b is a Bool ]] parse succeeds parse to And(Var("a"), IsA(Var("b"), SimpleSort("Bool")))
+test cast prio [[ a&&b as Bool ]] parse succeeds parse to And(Var("a"), Cast(Var("b"), SimpleSort("Bool")))
+test in collection prio [[ a&&b in abs ]] parse succeeds parse to And(Var("a"), InColl(Var("b"), Var("abs")))
+test in collection cast is a non-assoc [[ x in xs as Bool is a Bool ]] parse fails
+
+test not prio [[ !a&&b ]] parse succeeds parse to And(Not(Var("a")), Var("b"))
+
+test multiplication prio [[ a + b * c ]] parse succeeds parse to Add(Var("a"), Mul(Var("b"), Var("c")))
+test division prio [[ a + b / c ]] parse succeeds parse to Add(Var("a"), Div(Var("b"), Var("c")))
+test mod prio [[ a + b % c ]] parse succeeds parse to Add(Var("a"), Mod(Var("b"), Var("c")))
+test multiplication division mod same prio [[ a * b / c % d * e ]] parse succeeds parse to Mul(Mod(Div(Mul(Var("a"), Var("b")), Var("c")), Var("d")), Var("e"))
+
+test add prio [[ a == b + c ]] parse succeeds parse to Eq(Var("a"), Add(Var("b"), Var("c")))
+test sub prio [[ a == b - c ]] parse succeeds parse to Eq(Var("a"), Sub(Var("b"), Var("c")))
+test add sub same prio [[ a + b - c + d ]] parse succeeds parse to Add(Sub(Add(Var("a"), Var("b")), Var("c")), Var("d"))
+
+test eq prio [[ a && b == c ]] parse succeeds parse to And(Var("a"), Eq(Var("b"), Var("c")))
+test not eq prio [[ a && b != c ]] parse succeeds parse to And(Var("a"), NotEq(Var("b"), Var("c")))
+test larger than prio [[ a && b > c ]] parse succeeds parse to And(Var("a"), LargerThan(Var("b"), Var("c")))
+test larger than or equal prio [[ a && b >= c ]] parse succeeds parse to And(Var("a"), LargerThanOrEqual(Var("b"), Var("c")))
+test smaller than prio [[ a && b < c ]] parse succeeds parse to And(Var("a"), SmallerThan(Var("b"), Var("c")))
+test smaller than or equal prio [[ a && b <= c ]] parse succeeds parse to And(Var("a"), SmallerThanOrEqual(Var("b"), Var("c")))
+test eq noteq lt lte st ste same prio [[ a == b != c > d >= e < f <= g == h ]] parse succeeds parse to Eq(SmallerThanOrEqual(SmallerThan(LargerThanOrEqual(LargerThan(NotEq(Eq(Var("a"), Var("b")), Var("c")), Var("d")), Var("e")), Var("f")), Var("g")), Var("h"))
+
+test and prio [[ a || b && c ]] parse succeeds parse to Or(Var("a"), And(Var("b"), Var("c")))
+
+test or prio [[ if (false) a else b || c ]] parse succeeds parse to IfExp(False(), Var("a"), Or(Var("b"), Var("c")))
+
+test and or prio [[ a || b && c || d ]] parse succeeds parse to Or(Or(Var("a"), And(Var("b"), Var("c"))), Var("d"))
+
+
+// email
+test render email [[ renderemail(e_Mail01()) ]] parse succeeds parse to RenderEmailFunctionCall(EmailCall("e_Mail01", []))
+test render email single arg [[ renderemail(e_Mail01(x)) ]] parse succeeds parse to RenderEmailFunctionCall(EmailCall("e_Mail01", [Var("x")]))
+test render email multiple args [[ renderemail(e_Mail01(x, y)) ]] parse succeeds parse to RenderEmailFunctionCall(EmailCall("e_Mail01", [Var("x"), Var("y")]))
+
+test email function call [[ email(x()) ]] parse succeeds parse to EmailFunctionCall(EmailCall("x", []))
+test email function call alt [[ email x() ]] parse succeeds parse to EmailFunctionCallAlt(EmailCall("x", []))
+test send email function call [[ sendemail(x()) ]] parse succeeds parse to SendEmailFunctionCall(EmailCall("x", []))
+
+
+// template expressions
+test render template function call [[ rendertemplate(content()) ]] parse succeeds parse to RenderTemplateFunctionCall(TemplateCall("content", [], OptTCallPropAssignsNone(), TemplateBodyNone()))
+test validate template function call [[ validatetemplate(content()) ]] parse succeeds parse to ValidateTemplateFunctionCall(TemplateCall("content", [], OptTCallPropAssignsNone(), TemplateBodyNone()))
