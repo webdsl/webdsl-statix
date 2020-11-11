@@ -1,0 +1,66 @@
+module attributes/definitions
+
+language webdsl-statix
+
+fixture [[
+  application attributes_definitions
+
+  [[...]]
+]]
+
+
+// attribute collection
+test attribute collection [[
+  attributes x { }
+]] parse succeeds parse to AttributeCollection(AttributeCollectionOverrideNone(), "x", [])
+
+test override attribute collection [[
+  override attributes x { }
+]] parse succeeds parse to AttributeCollection(AttributeCollectionOverride(), "x", [])
+
+test attribute collection single attribute [[
+  attributes x {
+    class=y
+  }
+]] parse succeeds parse to AttributeCollection(AttributeCollectionOverrideNone(), "x", [AttributeAssign("class", Var("y"))])
+
+test attribute collection multiple attributes [[
+  attributes x {
+    class=y
+    onclick=z
+  }
+]] parse succeeds parse to AttributeCollection(AttributeCollectionOverrideNone(), "x", [AttributeAssign("class", Var("y")), AttributeAssign("onclick", Var("z"))])
+
+test attribute collection multiple attributes minimal layout [[
+  attributes x { class=y onclick=z }
+]] parse succeeds parse to AttributeCollection(AttributeCollectionOverrideNone(), "x", [AttributeAssign("class", Var("y")), AttributeAssign("onclick", Var("z"))])
+
+
+// attribute selection in template elements
+test property assignment attribute selection [[
+  template t() {
+    div[div attributes]
+  }
+]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([]), OptTemplateArgsNone(), [TemplateCall("div", OptTCallArgsNone(), [AttributeSelection("div")], TemplateBodyNone())]))
+
+test property assignment attribute selection ignore default [[
+  template t() {
+    div[ignore default onclick]
+  }
+]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([]), OptTemplateArgsNone(), [TemplateCall("div", OptTCallArgsNone(), [AttributeIgnoreDefault("onclick")], TemplateBodyNone())]))
+
+test xml attribute selection [[
+  template t() {
+    <div div attributes />
+  }
+]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([]), OptTemplateArgsNone(), [XMLEmptyElement("div", [AttributeSelection("div")])]))
+
+test xml attribute selection ignore default [[
+  template t() {
+    <div ignore default onclick />
+  }
+]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([]), OptTemplateArgsNone(), [XMLEmptyElement("div", [AttributeIgnoreDefault("onclick")])]))
+
+
+
+

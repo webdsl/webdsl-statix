@@ -1,0 +1,39 @@
+module attributes/elements
+
+language webdsl-statix
+
+fixture [[
+  application attributes_elements
+
+  attributes x {
+    [[...]]
+  }
+]]
+
+
+// attribute id
+test attribute id [[ x=y ]] parse succeeds parse to AttributeAssign("x", Var("y"))
+test attribute id underscores and numbers [[ x_1=y ]] parse succeeds parse to AttributeAssign("x_1", Var("y"))
+test attribute id upper case [[ AbC_0_1=y ]] parse succeeds parse to AttributeAssign("AbC_0_1", Var("y"))
+test attribute id all not allowed [[ all=y ]] parse fails
+test attribute id attributes not allowed [[ attributes=y ]] parse fails
+
+
+// attribute assign
+test attribute assign [[ x=y ]] parse succeeds parse to AttributeAssign("x", Var("y"))
+test attribute assign string [[ x="y" ]] parse succeeds parse to AttributeAssign("x", StringValue("y"))
+test attribute assign string interp [[ x="y~z" ]] parse succeeds parse to AttributeAssign("x", StringInterp(["y", InterpSimpleExp(SimpleVar("z"))]))
+test attribute assign addition [[ x="y"+z ]] parse succeeds parse to AttributeAssign("x", Add(StringValue("y"), Var("z")))
+test attribute assign function call [[ x=y.z() ]] parse succeeds parse to AttributeAssign("x", Call(Var("y"), "z", []))
+
+
+// attribute include
+test attribute include [[ table attributes ]] parse succeeds parse to AttributeInclude("table", AttributeIncludeIgnoreNone())
+test attribute include ignore single [[ table attributes ignore class ]] parse succeeds parse to AttributeInclude("table", AttributeIncludeIgnore(["class"]))
+test attribute include ignore multiple [[ table attributes ignore class onclick ]] parse succeeds parse to AttributeInclude("table", AttributeIncludeIgnore(["class", "onclick"]))
+test attribute include no ignores [[ table attributes ignore ]] parse fails
+
+
+// attribute ignore
+test attribute ignore all attributes of collection [[ ignore div attributes ]] parse succeeds parse to AttributeIgnore("div")
+test attribute ignore without attributes [[ ignore div ]] parse fails
