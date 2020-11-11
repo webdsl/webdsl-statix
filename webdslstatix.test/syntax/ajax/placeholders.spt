@@ -1,0 +1,157 @@
+module ajax/placeholders
+
+language webdsl-statix
+
+fixture [[
+  application ajax_placeholders
+
+  template content() {
+    [[...]]
+  }
+]]
+
+
+// placeholder
+test placeholder [[
+  placeholder ph { }
+]] parse succeeds parse to Placeholder("ph", [])
+
+test placeholder single element [[
+  placeholder ph {
+    "content"
+  }
+]] parse succeeds parse to Placeholder("ph", [Text("content")])
+
+test placeholder multiple elements [[
+  placeholder ph {
+    "content"
+    "content2"
+  }
+]] parse succeeds parse to Placeholder("ph", [Text("content"), Text("content2")])
+
+test placeholder expression as name [[
+  placeholder "ph-"+"1" { }
+]] parse succeeds parse to PlaceholderExp(Add(StringValue("ph-"), StringValue("1")), [])
+
+test placeholder expression as name single element [[
+  placeholder "ph-"+"1" {
+    "content"
+  }
+]] parse succeeds parse to PlaceholderExp(Add(StringValue("ph-"), StringValue("1")), [Text("content")])
+
+test placeholder expression as name multiple elements [[
+  placeholder "ph-"+"1" {
+    "content"
+    "content2"
+  }
+]] parse succeeds parse to PlaceholderExp(Add(StringValue("ph-"), StringValue("1")), [Text("content"), Text("content2")])
+
+
+// placeholder custom html tag
+test placeholder custom html tag [[
+  placeholder<div> ph { }
+]] parse succeeds parse to PlaceholderHtml("div", "ph", [])
+
+test placeholder multiple html tags [[
+  placeholder<div span> ph { }
+]] parse fails
+
+test placeholder custom html tag with layout [[
+  placeholder <div> ph { }
+]] parse succeeds parse to PlaceholderHtml("div", "ph", [])
+
+test placeholder custom html single element [[
+  placeholder<div> ph {
+    "content"
+  }
+]] parse succeeds parse to PlaceholderHtml("div", "ph", [Text("content")])
+
+test placeholder custom html multiple elements [[
+  placeholder<div> ph {
+    "content"
+    "content2"
+  }
+]] parse succeeds parse to PlaceholderHtml("div", "ph", [Text("content"), Text("content2")])
+
+test placeholder custom html tag expression as name [[
+  placeholder <div> "ph-"+"1" { }
+]] parse succeeds parse to PlaceholderHtmlExp("div", Add(StringValue("ph-"), StringValue("1")), [])
+
+test placeholder custom html tag expression single element [[
+  placeholder <div> "ph-"+"1" {
+    "content"
+  }
+]] parse succeeds parse to PlaceholderHtmlExp("div", Add(StringValue("ph-"), StringValue("1")), [Text("content")])
+
+test placeholder custom html tag expression multiple elements [[
+  placeholder <div> "ph-"+"1" {
+    "content"
+    "content2"
+  }
+]] parse succeeds parse to PlaceholderHtmlExp("div", Add(StringValue("ph-"), StringValue("1")), [Text("content"), Text("content2")])
+
+
+// placeholder with ajax call
+test ajax placeholder [[
+  placeholder ph ajaxTemplate()
+]] parse succeeds parse to PlaceholderAjax("ph", TemplateCall("ajaxTemplate", [], OptTCallPropAssignsNone(), TemplateBodyNone()))
+
+test ajax placeholder no ajax call [[
+  placeholder ph
+]] parse fails
+
+test ajax placeholder phexp as name[[
+  placeholder "ph-"+"1" ajaxTemplate()
+]] parse succeeds parse to PlaceholderAjaxExp(PHAdd(StringValue("ph-"), StringValue("1")), TemplateCall("ajaxTemplate", [], OptTCallPropAssignsNone(), TemplateBodyNone()))
+
+test ajax placeholder phexp as nameno ajax call [[
+  placeholder "ph-"+"1"
+]] parse fails
+
+
+// placeholder custom html tag ajax call
+test ajax placeholder custom html tag [[
+  placeholder<div> ph ajaxTemplate()
+]] parse succeeds parse to PlaceholderAjaxHtml("div", "ph",TemplateCall("ajaxTemplate", [], OptTCallPropAssignsNone(), TemplateBodyNone()))
+
+test ajax placeholder multiple html tags [[
+  placeholder<div span> ph ajaxTemplate()
+]] parse fails
+
+test ajax placeholder custom html tag with layout [[
+  placeholder <div> ph ajaxTemplate()
+]] parse succeeds parse to PlaceholderAjaxHtml("div", "ph",TemplateCall("ajaxTemplate", [], OptTCallPropAssignsNone(), TemplateBodyNone()))
+
+test ajax placeholder custom html tag no ajax call [[
+  placeholder<div> ph
+]] parse fails
+
+test ajax placeholder custom html tag phexp as name [[
+  placeholder<div> "ph-"+"1" ajaxTemplate()
+]] parse succeeds parse to PlaceholderAjaxHtmlExp("div", PHAdd(StringValue("ph-"), StringValue("1")), TemplateCall("ajaxTemplate", [], OptTCallPropAssignsNone(), TemplateBodyNone()))
+
+test ajax placeholder multiple html tags phexp as name [[
+  placeholder<div span> "ph-"+"1" ajaxTemplate()
+]] parse fails
+
+test ajax placeholder custom html tag phexp as name with layout[[
+  placeholder <div> "ph-"+"1" ajaxTemplate()
+]] parse succeeds parse to PlaceholderAjaxHtmlExp("div", PHAdd(StringValue("ph-"), StringValue("1")), TemplateCall("ajaxTemplate", [], OptTCallPropAssignsNone(), TemplateBodyNone()))
+
+test ajax placeholder custom html tag phexp as nameno ajax call [[
+  placeholder<div> "ph-"+"1"
+]] parse fails
+
+
+// placeholder var
+test placeholdervar [[
+  placeholdervar phvar
+]] parse succeeds parse to PlaceholderVar("phvar")
+
+test placeholdervar id required[[
+  placeholdervar
+]] parse fails
+
+test placeholdervar not allowed as template name [[
+  placeholdervar("x", "y")
+]] parse fails

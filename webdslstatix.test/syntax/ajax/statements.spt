@@ -1,0 +1,71 @@
+module ajax/statements
+
+language webdsl-statix
+
+fixture [[
+  application ajax_statements
+
+  action a() {
+    [[...]]
+  }
+]]
+
+
+// replace
+test ajax replace [[
+  replace(ph, content());
+]] parse succeeds parse to AjaxStatement(AjaxReplace(Var("ph"), TemplateCall("content" ,[], OptTCallPropAssignsNone(), TemplateBodyNone())))
+
+test ajax replace string [[
+  replace("ph", content());
+]] parse succeeds parse to AjaxStatement(AjaxReplace(StringValue("ph"), TemplateCall("content" ,[], OptTCallPropAssignsNone(), TemplateBodyNone())))
+
+
+// append
+test ajax append [[
+  append(ph, content());
+]] parse succeeds parse to AjaxStatement(AjaxAppend(Var("ph"), TemplateCall("content" ,[], OptTCallPropAssignsNone(), TemplateBodyNone())))
+
+
+// set visibility
+test ajax visibility show [[
+  visibility(ph, show);
+]] parse succeeds parse to AjaxStatement(AjaxVisibility(Var("ph"), Show()))
+
+test ajax visibility toggle [[
+  visibility(ph, toggle);
+]] parse succeeds parse to AjaxStatement(AjaxVisibility(Var("ph"), Toggle()))
+
+test ajax visibility hide [[
+  visibility(ph, hide);
+]] parse succeeds parse to AjaxStatement(AjaxVisibility(Var("ph"), Hide()))
+
+
+// relocate
+test ajax relocate [[
+  relocate(root());
+]] parse succeeds parse to AjaxStatement(AjaxRelocate(PageCall("root", [])))
+
+
+// restyle
+test ajax restyle [[
+  restyle(ph, "class");
+]] parse succeeds parse to AjaxStatement(AjaxRestyle(Var("ph"), StringValue("class")))
+
+
+// clear
+test ajax clear [[
+  clear(ph);
+]] parse succeeds parse to AjaxStatement(AjaxClear(Var("ph")))
+
+
+// refresh
+test ajax refresh [[
+  refresh();
+]] parse succeeds parse to AjaxStatement(AjaxRefresh())
+
+
+// run script
+test ajax run script [[
+  runscript("console.log('')");
+]] parse succeeds parse to AjaxStatement(AjaxRunScript(StringValue("console.log('')")))
