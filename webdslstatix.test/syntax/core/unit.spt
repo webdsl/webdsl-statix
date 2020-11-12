@@ -200,37 +200,3 @@ test module imports only in section [[
 
     imports z
 ]] parse succeeds parse to Module("x", [Section(" 1", [Imports("z")])])
-
-
-// description and note
-test description [[
-  application x
-
-    description { x y z }
-]] parse succeeds parse to ApplicationDefs("x", [Description(["x", "y", "z"])], [])
-
-test description longer [[
-  application x
-
-    description {
-      multi
-      line
-      description
-    }
-]] parse succeeds parse to ApplicationDefs("x", [Description(["multi", "line", "description"])], [])
-
-test note [[
-  application x
-
-    note { x y z }
-]] parse succeeds parse to ApplicationDefs("x", [Note(["x", "y", "z"])], [])
-
-test note longer [[
-  application x
-
-    note {
-      multi
-      line
-      description
-    }
-]] parse succeeds parse to ApplicationDefs("x", [Note(["multi", "line", "description"])], [])

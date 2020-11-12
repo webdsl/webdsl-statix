@@ -1,0 +1,57 @@
+module core/sorts
+
+language webdsl-statix
+
+fixture [[
+  application core_sorts
+
+    [[...]]
+]]
+
+
+// simple sort
+test simple sort [[ var x : Int ]] parse succeeds parse to GlobalVarDecl("x", SimpleSort("Int"))
+test simple sort lower case [[ var x : sort ]] parse succeeds parse to GlobalVarDecl("x", SimpleSort("sort"))
+test simple sort upper case [[ var x : SORT ]] parse succeeds parse to GlobalVarDecl("x", SimpleSort("SORT"))
+test simple sort numbers [[ var x : sort0 ]] parse succeeds parse to GlobalVarDecl("x", SimpleSort("sort0"))
+test simple sort underscore [[ var x : sort_ ]] parse succeeds parse to GlobalVarDecl("x", SimpleSort("sort_"))
+test simple sort dash [[ var x : sort- ]] parse fails
+test simple sort start with underscore [[ var x : _sort ]] parse fails
+test simple sort start with number [[ var x : 0sort ]] parse fails
+test simple sort dot [[ var x : sort. ]] parse fails
+
+
+// generic sort
+test generic sort [[ var x : List<Int> ]] parse succeeds parse to GlobalVarDecl("x", GenericSort("List", [SimpleSort("Int")]))
+test generic sort multiple [[ var x : Map<Int, Int> ]] parse succeeds parse to GlobalVarDecl("x", GenericSort("Map", [SimpleSort("Int"), SimpleSort("Int")]))
+test generic sort nested [[ var x : List<List<Int>> ]] parse succeeds parse to GlobalVarDecl("x", GenericSort("List", [GenericSort("List", [SimpleSort("Int")])]))
+test generic sort ref not allowed [[ var x : Ref<Int, Int> ]] parse fails
+test generic sort underscores numbers [[ var x : List_0<Int> ]] parse succeeds parse to GlobalVarDecl("x", GenericSort("List_0", [SimpleSort("Int")]))
+
+test list sort shorthand [[ var x : [Int] ]] parse succeeds parse to GlobalVarDecl("x", ListSort(SimpleSort("Int")))
+test list sort shorthand nested [[ var x : [ [Int] ] ]] parse succeeds parse to GlobalVarDecl("x", ListSort(ListSort(SimpleSort("Int"))))
+test list sort multiple [[ var x : [Int, Int] ]] parse fails
+
+test set sort shorthand [[ var x : {Int} ]] parse succeeds parse to GlobalVarDecl("x", SetSort(SimpleSort("Int")))
+test set sort shorthand nested [[ var x : { {Int} } ]] parse succeeds parse to GlobalVarDecl("x", SetSort(SetSort(SimpleSort("Int"))))
+test set sort multiple [[ var x : {Int, Int} ]] parse fails
+
+
+// ref sort
+test ref sort [[ var x : ref Int ]] parse succeeds parse to GlobalVarDecl("x", RefSort(SimpleSort("Int")))
+test ref sort alt [[ var x : Ref<Int>  ]] parse succeeds parse to GlobalVarDecl("x", RefSortAlt(SimpleSort("Int")))
+test ref sort alt multiple [[ var x : Ref<Int, Int>  ]] parse fails
+
+
+// function sorts
+test function sort [[ var x : function ]] parse succeeds parse to GlobalVarDecl("x", FunctionSort(FunctionSortParamsNone(), FunctionSortReturnNone()))
+test function sort no params [[ var x : function() ]] parse succeeds parse to GlobalVarDecl("x", FunctionSort(FunctionSortParams([]), FunctionSortReturnNone()))
+
+test function sort single param unnamed [[ var x : function(Int) ]] parse succeeds parse to GlobalVarDecl("x", FunctionSort(FunctionSortParams([UnnamedArg(SimpleSort("Int"))]), FunctionSortReturnNone()))
+test function sort multiple params unnamed [[ var x : function(Int, String) ]] parse succeeds parse to GlobalVarDecl("x", FunctionSort(FunctionSortParams([UnnamedArg(SimpleSort("Int")), UnnamedArg(SimpleSort("String"))]), FunctionSortReturnNone()))
+
+test function sort single param named [[ var x : function(x : Int) ]] parse succeeds parse to GlobalVarDecl("x", FunctionSort(FunctionSortParams([NamedArg("x", SimpleSort("Int"))]), FunctionSortReturnNone()))
+test function sort multiple params named [[ var x : function(x : Int, y : String) ]] parse succeeds parse to GlobalVarDecl("x", FunctionSort(FunctionSortParams([NamedArg("x", SimpleSort("Int")), NamedArg("y", SimpleSort("String"))]), FunctionSortReturnNone()))
+
+test function sort return [[ var x : function : String ]] parse succeeds parse to GlobalVarDecl("x", FunctionSort(FunctionSortParamsNone(), FunctionSortReturn(SimpleSort("String"))))
+test function sort return nested [[ var x : function : function : String ]] parse succeeds parse to GlobalVarDecl("x", FunctionSort(FunctionSortParamsNone(), FunctionSortReturn(FunctionSort(FunctionSortParamsNone(), FunctionSortReturn(SimpleSort("String"))))))

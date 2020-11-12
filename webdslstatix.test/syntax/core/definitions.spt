@@ -1,0 +1,75 @@
+module core/definitions
+
+language webdsl-statix
+
+fixture [[
+  application core_definitions
+
+    [[...]]
+]]
+
+
+// description and note
+test description [[
+  description { x y z }
+]] parse succeeds parse to Description(["x", "y", "z"])
+
+test description longer [[
+  description {
+    multi
+    line
+    description
+  }
+]] parse succeeds parse to Description(["multi", "line", "description"])
+
+test description without block [[
+  description x y z
+]] parse fails
+
+test note [[
+  note { x y z }
+]] parse succeeds parse to Note(["x", "y", "z"])
+
+test note longer [[
+  note {
+    multi
+    line
+    description
+  }
+]] parse succeeds parse to Note(["multi", "line", "description"])
+
+test note without block [[
+  note x y z
+]] parse fails
+
+
+// enum
+test enum [[
+  enum x {}
+]] parse succeeds parse to Enum("x", [])
+
+test enum single value [[
+  enum x {
+    a("a")
+  }
+]] parse succeeds parse to Enum("x", [EnumValue("a", StringValue("a"))])
+
+test enum multiple values [[
+  enum x {
+    a("a"),
+    b("b")
+  }
+]] parse succeeds parse to Enum("x", [EnumValue("a", StringValue("a")), EnumValue("b", StringValue("b"))])
+
+test enum values without commas [[
+  enum x {
+    a("a")
+    b("b")
+  }
+]] parse fails
+
+test enum only string value [[
+  enum x {
+    a("a"+"a")
+  }
+]] parse fails
