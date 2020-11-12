@@ -10,7 +10,7 @@ rules
 
   desugar-all = topdown(try(normalize))
 
-  normalize: ScheduleNoFor(e) -> Schedule(e, ThisCall("now", []))
+  //normalize: ScheduleNoFor(e) -> Schedule(e, ThisCall("now", []))
 
   normalize = normalize-accesscontrol
   normalize = normalize-action

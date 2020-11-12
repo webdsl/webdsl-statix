@@ -10,10 +10,10 @@ context-free sorts
 
 context-free syntax
 
-  Exp.RegexCall = RegexExp "." Id "(" {Exp ","}* ")" 
-  RegexExp.RegexPattern = "/" Pattern "/" 
-  Pattern.SingleBranch = Branche 
-  Pattern.TupleBranch = Pattern "|" Pattern {right, prefer}
+  Exp.RegexCall = <<RegexExp> . <Id> ( <{Exp ","}*> )>
+  RegexExp.RegexPattern = </ <Pattern> />
+  Pattern.SingleBranch = Branche
+  Pattern.TupleBranch = <<Pattern> | <Pattern>> {right, prefer}
 
 context-free sorts
 
@@ -21,9 +21,9 @@ context-free sorts
 
 context-free syntax
 
-  Branche.Pieces = Piece+
-  Piece.SingleAtom = Atom 
-  Piece.QuantifiedAtom = Atom Quantifier 
+  Branche.Pieces = <<Piece+>>
+  Piece.SingleAtom = Atom
+  Piece.QuantifiedAtom = <<Atom> <Quantifier>>
 
 context-free sorts
 
@@ -31,24 +31,24 @@ context-free sorts
 
 context-free syntax
 
-  Quantifier.GreedyExactBound = "{" Integer "}" 
-  Quantifier.GreedyLowerBound = "{" Integer "," "}" 
-  Quantifier.GreedyLowerUpperBound = "{" Integer "," Integer "}" 
-  Quantifier.GreedyOnceOrNot = "?" 
-  Quantifier.GreedyZeroOrMore = "*" 
-  Quantifier.GreedyOneOrMore = "+" 
-  Quantifier.ReluctantExactBound = "{" Integer "}?" 
-  Quantifier.ReluctantLowerBound = "{" Integer "," "}?" 
-  Quantifier.ReluctantLowerUpperBound = "{" Integer "," Integer "}?" 
-  Quantifier.ReluctantOnceOrNot = "??" 
-  Quantifier.ReluctantZeroOrMore = "*?" 
-  Quantifier.ReluctantOneOrMore = "+?" 
-  Quantifier.PossessiveExactBound = "{" Integer "}+" 
-  Quantifier.PossessiveLowerBound = "{" Integer "," "}+" 
-  Quantifier.PossessiveLowerUpperBound = "{" Integer "," Integer "}+" 
-  Quantifier.PossessiveOnceOrNot = "?+" 
-  Quantifier.PossessiveZeroOrMore = "*+" 
-  Quantifier.PossessiveOneOrMore = "++" 
+  Quantifier.GreedyExactBound = <{ <Integer> }>
+  Quantifier.GreedyLowerBound = <{ <Integer> , }>
+  Quantifier.GreedyLowerUpperBound = <{ <Integer> , <Integer> }>
+  Quantifier.GreedyOnceOrNot = <?>
+  Quantifier.GreedyZeroOrMore = <*>
+  Quantifier.GreedyOneOrMore = <+>
+  Quantifier.ReluctantExactBound = <{ <Integer> }?>
+  Quantifier.ReluctantLowerBound = <{ <Integer> , }?>
+  Quantifier.ReluctantLowerUpperBound = <{ <Integer> , <Integer> }?>
+  Quantifier.ReluctantOnceOrNot = <??>
+  Quantifier.ReluctantZeroOrMore = <*?>
+  Quantifier.ReluctantOneOrMore = <+?>
+  Quantifier.PossessiveExactBound = <{ <Integer> }+>
+  Quantifier.PossessiveLowerBound = <{ <Integer> , }+>
+  Quantifier.PossessiveLowerUpperBound = <{ <Integer> , <Integer> }+>
+  Quantifier.PossessiveOnceOrNot = <?+>
+  Quantifier.PossessiveZeroOrMore = <*+>
+  Quantifier.PossessiveOneOrMore = <++>
 
 context-free sorts
 
@@ -56,22 +56,22 @@ context-free sorts
 
 context-free syntax
 
-  Atom.Capture = "(" Pattern ")" 
-  Atom.NonCapture = "(?:" Pattern ")" 
-  Atom.PositiveLookahead = "(?=" Pattern ")" 
-  Atom.NegativeLookahead = "(?!" Pattern ")" 
-  Atom.PositiveLookbehind = "(?<=" Pattern ")" 
-  Atom.NegativeLookbehind = "(?<!" Pattern ")" 
-  Atom.PythonCapture = "(?P<" RegexId ">" Pattern ")" 
-  Atom.RegexCapture = "(" Pattern ")@{" RegexId "}" 
-  Atom.Empty = "()" 
-  Atom.SingleCharacter = "." 
-  Atom.LineStart = "^" 
-  Atom.LineEnd = "$" 
-  Atom.CharacterClass = CharacterClass 
-  Atom.AtomLiteral = AtomLiteral 
-  Atom.AtomCharacter = AtomCharacter 
-  Atom.QuotedAtom = "\\Q" AllChars "\\E" 
+  Atom.Capture = <( <Pattern> )>
+  Atom.NonCapture = <(?: <Pattern> )>
+  Atom.PositiveLookahead = <(?= <Pattern> )>
+  Atom.NegativeLookahead = <(?! <Pattern> )>
+  Atom.PositiveLookbehind = <(?\<= <Pattern> )>
+  Atom.NegativeLookbehind = <(?\<! <Pattern> )>
+  Atom.PythonCapture = <(?P\< <RegexId> \> <Pattern> )>
+  Atom.RegexCapture = <( <Pattern> )@{ <RegexId> }>
+  Atom.Empty = <()>
+  Atom.SingleCharacter = <.>
+  Atom.LineStart = <^>
+  Atom.LineEnd = <$>
+  Atom.CharacterClass = CharacterClass
+  Atom.AtomLiteral = AtomLiteral
+  Atom.AtomCharacter = AtomCharacter
+  Atom.QuotedAtom = <\\Q <AllChars> \\E>
 
 context-free sorts
 
@@ -79,14 +79,14 @@ context-free sorts
 
 context-free syntax
 
-  CharacterClass.BracketList = "[" BracketItem+ "]" 
-  CharacterClass.NegatedBracketList = "[^" BracketItem+ "]" 
-  BracketItem.Range = BracketLiteralOrBracketCharacter "-" BracketLiteralOrBracketCharacter 
-  BracketLiteralOrBracketCharacter = BracketLiteral 
-  BracketLiteralOrBracketCharacter = BracketCharacter 
-  BracketItem.Union = CharacterClass 
-  BracketItem.BracketLiteral = BracketLiteral 
-  BracketItem.BracketCharacter = BracketCharacter 
+  CharacterClass.BracketList = <[ <BracketItem+> ]>
+  CharacterClass.NegatedBracketList = <[^ <BracketItem+> ]>
+  BracketItem.Range = <<BracketLiteralOrBracketCharacter> - <BracketLiteralOrBracketCharacter>>
+  BracketLiteralOrBracketCharacter = BracketLiteral
+  BracketLiteralOrBracketCharacter = BracketCharacter
+  BracketItem.Union = CharacterClass
+  BracketItem.BracketLiteral = BracketLiteral
+  BracketItem.BracketCharacter = BracketCharacter
 
 context-free sorts
 
@@ -94,26 +94,26 @@ context-free sorts
 
 context-free syntax
 
-  ClassKeyword.LowerClass = "Lower" 
-  ClassKeyword.UpperClass = "Upper" 
-  ClassKeyword.ASCIIClass = "ASCII" 
-  ClassKeyword.AlphaClass = "Alpha" 
-  ClassKeyword.DigitClass = "Digit" 
-  ClassKeyword.AlnumClass = "Alnum" 
-  ClassKeyword.PunctClass = "Punct" 
-  ClassKeyword.GraphClass = "Graph" 
-  ClassKeyword.PrintClass = "Print" 
-  ClassKeyword.BlankClass = "Blank" 
-  ClassKeyword.CntrlClass = "Cntrl" 
-  ClassKeyword.XDigitClass = "XDigit" 
-  ClassKeyword.WhiteSpace = "Space" 
-  ClassKeyword.JavaIsLowerCase = "javaLowerCase" 
-  ClassKeyword.JavaIsUpperCase = "javaUpperCase" 
-  ClassKeyword.JavaIsWhitespace = "javaWhitespace" 
-  ClassKeyword.JavaIsMirrored = "javaMirrored" 
-  ClassKeyword.GreekBlock = "InGreek" 
-  ClassKeyword.UppercaseLetter = "Lu" 
-  ClassKeyword.CurrencySymbol = "Sc" 
+  ClassKeyword.LowerClass = <Lower>
+  ClassKeyword.UpperClass = <Upper>
+  ClassKeyword.ASCIIClass = <ASCII>
+  ClassKeyword.AlphaClass = <Alpha>
+  ClassKeyword.DigitClass = <Digit>
+  ClassKeyword.AlnumClass = <Alnum>
+  ClassKeyword.PunctClass = <Punct>
+  ClassKeyword.GraphClass = <Graph>
+  ClassKeyword.PrintClass = <Print>
+  ClassKeyword.BlankClass = <Blank>
+  ClassKeyword.CntrlClass = <Cntrl>
+  ClassKeyword.XDigitClass = <XDigit>
+  ClassKeyword.WhiteSpace = <Space>
+  ClassKeyword.JavaIsLowerCase = <javaLowerCase>
+  ClassKeyword.JavaIsUpperCase = <javaUpperCase>
+  ClassKeyword.JavaIsWhitespace = <javaWhitespace>
+  ClassKeyword.JavaIsMirrored = <javaMirrored>
+  ClassKeyword.GreekBlock = <InGreek>
+  ClassKeyword.UppercaseLetter = <Lu>
+  ClassKeyword.CurrencySymbol = <Sc>
 
 lexical sorts
 
@@ -121,15 +121,15 @@ lexical sorts
 
 lexical syntax
 
-  BracketLiteral = [a-zA-Z0-9\!\#\%\'\,\:\;\<\=\>\@\_\`\~\$\*\+\?\.\}\|] 
-  BracketLiteral = "/" 
+  BracketLiteral = [a-zA-Z0-9\!\#\%\'\,\:\;\<\=\>\@\_\`\~\$\*\+\?\.\}\|]
+  BracketLiteral = "/"
   BracketLiteral = [\&\]\-] {reject}
-  AtomLiteral = [a-zA-Z0-9\!\#\%\'\,\:\;\<\=\>\@\_\`\~\&\]\-] 
-  AtomLiteral = "/" 
+  AtomLiteral = [a-zA-Z0-9\!\#\%\'\,\:\;\<\=\>\@\_\`\~\&\]\-]
+  AtomLiteral = "/"
   AtomLiteral = [\}\)\|\[] {reject}
-  AllChars = [\\\|\$\*\+\?\.\{\}\(\)\&\]\-\[\^\!\#\%\'\,\:\;\<\=\>\@\_\`\~a-zA-Z0-9\t\n\r]* 
-  AllChars = "/" 
-  AllChars = DoubleQuote 
+  AllChars = [\\\|\$\*\+\?\.\{\}\(\)\&\]\-\[\^\!\#\%\'\,\:\;\<\=\>\@\_\`\~a-zA-Z0-9\t\n\r]*
+  AllChars = "/"
+  AllChars = DoubleQuote
 
 context-free sorts
 
@@ -139,32 +139,31 @@ context-free sorts
 
 context-free syntax
 
-  DoubleQuote.DoubleQuote = "\""
-  OctalChar.OctalChar = "\\0" OctalValue 
-  HexHexChar.HexHexChar = "\\x" TwoHexValue 
-  DecHexChar.DecHexChar = "\\u" FourHexValue 
-  Tab.Tab = "\\t" 
-  Newline.Newline = "\\n" 
-  Return.Return = "\\r" 
-  Formfeed.Formfeed = "\\f" 
-  Alarm.Alarm = "\\a" 
-  Escape.Escape = "\\e" 
-  WordChar.WordChar = "\\w" 
-  NonWordChar.NonWordChar = "\\W" 
-  WhiteSpaceChar.WhiteSpaceChar = "\\s" 
-  NonWhiteSpaceChar.NonWhiteSpaceChar = "\\S" 
-  DigitChar.DigitChar = "\\d" 
-  NonDigitChar.NonDigitChar = "\\D" 
-  ControlCharacter.ControlCharacter = "\\c" ControlValue 
-  WordBoundry.WordBoundry = "\\b" 
-  NonWordBoundry.NonWordBoundry = "\\B" 
-  InputBeginBoundry.InputBeginBoundry = "\\A" 
-  PrevMatchEndBoundry.PrevMatchEndBoundry = "\\G" 
-  EndInputBoundry.EndInputBoundry = "\\Z" 
-  EndInputFinalBoundry.EndInputFinalBoundry = "\\z" 
-  BackReference.BackReference = "\\" BackReferenceLex
-  Space.Space = "\\ "
-
+  DoubleQuote.DoubleQuote = <">
+  OctalChar.OctalChar = <\\0 <OctalValue>>
+  HexHexChar.HexHexChar = <\\x <TwoHexValue>>
+  DecHexChar.DecHexChar = <\\u <FourHexValue>>
+  Tab.Tab = <\\t>
+  Newline.Newline = <\\n>
+  Return.Return = <\\r>
+  Formfeed.Formfeed = <\\f>
+  Alarm.Alarm = <\\a>
+  Escape.Escape = <\\e>
+  WordChar.WordChar = <\\w>
+  NonWordChar.NonWordChar = <\\W>
+  WhiteSpaceChar.WhiteSpaceChar = <\\s>
+  NonWhiteSpaceChar.NonWhiteSpaceChar = <\\S>
+  DigitChar.DigitChar = <\\d>
+  NonDigitChar.NonDigitChar = <\\D>
+  ControlCharacter.ControlCharacter = <\\c <ControlValue>>
+  WordBoundry.WordBoundry = <\\b>
+  NonWordBoundry.NonWordBoundry = <\\B>
+  InputBeginBoundry.InputBeginBoundry = <\\A>
+  PrevMatchEndBoundry.PrevMatchEndBoundry = <\\G>
+  EndInputBoundry.EndInputBoundry = <\\Z>
+  EndInputFinalBoundry.EndInputFinalBoundry = <\\z>
+  BackReference.BackReference = <\\ <BackReferenceLex>>
+  Space.Space = <\\ >
   BracketCharacter = DoubleQuote
   BracketCharacter = OctalChar
   BracketCharacter = HexHexChar
@@ -222,7 +221,7 @@ context-free sorts
 
 context-free syntax
 
-  Quoted.Quoted = "\\" QuotablePatternSymbol
+  Quoted.Quoted = <\\ <QuotablePatternSymbol>>
   AtomCharacter = Quoted
   BracketCharacter = Quoted
 

@@ -10,7 +10,6 @@ imports
   WebDSL-DataValidation
   WebDSL-Dispatch
   WebDSL-EntityDerive
-  WebDSL-Enums
   WebDSL-Exception
   WebDSL-Expand
   WebDSL-JavaScript

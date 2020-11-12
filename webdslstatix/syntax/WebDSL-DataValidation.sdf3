@@ -4,20 +4,24 @@ imports
   WebDSL-Action
   WebDSL-Lexical
 
-context-free sorts
-
-  ValidateEntity
-
 context-free syntax
 
-  Annotation.ValidateCreateAnno = "validatecreate" "(" Exp "," Exp ")" {prefer}
-  Annotation.ValidateUpdateAnno = "validateupdate" "(" Exp "," Exp ")" {prefer}
-  Annotation.ValidateDeleteAnno = "validatedelete" "(" Exp "," Exp ")" {prefer}
-  Annotation.ValidateAnno = "validate" "(" Exp "," Exp ")" {prefer}
-  Annotation.NamedValidateAnno = Id ":" "validate" "(" Exp "," Exp ")" {prefer}
-  EntityBodyDeclaration = ValidateEntity 
-  ValidateEntity.ValidateEntity = "validate" "(" Exp "," Exp ")" {prefer}
-  Statement.ValidateStatement = "validate" "(" Exp "," Exp ")" ";" {prefer}
-  Statement.NamedValidateStatement = Id ":" "validate" "(" Exp "," Exp ")" ";" {prefer}
-  TemplateCall.ValidationErrors = "validationErrors" "(" Id ")" {prefer}
-  TemplateCall.ValidationErrors = "validationErrors" "(" ")" {prefer}
+  Annotation.ValidateCreateAnno = <validatecreate ( <Exp> , <Exp> )> {prefer}
+  Annotation.ValidateUpdateAnno = <validateupdate ( <Exp> , <Exp> )> {prefer}
+  Annotation.ValidateDeleteAnno = <validatedelete ( <Exp> , <Exp> )> {prefer}
+  Annotation.ValidateAnno = <validate ( <Exp> , <Exp> )> {prefer}
+  Annotation.NamedValidateAnno = <<Id> : validate ( <Exp> , <Exp> )> {prefer}
+
+  EntityBodyDeclaration.ValidateEntity = <
+    validate ( <Exp> , <Exp> )
+  > {prefer}
+
+  Statement.ValidateStatement = <
+    validate ( <Exp> , <Exp> ) ;
+  > {prefer}
+  Statement.NamedValidateStatement = <
+    <Id> : validate ( <Exp> , <Exp> ) ;
+  > {prefer}
+
+  TemplateCall.ValidationErrors = <validationErrors ( <Id> )> {prefer}
+  TemplateCall.ValidationErrors = <validationErrors ( )> {prefer}

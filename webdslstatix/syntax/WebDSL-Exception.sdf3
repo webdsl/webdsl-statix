@@ -11,8 +11,18 @@ context-free sorts
 
 context-free syntax
 
-  Statement.ThrowStatement = "throw" {Exp ","}+ ";" {prefer}
-  TemplateCall.ThrowTemplate = "throw" {Exp ","}+ {prefer}
-  Statement.TryStatement = "try" Block Catch+ {prefer}
-  TemplateCall.TryTemplate = "try" Block Catch+ {prefer}
-  Catch.Catch = "catch" "(" Id ":" Sort ")" Block 
+  Statement.ThrowStatement = <
+    throw <{Exp ","}+> ;
+  > {prefer}
+  TemplateCall.ThrowTemplate = <
+    throw <{Exp ","}+>
+  > {prefer}
+
+  Statement.TryStatement = <
+    try <Block> <Catch+>
+  > {prefer}
+  TemplateCall.TryTemplate = <
+    try <Block> <Catch+>
+  > {prefer}
+
+  Catch.Catch = <catch ( <Id> : <Sort> ) <Block>> 

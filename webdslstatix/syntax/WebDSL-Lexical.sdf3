@@ -8,11 +8,11 @@ lexical syntax
 
   TemplateCallIdLex = Id %% hook for reject rules on templatecall names
   VarId = Id
-  Id = [a-zA-Z] [a-zA-Z0-9\_]* 
-  PageId = [a-zA-Z] [a-zA-Z0-9\_\-]* 
-  ExtendedId = [a-zA-Z0-9\-\_\.]+ 
-  ModuleName = {ExtendedId "/"}+ 
-  SectionName = ~[\n\r]* 
+  Id = [a-zA-Z] [a-zA-Z0-9\_]*
+  PageId = [a-zA-Z] [a-zA-Z0-9\_\-]*
+  ExtendedId = [a-zA-Z0-9\-\_\.]+
+  ModuleName = {ExtendedId "/"}+
+  SectionName = ~[\n\r]*
 
 lexical restrictions
 
@@ -26,13 +26,13 @@ lexical sorts
 
 lexical syntax
 
-  Int = "-"? [0-9]+ 
+  Int = "-"? [0-9]+
   Long = "-"? [0-9]+ "L"
   Float = "-"? FloatDigits ExponentPart? [fFdD]? 
-  FloatDigits = [0-9]* "." [0-9]+ 
-  FloatDigits = [0-9]+ 
-  ExponentPart = [eE] SignedInteger 
-  SignedInteger = [\+\-]? [0-9]+ 
+  FloatDigits = [0-9]* "." [0-9]+
+  FloatDigits = [0-9]+
+  ExponentPart = [eE] SignedInteger
+  SignedInteger = [\+\-]? [0-9]+
   Float = "-"? [0-9]+ {reject}
   FloatDigits = "." {reject}
 
@@ -56,7 +56,7 @@ syntax
   StringValue-CF.StringInterp = "\"" StringPart-CF* "\"" {avoid}
 
   StringPart-CF = SimpleStringPart-CF
-  StringPart-CF = StringLexInterp-LEX 
+  StringPart-CF = StringLexInterp-LEX
   SimpleStringPart-CF.InterpSimpleExp = "~" SimpleExp-CF 
 
 context-free restrictions
@@ -71,7 +71,7 @@ context-free sorts
 context-free syntax
 %% ~SimpleExp and ~(Exp) shorthand for output template call
 
-  OutputShorthand.OutputShorthandSimpleExp = "~" SimpleExp 
+  OutputShorthand.OutputShorthandSimpleExp = "~" SimpleExp
 
 context-free sorts
 
@@ -85,8 +85,8 @@ context-free syntax
 %% a '.' after a SimpleExp must be rejected as part of String to avoid amb, e.g. not allowed: "~a."
 %% in these cases, use '()' if a '.' is needed as part of the string,       e.g.     allowed: "~(a)."
 
-  SimpleExp.SimpleVar = VarId 
-  SimpleExp.SimpleFieldAccess = SimpleExp "." Id
+  SimpleExp.SimpleVar = VarId
+  SimpleExp.SimpleFieldAccess = <<SimpleExp> . <Id>>
 
 lexical sorts
 
@@ -95,11 +95,11 @@ lexical sorts
 lexical syntax
 
   QMLex = "\"" 
-  StringLex = StringChar* 
-  StringLexInterp = StringChar+ 
-  StringChar = ~[\"\n\~\\] 
-  StringChar = "\\" [0-9btnfr\'\"\\\~] 
-  HexPart = [0-9a-fA-F] 
+  StringLex = StringChar*
+  StringLexInterp = StringChar+
+  StringChar = ~[\"\n\~\\]
+  StringChar = "\\" [0-9btnfr\'\"\\\~]
+  HexPart = [0-9a-fA-F]
   StringChar = "\\u" HexPart HexPart HexPart HexPart
 
 lexical restrictions
@@ -114,13 +114,13 @@ lexical sorts
 lexical syntax
   LAYOUT     = [\ \t\n\r]
   LAYOUT     = "//" ~[\n\r]* NewLineEOF
-  LAYOUT     = "/*" InsideComment* "*/" 
-  InsideComment  = ~[\*] 
+  LAYOUT     = "/*" InsideComment* "*/"
+  InsideComment  = ~[\*]
   InsideComment  = CommentChar 
-  CommentChar    = [\*]     
-  NewLineEOF = [\n\r] 
-  NewLineEOF = EOF 
-  EOF        =  
+  CommentChar    = [\*]
+  NewLineEOF = [\n\r]
+  NewLineEOF = EOF
+  EOF        =
 
 lexical restrictions
   CommentChar -/- [\/]
@@ -139,7 +139,7 @@ lexical sorts
 
 lexical syntax
 
-  Word = ~[\ \t\n\r\}]+ 
+  Word = ~[\ \t\n\r\}]+
 
 lexical restrictions
 

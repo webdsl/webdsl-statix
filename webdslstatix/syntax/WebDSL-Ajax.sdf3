@@ -11,32 +11,50 @@ context-free sorts
 
 context-free syntax
 
-  Statement.AjaxStatement = AjaxStatement ";" {prefer}
-  AjaxStatement.AjaxReplace = "replace" "(" Exp "," TemplateCall ")" 
-  AjaxStatement.AjaxAppend = "append" "(" Exp "," TemplateCall ")" 
-  AjaxStatement.AjaxVisibility = "visibility" "(" Exp "," AjaxVisibility ")" 
-  AjaxVisibility.Show = "show" 
-  AjaxVisibility.Toggle = "toggle" 
-  AjaxVisibility.Hide = "hide" 
-  AjaxStatement.AjaxRelocate = "relocate" "(" PageCall ")" 
-  AjaxStatement.AjaxRestyle = "restyle" "(" Exp "," Exp ")" 
-  AjaxStatement.AjaxClear = "clear" "(" Exp ")" 
-  AjaxStatement.AjaxRefresh = "refresh" "(" ")" 
-  AjaxStatement.AjaxRunScript = "runscript" "(" Exp ")" {prefer}
-  
-  TemplateElement = Placeholder
-  TemplateElement = PlaceholderWithAjaxCall
-  Placeholder.PlaceholderHtml = "placeholder" "<" Id ">" Id "{" TemplateElement* "}" {prefer}
-  Placeholder.PlaceholderHtmlExp = "placeholder" "<" Id ">" Exp "{" TemplateElement* "}" 
-  Placeholder.Placeholder = "placeholder" Id "{" TemplateElement* "}" {prefer}
-  Placeholder.PlaceholderExp = "placeholder" Exp "{" TemplateElement* "}" 
-  PlaceholderWithAjaxCall.PlaceholderAjaxHtml = "placeholder" "<" Id ">" Id TemplateCall {prefer}
-  PlaceholderWithAjaxCall.PlaceholderAjaxHtmlExp = "placeholder" "<" Id ">" PHExp TemplateCall 
-  PlaceholderWithAjaxCall.PlaceholderAjax = "placeholder" Id TemplateCall {prefer}
-  PlaceholderWithAjaxCall.PlaceholderAjaxExp = "placeholder" PHExp TemplateCall 
-  
-  TemplateElement = PlaceholderVar 
-  PlaceholderVar.PlaceholderVar = "placeholdervar" Id {prefer}
+  Statement.AjaxStatement = <
+    <AjaxStatement> ;
+  > {prefer}
+
+  AjaxStatement.AjaxReplace = <replace ( <Exp> , <TemplateCall> )>
+  AjaxStatement.AjaxAppend = <append ( <Exp> , <TemplateCall> )>
+  AjaxStatement.AjaxVisibility = <visibility ( <Exp> , <AjaxVisibility> )>
+  AjaxVisibility.Show = <show>
+  AjaxVisibility.Toggle = <toggle>
+  AjaxVisibility.Hide = <hide>
+  AjaxStatement.AjaxRelocate = <relocate ( <PageCall> )>
+  AjaxStatement.AjaxRestyle = <restyle ( <Exp> , <Exp> )>
+  AjaxStatement.AjaxClear = <clear ( <Exp> )>
+  AjaxStatement.AjaxRefresh = <refresh ( )>
+  AjaxStatement.AjaxRunScript = <runscript ( <Exp> )> {prefer}
+
+  TemplateElement = <
+    <Placeholder>
+  >
+  TemplateElement = <
+    <PlaceholderWithAjaxCall>
+  >
+
+  Placeholder.PlaceholderHtml = <placeholder \< <Id> \> <Id> {
+    <TemplateElement*>
+  }> {prefer}
+  Placeholder.PlaceholderHtmlExp = <placeholder \< <Id> \> <Exp> {
+    <TemplateElement*>
+  }>
+  Placeholder.Placeholder = <placeholder <Id> {
+    <TemplateElement*>
+  }> {prefer}
+  Placeholder.PlaceholderExp = <placeholder <Exp> {
+    <TemplateElement*>
+  }>
+
+  PlaceholderWithAjaxCall.PlaceholderAjaxHtml = <placeholder \< <Id> \> <Id> <TemplateCall>> {prefer}
+  PlaceholderWithAjaxCall.PlaceholderAjaxHtmlExp = <placeholder \< <Id> \> <PHExp> <TemplateCall>>
+  PlaceholderWithAjaxCall.PlaceholderAjax = <placeholder <Id> <TemplateCall>> {prefer}
+  PlaceholderWithAjaxCall.PlaceholderAjaxExp = <placeholder <PHExp> <TemplateCall>>
+
+  TemplateElement = PlaceholderVar
+
+  PlaceholderVar.PlaceholderVar = <placeholdervar <Id>> {prefer}
 
 context-free sorts
 
@@ -44,9 +62,9 @@ context-free sorts
 
 context-free syntax
 
-  PHExp.PHThisCall = Id "(" {Exp ","}* ")" 
-  PHExp.PHCall = Exp "." Id "(" {Exp ","}* ")" 
-  PHExp.PHFieldAccess = Exp "." Id {prefer}
-  PHExp.PHCollectionIndex = Exp "[" Exp "]" {prefer}
-  PHExp.PHAdd = Exp "+" Exp 
-  PHExp = ConstValue 
+  PHExp.PHThisCall = <<Id> ( <{Exp ","}*> )>
+  PHExp.PHCall = <<Exp> . <Id> ( <{Exp ","}*> )>
+  PHExp.PHFieldAccess = <<Exp> . <Id>> {prefer}
+  PHExp.PHCollectionIndex = <<Exp> [ <Exp> ]> {prefer}
+  PHExp.PHAdd = <<Exp> + <Exp>>
+  PHExp = ConstValue

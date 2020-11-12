@@ -6,40 +6,54 @@ imports
 
 context-free sorts
 
-  NativeClassAlias NativeClassSuper NativeClassDeclaration
+  NativeClassAlias NativeClassSuper
 
 context-free syntax
 
-  Definition = NativeClassDeclaration 
-  NativeClassDeclaration.NativeClass = "native" "class" QId NativeClassAlias NativeClassSuper "{" NativeClassElement* "}" 
-  NativeClassAlias.NativeClassAlias = "as" Id {prefer}
+  Definition.NativeClass = <
+    native class <QId> <NativeClassAlias> <NativeClassSuper> {
+      <NativeClassElement*>
+    }
+  >
+  NativeClassAlias.NativeClassAlias = <as <Id>> {prefer}
   NativeClassAlias.NativeClassAliasNone = <>
-  NativeClassSuper.NativeClassSuper = ":" Id {prefer}
+  NativeClassSuper.NativeClassSuper = <: <Id>> {prefer}
   NativeClassSuper.NativeClassSuperNone = <>
 
 context-free sorts
 
-  NativeClassElement NativeType NativeClassFunction NativeClassFunctionReturn NativeClassFunctionStatic
-  NativeClassFunctionFromStatic
+  NativeClassElement NativeType NativeClassFunction NativeClassFunctionReturn
+  NativeClassFunctionStatic NativeClassFunctionFromStatic
 
 context-free syntax
 
-  NativeClassElement.NativeClassProperty = Id ":" NativeType
-  NativeClassElement = NativeClassFunction 
-  NativeClassFunction.NativeClassFunction = NativeClassFunctionStatic NativeFunId "(" {NativeType ","}* ")" NativeClassFunctionReturn 
-  NativeClassElement = "constructor" "(" {NativeType ","}* ")" NativeClassFunctionReturn {reject}
-  NativeClassFunctionReturn.NativeClassFunctionReturn = ":" NativeType {prefer}
+  NativeClassElement.NativeClassProperty = <
+    <Id> : <NativeType>
+  >
+  NativeClassElement = NativeClassFunction
+  NativeClassFunction.NativeClassFunction = <
+    <NativeClassFunctionStatic> <NativeFunId> ( <{NativeType ","}*> ) <NativeClassFunctionReturn>
+  >
+  NativeClassFunctionReturn.NativeClassFunctionReturn = <: <NativeType>> {prefer}
   NativeClassFunctionReturn.NativeClassFunctionReturnNone = <>
-  NativeClassFunctionStatic.NativeClassFunctionStatic = "static" {prefer}
+  NativeClassFunctionStatic.NativeClassFunctionStatic = <static> {prefer}
   NativeClassFunctionStatic.NativeClassFunctionStaticNone = <>
-  NativeClassFunctionFromStatic.NativeClassFunctionFromStatic = QId "as" NativeClassFunction
+  NativeClassFunctionFromStatic.NativeClassFunctionFromStatic = <
+    <QId> as <NativeClassFunction>
+  >
   NativeClassElement = NativeClassFunctionFromStatic
-  NativeClassElement.NativeClassConstructor = "constructor" "(" {NativeType ","}* ")" 
-  NativeClassElement.NativeClassConstructorFromStatic = QId "as" "constructor" "(" {NativeType ","}* ")" 
-  NativeType.NativeGenericType = Id "<" {NativeType ","}* ">"
-  NativeType.NativeGenericTypeList = "[" {NativeType ","}* "]"
-  NativeType.NativeGenericTypeSet = "{" {NativeType ","}* "}"
-  NativeType.NativeSimpleType = Id 
+  NativeClassElement.NativeClassConstructor = <
+    constructor ( <{NativeType ","}*> )
+  >
+  NativeClassElement.NativeClassConstructorFromStatic = <
+    <QId> as constructor ( <{NativeType ","}*> )
+  >
+  NativeType.NativeGenericType = <<Id> \< <{NativeType ","}*> \>>
+  NativeType.NativeGenericTypeList = <[ <{NativeType ","}*> ]>
+  NativeType.NativeGenericTypeSet = <{ <{NativeType ","}*> }>
+  NativeType.NativeSimpleType = Id
+
+  NativeClassElement = <constructor ( <{NativeType ","}*> ) <NativeClassFunctionReturn>> {reject}
 
 lexical sorts
 

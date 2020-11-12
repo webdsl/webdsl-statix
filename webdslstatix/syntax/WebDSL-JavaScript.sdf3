@@ -6,8 +6,8 @@ imports
 
 context-free syntax
 
-  TemplateElement.JSElement = "<" "script" Attribute* ">" JSPart* "</" "script" ">"
-  TemplateElement.StyleElement = "<" "style" Attribute* ">" JSPart* "</" "style" ">"
+  TemplateElement.JSElement = <\< script <Attribute*> \> <JSPart*> \</ script \>>
+  TemplateElement.StyleElement = <\< style <Attribute*> \> <JSPart*> \</ style \>>
 
 context-free sorts
 

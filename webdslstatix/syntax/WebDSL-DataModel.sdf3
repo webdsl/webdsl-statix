@@ -10,12 +10,32 @@ context-free sorts
 
 context-free syntax
 
-  Definition.Entity = "entity" Id ":" Id "{" EntityBodyDeclaration* "}" 
-  Definition.EntityNoSuper = "entity" Id "{" EntityBodyDeclaration* "}" 
-  Definition.SessionEntity = "session" Id "{" EntityBodyDeclaration* "}" 
-  EntityBodyDeclaration.CachedEntity = "cache" 
-  Definition.ExtendEntity = "extend" "entity" Id "{" EntityBodyDeclaration* "}" 
-  Definition.ExtendSessionEntity = "extend" "session" Id "{" EntityBodyDeclaration* "}" 
+  Definition.Entity = <
+    entity <Id> : <Id> {
+      <EntityBodyDeclaration*>
+    }
+  >
+  Definition.EntityNoSuper = <
+    entity <Id> {
+      <EntityBodyDeclaration*>
+    }
+  >
+  Definition.SessionEntity = <
+    session <Id> {
+      <EntityBodyDeclaration*>
+    }
+  >
+
+  Definition.ExtendEntity = <
+    extend entity <Id> {
+      <EntityBodyDeclaration*>
+    }
+  >
+  Definition.ExtendSessionEntity = <
+    extend session <Id> {
+      <EntityBodyDeclaration*>
+    }
+  >
 
 context-free restrictions
 
@@ -27,18 +47,42 @@ context-free sorts
 
 context-free syntax
 
-  Definition.GlobalVarDecl = "var" Id ":" Sort
-  Definition.GlobalVarDeclDepr = "var" Id ":" Sort ";"
-  Definition.GlobalVarDeclInit = "var" Id ":" Sort ":=" Exp
-  Definition.GlobalVarDeclInitDepr = "var" Id ":" Sort ":=" Exp ";"
-  Definition.GlobalVarDeclInitInferred = "var" Id ":=" Exp
-  Definition.GlobalVarDeclInitInferredDepr = "var" Id ":=" Exp ";"
-  Definition.RequestVarDecl = "request" "var" Id ":" Sort
-  Definition.RequestVarDeclDepr = "request" "var" Id ":" Sort ";"
-  Definition.RequestVarDeclInit = "request" "var" Id ":" Sort ":=" Exp
-  Definition.RequestVarDeclInitDepr = "request" "var" Id ":" Sort ":=" Exp ";"
-  Definition.RequestVarDeclInitInferred = "request" "var" Id ":=" Exp
-  Definition.RequestVarDeclInitInferredDepr = "request" "var" Id ":=" Exp ";"
+  Definition.GlobalVarDecl = <
+    var <Id> : <Sort>
+  >
+  Definition.GlobalVarDeclDepr = <
+    var <Id> : <Sort> ;
+  >
+  Definition.GlobalVarDeclInit = <
+    var <Id> : <Sort> := <Exp>
+  >
+  Definition.GlobalVarDeclInitDepr = <
+    var <Id> : <Sort> := <Exp> ;
+  >
+  Definition.GlobalVarDeclInitInferred = <
+    var <Id> := <Exp>
+  >
+  Definition.GlobalVarDeclInitInferredDepr = <
+    var <Id> := <Exp> ;
+  >
+  Definition.RequestVarDecl = <
+    request var <Id> : <Sort>
+  >
+  Definition.RequestVarDeclDepr = <
+    request var <Id> : <Sort> ;
+  >
+  Definition.RequestVarDeclInit = <
+    request var <Id> : <Sort> := <Exp>
+  >
+  Definition.RequestVarDeclInitDepr = <
+    request var <Id> : <Sort> := <Exp> ;
+  >
+  Definition.RequestVarDeclInitInferred = <
+    request var <Id> := <Exp>
+  >
+  Definition.RequestVarDeclInitInferredDepr = <
+  request var <Id> := <Exp> ;
+  >
 
 context-free sorts
 
@@ -46,32 +90,39 @@ context-free sorts
 
 context-free syntax
 
-  EntityBodyDeclaration.Property = Id PropKind Sort OptPropAnnos 
-  EntityBodyDeclaration.DerivedProperty = Id PropKind Sort OptPropAnnos ":=" Exp 
-  OptPropAnnos = "(" {Annotation ","}* ")"
+  EntityBodyDeclaration.Property = <
+    <Id> <PropKind> <Sort> <OptPropAnnos>
+  >
+  EntityBodyDeclaration.DerivedProperty = <
+    <Id> <PropKind> <Sort> <OptPropAnnos> := <Exp>
+  >
+  EntityBodyDeclaration.CachedEntity = <
+    cache
+  >
+  OptPropAnnos = <( <{Annotation ","}*> )>
   OptPropAnnos.OptPropAnnosNone = <>
-  PropKind.Simple = "::" 
-  PropKind.Ref = "->" 
-  PropKind.Comp = "<>" 
-  PropKind.AnyProp = ":" 
+  PropKind.Simple = <::>
+  PropKind.Ref = <-\>>
+  PropKind.Comp = <\<\>>
+  PropKind.AnyProp = <:>
 
 context-free syntax
 
-  Annotation.SimpleAnno = Id 
-  Annotation.InverseAnno = "inverse" "=" Id "." Id 
-  Annotation.IncompleteInverseAnno = "inverse" "=" Id 
-  Annotation.InverseSlaveAnno = "inverseSlave" "=" Id "." Id 
-  Annotation.InverseReferenceOnlyAnno = "inverse-reference-only" 
-  Annotation.InlineAnno = "inline" "(" {Id ","}* ")" 
-  Annotation.SelectAnno = "select" "=" Id 
-  Annotation.NotNullAnno = "not null" 
-  Annotation.NotEmptyAnno = "not empty" 
-  Annotation.AllowedAnno = "allowed" "=" Exp 
-  Annotation.DefaultAnno = "default" "=" Exp 
-  Annotation.LengthAnno = "length" "=" Int 
-  Annotation.FormatAnno = "format" "=" StringValue
-  Annotation.IndexAnno = "index" "(" ")" 
-  Annotation.IndexAnno = "index" "(" Int ")" 
-  Annotation.CollationAnno = "collation" "(" Id ")" 
-  Annotation.IdErrorAnno = "iderror" "=" StringValue
-  Annotation.IdEmptyErrorAnno = "idemptyerror" "=" StringValue
+  Annotation.SimpleAnno = Id
+  Annotation.InverseAnno = <inverse = <Id> . <Id>>
+  Annotation.IncompleteInverseAnno = <inverse = <Id>>
+  Annotation.InverseSlaveAnno = <inverseSlave = <Id> . <Id>>
+  Annotation.InverseReferenceOnlyAnno = <inverse-reference-only>
+  Annotation.InlineAnno = <inline ( <{Id ","}*> )>
+  Annotation.SelectAnno = <select = <Id>>
+  Annotation.NotNullAnno = <not null>
+  Annotation.NotEmptyAnno = <not empty>
+  Annotation.AllowedAnno = <allowed = <Exp>>
+  Annotation.DefaultAnno = <default = <Exp>>
+  Annotation.LengthAnno = <length = <Int>>
+  Annotation.FormatAnno = <format = <StringValue>>
+  Annotation.IndexAnno = <index ( )>
+  Annotation.IndexAnno = <index ( <Int> )>
+  Annotation.CollationAnno = <collation ( <Id> )>
+  Annotation.IdErrorAnno = <iderror = <StringValue>>
+  Annotation.IdEmptyErrorAnno = <idemptyerror = <StringValue>>

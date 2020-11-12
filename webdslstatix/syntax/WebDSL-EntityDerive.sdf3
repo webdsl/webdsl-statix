@@ -10,12 +10,21 @@ context-free sorts
 
 context-free syntax
 
-  TemplateArgExp.ExpEntityDerive = Exp "with" ExpEntityDeriveProp* {avoid}
-  ExpEntityDeriveProp.ExpEntityDeriveProp = Id "(" {Exp ","}* ")" 
+  TemplateArgExp.ExpEntityDerive = <<Exp> with <ExpEntityDeriveProp*>> {avoid}
+  ExpEntityDeriveProp.ExpEntityDeriveProp = <<Id> ( <{Exp ","}*> )>
   ExpEntityDeriveProp.ExpEntityDerivePropAlt = Id
-  Sort.ArgEntityDerive = Id "with" ArgEntityDeriveProp 
-  ArgEntityDeriveProp.ArgEntityDeriveProp = Id "(" {ArgEntityDerivePropArg ","}* ")" 
+  Sort.ArgEntityDerive = <<Id> with <ArgEntityDeriveProp>>
+  ArgEntityDeriveProp.ArgEntityDeriveProp = <<Id> ( <{ArgEntityDerivePropArg ","}*> )>
   ArgEntityDeriveProp.ArgEntityDerivePropAlt = Id
-  ArgEntityDerivePropArg.ArgEntityDerivePropArg = Id ":" Sort 
-  TemplateElement.ForeachElementEntityDerive = "foreach" Id "{" TemplateElement* "}" 
-  Statement.ForeachStatementEntityDerive = "foreach" Id "{" Statement* "}" 
+  ArgEntityDerivePropArg.ArgEntityDerivePropArg = <<Id> : <Sort>>
+
+  TemplateElement.ForeachElementEntityDerive = <
+    foreach <Id> {
+      <TemplateElement*>
+    }
+  >
+  Statement.ForeachStatementEntityDerive = <
+    foreach <Id> {
+      <Statement*>
+    }
+  >

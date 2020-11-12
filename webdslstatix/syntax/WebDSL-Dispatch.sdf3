@@ -12,22 +12,43 @@ context-free sorts
 
 context-free syntax
 
-  TemplateElement.Dispatch = "dispatch" "{" DispatchEntry* DispatchEntryDefault "}" 
-  TemplateCall = "dispatch" "{" TemplateElement* "}" {reject}
-  DispatchEntry.DispatchEntry = Id "(" {FormalArg ","}* ")" "{" TemplateElement* "}" 
-  DispatchEntry.DispatchEntryNoArg = Id "{" TemplateElement* "}" 
-  DispatchEntry.DispatchEntity = Id ":" Sort "{" TemplateElement* "}" 
-  DispatchEntryDefault.DispatchDefault = "default" "{" TemplateElement* "}" 
+  TemplateElement.Dispatch = <
+    dispatch {
+      <DispatchEntry*>
+      <DispatchEntryDefault> 
+    }
+  >
+  TemplateCall = <dispatch { <TemplateElement*> }> {reject}
+
+  DispatchEntry.DispatchEntry = <
+    <Id> ( <{FormalArg ","}*> ) { <TemplateElement*> }
+  >
+  DispatchEntry.DispatchEntryNoArg = <
+    <Id> { <TemplateElement*> }
+  >
+  DispatchEntry.DispatchEntity = <
+    <Id> : <Sort> { <TemplateElement*> }
+  >
+  DispatchEntryDefault.DispatchDefault = <
+    default { <TemplateElement*> }
+  >
   DispatchEntryDefault.DispatchEntryDefaultNone = <>
-  DispatchEntry = "default" "(" {FormalArg ","}* ")" "{" TemplateElement* "}" {reject}
-  DispatchEntry = "default" "{" TemplateElement* "}" {reject}
-  DispatchNavigate.DispatchNavigate = "navigate" "(" {DispatchNavigateCall "/"}+ ")" "{" TemplateElement* "}" 
-  DispatchNavigateButton.DispatchNavigateButton = "navigate" "(" Exp "," {DispatchNavigateCall "/"}+ ")" 
-  TemplateElement = DispatchNavigate 
-  TemplateElement = DispatchNavigateButton 
-  DispatchNavigate = "navigate" "(" Id "(" {Exp ","}* ")" ")" "{" TemplateElement* "}" {reject}
-  DispatchNavigateButton = "navigate" "(" Exp "," Id "(" {Exp ","}* ")" ")" "{" TemplateElement* "}" {reject}
-  TemplateCall = "navigate" "(" Exp "/" Exp ")" TemplateBody {reject}
-  TemplateCall = "navigate" "(" Exp "," Exp "/" Exp ")" TemplateBody {reject}
-  DispatchNavigateCall.DispatchNavigateCall = Id "(" {Exp ","}* ")" 
-  DispatchNavigateCall.DispatchNavigateCallNoArg = Id 
+  DispatchEntry = <default ( <{FormalArg ","}*> ) { <TemplateElement*> }> {reject}
+  DispatchEntry = <default { <TemplateElement*> }> {reject}
+
+  TemplateElement = DispatchNavigate
+  TemplateElement = DispatchNavigateButton
+  DispatchNavigate.DispatchNavigate = <
+    navigate ( <{DispatchNavigateCall "/"}+> ) {
+      <TemplateElement*>
+    }
+  >
+  DispatchNavigateButton.DispatchNavigateButton = <
+    navigate ( <Exp> , <{DispatchNavigateCall "/"}+> )
+  >
+  DispatchNavigate = <navigate ( <Id> ( <{Exp ","}*> ) ) { <TemplateElement*> }> {reject}
+  DispatchNavigateButton = <navigate ( <Exp> , <Id> ( <{Exp ","}*> ) ) { <TemplateElement*> }> {reject}
+  TemplateCall = <navigate ( <Exp> / <Exp> ) <TemplateBody>> {reject}
+  TemplateCall = <navigate ( <Exp> , <Exp> / <Exp> ) <TemplateBody>> {reject}
+  DispatchNavigateCall.DispatchNavigateCall = <<Id> ( <{Exp ","}*> )>
+  DispatchNavigateCall.DispatchNavigateCallNoArg = Id

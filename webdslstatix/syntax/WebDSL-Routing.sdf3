@@ -10,8 +10,16 @@ context-free sorts
 
 context-free syntax
 
-  Definition.Routing = "routing" "{" RoutingElement* "}" 
-  RoutingElement.RoutingReceive = "receive" OptRoutingArgs Block 
-  RoutingElement.RoutingConstruct = "construct" OptRoutingArgs Block 
-  OptRoutingArgs.RoutingArgs = "(" {FormalArg ","}* ")" 
+  Definition.Routing = <
+    routing {
+      <RoutingElement*> 
+    }
+  >
+  RoutingElement.RoutingReceive = <
+    receive <OptRoutingArgs> <Block>
+  >
+  RoutingElement.RoutingConstruct = <
+    construct <OptRoutingArgs> <Block>
+  >
+  OptRoutingArgs.RoutingArgs = <( <{FormalArg ","}*> )>
   OptRoutingArgs.OptRoutingArgsNone = <>

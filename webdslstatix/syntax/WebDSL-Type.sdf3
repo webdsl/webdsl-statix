@@ -11,8 +11,12 @@ context-free sorts
 
 context-free syntax
 
-  Definition.TypeDef = "type" Id "{" TypeProperty* "}" 
-  TypeProperty.TypeDefAnno = Annotation 
-  TypeProperty = NativeClassFunction 
-  TypeProperty = "static" {reject}
-  TypeProperty = NativeClassFunctionFromStatic 
+  Definition.TypeDef = <
+    type <Id> {
+      <TypeProperty*>
+    }
+  >
+  TypeProperty.TypeDefAnno = Annotation
+  TypeProperty = NativeClassFunction
+  TypeProperty = <static> {reject}
+  TypeProperty = NativeClassFunctionFromStatic
