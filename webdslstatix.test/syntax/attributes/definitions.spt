@@ -60,7 +60,3 @@ test xml attribute selection ignore default [[
     <div ignore default onclick />
   }
 ]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([]), OptTemplateArgsNone(), [XMLEmptyElement("div", [AttributeIgnoreDefault("onclick")])]))
-
-
-
-
