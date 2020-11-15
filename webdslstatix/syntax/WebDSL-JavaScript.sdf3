@@ -15,9 +15,9 @@ context-free sorts
 
 syntax
 
-  JSPart-CF.JSExp = "~" Exp-CF {prefer}
+  JSPart-CF.JSExp = "~" Exp-CF {/*prefer*/}
   JSPart-CF.JSString = JSString-LEX 
-  JSPart-CF.JSTilde = "\\~" {prefer}
+  JSPart-CF.JSTilde = "\\~" {/*prefer*/}
 
 lexical sorts
 

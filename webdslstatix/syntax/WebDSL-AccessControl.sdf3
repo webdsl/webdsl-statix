@@ -97,11 +97,11 @@ context-free syntax
 
   TemplateElement.AccessControlImportRules = <
     apply ac rules <Id> ( <{AccessControlImportRulesArg ","}*> )
-  > {prefer}
+  > {/*prefer*/}
 
   AccessControlImportRulesArg.ACVar = Id
 
-  OptMatchArgs.MatchArgs = <( <{FormalArg ","}*> <OptWildCardArg> )> {prefer}
+  OptMatchArgs.MatchArgs = <( <{FormalArg ","}*> <OptWildCardArg> )> {/*prefer*/}
   OptMatchArgs.OptMatchArgsNone = <>
 
   OptId.Id = Id

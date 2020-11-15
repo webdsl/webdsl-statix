@@ -13,16 +13,16 @@ context-free syntax
 
   Statement.ThrowStatement = <
     throw <{Exp ","}+> ;
-  > {prefer}
+  > {/*prefer*/}
   TemplateCall.ThrowTemplate = <
     throw <{Exp ","}+>
-  > {prefer}
+  > {/*prefer*/}
 
   Statement.TryStatement = <
     try <Block> <Catch+>
-  > {prefer}
+  > {/*prefer*/}
   TemplateCall.TryTemplate = <
     try <Block> <Catch+>
-  > {prefer}
+  > {/*prefer*/}
 
   Catch.Catch = <catch ( <Id> : <Sort> ) <Block>> 

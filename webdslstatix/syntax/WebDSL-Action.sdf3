@@ -52,10 +52,10 @@ context-free syntax
   >
   Statement.GoTo = <
     goto <PageCall>;
-  > {prefer}
+  > {/*prefer*/}
   Statement.GoToAlt = <
     goto ( <PageCall> );
-  > {prefer}
+  > {/*prefer*/}
 
   Statement.VarDecl = <
     var <Id> : <Sort>;
@@ -96,7 +96,7 @@ context-free syntax
   >
   Case.CaseAltDefault = <
     default <Block>
-  > {prefer}
+  > {/*prefer*/}
 
   Statement.TypeCaseStmt = <
     typecase ( <Exp> <OptTypeAlias> ) {
@@ -110,7 +110,7 @@ context-free syntax
   >
   TypeCaseAlt.TypeCaseAltDefault = <
     default <Block>
-  > {prefer}
+  > {/*prefer*/}
 
 context-free syntax
 
@@ -143,16 +143,16 @@ context-free syntax
   Exp = ConstValue
   Exp.Var = VarId
   Exp = <in> {reject}
-  Exp.GlobalVar = <global . <Id>> {prefer}
-  Exp.SessionVar = <session . <Id>> {prefer}
+  Exp.GlobalVar = <global . <Id>> {/*prefer*/}
+  Exp.SessionVar = <session . <Id>> {/*prefer*/}
   Exp.FieldAccess = <<Exp> . <Id>>
-  Exp.CollectionIndex = <<Exp> [ <Exp> ]> {prefer}
+  Exp.CollectionIndex = <<Exp> [ <Exp> ]> {/*prefer*/}
   ObjectCreation.ObjectCreationAlt = <<Sort> {
     <ObjectPropertyAssignment*>
   }>
   ObjectCreation.ObjectCreation = <<Sort> {
     <{ObjectPropertyAssignment ","}*>
-  }> {prefer}
+  }> {/*prefer*/}
   Exp = ObjectCreation
   ObjectPropertyAssignment.ObjectPropertyAssignment = <
     <Id> := <Exp>
@@ -163,16 +163,16 @@ context-free syntax
   Statement.Assignment = <
     <Exp> := <Exp> ;
   >
-  Exp.MapCreation = <[ <Mapping*> ]> {avoid}
+  Exp.MapCreation = <[ <Mapping*> ]> {/*avoid*/}
   Mapping.Mapping = <<Exp> -\> <Exp>>
   Exp.ListCreation = <[ <{Exp ","}*> ]>
   Exp.SetCreation = <{ <{Exp ","}+> }>
-  Exp.TypedListCreation = <List \< <Sort> \> ( <{Exp ","}*> )> {prefer}
-  Exp.TypedSetCreation = <Set \< <Sort> \> ( <{Exp ","}*> )> {prefer}
+  Exp.TypedListCreation = <List \< <Sort> \> ( <{Exp ","}*> )> {/*prefer*/}
+  Exp.TypedSetCreation = <Set \< <Sort> \> ( <{Exp ","}*> )> {/*prefer*/}
   Exp.ThisCall = <<Id> ( <{Exp ","}*> )>
   Exp.Call = <<Exp> . <Id> ( <{Exp ","}*> )>
   Exp.IsA = <<Exp> is a <Sort>>
-  Exp.Cast = <<Exp> as <Sort>> {avoid}
+  Exp.Cast = <<Exp> as <Sort>> {/*avoid*/}
 
   Exp.IfExp = <if ( <Exp> ) <Exp> else <Exp>>
 
@@ -204,9 +204,9 @@ context-free syntax
   Exp.LargerThanOrEqual = <<Exp> \>= <Exp>> {left}
   Exp.SmallerThan = <<Exp> \< <Exp>> {left}
   Exp.SmallerThanOrEqual = <<Exp> \<= <Exp>> {left}
-  Exp.True = <true> {prefer}
-  Exp.False = <false> {prefer}
-  Exp.Null = <null> {prefer}
+  Exp.True = <true> {/*prefer*/}
+  Exp.False = <false> {/*prefer*/}
+  Exp.Null = <null> {/*prefer*/}
   Exp.And = <<Exp> && <Exp>> {left}
   Exp.Or = <<Exp> || <Exp>> {left}
   Exp.Not = <! <Exp>>
@@ -291,12 +291,12 @@ context-free sorts
 context-free syntax
 
   EmailCall.EmailCall = <<Id> ( <{Exp ","}*> )> 
-  Exp.RenderEmailFunctionCall = <renderemail ( <EmailCall> )> {prefer}
-  Exp.EmailFunctionCall = <email ( <EmailCall> )> {prefer}
-  Exp.EmailFunctionCallAlt = <email <EmailCall>> {prefer}
-  Exp.SendEmailFunctionCall = <sendemail ( <EmailCall> )> {prefer}
+  Exp.RenderEmailFunctionCall = <renderemail ( <EmailCall> )> {/*prefer*/}
+  Exp.EmailFunctionCall = <email ( <EmailCall> )> {/*prefer*/}
+  Exp.EmailFunctionCallAlt = <email <EmailCall>> {/*prefer*/}
+  Exp.SendEmailFunctionCall = <sendemail ( <EmailCall> )> {/*prefer*/}
 
 context-free syntax
 
-  Exp.RenderTemplateFunctionCall = <rendertemplate ( <TemplateCall> )> {prefer}
-  Exp.ValidateTemplateFunctionCall = <validatetemplate ( <TemplateCall> )> {prefer}
+  Exp.RenderTemplateFunctionCall = <rendertemplate ( <TemplateCall> )> {/*prefer*/}
+  Exp.ValidateTemplateFunctionCall = <validatetemplate ( <TemplateCall> )> {/*prefer*/}
