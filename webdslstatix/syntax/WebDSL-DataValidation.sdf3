@@ -6,22 +6,22 @@ imports
 
 context-free syntax
 
-  Annotation.ValidateCreateAnno = <validatecreate ( <Exp> , <Exp> )> {/*prefer*/}
-  Annotation.ValidateUpdateAnno = <validateupdate ( <Exp> , <Exp> )> {/*prefer*/}
-  Annotation.ValidateDeleteAnno = <validatedelete ( <Exp> , <Exp> )> {/*prefer*/}
-  Annotation.ValidateAnno = <validate ( <Exp> , <Exp> )> {/*prefer*/}
-  Annotation.NamedValidateAnno = <<Id> : validate ( <Exp> , <Exp> )> {/*prefer*/}
+  Annotation.ValidateCreateAnno = <validatecreate ( <Exp> , <Exp> )> {prefer}
+  Annotation.ValidateUpdateAnno = <validateupdate ( <Exp> , <Exp> )> {prefer}
+  Annotation.ValidateDeleteAnno = <validatedelete ( <Exp> , <Exp> )> {prefer}
+  Annotation.ValidateAnno = <validate ( <Exp> , <Exp> )> {prefer}
+  Annotation.NamedValidateAnno = <<Id> : validate ( <Exp> , <Exp> )> {prefer}
 
   EntityBodyDeclaration.ValidateEntity = <
     validate ( <Exp> , <Exp> )
-  > {/*prefer*/}
+  > {prefer}
 
   Statement.ValidateStatement = <
     validate ( <Exp> , <Exp> ) ;
-  > {/*prefer*/}
+  > {prefer}
   Statement.NamedValidateStatement = <
     <Id> : validate ( <Exp> , <Exp> ) ;
-  > {/*prefer*/}
+  > {prefer}
 
-  TemplateCall.ValidationErrors = <validationErrors ( <Id> )> {/*prefer*/}
-  TemplateCall.ValidationErrors = <validationErrors ( )> {/*prefer*/}
+  TemplateCall.ValidationErrors = <validationErrors ( <Id> )> {prefer}
+  TemplateCall.ValidationErrors = <validationErrors ( )> {prefer}

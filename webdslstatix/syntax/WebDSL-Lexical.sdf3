@@ -53,7 +53,7 @@ syntax
   
   %% string literal as expression
   StringValue-CF.StringValue = "\"" StringLex-LEX "\""
-  StringValue-CF.StringInterp = "\"" StringPart-CF* "\"" {/*avoid*/}
+  StringValue-CF.StringInterp = "\"" StringPart-CF* "\"" {avoid}
 
   StringPart-CF = SimpleStringPart-CF
   StringPart-CF = StringLexInterp-LEX
@@ -82,7 +82,7 @@ context-free syntax
 %% allowing all expressions directly after '~' causes too many ambiguities
 %% parentheses expression is used as delimiter for inserting any expression
 %% allowed after '~': var/fieldaccess/thiscall/call/brackets a, a.b, a(), a.b(), (exp)
-%% a '.' after a SimpleExp must be rejected as part of String to /*avoid*/ amb, e.g. not allowed: "~a."
+%% a '.' after a SimpleExp must be rejected as part of String to avoid amb, e.g. not allowed: "~a."
 %% in these cases, use '()' if a '.' is needed as part of the string,       e.g.     allowed: "~(a)."
 
   SimpleExp.SimpleVar = VarId

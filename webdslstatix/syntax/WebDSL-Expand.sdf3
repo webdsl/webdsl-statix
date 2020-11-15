@@ -12,19 +12,19 @@ context-free syntax
 
   TemplateElement.DeriveNoBody = <
     derive <Id> from <Exp> for ( <{DeriveProperty ","}*> )
-  > {/*prefer*/}
+  > {prefer}
   TemplateElement.DeriveNoForNoNody = <
     derive <Id> from <Exp>
-  > {/*prefer*/}
+  > {prefer}
   TemplateElement.Derive = <
     derive <Id> from <Exp> for ( <{DeriveProperty ","}*> ) <DeriveBody>
-  > {/*prefer*/}
+  > {prefer}
   TemplateElement.DeriveNoFor = <
     derive <Id> from <Exp> <DeriveBody>
-  > {/*prefer*/}
+  > {prefer}
   TemplateElement.DeriveNoFromNoFor = <
     derive <Id> <DeriveBody>
-  > {/*prefer*/}
+  > {prefer}
 
   DeriveProperty.DeriveDefault = Id
   DeriveProperty.DeriveMode = <<Id> ( <Id> )>
@@ -32,8 +32,8 @@ context-free syntax
   DeriveBodyElement.DeriveBodyElement = <<Id> { <TemplateElement*> }>
 
   TemplateCall = <derive> {reject}
-  Definition.DeriveCrud = <derive crud <Id>> {/*prefer*/}
-  Definition.DeriveCrudUpper = <derive CRUD <Id>> {/*prefer*/}
+  Definition.DeriveCrud = <derive crud <Id>> {prefer}
+  Definition.DeriveCrudUpper = <derive CRUD <Id>> {prefer}
 
 context-free syntax
 
@@ -49,39 +49,39 @@ context-free syntax
     expand <ExpandId+> to <ExpandArgId+> {
       <TemplateElement*>
     }
-  > {/*prefer*/}
+  > {prefer}
   EntityBodyDeclaration.EntityBodyDeclarationExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> {
       <EntityBodyDeclaration*>
     }
-  > {/*prefer*/}
+  > {prefer}
   Statement.StatementExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> {
       <Statement*>
     }
-  > {/*prefer*/}
-  ObjectPropertyAssignment.ObjectPropertyAssignmentExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <ObjectPropertyAssignment*> }> {/*prefer*/}
+  > {prefer}
+  ObjectPropertyAssignment.ObjectPropertyAssignmentExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <ObjectPropertyAssignment*> }> {prefer}
   Definition.DefinitionExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> {
       <Definition*>
     }
-  > {/*prefer*/}
-  Exp.ExpExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <Exp> }> {/*prefer*/}
-  Attribute.AttributeExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <Attribute> }> {/*prefer*/}
-  PropertyAssignment.PropertyAssignmentExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <PropertyAssignment> }> {/*prefer*/}
-  FormalArg.FormalArgExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <FormalArg> }> {/*prefer*/}
+  > {prefer}
+  Exp.ExpExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <Exp> }> {prefer}
+  Attribute.AttributeExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <Attribute> }> {prefer}
+  PropertyAssignment.PropertyAssignmentExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <PropertyAssignment> }> {prefer}
+  FormalArg.FormalArgExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <FormalArg> }> {prefer}
   Case.CaseExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> { <Case> }
-  > {/*prefer*/}
+  > {prefer}
   TemplateCaseAlt.TemplateCaseAltExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> { <TemplateCaseAlt> }
-  > {/*prefer*/}
+  > {prefer}
   TypeCaseAlt.TypeCaseAltExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> { <TypeCaseAlt> }
-  > {/*prefer*/}
+  > {prefer}
   TemplateTypeCaseAlt.TemplateTypeCaseAltExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> { <TemplateTypeCaseAlt> }
-  > {/*prefer*/}
+  > {prefer}
 
   ExpandId = <expandtemplate> {reject}
   ExpandId = <template> {reject}

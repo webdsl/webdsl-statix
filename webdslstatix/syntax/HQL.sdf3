@@ -130,8 +130,8 @@ context-free syntax
   HQLExpression.HQLPath = HQLPath
 
   HQLExpression.HQLExpressions = <( <{HQLExpression ","}+> )>
-  HQLExpression.HQLQueryRule = <( <HQLQueryRule> )> {/*prefer*/}
-  HQLExpression.HQLQueryRuleAlt = HQLQueryRule {/*avoid*/}
+  HQLExpression.HQLQueryRule = <( <HQLQueryRule> )> {prefer}
+  HQLExpression.HQLQueryRuleAlt = HQLQueryRule {avoid}
 
   HQLExpression.QueryOr   = <<HQLExpression> or <HQLExpression>>
   HQLExpression.QueryAnd  = <<HQLExpression> and <HQLExpression>>

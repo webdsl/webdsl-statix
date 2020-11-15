@@ -15,9 +15,9 @@ context-free syntax
       <NativeClassElement*>
     }
   >
-  NativeClassAlias.NativeClassAlias = <as <Id>> {/*prefer*/}
+  NativeClassAlias.NativeClassAlias = <as <Id>> {prefer}
   NativeClassAlias.NativeClassAliasNone = <>
-  NativeClassSuper.NativeClassSuper = <: <Id>> {/*prefer*/}
+  NativeClassSuper.NativeClassSuper = <: <Id>> {prefer}
   NativeClassSuper.NativeClassSuperNone = <>
 
 context-free sorts
@@ -34,9 +34,9 @@ context-free syntax
   NativeClassFunction.NativeClassFunction = <
     <NativeClassFunctionStatic> <NativeFunId> ( <{NativeType ","}*> ) <NativeClassFunctionReturn>
   >
-  NativeClassFunctionReturn.NativeClassFunctionReturn = <: <NativeType>> {/*prefer*/}
+  NativeClassFunctionReturn.NativeClassFunctionReturn = <: <NativeType>> {prefer}
   NativeClassFunctionReturn.NativeClassFunctionReturnNone = <>
-  NativeClassFunctionStatic.NativeClassFunctionStatic = <static> {/*prefer*/}
+  NativeClassFunctionStatic.NativeClassFunctionStatic = <static> {prefer}
   NativeClassFunctionStatic.NativeClassFunctionStaticNone = <>
   NativeClassFunctionFromStatic.NativeClassFunctionFromStatic = <
     <QId> as <NativeClassFunction>

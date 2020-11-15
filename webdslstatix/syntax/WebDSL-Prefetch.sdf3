@@ -28,7 +28,7 @@ context-free syntax
   PrefetchNodeMod.FetchEarly = <fetch-early>
   TemplateArgOrThis.TemplateArgOrThis = <<Id> ( <{SortOrThis ","}*> )>
   SortOrThis = Sort
-  SortOrThis = PrefetchThis {/*prefer*/}
+  SortOrThis = PrefetchThis {prefer}
   SortOrThis.PrefetchThisCast = <<PrefetchThis> as <Sort>>
   PrefetchThis.PrefetchThis = <this>
   PrefetchTemplateArgs.PrefetchTemplateArgsNone = <>
@@ -40,10 +40,10 @@ context-free syntax
   PrefetchWhereMod.Hint = <hint>
   OptPrefetchOwnerCast.OptPrefetchOwnerCastNone = <>
   OptPrefetchOwnerCast.OptPrefetchOwnerCastSome = <<SIMPLESORT> .>
-  PrefetchCondVal.PrefetchTrue = <true> {/*prefer*/}
-  PrefetchCondVal.PrefetchFalse = <false> {/*prefer*/}
-  PrefetchCondVal.PrefetchNull = <null> {/*prefer*/}
-  PrefetchCondVal = ConstValue {/*prefer*/}
+  PrefetchCondVal.PrefetchTrue = <true> {prefer}
+  PrefetchCondVal.PrefetchFalse = <false> {prefer}
+  PrefetchCondVal.PrefetchNull = <null> {prefer}
+  PrefetchCondVal = ConstValue {prefer}
   PrefetchCondVal.PretchCondVar = Id
   OptSimpleSort.OptSimpleSortNone = <>
   OptSimpleSort.OptSimpleSortSome = SIMPLESORT

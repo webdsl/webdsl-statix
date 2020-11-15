@@ -13,7 +13,7 @@ context-free syntax
 
   Statement.AjaxStatement = <
     <AjaxStatement> ;
-  > {/*prefer*/}
+  > {prefer}
 
   AjaxStatement.AjaxReplace = <replace ( <Exp> , <TemplateCall> )>
   AjaxStatement.AjaxAppend = <append ( <Exp> , <TemplateCall> )>
@@ -25,7 +25,7 @@ context-free syntax
   AjaxStatement.AjaxRestyle = <restyle ( <Exp> , <Exp> )>
   AjaxStatement.AjaxClear = <clear ( <Exp> )>
   AjaxStatement.AjaxRefresh = <refresh ( )>
-  AjaxStatement.AjaxRunScript = <runscript ( <Exp> )> {/*prefer*/}
+  AjaxStatement.AjaxRunScript = <runscript ( <Exp> )> {prefer}
 
   TemplateElement = <
     <Placeholder>
@@ -36,25 +36,25 @@ context-free syntax
 
   Placeholder.PlaceholderHtml = <placeholder \< <Id> \> <Id> {
     <TemplateElement*>
-  }> {/*prefer*/}
+  }> {prefer}
   Placeholder.PlaceholderHtmlExp = <placeholder \< <Id> \> <Exp> {
     <TemplateElement*>
   }>
   Placeholder.Placeholder = <placeholder <Id> {
     <TemplateElement*>
-  }> {/*prefer*/}
+  }> {prefer}
   Placeholder.PlaceholderExp = <placeholder <Exp> {
     <TemplateElement*>
   }>
 
-  PlaceholderWithAjaxCall.PlaceholderAjaxHtml = <placeholder \< <Id> \> <Id> <TemplateCall>> {/*prefer*/}
+  PlaceholderWithAjaxCall.PlaceholderAjaxHtml = <placeholder \< <Id> \> <Id> <TemplateCall>> {prefer}
   PlaceholderWithAjaxCall.PlaceholderAjaxHtmlExp = <placeholder \< <Id> \> <PHExp> <TemplateCall>>
-  PlaceholderWithAjaxCall.PlaceholderAjax = <placeholder <Id> <TemplateCall>> {/*prefer*/}
+  PlaceholderWithAjaxCall.PlaceholderAjax = <placeholder <Id> <TemplateCall>> {prefer}
   PlaceholderWithAjaxCall.PlaceholderAjaxExp = <placeholder <PHExp> <TemplateCall>>
 
   TemplateElement = PlaceholderVar
 
-  PlaceholderVar.PlaceholderVar = <placeholdervar <Id>> {/*prefer*/}
+  PlaceholderVar.PlaceholderVar = <placeholdervar <Id>> {prefer}
 
 context-free sorts
 
@@ -64,7 +64,7 @@ context-free syntax
 
   PHExp.PHThisCall = <<Id> ( <{Exp ","}*> )>
   PHExp.PHCall = <<Exp> . <Id> ( <{Exp ","}*> )>
-  PHExp.PHFieldAccess = <<Exp> . <Id>> {/*prefer*/}
-  PHExp.PHCollectionIndex = <<Exp> [ <Exp> ]> {/*prefer*/}
+  PHExp.PHFieldAccess = <<Exp> . <Id>> {prefer}
+  PHExp.PHCollectionIndex = <<Exp> [ <Exp> ]> {prefer}
   PHExp.PHAdd = <<Exp> + <Exp>>
   PHExp = ConstValue
