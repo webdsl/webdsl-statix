@@ -24,4 +24,4 @@ context-free syntax
   > {prefer}
 
   TemplateCall.ValidationErrors = <validationErrors ( <Id> )> {prefer}
-  TemplateCall.ValidationErrors = <validationErrors ( )> {prefer}
+  TemplateCall.ValidationErrorsEmpty = <validationErrors ( )> {prefer}

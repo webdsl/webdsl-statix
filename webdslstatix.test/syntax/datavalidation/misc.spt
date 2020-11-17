@@ -1,0 +1,49 @@
+module datavalidation/misc
+
+language webdsl-statix
+
+fixture [[
+  application datavalidation_misc
+
+    [[...]]
+]]
+
+
+// validate as statement
+test validate as statement [[
+  function f() {
+    validate(x.length == 1, "error" + "");
+  }
+]] parse succeeds parse to GlobalFunction(Function("f", FormalArgs([]), OptSortNone(), Block([ValidateStatement(Eq(FieldAccess(Var("x"),"length"),Int("1")),Add(StringValue("error"),StringValue("")))])))
+
+test named validate as statement [[
+  function f() {
+    y : validate(x.length == 1, "error" + "");
+  }
+]] parse succeeds parse to GlobalFunction(Function("f", FormalArgs([]), OptSortNone(), Block([NamedValidateStatement("y", Eq(FieldAccess(Var("x"),"length"),Int("1")),Add(StringValue("error"),StringValue("")))])))
+
+test named validate as statement underscores and numbers [[
+  function f() {
+    yZ_1 : validate(x.length == 1, "error" + "");
+  }
+]] parse succeeds parse to GlobalFunction(Function("f", FormalArgs([]), OptSortNone(), Block([NamedValidateStatement("yZ_1", Eq(FieldAccess(Var("x"),"length"),Int("1")),Add(StringValue("error"),StringValue("")))])))
+
+test named validate as statement start with number [[
+  function f() {
+    1z : validate(x.length == 1, "error" + "");
+  }
+]] parse fails
+
+
+// validation errors as template calls
+test validation errors as template call [[
+  template t() {
+    validationErrors(x)
+  }
+]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([]), OptTemplateArgsNone(), [ValidationErrors("x")]))
+
+test validation errors as template call without name [[
+  template t() {
+    validationErrors()
+  }
+]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([]), OptTemplateArgsNone(), [ValidationErrorsEmpty()]))
