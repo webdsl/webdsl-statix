@@ -52,19 +52,19 @@ context-free syntax
   >
   Definition.GlobalVarDeclDepr = <
     var <Id> : <Sort> ;
-  >
+  > {deprecated("remove ;")}
   Definition.GlobalVarDeclInit = <
     var <Id> : <Sort> := <Exp>
   >
   Definition.GlobalVarDeclInitDepr = <
     var <Id> : <Sort> := <Exp> ;
-  >
+  > {deprecated("remove ;")}
   Definition.GlobalVarDeclInitInferred = <
     var <Id> := <Exp>
   >
   Definition.GlobalVarDeclInitInferredDepr = <
     var <Id> := <Exp> ;
-  >
+  > {deprecated("remove ;")}
   Definition.RequestVarDecl = <
     request var <Id> : <Sort>
   >
@@ -81,7 +81,7 @@ context-free syntax
     request var <Id> := <Exp>
   >
   Definition.RequestVarDeclInitInferredDepr = <
-  request var <Id> := <Exp> ;
+    request var <Id> := <Exp> ;
   >
 
 context-free sorts
@@ -99,7 +99,7 @@ context-free syntax
   EntityBodyDeclaration.CachedEntity = <
     cache
   >
-  OptPropAnnos = <( <{Annotation ","}*> )>
+  OptPropAnnos.PropAnnos = <( <{Annotation ","}*> )>
   OptPropAnnos.OptPropAnnosNone = <>
   PropKind.Simple = <::>
   PropKind.Ref = <-\>>
@@ -121,7 +121,7 @@ context-free syntax
   Annotation.DefaultAnno = <default = <Exp>>
   Annotation.LengthAnno = <length = <Int>>
   Annotation.FormatAnno = <format = <StringValue>>
-  Annotation.IndexAnno = <index ( )>
+  Annotation.IndexEmptyAnno = <index ( )>
   Annotation.IndexAnno = <index ( <Int> )>
   Annotation.CollationAnno = <collation ( <Id> )>
   Annotation.IdErrorAnno = <iderror = <StringValue>>

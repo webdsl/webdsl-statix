@@ -1,0 +1,196 @@
+module datamodel/definitions
+
+language webdsl-statix
+
+fixture [[
+  application datamodel_definitions
+  [[...]]
+]]
+
+// entity definitions
+test entity no super [[
+  entity Ent { }
+]] parse succeeds parse to EntityNoSuper("Ent", [])
+
+test entity name underscores and numbers allowed [[
+  entity aA_1_2_ { }
+]] parse succeeds parse to EntityNoSuper("aA_1_2_", [])
+
+test entity name dont start with numbers [[
+  entity 1Ent {}
+]] parse fails
+
+test entity name dont start with underscores [[
+  entity _Ent {}
+]] parse fails
+
+test entity no super single prop [[
+  entity Ent {
+    x : Int
+  }
+]] parse succeeds parse to EntityNoSuper("Ent", [Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())])
+
+test entity no super multiple props [[
+  entity Ent {
+    x : Int
+    y : Int
+  }
+]] parse succeeds parse to EntityNoSuper("Ent", [Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone()), Property("y", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())])
+
+test entity with super [[
+  entity Ent2 : Ent { }
+]] parse succeeds parse to Entity("Ent2", "Ent", [])
+
+test entity with super single prop [[
+  entity Ent2 : Ent {
+    x : Int
+  }
+]] parse succeeds parse to Entity("Ent2", "Ent", [Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())])
+
+test entity with super multiple props [[
+  entity Ent2 : Ent {
+    x : Int
+    y : Int
+  }
+]] parse succeeds parse to Entity("Ent2", "Ent", [Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone()), Property("y", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())])
+
+test session entity [[
+  session SessionEnt { }
+]] parse succeeds parse to SessionEntity("SessionEnt", [])
+
+test session entity single prop [[
+  session SessionEnt {
+    x : Int
+  }
+]] parse succeeds parse to SessionEntity("SessionEnt", [Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())])
+
+test session entity multiple props [[
+  session SessionEnt {
+    x : Int
+    y : Int
+  }
+]] parse succeeds parse to SessionEntity("SessionEnt", [Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone()), Property("y", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())])
+
+test session entity no super allowed [[
+  session SessionEnt2 : SessionEnt { }
+]] parse fails
+
+
+// extend entity
+test extend entity [[
+  extend entity Ent { }
+]] parse succeeds parse to ExtendEntity("Ent", [])
+
+test extend entity single prop [[
+  extend entity Ent {
+    x : Int
+  }
+]] parse succeeds parse to ExtendEntity("Ent", [Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())])
+
+test extend entity multiple props [[
+  extend entity Ent {
+    x : Int
+    y : Int
+  }
+]] parse succeeds parse to ExtendEntity("Ent", [Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone()), Property("y", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())])
+
+test extend entity dont name super [[
+  extend entity Ent2 : Ent { }
+]] parse fails
+
+test extend session entity [[
+  extend session SessionEnt { }
+]] parse succeeds parse to ExtendSessionEntity("SessionEnt", [])
+
+test extend session entity single prop [[
+  extend session SessionEnt {
+    x : Int
+  }
+]] parse succeeds parse to ExtendSessionEntity("SessionEnt", [Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())])
+
+test extend session entity multiple props [[
+  extend session SessionEnt {
+    x : Int
+    y : Int
+  }
+]] parse succeeds parse to ExtendSessionEntity("SessionEnt", [Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone()), Property("y", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())])
+
+test extend session entity no super allowed [[
+  extend session SessionEnt2 : SessionEnt { }
+]] parse fails
+
+
+// global var declarations
+test global var decl [[
+  var x : Int
+]] parse succeeds parse to GlobalVarDecl("x", SimpleSort("Int"))
+
+test global var decl underscores and numbers allowed [[
+  var aA_1_2_ : Int
+]] parse succeeds parse to GlobalVarDecl("aA_1_2_", SimpleSort("Int"))
+
+test global var decl dont start with numbers [[
+  var 1x : Int
+]] parse fails
+
+test global var decl dont start with underscores [[
+  var _x : Int
+]] parse fails
+
+test global var decl (deprecated) [[
+  var x : Int;
+]] parse succeeds parse to GlobalVarDeclDepr("x", SimpleSort("Int"))
+
+test global var decl init [[
+  var x : Int := 1
+]] parse succeeds parse to GlobalVarDeclInit("x", SimpleSort("Int"), Int("1"))
+
+test global var decl init (deprecated) [[
+  var x : Int := 1;
+]] parse succeeds parse to GlobalVarDeclInitDepr("x", SimpleSort("Int"), Int("1"))
+
+test global var decl init inferred [[
+  var x := 1
+]] parse succeeds parse to GlobalVarDeclInitInferred("x", Int("1"))
+
+test global var decl init inferred (deprecated) [[
+  var x := 1;
+]] parse succeeds parse to GlobalVarDeclInitInferredDepr("x", Int("1"))
+
+
+// request var declarations
+test request var decl [[
+  request var x : Int
+]] parse succeeds parse to RequestVarDecl("x", SimpleSort("Int"))
+
+test request var decl underscores and numbers allowed [[
+  request var aA_1_2_ : Int
+]] parse succeeds parse to RequestVarDecl("aA_1_2_", SimpleSort("Int"))
+
+test request var decl dont start with numbers [[
+  request var 1x : Int
+]] parse fails
+
+test request var decl dont start with underscores [[
+  request var _x : Int
+]] parse fails
+
+test request var decl (deprecated) [[
+  request var x : Int;
+]] parse succeeds parse to RequestVarDeclDepr("x", SimpleSort("Int"))
+
+test request var decl init [[
+  request var x : Int := 1
+]] parse succeeds parse to RequestVarDeclInit("x", SimpleSort("Int"), Int("1"))
+
+test request var decl init (deprecated) [[
+  request var x : Int := 1;
+]] parse succeeds parse to RequestVarDeclInitDepr("x", SimpleSort("Int"), Int("1"))
+
+test request var decl init inferred [[
+  request var x := 1
+]] parse succeeds parse to RequestVarDeclInitInferred("x", Int("1"))
+
+test request var decl init inferred (deprecated) [[
+  request var x := 1;
+]] parse succeeds parse to RequestVarDeclInitInferredDepr("x", Int("1"))

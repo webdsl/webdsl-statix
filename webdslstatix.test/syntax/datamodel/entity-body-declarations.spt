@@ -1,0 +1,197 @@
+module datamodel/entity-body-declarations
+
+language webdsl-statix
+
+fixture [[
+  application datamodel_entity_body_declarations
+
+  entity Ent {
+    [[...]]
+  }
+]]
+
+
+// properties
+test property [[
+  x : Int
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())
+
+test property name underscores and numbers allowed [[
+  aA_1_2_ : Int
+]] parse succeeds parse to Property("aA_1_2_", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())
+
+test property name dont start with numbers [[
+  1x : Int
+]] parse fails
+
+test property name dont start with underscores [[
+  _x : Int
+]] parse fails
+
+
+// derived properties
+test derived property [[
+  x : Int := 1
+]] parse succeeds parse to DerivedProperty("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone(), Int("1"))
+
+test derived property function call [[
+  x : Int := x()
+]] parse succeeds parse to DerivedProperty("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone(), ThisCall("x", []))
+
+
+// property kind
+test prop kind simple [[
+  x :: Int
+]] parse succeeds parse to Property("x", Simple(), SimpleSort("Int"), OptPropAnnosNone())
+
+test prop kind ref [[
+  x -> Int
+]] parse succeeds parse to Property("x", Ref(), SimpleSort("Int"), OptPropAnnosNone())
+
+test prop kind composite [[
+  x <> Int
+]] parse succeeds parse to Property("x", Comp(), SimpleSort("Int"), OptPropAnnosNone())
+
+test prop kind any [[
+  x : Int
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())
+
+
+// property annotations
+test property no annotations [[
+  x : Int
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())
+
+test property empty list of annotations no layout between [[
+  x : Int()
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([]))
+
+test property single annotation [[
+  x : Int (y)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([SimpleAnno("y")]))
+
+test property multiple annotations [[
+  x : Int (not null, not empty)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([NotNullAnno(), NotEmptyAnno()]))
+
+test property multiple annotations comma required [[
+  x : Int (not null not empty)
+]] parse fails
+
+test property simple annotation [[
+  x : Int (aAa_1_2)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([SimpleAnno("aAa_1_2")]))
+
+test property inverse annotation [[
+  x : Int (inverse = Ent2.y)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([InverseAnno("Ent2", "y")]))
+
+test property incomplete inverse annotation [[
+  x : Int (inverse = Ent2)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([IncompleteInverseAnno("Ent2")]))
+
+test property inverse slave annotation [[
+  x : Int (inverseSlave = Ent2.y)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([InverseSlaveAnno("Ent2", "y")]))
+
+test property inverse reference only annotation [[
+  x : Int (inverse-reference-only)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([InverseReferenceOnlyAnno()]))
+
+test property inline empty annotation [[
+  x : Int (inline())
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([InlineAnno([])]))
+
+test property inline single annotation [[
+  x : Int (inline(y))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([InlineAnno(["y"])]))
+
+test property inline multiple annotation [[
+  x : Int (inline(y, z))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([InlineAnno(["y", "z"])]))
+
+test property select annotation [[
+  x : Int (select = y)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([SelectAnno("y")]))
+
+test property not null annotation [[
+  x : Int (not null)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([NotNullAnno()]))
+
+test property not empty annotation [[
+  x : Int (not empty)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([NotEmptyAnno()]))
+
+test property allowed annotation [[
+  x : Int (allowed = 1)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([AllowedAnno(Int("1"))]))
+
+test property allowed more complicated exp [[
+  x : Int (allowed = f() + 2)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([AllowedAnno(Add(ThisCall("f", []), Int("2")))]))
+
+test property default annotation [[
+  x : Int (default = 1)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([DefaultAnno(Int("1"))]))
+
+test property default more complicated exp [[
+  x : Int (default = f() + 2)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([DefaultAnno(Add(ThisCall("f", []), Int("2")))]))
+
+test property length annotation [[
+  x : Int (length = 1)
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([LengthAnno("1")]))
+
+test property length only int allowed [[
+  x : Int (length = "y")
+]] parse fails
+
+test property format annotation [[
+  x : Int (format = "")
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([FormatAnno(StringValue(""))]))
+
+test property format only stringvalue allowed [[
+  x : Int (format = "" + "")
+]] parse fails
+
+test property index empty annotation [[
+  x : Int (index())
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([IndexEmptyAnno()]))
+
+test property index annotation [[
+  x : Int (index(1))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([IndexAnno("1")]))
+
+test property index only int allowed [[
+  x : Int (index("y"))
+]] parse fails
+
+test property collation annotation [[
+  x : Int (collation(y))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([CollationAnno("y")]))
+
+test property iderror annotation [[
+  x : Int (iderror = "")
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([IdErrorAnno(StringValue(""))]))
+
+test property iderror only stringvalue allowed [[
+  x : Int (iderror = "" + "")
+]] parse fails
+
+test property idemptyerror annotation [[
+  x : Int (idemptyerror = "")
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([IdEmptyErrorAnno(StringValue(""))]))
+
+test property iderrorempty only stringvalue allowed [[
+  x : Int (iderrorempty = "" + "")
+]] parse fails
+
+
+// cached
+test entity body declaration cache [[
+  cache
+]] parse to CachedEntity()
+
+test entity body declaration cached not allowed [[
+  cached
+]] parse fails
