@@ -1,0 +1,59 @@
+module exceptions/statements
+
+language webdsl-statix
+
+fixture [[
+  application exceptions_statements
+
+    function f() {
+      [[...]]
+    }
+]]
+
+
+// throw exception
+test throw exception statement [[
+  throw Ex{};
+]] parse succeeds parse to ThrowStatement([ObjectCreation(SimpleSort("Ex"), [])])
+
+test throw multiple exceptions statement [[
+  throw Ex1{}, Ex2{};
+]] parse succeeds parse to ThrowStatement([ObjectCreation(SimpleSort("Ex1"), []), ObjectCreation(SimpleSort("Ex2"), [])])
+
+test throw at least one exception statement [[
+  throw;
+]] parse fails
+
+test throw expression statement [[
+  throw f().x;
+]] parse succeeds parse to ThrowStatement([FieldAccess(ThisCall("f", []), "x")])
+
+
+// try catch
+test try catch statement [[
+  try {
+  } catch (ex : Exception) {
+  }
+]] parse succeeds parse to TryStatement(Block([]), [Catch("ex", SimpleSort("Exception"), Block([]))])
+
+test try multiple catch statement [[
+  try {
+  } catch (ex : Exception) {
+  } catch (ex : Exception2) {
+  }
+]] parse succeeds parse to TryStatement(Block([]), [Catch("ex", SimpleSort("Exception"), Block([])), Catch("ex", SimpleSort("Exception2"), Block([]))])
+
+test try at least one catch statement [[
+  try {
+  }
+]] parse fails
+
+test try catch multiple statement [[
+  try {
+    f();
+    g();
+  } catch (ex : Exception) {
+    h();
+    i();
+  }
+]] parse succeeds parse to TryStatement(Block([Stat(ThisCall("f", [])), Stat(ThisCall("g", []))]), [Catch("ex", SimpleSort("Exception"), Block([Stat(ThisCall("h", [])), Stat(ThisCall("i", []))]))])

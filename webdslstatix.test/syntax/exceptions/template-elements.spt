@@ -1,0 +1,59 @@
+module exceptions/template-elements
+
+language webdsl-statix
+
+fixture [[
+  application exceptions_template_elements
+
+    template t() {
+      [[...]]
+    }
+]]
+
+
+// throw exception
+test throw exception element [[
+  throw Ex{}
+]] parse succeeds parse to ThrowTemplate([ObjectCreation(SimpleSort("Ex"), [])])
+
+test throw multiple exceptions element [[
+  throw Ex1{}, Ex2{}
+]] parse succeeds parse to ThrowTemplate([ObjectCreation(SimpleSort("Ex1"), []), ObjectCreation(SimpleSort("Ex2"), [])])
+
+test throw at least one exception element [[
+  throw
+]] parse fails
+
+test throw expression element [[
+  throw f().x
+]] parse succeeds parse to ThrowTemplate([FieldAccess(ThisCall("f", []), "x")])
+
+
+// try catch
+test try catch element [[
+  try {
+  } catch (ex : Exception) {
+  }
+]] parse succeeds parse to TryTemplate(Block([]), [Catch("ex", SimpleSort("Exception"), Block([]))])
+
+test try multiple catch element [[
+  try {
+  } catch (ex : Exception) {
+  } catch (ex : Exception2) {
+  }
+]] parse succeeds parse to TryTemplate(Block([]), [Catch("ex", SimpleSort("Exception"), Block([])), Catch("ex", SimpleSort("Exception2"), Block([]))])
+
+test try at least one catch element [[
+  try {
+  }
+]] parse fails
+
+test try catch multiple statements element [[
+  try {
+    f();
+    g();
+  } catch (ex : Exception) {
+    h();
+    i();
+  }
+]] parse succeeds parse to TryTemplate(Block([Stat(ThisCall("f", [])), Stat(ThisCall("g", []))]), [Catch("ex", SimpleSort("Exception"), Block([Stat(ThisCall("h", [])), Stat(ThisCall("i", []))]))])
