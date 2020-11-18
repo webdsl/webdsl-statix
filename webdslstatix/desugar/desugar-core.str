@@ -7,3 +7,6 @@ imports
 rules
 
   normalize-core : RefSortAlt(sort) -> RefSort(sort)
+
+  normalize-core : OptFormalArgsNone() -> FormalArgs([])
+  normalize-core : OptCallArgsNone() -> CallArgs([])

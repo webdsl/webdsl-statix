@@ -1,12 +1,13 @@
 module WebDSL-Core
 
 imports
+  WebDSL-Action
   WebDSL-DataModel
   WebDSL-Lexical
 
 context-free sorts
 
-  QId FormalArg OptFormalArgs FunctionSortParams FunctionSortParam FunctionSortReturn
+  QId FormalArg OptFormalArgs FunctionSortParams FunctionSortParam FunctionSortReturn OptCallArgs
 
 context-free syntax
 
@@ -34,6 +35,9 @@ context-free syntax %% Types
   FormalArg.Arg = <<Id> : <Sort>>
   OptFormalArgs.FormalArgs = <( <{FormalArg ","}*> )>
   OptFormalArgs.OptFormalArgsNone = <>
+
+  OptCallArgs.CallArgs = <( <{Exp ","}*> )>
+  OptCallArgs.OptCallArgsNone = <>
 
 lexical sorts
 

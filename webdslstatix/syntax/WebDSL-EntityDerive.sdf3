@@ -2,21 +2,19 @@ module WebDSL-EntityDerive
 
 imports
   WebDSL-Action
+  WebDSL-Core
   WebDSL-Lexical
 
 context-free sorts
 
-  ExpEntityDeriveProp ArgEntityDeriveProp ArgEntityDerivePropArg
+  ExpEntityDeriveProp
 
 context-free syntax
 
   TemplateArgExp.ExpEntityDerive = <<Exp> with <ExpEntityDeriveProp*>> {avoid}
-  ExpEntityDeriveProp.ExpEntityDeriveProp = <<Id> ( <{Exp ","}*> )>
-  ExpEntityDeriveProp.ExpEntityDerivePropAlt = Id
-  Sort.ArgEntityDerive = <<Id> with <ArgEntityDeriveProp>>
-  ArgEntityDeriveProp.ArgEntityDeriveProp = <<Id> ( <{ArgEntityDerivePropArg ","}*> )>
-  ArgEntityDeriveProp.ArgEntityDerivePropAlt = Id
-  ArgEntityDerivePropArg.ArgEntityDerivePropArg = <<Id> : <Sort>>
+  ExpEntityDeriveProp.ExpEntityDeriveProp = <<Id> <OptCallArgs>>
+
+  Sort.ArgEntityDerive = <<Id> with <Id> <OptFormalArgs>>
 
   TemplateElement.ForeachElementEntityDerive = <
     foreach <Id> {

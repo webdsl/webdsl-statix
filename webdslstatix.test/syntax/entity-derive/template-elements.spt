@@ -1,0 +1,115 @@
+module entity-derive/template-elements
+
+language webdsl-statix
+
+fixture [[
+  application entity_derive_template_elements
+
+    template t() {
+      [[...]]
+    }
+]]
+
+
+// template call entity argument
+test entity derive template argument exp [[
+  x(e with y)
+]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("y", OptCallArgsNone())])], OptTCallPropAssignsNone(), TemplateBodyNone())
+
+test entity derive template argument exp call [[
+  x(getValue() with y)
+]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(ThisCall("getValue", []), [ExpEntityDeriveProp("y", OptCallArgsNone())])], OptTCallPropAssignsNone(), TemplateBodyNone())
+
+test entity derive template argument exp empty args [[
+  x(e with y())
+]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("y", CallArgs([]))])], OptTCallPropAssignsNone(), TemplateBodyNone())
+
+test entity derive template argument exp single arg [[
+  x(e with y(1))
+]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("y", CallArgs([Int("1")]))])], OptTCallPropAssignsNone(), TemplateBodyNone())
+
+test entity derive template argument exp multiple args [[
+  x(e with y(1, 2))
+]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("y", CallArgs([Int("1"), Int("2")]))])], OptTCallPropAssignsNone(), TemplateBodyNone())
+
+test entity derive template argument exp two props [[
+  x(e with a b)
+]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("a", OptCallArgsNone()), ExpEntityDeriveProp("b", OptCallArgsNone())])], OptTCallPropAssignsNone(), TemplateBodyNone())
+
+test entity derive template argument exp three props [[
+  x(e with a b c)
+]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("a", OptCallArgsNone()), ExpEntityDeriveProp("b", OptCallArgsNone()), ExpEntityDeriveProp("c", OptCallArgsNone())])], OptTCallPropAssignsNone(), TemplateBodyNone())
+
+
+// entity derive foreach template element
+test foreach entity derive template element [[
+  foreach props { }
+]] parse succeeds parse to ForeachElementEntityDerive("props", [])
+
+test foreach entity derive template element numbers and underscores [[
+  foreach propS_1_2 { }
+]] parse succeeds parse to ForeachElementEntityDerive("propS_1_2", [])
+
+test foreach entity derive template element start with numbers not allowed [[
+  foreach 1props { }
+]] parse fails
+
+test foreach entity derive template element start with underscores not allowed [[
+  foreach _props { }
+]] parse fails
+
+test foreach entity derive template element single template element [[
+  foreach props {
+    "x"
+  }
+]] parse succeeds parse to ForeachElementEntityDerive("props", [Text("x")])
+
+test foreach entity derive template element multiple template elements [[
+  foreach props {
+    "x"
+    "y"
+  }
+]] parse succeeds parse to ForeachElementEntityDerive("props", [Text("x"), Text("y")])
+
+
+// entity derive foreach statement
+test foreach entity derive [[
+  init {
+    foreach props { }
+  }
+]] parse succeeds parse to InitAction(Block([ForeachStatementEntityDerive("props", [])]))
+
+test foreach entity derive numbers and underscores [[
+  init {
+    foreach propS_1_2 { }
+  }
+]] parse succeeds parse to InitAction(Block([ForeachStatementEntityDerive("propS_1_2", [])]))
+
+test foreach entity derive start with numbers not allowed [[
+  init {
+    foreach 1props { }
+  }
+]] parse fails
+
+test foreach entity derive start with underscores not allowed [[
+  init {
+    foreach _props { }
+  }
+]] parse fails
+
+test foreach entity derive single statement [[
+  init {
+    foreach props {
+      g();
+    }
+  }
+]] parse succeeds parse to InitAction(Block([ForeachStatementEntityDerive("props", [Stat(ThisCall("g", []))])]))
+
+test foreach entity derive multiple statements [[
+  init {
+    foreach props {
+      g();
+      h();
+    }
+  }
+]] parse succeeds parse to InitAction(Block([ForeachStatementEntityDerive("props", [Stat(ThisCall("g", [])), Stat(ThisCall("h", []))])]))

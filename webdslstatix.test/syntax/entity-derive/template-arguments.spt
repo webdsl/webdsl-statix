@@ -1,0 +1,27 @@
+module entity-derive/template-arguments
+
+language webdsl-statix
+
+fixture [[
+  application entity_derive_template_arguments
+
+    [[...]]
+]]
+
+
+// sort definition
+test entity derive in template definition [[
+  template t(props : x with y) { }
+]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([Arg("props", ArgEntityDerive("x", "y", OptFormalArgsNone()))]), OptTemplateArgsNone(), []))
+
+test entity derive in template definition empty args [[
+  template t(props : x with y()) { }
+]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([Arg("props", ArgEntityDerive("x", "y", FormalArgs([])))]), OptTemplateArgsNone(), []))
+
+test entity derive in template definition single arg [[
+  template t(props : x with y(a : Int)) { }
+]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([Arg("props", ArgEntityDerive("x", "y", FormalArgs([Arg("a", SimpleSort("Int"))])))]), OptTemplateArgsNone(), []))
+
+test entity derive in template definition multiple args [[
+  template t(props : x with y(a : Int, b : String)) { }
+]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([Arg("props", ArgEntityDerive("x", "y", FormalArgs([Arg("a", SimpleSort("Int")), Arg("b", SimpleSort("String"))])))]), OptTemplateArgsNone(), []))
