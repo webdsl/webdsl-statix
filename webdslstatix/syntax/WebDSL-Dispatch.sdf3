@@ -8,31 +8,28 @@ imports
 
 context-free sorts
 
-  DispatchEntry DispatchEntryDefault DispatchNavigateCall DispatchNavigate DispatchNavigateButton
+  DispatchEntry DispatchDefault DispatchNavigateCall DispatchNavigate DispatchNavigateButton
 
 context-free syntax
 
   TemplateElement.Dispatch = <
     dispatch {
       <DispatchEntry*>
-      <DispatchEntryDefault> 
+      <DispatchDefault>
     }
   >
   TemplateCall = <dispatch { <TemplateElement*> }> {reject}
 
   DispatchEntry.DispatchEntry = <
-    <Id> ( <{FormalArg ","}*> ) { <TemplateElement*> }
-  >
-  DispatchEntry.DispatchEntryNoArg = <
-    <Id> { <TemplateElement*> }
+    <Id> <OptFormalArgs> { <TemplateElement*> }
   >
   DispatchEntry.DispatchEntity = <
     <Id> : <Sort> { <TemplateElement*> }
   >
-  DispatchEntryDefault.DispatchDefault = <
+  DispatchDefault.DispatchDefault = <
     default { <TemplateElement*> }
   >
-  DispatchEntryDefault.DispatchEntryDefaultNone = <>
+  DispatchDefault.DispatchDefaultNone = <>
   DispatchEntry = <default ( <{FormalArg ","}*> ) { <TemplateElement*> }> {reject}
   DispatchEntry = <default { <TemplateElement*> }> {reject}
 

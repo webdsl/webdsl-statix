@@ -1,0 +1,113 @@
+module dispatch/template-elements
+
+language webdsl-statix
+
+fixture [[
+  application dispatch_template_elements
+
+    template t() {
+      [[...]]
+    }
+]]
+
+
+// dispatch block
+test dispatch [[
+  dispatch { }
+]] parse succeeds parse to Dispatch([], DispatchDefaultNone())
+
+test dispatch default no elements [[
+  dispatch {
+    default { }
+  }
+]] parse succeeds parse to Dispatch([], DispatchDefault([]))
+
+test dispatch default single element [[
+  dispatch {
+    default { "x" }
+  }
+]] parse succeeds parse to Dispatch([], DispatchDefault([Text("x")]))
+
+test dispatch default multiple elements [[
+  dispatch {
+    default { "x" "y" }
+  }
+]] parse succeeds parse to Dispatch([], DispatchDefault([Text("x"), Text("y")]))
+
+test dispatch single element [[
+  dispatch {
+    x { }
+  }
+]] parse succeeds parse to Dispatch([DispatchEntry("x", OptFormalArgsNone(), [])], DispatchDefaultNone())
+
+test dispatch multiple elements [[
+  dispatch {
+    x       { }
+    y       { }
+  }
+]] parse succeeds parse to Dispatch([DispatchEntry("x", OptFormalArgsNone(), []), DispatchEntry("y", OptFormalArgsNone(), [])], DispatchDefaultNone())
+
+test dispatch multiple elements and default [[
+  dispatch {
+    x       { }
+    y       { }
+    default { }
+  }
+]] parse succeeds parse to Dispatch([DispatchEntry("x", OptFormalArgsNone(), []), DispatchEntry("y", OptFormalArgsNone(), [])], DispatchDefault([]))
+
+
+// dispatch navigate
+test dispatch navigate [[
+  navigate(x) { }
+]] parse succeeds parse to DispatchNavigate([DispatchNavigateCallNoArg("x")], [])
+
+test dispatch navigate at least one call [[
+  navigate() { }
+]] parse fails
+
+test dispatch navigate multiple calls [[
+  navigate(x / y) { }
+]] parse succeeds parse to DispatchNavigate([DispatchNavigateCallNoArg("x"), DispatchNavigateCallNoArg("y")], [])
+
+test dispatch navigate three calls [[
+  navigate(x / y / z) { }
+]] parse succeeds parse to DispatchNavigate([DispatchNavigateCallNoArg("x"), DispatchNavigateCallNoArg("y"), DispatchNavigateCallNoArg("z")], [])
+
+test dispatch navigate multiple calls with args [[
+  navigate(x(1, 2) / y(3, 4)) { }
+]] parse succeeds parse to DispatchNavigate([DispatchNavigateCall("x", [Int("1"), Int("2")]), DispatchNavigateCall("y", [Int("3"), Int("4")])], [])
+
+test dispatch navigate single template element [[
+  navigate(x) {
+    "x"
+  }
+]] parse succeeds parse to DispatchNavigate([DispatchNavigateCallNoArg("x")], [Text("x")])
+
+test dispatch navigate multiple template elements [[
+  navigate(x) {
+    "x"
+    "y"
+  }
+]] parse succeeds parse to DispatchNavigate([DispatchNavigateCallNoArg("x")], [Text("x"), Text("y")])
+
+
+// dispatch navigate button
+test dispatch navigate button [[
+  navigate("button-" + "x", x)
+]] parse succeeds parse to DispatchNavigateButton(Add(StringValue("button-"), StringValue("x")), [DispatchNavigateCallNoArg("x")])
+
+test dispatch navigate button at least one call [[
+  navigate("button-" + "x")
+]] parse fails
+
+test dispatch navigate button multiple calls [[
+  navigate("button-" + "x", x / y)
+]] parse succeeds parse to DispatchNavigateButton(Add(StringValue("button-"), StringValue("x")), [DispatchNavigateCallNoArg("x"), DispatchNavigateCallNoArg("y")])
+
+test dispatch navigate button three calls [[
+  navigate("button-" + "x", x / y / z)
+]] parse succeeds parse to DispatchNavigateButton(Add(StringValue("button-"), StringValue("x")), [DispatchNavigateCallNoArg("x"), DispatchNavigateCallNoArg("y"), DispatchNavigateCallNoArg("z")])
+
+test dispatch navigate button multiple calls with args [[
+  navigate("button-" + "x", x(1, 2) / y(3, 4))
+]] parse succeeds parse to DispatchNavigateButton(Add(StringValue("button-"), StringValue("x")), [DispatchNavigateCall("x", [Int("1"), Int("2")]), DispatchNavigateCall("y", [Int("3"), Int("4")])])

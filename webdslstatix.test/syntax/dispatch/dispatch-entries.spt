@@ -1,0 +1,68 @@
+module dispatch/dispatch-entries
+
+language webdsl-statix
+
+fixture [[
+  application dispatch_dispatch_entries
+
+    template t() {
+      dispatch {
+        [[...]]
+      }
+    }
+]]
+
+// dispatch entry
+test dispatch entry [[
+  x { }
+]] parse succeeds parse to DispatchEntry("x", OptFormalArgsNone(), [])
+
+test dispatch entry numbers and underscores [[
+  xY_0_1 { }
+]] parse succeeds parse to DispatchEntry("xY_0_1", OptFormalArgsNone(), [])
+
+test dispatch entry start with underscore not allowed [[
+  _x { }
+]] parse fails
+
+test dispatch entry start with number not allowed [[
+  1x { }
+]] parse fails
+
+test dispatch entry empty args [[
+  x() { }
+]] parse succeeds parse to DispatchEntry("x", FormalArgs([]), [])
+
+test dispatch entry single arg [[
+  x(x : Int) { }
+]] parse succeeds parse to DispatchEntry("x", FormalArgs([Arg("x", SimpleSort("Int"))]), [])
+
+test dispatch entry multiple args [[
+  x(x : Int, y : String) { }
+]] parse succeeds parse to DispatchEntry("x", FormalArgs([Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("String"))]), [])
+
+test dispatch entry single template element [[
+  x { "x" }
+]] parse succeeds parse to DispatchEntry("x", OptFormalArgsNone(), [Text("x")])
+
+test dispatch entry multiple template elements [[
+  x { "x" "y" }
+]] parse succeeds parse to DispatchEntry("x", OptFormalArgsNone(), [Text("x"), Text("y")])
+
+
+// dispatch entity
+test dispatch entity [[
+  x : Ent { }
+]] parse succeeds parse to DispatchEntity("x", SimpleSort("Ent"), [])
+
+test dispatch entity single template element [[
+  x : Ent {
+    "x"
+  }
+]] parse succeeds parse to DispatchEntity("x", SimpleSort("Ent"), [Text("x")])
+
+test dispatch entity [[
+  x : Ent {
+    "x" "y"
+  }
+]] parse succeeds parse to DispatchEntity("x", SimpleSort("Ent"), [Text("x"), Text("y")])
