@@ -13,7 +13,7 @@ context-free syntax
   TemplateElement.DeriveNoBody = <
     derive <Id> from <Exp> for ( <{DeriveProperty ","}*> )
   > {prefer}
-  TemplateElement.DeriveNoForNoNody = <
+  TemplateElement.DeriveNoForNoBody = <
     derive <Id> from <Exp>
   > {prefer}
   TemplateElement.Derive = <
@@ -28,8 +28,12 @@ context-free syntax
 
   DeriveProperty.DeriveDefault = Id
   DeriveProperty.DeriveMode = <<Id> ( <Id> )>
-  DeriveBody.DeriveBody = <{ <DeriveBodyElement*> }>
-  DeriveBodyElement.DeriveBodyElement = <<Id> { <TemplateElement*> }>
+  DeriveBody.DeriveBody = <{
+    <DeriveBodyElement*>
+  }>
+  DeriveBodyElement.DeriveBodyElement = <
+    <Id> { <TemplateElement*> }
+  >
 
   TemplateCall = <derive> {reject}
   Definition.DeriveCrud = <derive crud <Id>> {prefer}
@@ -60,7 +64,11 @@ context-free syntax
       <Statement*>
     }
   > {prefer}
-  ObjectPropertyAssignment.ObjectPropertyAssignmentExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <ObjectPropertyAssignment*> }> {prefer}
+  ObjectPropertyAssignment.ObjectPropertyAssignmentExpandLocal = <
+    expand <ExpandId+> to <ExpandArgId+> {
+      <ObjectPropertyAssignment*>
+    }
+  > {prefer}
   Definition.DefinitionExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> {
       <Definition*>
@@ -70,7 +78,7 @@ context-free syntax
   Attribute.AttributeExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <Attribute> }> {prefer}
   PropertyAssignment.PropertyAssignmentExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <PropertyAssignment> }> {prefer}
   FormalArg.FormalArgExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <FormalArg> }> {prefer}
-  Case.CaseExpandLocal = <
+  Case.CaseAltExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> { <Case> }
   > {prefer}
   TemplateCaseAlt.TemplateCaseAltExpandLocal = <

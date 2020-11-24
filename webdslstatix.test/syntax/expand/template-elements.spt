@@ -1,0 +1,182 @@
+module expand/template-elements
+
+language webdsl-statix
+
+fixture [[
+  application expand_template_elements
+
+  template t() {
+    [[...]]
+  }
+]]
+
+
+// derive for
+test derive for [[
+  derive x from y for ()
+]] parse succeeds parse to DeriveNoBody("x", Var("y"), [])
+
+test derive for this call [[
+  derive x from y() for ()
+]] parse succeeds parse to DeriveNoBody("x", ThisCall("y", []), [])
+
+test derive for single property [[
+  derive x from y for ( a )
+]] parse succeeds parse to DeriveNoBody("x", Var("y"), [DeriveDefault("a")])
+
+test derive for single property mode [[
+  derive x from y for ( a(b) )
+]] parse succeeds parse to DeriveNoBody("x", Var("y"), [DeriveMode("a", "b")])
+
+test derive for multiple properties [[
+  derive x from y for ( a, b )
+]] parse succeeds parse to DeriveNoBody("x", Var("y"), [DeriveDefault("a"), DeriveDefault("b")])
+
+
+// derive no for no body
+test derive [[
+  derive x from y
+]] parse succeeds parse to DeriveNoForNoBody("x", Var("y"))
+
+test derive this call [[
+  derive x from y()
+]] parse succeeds parse to DeriveNoForNoBody("x", ThisCall("y", []))
+
+
+// derive for body
+test derive for body [[
+  derive x from y for () { }
+]] parse succeeds parse to Derive("x", Var("y"), [], DeriveBody([]))
+
+test derive for body this call [[
+  derive x from y() for () { }
+]] parse succeeds parse to Derive("x", ThisCall("y", []), [], DeriveBody([]))
+
+test derive for body single property [[
+  derive x from y for ( a ) { }
+]] parse succeeds parse to Derive("x", Var("y"), [DeriveDefault("a")], DeriveBody([]))
+
+test derive for body single property mode [[
+  derive x from y for ( a(b) ) { }
+]] parse succeeds parse to Derive("x", Var("y"), [DeriveMode("a", "b")], DeriveBody([]))
+
+test derive for body multiple properties [[
+  derive x from y for ( a, b ) { }
+]] parse succeeds parse to Derive("x", Var("y"), [DeriveDefault("a"), DeriveDefault("b")], DeriveBody([]))
+
+
+// derive body
+test derive body [[
+  derive x from y { }
+]] parse succeeds parse to DeriveNoFor("x", Var("y"), DeriveBody([]))
+
+test derive body this call [[
+  derive x from y() { }
+]] parse succeeds parse to DeriveNoFor("x", ThisCall("y", []), DeriveBody([]))
+
+
+// derive no from
+test derive no from [[
+  derive x { }
+]] parse succeeds parse to DeriveNoFromNoFor("x", DeriveBody([]))
+
+
+// derive body elements
+test derive body elements [[
+  derive x from y for () { }
+]] parse succeeds parse to Derive("x", Var("y"), [], DeriveBody([]))
+
+test derive body elements single element [[
+  derive x from y for () {
+    z { }
+  }
+]] parse succeeds parse to Derive("x", Var("y"), [], DeriveBody([DeriveBodyElement("z", [])]))
+
+test derive body elements multiple element [[
+  derive x from y for () {
+    a { }
+    b { }
+  }
+]] parse succeeds parse to Derive("x", Var("y"), [], DeriveBody([DeriveBodyElement("a", []), DeriveBodyElement("b", [])]))
+
+test derive body element no elements [[
+  derive x from y for () {
+    z { }
+  }
+]] parse succeeds parse to Derive("x", Var("y"), [], DeriveBody([DeriveBodyElement("z", [])]))
+
+test derive body element single element [[
+  derive x from y for () {
+    z { a }
+  }
+]] parse succeeds parse to Derive("x", Var("y"), [], DeriveBody([DeriveBodyElement("z", [TemplateCall("a", OptTCallArgsNone(), OptTCallPropAssignsNone(), TemplateBodyNone())])]))
+
+test derive body element multiple elements [[
+  derive x from y for () {
+    z { a b }
+  }
+]] parse succeeds parse to Derive("x", Var("y"), [], DeriveBody([DeriveBodyElement("z", [TemplateCall("a", OptTCallArgsNone(), OptTCallPropAssignsNone(), TemplateBodyNone()), TemplateCall("b", OptTCallArgsNone(), OptTCallPropAssignsNone(), TemplateBodyNone())])]))
+
+
+// expand template element local
+test expand template element [[
+  expand a to x { }
+]] parse succeeds parse to TemplateElementExpandLocal(["a"], ["x"], [])
+
+test expand template element multiple args [[
+  expand a b c d to x y { }
+]] parse succeeds parse to TemplateElementExpandLocal(["a", "b", "c", "d"], ["x", "y"], [])
+
+test expand template element single element [[
+  expand a to x {
+    "x"
+  }
+]] parse succeeds parse to TemplateElementExpandLocal(["a", "b", "c", "d"], ["x", "y"], [Text("x")])
+
+test expand template element multiple elements [[
+  expand a to x {
+    "x" "y"
+  }
+]] parse succeeds parse to TemplateElementExpandLocal(["a", "b", "c", "d"], ["x", "y"], [Text("x"), Text("y")])
+
+test expand template first expandid [[
+  expand _a to x { }
+]] parse succeeds parse to TemplateElementExpandLocal(["_a"], ["x"], [])
+
+test expand template second no expandid [[
+  expand a to _x { }
+]] parse fails
+
+
+// XML attribute expand local
+test expand local as attribute [[
+  <div
+    expand a 1 b 2 to x y { x = y }
+  />
+]] parse succeeds parse to XMLEmptyElement("div", [AttributeExpandLocal(["a", "1", "b", "2"], ["x", "y"], Attribute("x", Var("y")))])
+
+
+// property assignment expand local
+test expand local as property assignment [[
+  div [expand a 1 b 2 to x y { x=y }] {}
+]] parse succeeds parse to TemplateCall("div", OptTCallArgsNone(), [PropertyAssignmentExpandLocal(["a", "1", "b", "2"], ["x", "y"], PropertyAssignment("x", Var("y")))], TemplateBody([]))
+
+
+// template case expand local
+test expand local as template cases [[
+  case(a) {
+    expand 1 2 3 4 to x {
+      x { "x" }
+    }
+  }
+]] parse succeeds parse to TemplateCase([Var("a")], [TemplateCaseAltExpandLocal(["1", "2", "3", "4"], ["x"], TemplateCaseAlt([Var("x")], [Text("x")]))])
+
+
+// template typecase expand local
+test expand local as template type cases [[
+  typecase(a as b) {
+    expand Int Long Float String Bool to x {
+      x { "x" }
+    }
+  }
+]] parse succeeds parse to TemplateTypeCase(Var("a"), "b", [TemplateTypeCaseAltExpandLocal(["Int", "Long", "Float", "String", "Bool"], ["x"], TemplateTypeCaseAlt(SimpleSort("x"), [Text("x")]))])

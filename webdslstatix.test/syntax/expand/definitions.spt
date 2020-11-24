@@ -1,0 +1,149 @@
+module expand/definitions
+
+language webdsl-statix
+
+fixture [[
+  application expand_definitions
+
+  [[...]]
+]]
+
+
+// derive crud
+test derive crud lower case [[
+  derive crud x
+]] parse succeeds parse to DeriveCrud("x")
+
+test derive crud upper case [[
+  derive CRUD x
+]] parse succeeds parse to DeriveCrudUpper("x")
+
+test derive crud mixed case [[
+  derive Crud x
+]] parse fails
+
+
+// expand id
+test expand id start with lower case [[
+  expand aA to x
+]] parse succeeds parse to ExpandTemplateCall(["aA"], "x")
+
+test expand id start with upper case [[
+  expand Aa to x
+]] parse succeeds parse to ExpandTemplateCall(["Aa"], "x")
+
+test expand id start with number [[
+  expand 123 to x
+]] parse succeeds parse to ExpandTemplateCall(["123"], "x")
+
+test expand id start with underscore [[
+  expand _a to x
+]] parse succeeds parse to ExpandTemplateCall(["_a"], "x")
+
+test expand id start with dash [[
+  expand -a to x
+]] parse succeeds parse to ExpandTemplateCall(["-a"], "x")
+
+test expand id [[
+  expand aA123_- to x
+]] parse succeeds parse to ExpandTemplateCall(["aA123_-"], "x")
+
+
+// expand template call
+test expand template call [[
+  expand x to y
+]] parse succeeds parse to ExpandTemplateCall(["x"], "y")
+
+test expand template call no expand id second [[
+  expand x to _y
+]] parse fails
+
+test expand template call multiple [[
+  expand x y z 1 2 3 to a
+]] parse succeeds parse to ExpandTemplateCall(["x", "y", "z", "1", "2", "3"], "a")
+
+
+// expand template definition
+test expand template definition [[
+  expandtemplate y to a { }
+]] parse succeeds parse to ExpandTemplateDefinition("y", ["a"], [])
+
+test expand template definition multiple args [[
+  expandtemplate y to a b c { }
+]] parse succeeds parse to ExpandTemplateDefinition("y", ["a", "b", "c"], [])
+
+test expand template definition no expandids [[
+  expandtemplate y to _a { }
+]] parse fails
+
+test expand template definition at least one arg [[
+  expandtemplate y to { }
+]] parse fails
+
+test expandtemplate single definition [[
+  expandtemplate y to a b {
+    template a() { }
+  }
+]] parse succeeds parse to ExpandTemplateDefinition("y", ["a", "b"], [TemplateDefinition(DefineTemplate([], "a", FormalArgs([]), OptTemplateArgsNone(), []))])
+
+test expandtemplate single multiple definitions [[
+  expandtemplate y to a b {
+    template a() { }
+    template b() { }
+  }
+]] parse succeeds parse to ExpandTemplateDefinition("y", ["a", "b"], [TemplateDefinition(DefineTemplate([], "a", FormalArgs([]), OptTemplateArgsNone(), [])), TemplateDefinition(DefineTemplate([], "b", FormalArgs([]), OptTemplateArgsNone(), []))])
+
+
+// expand local
+test expand local [[
+  expand a to x { }
+]] parse succeeds parse to DefinitionExpandLocal(["a"], ["x"], [])
+
+test expand local first expandid [[
+  expand _a to x { }
+]] parse succeeds parse to DefinitionExpandLocal(["_a"], ["x"], [])
+
+test expand local no expandids as arg [[
+  expand a to _x { }
+]] parse fails
+
+test expand local multiple args [[
+  expand a b c to x y z { }
+]] parse succeeds parse to DefinitionExpandLocal(["a", "b", "c"], ["x", "y", "z"], [])
+
+test expand local multiple args single definition [[
+  expand a b c to x y z {
+    template x() { }
+  }
+]] parse succeeds parse to DefinitionExpandLocal(["a", "b", "c"], ["x", "y", "z"], [TemplateDefinition(DefineTemplate([], "x", FormalArgs([]), OptTemplateArgsNone(), []))])
+
+test expand local multiple args multiple definitions [[
+  expand a b c to x y z {
+    template x() { }
+    template testx() { }
+  }
+]] parse succeeds parse to DefinitionExpandLocal(["a", "b", "c"], ["x", "y", "z"], [TemplateDefinition(DefineTemplate([], "x", FormalArgs([]), OptTemplateArgsNone(), [])), TemplateDefinition(DefineTemplate([], "testx", FormalArgs([]), OptTemplateArgsNone(), []))])
+
+
+// expand as entity body declaration
+test expand as entity body declaration [[
+  entity Ent {
+    expand a b to x y {
+      x : Int
+      y : Int
+    }
+  }
+]] parse succeeds parse to EntityNoSuper("Ent", [EntityBodyDeclarationExpandLocal(["a", "b"], ["x", "y"], [Property("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone()), Property("y", AnyProp(), SimpleSort("Int"), OptPropAnnosNone())])])
+
+
+// expand as formal args
+test expand local as formal args [[
+  function f(x : Int, expand a b c to d { d : Int }, y : Int) { }
+]] parse succeeds parse to GlobalFunction(Function("f", FormalArgs([Arg("x", SimpleSort("Int")), FormalArgExpandLocal(["a","b","c"], ["d"], Arg("d", SimpleSort("Int"))), Arg("y", SimpleSort("Int"))]), OptSortNone(), Block([])))
+
+
+// expand as expression
+test expand local as expression [[
+  var x := expand 1 2 to a b { a + b }
+]] parse succeeds parse to GlobalVarDeclInitInferred("x", ExpExpandLocal(["1", "2"], ["a", "b"], Add(Var("a"), Var("b"))))
+

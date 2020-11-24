@@ -1,0 +1,49 @@
+module expand/statements
+
+language webdsl-statix
+
+fixture [[
+  application expand_statements
+
+  function f() {
+    [[...]]
+  }
+]]
+
+
+// expand as statement
+test expand as statement [[
+  expand a 1 b 2 to x y {
+    var x := y;
+  }
+]] parse succeeds parse to StatementExpandLocal(["a", "1", "b", "2"], ["x", "y"], [VarDeclInitInferred("x", Var("y"))])
+
+
+// expand as object property assignment
+test expand as object property assignment [[
+  var x := Ent {
+    expand a 1 b 2 to x y {
+      x := y
+    }
+  };
+]] parse succeeds parse to VarDeclInitInferred("x", ObjectCreation(SimpleSort("Ent"), [ObjectPropertyAssignmentExpandLocal(["a", "1", "b", "2"], ["x", "y"], [ObjectPropertyAssignment("x", Var("y"))])]))
+
+
+// case expand local
+test expand local as cases [[
+  case(a) {
+    expand 1 2 3 4 to x {
+      x { x(); }
+    }
+  }
+]] parse succeeds parse to CaseStmt([Var("a")], [CaseAltExpandLocal(["1", "2", "3", "4"], ["x"], CaseAlt([Var("x")], Block([Stat(ThisCall("x", []))])))])
+
+
+// typecase expand local
+test expand local as type cases [[
+  typecase(a as b) {
+    expand Int Long Float String Bool to x {
+      x { x(); }
+    }
+  }
+]] parse succeeds parse to TypeCaseStmt(Var("a"), "b", [TypeCaseAltExpandLocal(["Int", "Long", "Float", "String", "Bool"], ["x"], TypeCaseAlt(SimpleSort("x"), Block([Stat(ThisCall("x", []))])))])
