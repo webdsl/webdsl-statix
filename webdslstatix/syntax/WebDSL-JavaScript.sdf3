@@ -6,8 +6,16 @@ imports
 
 context-free syntax
 
-  TemplateElement.JSElement = <\< script <Attribute*> \> <JSPart*> \</ script \>>
-  TemplateElement.StyleElement = <\< style <Attribute*> \> <JSPart*> \</ style \>>
+  TemplateElement.JSElement = <
+    \< script <Attribute*> \>
+      <JSPart*>
+    \</ script \>
+  >
+  TemplateElement.StyleElement = <
+    \< style <Attribute*> \>
+      <JSPart*>
+    \</ style \>
+  >
 
 context-free sorts
 
@@ -16,7 +24,7 @@ context-free sorts
 syntax
 
   JSPart-CF.JSExp = "~" Exp-CF {prefer}
-  JSPart-CF.JSString = JSString-LEX 
+  JSPart-CF.JSString = JSString-LEX
   JSPart-CF.JSTilde = "\\~" {prefer}
 
 lexical sorts
@@ -25,9 +33,9 @@ lexical sorts
 
 lexical syntax
 
-  JSString = JSChar+ 
-  JSChar = ~[\<\~] 
-  JSChar = SmallerThan 
+  JSString = JSChar+
+  JSChar = ~[\<\~]
+  JSChar = SmallerThan
   SmallerThan = [\<]
 
   NCName = "script" {reject}
@@ -37,3 +45,4 @@ lexical restrictions
 
   SmallerThan -/- [\/]
   JSString -/- ~[\<\~]
+  JSString -/- [\<] . ~[\/]

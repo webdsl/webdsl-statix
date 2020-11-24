@@ -1,0 +1,96 @@
+module javascript/template-elements
+
+language webdsl-statix
+
+fixture [[
+  application javascript_template_elements
+
+  template t() {
+    [[...]]
+  }
+]]
+
+
+// javascript block
+test javascript empty block [[
+  <script></script>
+]] parse succeeds parse to JSElement([], [])
+
+test javascript single attribute [[
+  <script id="x"></script>
+]] parse succeeds parse to JSElement([Attribute("id", StringValue("x"))], [])
+
+test javascript multiple attributes [[
+  <script id="x" class="y"></script>
+]] parse succeeds parse to JSElement([Attribute("id", StringValue("x")), Attribute("class", StringValue("y"))], [])
+
+test javascript [[
+  <script>alert("x");</script>
+]] parse succeeds parse to JSElement([], [JSString("alert(\"x\");")])
+
+test javascript multiline [[
+  <script>
+    alert("x");
+    var y = 2;
+    alert(y);
+  </script>
+]] parse succeeds
+
+test javascript escaped tilde [[
+  <script>alert("\~");</script>
+]] parse succeeds parse to JSElement([], [JSString("alert(\""), JSTilde(), JSString("\");")])
+
+test javascript string interp [[
+  <script>alert("~x");</script>
+]] parse succeeds parse to JSElement([], [JSString("alert(\""), JSExp(Var("x")), JSString("\");")])
+
+test javascript empty block single tag not allowed [[
+  <script />
+]] parse fails
+
+test javascript smaller than in string [[
+  <script>alert("<");</script>
+]] parse succeeds parse to JSElement([], [JSString("alert(\"<\");")])
+
+
+// style block
+test style empty block [[
+  <style></style>
+]] parse succeeds parse to StyleElement([], [])
+
+test style single attribute [[
+  <style id="x"></style>
+]] parse succeeds parse to StyleElement([Attribute("id", StringValue("x"))], [])
+
+test style multiple attributes [[
+  <style id="x" class="y"></style>
+]] parse succeeds parse to StyleElement([Attribute("id", StringValue("x")), Attribute("class", StringValue("y"))], [])
+
+test style [[
+  <style>.x{ color: red; }</style>
+]] parse succeeds parse to StyleElement([], [JSString(".x{ color: red; }")])
+
+test style multiline [[
+  <style>
+    .x {
+      color: red;
+      margin: 0;
+    }
+
+    #y[data-is-visible=false] {
+      display: none;
+    }
+  </style>
+]] parse succeeds
+
+test style escaped tilde [[
+  <style>.\~x{ color: red }</style>
+]] parse succeeds parse to StyleElement([], [JSString("."), JSTilde(), JSString("x{ color: red }")])
+
+test style string interp [[
+  <style>.x{color: ~y}</style>
+]] parse succeeds parse to StyleElement([], [JSString(".x{color: "), JSExp(Var("y")), JSString("}")])
+
+test style empty block single tag not allowed [[
+  <style />
+]] parse fails
