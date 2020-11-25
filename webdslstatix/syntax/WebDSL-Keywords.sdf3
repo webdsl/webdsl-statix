@@ -1,21 +1,16 @@
 module WebDSL-Keywords
 
-context-free sorts
-
-  Keyword
-
-context-free syntax
-
-  Id = Keyword {reject}
+imports
+  WebDSL-Lexical
 
 context-free syntax
 
-  Keyword = <function>
-  Keyword = <return>
-  Keyword = <as>
-  Keyword = <define>
-  Keyword = <for>
- 
+  Id = <function> {reject}
+  Id = <return> {reject}
+  Id = <as> {reject}
+  Id = <define> {reject}
+  Id = <for> {reject}
+
 context-free restrictions
 
   "as" -/- [a-zA-Z0-9\_]
