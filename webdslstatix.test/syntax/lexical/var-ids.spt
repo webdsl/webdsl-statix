@@ -1,0 +1,28 @@
+module lexical/var-ids
+
+language webdsl-statix
+
+fixture [[
+  application lexical_var_ids
+
+  var [[...]] : Int
+]]
+
+
+test var id [[x]] parse succeeds
+test var id longer [[abcdefghijklmnopqrstuvwxyz]] parse succeeds
+test var id upper case [[ABCDEFGHIJKLMNOPQRSTUVWXYZ]] parse succeeds
+test var id lower and upper case mixed [[xYz]] parse succeeds
+test var id lower and upper case mixed 2 [[XyZ]] parse succeeds
+test var id numbers [[ x1y2 ]] parse succeeds
+test var id dont start with numbers [[ 0x1y2 ]] parse fails
+test var id underscores [[ x_y_ ]] parse succeeds
+test var id dont start with underscores [[ _x_y_ ]] parse fails
+test var id numbers and underscores [[ x_1 ]] parse succeeds
+test var id numbers, underscores and upper case [[ X_1 ]] parse succeeds
+test var id no dashes [[ x-y ]] parse fails
+test var id no spaces [[ x y ]] parse fails
+test var id no single quotes [[ x' ]] parse fails
+test var id no double quotes [[ x" ]] parse fails
+test var id no star [[ x* ]] parse fails
+test var id no hash [[ #x ]] parse fails

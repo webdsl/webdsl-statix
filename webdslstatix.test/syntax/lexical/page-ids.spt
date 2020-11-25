@@ -1,0 +1,31 @@
+module lexical/page-ids
+
+language webdsl-statix
+
+fixture [[
+  application lexical_page_ids
+
+  page [[...]]() {
+  
+  }
+]]
+
+test page id [[x]] parse succeeds
+test page id longer [[abcdefghijklmnopqrstuvwxyz]] parse succeeds
+test page id upper case [[ABCDEFGHIJKLMNOPQRSTUVWXYZ]] parse succeeds
+test page id lower and upper case mixed [[xYz]] parse succeeds
+test page id lower and upper case mixed 2 [[XyZ]] parse succeeds
+test page id numbers [[ x1y2 ]] parse succeeds
+test page id dont start with numbers [[ 0x1y2 ]] parse fails
+test page id underscores [[ x_y_ ]] parse succeeds
+test page id dont start with underscores [[ _x_y_ ]] parse fails
+test page id dashes [[ x-y ]] parse succeeds
+test page id dont start with dashes [[ -x-y ]] parse fails
+test page id numbers and underscores [[ x_1 ]] parse succeeds
+test page id numbers, underscores and upper case [[ X_1 ]] parse succeeds
+test page id numbers, underscores, upper case and dashes [[ X-_1 ]] parse succeeds
+test page id no spaces [[ x y ]] parse fails
+test page id no single quotes [[ x' ]] parse fails
+test page id no double quotes [[ x" ]] parse fails
+test page id no star [[ x* ]] parse fails
+test page id no hash [[ #x ]] parse fails
