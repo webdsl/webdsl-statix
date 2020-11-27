@@ -1,0 +1,45 @@
+module native/definitions
+
+language webdsl-statix
+
+fixture [[
+  application native_definitions
+
+  [[...]]
+]]
+
+
+test native class [[
+  native class JavaClass { }
+]] parse succeeds parse to NativeClass("JavaClass", NativeClassAliasNone(), NativeClassSuperNone(), [])
+
+test native class with qualified id [[
+  native class Java.Class { }
+]] parse succeeds parse to NativeClass(Qualified("Java", "Class"), NativeClassAliasNone(), NativeClassSuperNone(), [])
+
+test native class with double qualified id [[
+  native class My.Java.Class { }
+]] parse succeeds parse to NativeClass(Qualified(Qualified("My", "Java"), "Class"), NativeClassAliasNone(), NativeClassSuperNone(), [])
+
+
+// alias
+test native class with alias [[
+  native class JavaClass as OtherJavaClass { }
+]] parse succeeds parse to NativeClass("JavaClass", NativeClassAlias("OtherJavaClass"), NativeClassSuperNone(), [])
+
+test native class no qualified alias allowed [[
+  native class JavaClass as Other.JavaClass { }
+]] parse fails
+
+// super
+test native class with super [[
+  native class JavaClass : OtherJavaClass { }
+]] parse succeeds parse to NativeClass("JavaClass", NativeClassAliasNone(), NativeClassSuper("OtherJavaClass"), [])
+
+test native class no qualified super allowed [[
+  native class JavaClass : Other.JavaClass { }
+]] parse fails
+
+test native class alias and super [[
+  native class JavaClass as OtherJavaClass : SuperClass { }
+]] parse succeeds parse to NativeClass("JavaClass", NativeClassAlias("OtherJavaClass"), NativeClassSuper("SuperClass"), [])
