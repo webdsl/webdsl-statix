@@ -1,0 +1,24 @@
+module regex/expressions
+
+language webdsl-statix
+
+fixture [[
+  application regex_expressions
+
+  function f() {
+    var x := [[...]];
+  }
+]]
+
+
+test regex as expression [[
+  /[a-z]*/.replaceAll(x, y)
+]] parse succeeds parse to RegexCall(RegexPattern(SingleBranch(Pieces([QuantifiedAtom(CharacterClass(BracketList([Range("a", "z")])), GreedyZeroOrMore())]))), "replaceAll", [Var("x"), Var("y")])
+
+test regex with branch [[
+  /a|b/.replaceAll(x, y)
+]] parse succeeds parse to RegexCall(RegexPattern(TupleBranch(SingleBranch(Pieces([SingleAtom(AtomLiteral("a"))])), SingleBranch(Pieces([SingleAtom(AtomLiteral("b"))])))), "replaceAll", [Var("x"), Var("y")])
+
+test regex with multiple branches [[
+  /a|b|c/.replaceAll(x, y)
+]] parse succeeds parse to RegexCall(RegexPattern(TupleBranch(SingleBranch(Pieces([SingleAtom(AtomLiteral("a"))])), TupleBranch(SingleBranch(Pieces([SingleAtom(AtomLiteral("b"))])), SingleBranch(Pieces([SingleAtom(AtomLiteral("c"))]))))), "replaceAll", [Var("x"), Var("y")])
