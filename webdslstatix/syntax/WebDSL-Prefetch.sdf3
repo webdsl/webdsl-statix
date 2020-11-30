@@ -7,60 +7,93 @@ imports
 
 context-free sorts
 
-  PrefetchFor PrefetchChildren PrefetchNode PrefetchTemplateArgs PrefetchNodeMod PrefetchCondition PrefetchCondVal PrefetchCond PrefetchWhere PrefetchWhereMod
-  PrefetchForVar OptSimpleSort PrefetchChildrenOpt OptPrefetchOwnerCast SortOrThis TemplateArgOrThis PrefetchThis
+  PrefetchChildren PrefetchNode PrefetchTemplateArgsOpt PrefetchNodeMod PrefetchCondition PrefetchCondVal PrefetchCond PrefetchWhereOpt PrefetchWhereMod
+  OptSimpleSort PrefetchChildrenOpt OptPrefetchOwnerCast SortOrThis TemplateArgOrThis
 
 context-free syntax
 
-  PrefetchFor.PrefetchFor = <
-    prefetch-for <PrefetchForVar> <PrefetchTemplateArgs> <PrefetchWhere> <PrefetchChildren>
+  TemplateElement.PrefetchFor = <
+    prefetch-for <Id> <PrefetchTemplateArgsOpt> <PrefetchWhereOpt> <PrefetchChildren>
   >
+  Statement.PrefetchForStmt = <
+    prefetch-for <Id> <PrefetchTemplateArgsOpt> <PrefetchWhereOpt> <PrefetchChildren>
+  >
+
   PrefetchChildren.PrefetchChildren = <{
     <PrefetchNode*>
   }>
   PrefetchChildrenOpt.PrefetchChildrenOptNone = <>
   PrefetchChildrenOpt = PrefetchChildren
-  TemplateElement = PrefetchFor
-  Statement = PrefetchFor
-  PrefetchNode.PrefetchNode = <<OptPrefetchOwnerCast> <Id> <PrefetchNodeMod*> <PrefetchTemplateArgs> <PrefetchCondition> <PrefetchWhere> <PrefetchChildrenOpt>>
-  PrefetchForVar.PrefetchForVar = Id
+
+  PrefetchNode.PrefetchNode = <<OptPrefetchOwnerCast> <Id> <PrefetchNodeMod*> <PrefetchTemplateArgsOpt> <PrefetchCondition> <PrefetchWhereOpt> <PrefetchChildrenOpt>>
+  OptPrefetchOwnerCast.OptPrefetchOwnerCastNone = <>
+  OptPrefetchOwnerCast.PrefetchOwnerCast = <<SIMPLESORT> .>
   PrefetchNodeMod.NoEmptyBatch = <no-empty-batch>
   PrefetchNodeMod.FetchEarly = <fetch-early>
+
+  PrefetchTemplateArgsOpt.PrefetchTemplateArgsOptNone = <>
+  PrefetchTemplateArgsOpt.PrefetchTemplateArgs = <templates [ <{TemplateArgOrThis ","}+> ]>
   TemplateArgOrThis.TemplateArgOrThis = <<Id> ( <{SortOrThis ","}*> )>
-  SortOrThis = Sort
-  SortOrThis = PrefetchThis {prefer}
-  SortOrThis.PrefetchThisCast = <<PrefetchThis> as <Sort>>
-  PrefetchThis.PrefetchThis = <this>
-  PrefetchTemplateArgs.PrefetchTemplateArgsNone = <>
-  PrefetchTemplateArgs.PrefetchTemplateArgs = <templates [ <{TemplateArgOrThis ","}+> ]>
+  SortOrThis.Sort = Sort
+  SortOrThis.This = <this> {prefer}
+  SortOrThis.PrefetchThisCast = <this as <Sort>>
+
   PrefetchCondition.PrefetchConditionNone = <>
   PrefetchCondition.PrefetchCondition = <if ( <PrefetchCond> )>
-  PrefetchWhere.PrefetchWhereNone = <>
-  PrefetchWhere.PrefetchWhere = <where <PrefetchWhereMod*> ( <PrefetchCond> )>
+  PrefetchWhereOpt.PrefetchWhereOptNone = <>
+  PrefetchWhereOpt.PrefetchWhere = <where <PrefetchWhereMod*> ( <PrefetchCond> )>
   PrefetchWhereMod.Hint = <hint>
-  OptPrefetchOwnerCast.OptPrefetchOwnerCastNone = <>
-  OptPrefetchOwnerCast.OptPrefetchOwnerCastSome = <<SIMPLESORT> .>
+  PrefetchCond.PrefetchEq                 = <<PrefetchCondVal> == <PrefetchCondVal>> {left}
+  PrefetchCond.PrefetchNotEq              = <<PrefetchCondVal> != <PrefetchCondVal>> {left}
+  PrefetchCond.PrefetchLargerThan         = <<PrefetchCondVal> \> <PrefetchCondVal>> {left}
+  PrefetchCond.PrefetchLargerThanOrEqual  = <<PrefetchCondVal> \>= <PrefetchCondVal>> {left}
+  PrefetchCond.PrefetchSmallerThan        = <<PrefetchCondVal> \< <PrefetchCondVal>> {left}
+  PrefetchCond.PrefetchSmallerThanOrEqual = <<PrefetchCondVal> \<= <PrefetchCondVal>> {left}
+  PrefetchCond.PrefetchAnd                = <<PrefetchCond> && <PrefetchCond>> {left}
+  PrefetchCond.PrefetchOr                 = <<PrefetchCond> || <PrefetchCond>> {left}
+  PrefetchCond.PrefetchNot                = <! <PrefetchCond>>
+  PrefetchCond = PrefetchCondVal
+  PrefetchCond = <( <PrefetchCond> )> {bracket}
+
   PrefetchCondVal.PrefetchTrue = <true> {prefer}
   PrefetchCondVal.PrefetchFalse = <false> {prefer}
   PrefetchCondVal.PrefetchNull = <null> {prefer}
   PrefetchCondVal = ConstValue {prefer}
-  PrefetchCondVal.PretchCondVar = Id
+  PrefetchCondVal.PrefetchCondVar = Id
+  PrefetchCondVal.RelativeFieldAccess = <<OptSimpleSort> . <Id>> {left}
+  PrefetchCondVal.PrefetchMul = <<PrefetchCondVal> * <PrefetchCondVal>> {left}
+  PrefetchCondVal.PrefetchDiv = <<PrefetchCondVal> / <PrefetchCondVal>> {left}
+  PrefetchCondVal.PrefetchMod = <<PrefetchCondVal> % <PrefetchCondVal>> {left}
+  PrefetchCondVal.PrefetchAdd = <<PrefetchCondVal> + <PrefetchCondVal>> {left}
+  PrefetchCondVal.PrefetchSub = <<PrefetchCondVal> - <PrefetchCondVal>> {left}
+
   OptSimpleSort.OptSimpleSortNone = <>
   OptSimpleSort.OptSimpleSortSome = SIMPLESORT
-  PrefetchCondVal.RelativeFieldAccess = <<OptSimpleSort> . <Id>>
-  PrefetchCondVal.PrefetchMul = <<PrefetchCondVal> * <PrefetchCondVal>> {assoc}
-  PrefetchCondVal.PrefetchDiv = <<PrefetchCondVal> / <PrefetchCondVal>> {assoc}
-  PrefetchCondVal.PrefetchMod = <<PrefetchCondVal> % <PrefetchCondVal>> {assoc}
-  PrefetchCondVal.PrefetchAdd = <<PrefetchCondVal> + <PrefetchCondVal>> {assoc}
-  PrefetchCondVal.PrefetchSub = <<PrefetchCondVal> - <PrefetchCondVal>> {assoc}
-  PrefetchCond = PrefetchCondVal
-  PrefetchCond.PrefetchEq = <<PrefetchCondVal> == <PrefetchCondVal>>
-  PrefetchCond.PrefetchNotEq = <<PrefetchCondVal> != <PrefetchCondVal>>
-  PrefetchCond.PrefetchLargerThan = <<PrefetchCondVal> \> <PrefetchCondVal>>
-  PrefetchCond.PrefetchLargerThanOrEqual = <<PrefetchCondVal> \>= <PrefetchCondVal>>
-  PrefetchCond.PrefetchSmallerThan = <<PrefetchCondVal> \< <PrefetchCondVal>>
-  PrefetchCond.PrefetchSmallerThanOrEqual = <<PrefetchCondVal> \<= <PrefetchCondVal>>
-  PrefetchCond.PrefetchAnd = <<PrefetchCond> && <PrefetchCond>> {assoc}
-  PrefetchCond.PrefetchOr = <<PrefetchCond> || <PrefetchCond>> {assoc}
-  PrefetchCond.PrefetchNot = <! <PrefetchCond>>
-  PrefetchCond = <( <PrefetchCond> )> {bracket}
+
+context-free priorities
+
+  {left :
+    PrefetchCondVal.RelativeFieldAccess
+  } >
+  {
+    PrefetchCond.PrefetchNot
+  } >
+  {left :
+    PrefetchCondVal.PrefetchMul
+    PrefetchCondVal.PrefetchDiv
+    PrefetchCondVal.PrefetchMod
+  } >
+  {left:
+    PrefetchCondVal.PrefetchAdd
+    PrefetchCondVal.PrefetchSub
+  } >
+  {left :
+    PrefetchCond.PrefetchEq
+    PrefetchCond.PrefetchNotEq
+    PrefetchCond.PrefetchLargerThan
+    PrefetchCond.PrefetchLargerThanOrEqual
+    PrefetchCond.PrefetchSmallerThan
+    PrefetchCond.PrefetchSmallerThanOrEqual
+  } >
+  {left : PrefetchCond.PrefetchAnd } >
+  {left : PrefetchCond.PrefetchOr }

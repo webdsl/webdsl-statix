@@ -1,0 +1,117 @@
+module prefetch/prefetch-where-conditions
+
+language webdsl-statix
+
+fixture [[
+  application prefetch_prefetch_where_conditions
+
+  template t() {
+    prefetch-for x where ([[...]]) { }
+  }
+]]
+
+
+// prefetch condition expressions
+test prefetch where condition eq [[
+  1 == 1
+]] parse succeeds parse to PrefetchEq(Int("1"), Int("1"))
+
+test prefetch where condition not eq [[
+  1 != 1
+]] parse succeeds parse to PrefetchNotEq(Int("1"), Int("1"))
+
+test prefetch where condition gt [[
+  1 > 1
+]] parse succeeds parse to PrefetchLargerThan(Int("1"), Int("1"))
+
+test prefetch where condition gte [[
+  1 >= 1
+]] parse succeeds parse to PrefetchLargerThanOrEqual(Int("1"), Int("1"))
+
+test prefetch where condition lt [[
+  1 < 1
+]] parse succeeds parse to PrefetchSmallerThan(Int("1"), Int("1"))
+
+test prefetch where condition lte [[
+  1 <= 1
+]] parse succeeds parse to PrefetchSmallerThanOrEqual(Int("1"), Int("1"))
+
+test prefetch where condition and [[
+  true && true
+]] parse succeeds parse to PrefetchAnd(PrefetchTrue(), PrefetchTrue())
+
+test prefetch where condition or [[
+  true || true
+]] parse succeeds parse to PrefetchOr(PrefetchTrue(), PrefetchTrue())
+
+test prefetch where condition not [[
+  !true
+]] parse succeeds parse to PrefetchNot(PrefetchTrue())
+
+test prefetch where condition bracket rule [[
+  (((true)))
+]] parse succeeds parse to PrefetchTrue()
+
+
+// prefetch condition values
+test prefetch where condition true [[
+  true
+]] parse succeeds parse to PrefetchTrue()
+
+test prefetch where condition false [[
+  false
+]] parse succeeds parse to PrefetchFalse()
+
+test prefetch where condition null [[
+  null
+]] parse succeeds parse to PrefetchNull()
+
+test prefetch where condition int [[
+  1
+]] parse succeeds parse to Int("1")
+
+test prefetch where condition long [[
+  1L
+]] parse succeeds parse to Long("1L")
+
+test prefetch where condition float [[
+  1.0f
+]] parse succeeds parse to Float("1.0f")
+
+test prefetch where condition var [[
+  y
+]] parse succeeds parse to PrefetchCondVar("y")
+
+test prefetch where condition fieldaccess [[
+  Ent.y
+]] parse succeeds parse to RelativeFieldAccess(OptSimpleSortSome("Ent"), "y")
+
+test prefetch where condition this fieldaccess [[
+  .y
+]] parse succeeds parse to RelativeFieldAccess(OptSimpleSortNone(), "y")
+
+test prefetch where condition mul [[
+  1 * 1
+]] parse succeeds parse to PrefetchMul(Int("1"), Int("1"))
+
+test prefetch where condition div [[
+  1 / 1
+]] parse succeeds parse to PrefetchDiv(Int("1"), Int("1"))
+
+test prefetch where condition mod [[
+  1 % 1
+]] parse succeeds parse to PrefetchMod(Int("1"), Int("1"))
+
+test prefetch where condition add [[
+  1 + 1
+]] parse succeeds parse to PrefetchAdd(Int("1"), Int("1"))
+
+test prefetch where condition sub [[
+  1 - 1
+]] parse succeeds parse to PrefetchSub(Int("1"), Int("1"))
+
+
+// prefetch condition value nesting
+test prefetch where condition mul, div, mod, sub, add [[
+  2 + 5 / 1 - 3 % 3
+]] parse succeeds parse to PrefetchSub(PrefetchAdd(Int("2"), PrefetchDiv(Int("5"), Int("1"))), PrefetchMod(Int("3"), Int("3")))

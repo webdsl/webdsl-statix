@@ -1,0 +1,63 @@
+module prefecth/statements
+
+language webdsl-statix
+
+fixture [[
+  application prefetch_statements
+
+  function f() {
+    [[...]]
+  }
+]]
+
+
+test prefetch statement [[
+  prefetch-for x { }
+]] parse succeeds parse to PrefetchForStmt("x", PrefetchTemplateArgsOptNone(), PrefetchWhereOptNone(), PrefetchChildren([]))
+
+
+// templates options
+test prefetch statement with template arg [[
+  prefetch-for x templates[t1()] { }
+]] parse succeeds parse to PrefetchForStmt("x", PrefetchTemplateArgs([TemplateArgOrThis("t1", [])]), PrefetchWhereOptNone(), PrefetchChildren([]))
+
+test prefetch statement at least one template arg [[
+  prefetch-for x templates[] { }
+]] parse fails
+
+test prefetch statement with multiple template args [[
+  prefetch-for x templates[t1(), t2(Int), t3(Int, this, Int)] { }
+]] parse succeeds parse to PrefetchForStmt("x", PrefetchTemplateArgs([TemplateArgOrThis("t1", []), TemplateArgOrThis("t2", [Sort(SimpleSort("Int"))]), TemplateArgOrThis("t3", [Sort(SimpleSort("Int")), This(), Sort(SimpleSort("Int"))])]), PrefetchWhereOptNone(), PrefetchChildren([]))
+
+
+// where options
+test prefetch statement where [[
+ prefetch-for x where (y) { }
+]] parse succeeds parse to PrefetchForStmt("x", PrefetchTemplateArgsOptNone(), PrefetchWhere([], PrefetchCondVar("y")), PrefetchChildren([]))
+
+test prefetch statement where hint [[
+  prefetch-for x where hint (y) { }
+]] parse succeeds parse to PrefetchForStmt("x", PrefetchTemplateArgsOptNone(), PrefetchWhere([Hint()], PrefetchCondVar("y")), PrefetchChildren([]))
+
+test prefetch statement where condition required [[
+  prefetch-for x where hint () { }
+]] parse fails
+
+
+// prefetch children
+test prefetch statement no children [[
+  prefetch-for x { }
+]] parse succeeds parse to PrefetchForStmt("x", PrefetchTemplateArgsOptNone(), PrefetchWhereOptNone(), PrefetchChildren([]))
+
+test prefetch statement single child [[
+  prefetch-for x {
+    y
+  }
+]] parse succeeds parse to PrefetchForStmt("x", PrefetchTemplateArgsOptNone(), PrefetchWhereOptNone(), PrefetchChildren([PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgsOptNone(), PrefetchConditionNone(), PrefetchWhereOptNone() ,PrefetchChildrenOptNone())]))
+
+test prefetch statement multiple children [[
+  prefetch-for x {
+    y
+    z
+  }
+]] parse succeeds parse to PrefetchForStmt("x", PrefetchTemplateArgsOptNone(), PrefetchWhereOptNone(), PrefetchChildren([PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgsOptNone(), PrefetchConditionNone(), PrefetchWhereOptNone() ,PrefetchChildrenOptNone()), PrefetchNode(OptPrefetchOwnerCastNone(), "z", [], PrefetchTemplateArgsOptNone(), PrefetchConditionNone(), PrefetchWhereOptNone() ,PrefetchChildrenOptNone())]))

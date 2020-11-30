@@ -1,0 +1,60 @@
+module prefetch/prefetch-nodes
+
+language webdsl-statix
+
+fixture [[
+  application prefetch_prefetch_nodes
+
+  template t() {
+    prefetch-for x {
+      [[...]]
+    }
+  }
+]]
+
+
+test prefetch node [[
+  y
+]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgsOptNone(), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildrenOptNone())
+
+test prefetch node with owner cast [[
+  Ent.y
+]] parse succeeds parse to PrefetchNode(PrefetchOwnerCast("Ent"), "y", [], PrefetchTemplateArgsOptNone(), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildrenOptNone())
+
+test prefetch node single mod [[
+  y no-empty-batch
+]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [NoEmptyBatch()], PrefetchTemplateArgsOptNone(), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildrenOptNone())
+
+test prefetch node multiple mods [[
+  y no-empty-batch fetch-early
+]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [NoEmptyBatch(), FetchEarly()], PrefetchTemplateArgsOptNone(), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildrenOptNone())
+
+test prefetch node single template arg [[
+  y templates[ t(this) ]
+]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgs([TemplateArgOrThis("t", [This()])]), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildrenOptNone())
+
+test prefetch node single template arg with sort [[
+  y templates[ t(Ent) ]
+]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgs([TemplateArgOrThis("t", [Sort(SimpleSort("Ent"))])]), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildrenOptNone())
+
+test prefetch node multiple template args [[
+  y templates[ t(this), t2(this as Ent) ]
+]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgs([TemplateArgOrThis("t", [This()]), TemplateArgOrThis("t2", [PrefetchThisCast(SimpleSort("Ent"))])]), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildrenOptNone())
+
+test prefetch node with condition [[
+  y if(true)
+]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgsOptNone(), PrefetchCondition(PrefetchTrue()), PrefetchWhereOptNone(), PrefetchChildrenOptNone())
+
+test prefetch node with where [[
+  y where (false)
+]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgsOptNone(), PrefetchConditionNone(), PrefetchWhere([], PrefetchFalse()), PrefetchChildrenOptNone())
+
+test prefetch node with children [[
+  y { }
+]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgsOptNone(), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildren([]))
+
+test prefetch node with children [[
+  y {
+    z
+  }
+]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgsOptNone(), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildren([PrefetchNode(OptPrefetchOwnerCastNone(), "z", [], PrefetchTemplateArgsOptNone(), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildrenOptNone())]))
