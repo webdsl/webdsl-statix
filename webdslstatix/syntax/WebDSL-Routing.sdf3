@@ -6,7 +6,7 @@ imports
 
 context-free sorts
 
-  RoutingElement OptRoutingArgs
+  RoutingElement
 
 context-free syntax
 
@@ -16,10 +16,8 @@ context-free syntax
     }
   >
   RoutingElement.RoutingReceive = <
-    receive <OptRoutingArgs> <Block>
+    receive <OptFormalArgs> <Block>
   >
   RoutingElement.RoutingConstruct = <
-    construct <OptRoutingArgs> <Block>
+    construct <OptFormalArgs> <Block>
   >
-  OptRoutingArgs.RoutingArgs = <( <{FormalArg ","}*> )>
-  OptRoutingArgs.OptRoutingArgsNone = <>

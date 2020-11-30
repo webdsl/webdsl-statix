@@ -1,0 +1,28 @@
+module routing/definitions
+
+language webdsl-statix
+
+fixture [[
+  application routing_definitions
+
+  [[...]]
+]]
+
+
+// routing elements
+test empty routing block [[
+  routing { }
+]] parse succeeds parse to Routing([])
+
+test routing single element [[
+  routing {
+    receive { }
+  }
+]] parse succeeds parse to Routing([RoutingReceive(OptFormalArgsNone(), Block([]))])
+
+test routing multiple elements [[
+  routing {
+    receive(x : Int) { }
+    construct(y : String) { }
+  }
+]] parse succeeds parse to Routing([RoutingReceive(FormalArgs([Arg("x", SimpleSort("Int"))]), Block([])), RoutingConstruct(FormalArgs([Arg("y", SimpleSort("String"))]), Block([]))])
