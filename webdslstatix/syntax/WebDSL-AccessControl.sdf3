@@ -17,19 +17,15 @@ context-free sorts
 
 lexical sorts
 
-  MatchId AccessControlType
+  MatchId
 
 lexical syntax
 
   MatchId = [a-zA-Z] [a-zA-Z0-9\_\-]* [\*]?
   MatchId = [\*]
-  AccessControlType = "page"
-  AccessControlType = "action"
-  AccessControlType = "template"
-  AccessControlType = "ajaxtemplate"
-  AccessControlType = "pointcut"
 
 context-free syntax
+
   Section.AccessControlDefinition = <
     access control rules <OptId>
       <AccessControlDefinition*>
@@ -109,6 +105,18 @@ context-free syntax
 
   OptWildCardArg.WildCardArg = <*>
   OptWildCardArg.OptWildCardArgNone = <>
+
+context-free sorts
+
+  AccessControlType
+
+context-free syntax
+
+  AccessControlType.ACTypePage          = <page>
+  AccessControlType.ACTypeAction        = <action>
+  AccessControlType.ACTypeTemplate      = <template>
+  AccessControlType.ACTypeAjaxTemplate  = <ajaxtemplate>
+  AccessControlType.ACTypePointcut      = <pointcut>
 
 context-free priorities
 

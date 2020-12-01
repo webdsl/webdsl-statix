@@ -4,130 +4,138 @@ imports
   WebDSL-Core
   WebDSL-Lexical
 
-context-free sorts
-
-  OptDEFAULT
-
 lexical sorts
 
-  DEFAULT DEFAULTSF SA-Key SA-Value SearcherKW SearchMappingAnnoKW SearchFieldId ENTITY SEARCHERREF INDEXORQUERY
+  SA-Value SearcherKW SearchFieldId ENTITY SEARCHERREF INDEXORQUERY
 
 context-free sorts
 
-  FullTextAnalyzerBody FullTextAnalyzerBodyDef CharFilter Tokenizer TokenFilter Argument
-  CHARFILTERNAME TOKENIZERNAME TOKENFILTERNAME
+  FullTextAnalyzerBody FullTextAnalyzerBodyDef CharFilter Tokenizer
+  TokenFilter Argument OptDefaultAnalyzer OptArguments SA-Key
 
 context-free syntax
 
   Definition.FullTextAnalyzer = <
-    <OptDEFAULT> analyzer <Id> {
+    <OptDefaultAnalyzer> analyzer <Id> {
       <FullTextAnalyzerBody>
     }
   >
-  OptDEFAULT.OptDEFAULTNone = <>
-  OptDEFAULT = DEFAULT
+
+  OptDefaultAnalyzer.OptDefaultAnalyzerNone = <>
+  OptDefaultAnalyzer.DefaultAnalyzer = <default>
+  OptDefaultAnalyzer.DefaultBuiltInAnalyzer = <default_builtin_analyzer>
+
   FullTextAnalyzerBody = FullTextAnalyzerBodyDef
   FullTextAnalyzerBody.DualFullTextAnalyzerBodyDef = <<INDEXORQUERY> { <FullTextAnalyzerBodyDef> } <INDEXORQUERY> { <FullTextAnalyzerBodyDef> }>
   FullTextAnalyzerBodyDef.FullTextAnalyzerBodyDef = <<CharFilter*> <Tokenizer> <TokenFilter*>>
-  CharFilter.CharFilter = <char filter = <CHARFILTERNAME> ( <{Argument ","}*> )>
-  CharFilter.CharFilterNoArgs = <char filter = <CHARFILTERNAME>>
-  Tokenizer.Tokenizer = <tokenizer = <TOKENIZERNAME> ( <{Argument ","}*> )>
-  Tokenizer.TokenizerNoArgs = <tokenizer = <TOKENIZERNAME>>
-  TokenFilter.TokenFilter = <token filter = <TOKENFILTERNAME> ( <{Argument ","}*> )>
-  TokenFilter.TokenFilterNoArgs = <token filter = <TOKENFILTERNAME>>
+
+  CharFilter.CharFilter   = <char filter = <Id> <OptArguments>>
+  Tokenizer.Tokenizer     = <tokenizer = <Id> <OptArguments>>
+  TokenFilter.TokenFilter = <token filter = <Id> <OptArguments>>
+
+  OptArguments.OptArgumentsNone = <>
+  OptArguments.Arguments = <( <{Argument ","}*> )>
+
   Argument.Argument = <<Id> = <StringValue>>
-  CHARFILTERNAME = Id
-  TOKENIZERNAME = Id
-  TOKENFILTERNAME = Id
 
 context-free sorts
 
-  SearchableAnno SearchNamespaceAnno SA-Argument
+  SearchableAnno SearchNamespaceAnno SA-Argument OptSAArguments
 
 context-free syntax
 
-  SearchableAnno.SearchableAnno = <searchable> {prefer}
-  SearchableAnno.SearchableAnno = <searchable ( <{SA-Argument ","}*> )>
+  SearchableAnno.SearchableAnno = <searchable <OptSAArguments>>
   SearchNamespaceAnno.SearchNamespaceAnno = <search namespace> {prefer}
   Annotation.SearchableAnnoBoost = <<SearchableAnno> ^ <Float>>
   Annotation = SearchableAnno
   Annotation = SearchNamespaceAnno
-  SA-Argument.SA-Argument = <<SA-Key> = <SA-Value>>
+
+  OptSAArguments.OptSAArgumentsNone = <>
+  OptSAArguments.OptSAArguments = <( <{SA-Argument ","}*> )>
+
+  SA-Argument.SA-Argument           = <<SA-Key> = <SA-Value>>
   SA-Argument.Autocomplete-Argument = <autocomplete>
-  SA-Argument.Spellcheck-Argument = <spellcheck>
-  SA-Argument.Numeric-Argument = <numeric>
-  SA-Argument.DefaultSF-Argument = <default>
+  SA-Argument.Spellcheck-Argument   = <spellcheck>
+  SA-Argument.Numeric-Argument      = <numeric>
+  SA-Argument.DefaultSF-Argument    = <default>
+
+  SA-Key.SAKeyAnalyzer  = <analyzer>
+  SA-Key.SAKeyName      = <name>
+  SA-Key.SAKeyBoost     = <boost>
+  SA-Key.SAKeySubclass  = <subclass>
+  SA-Key.SAKeyDepth     = <depth>
 
 context-free sorts
 
-  SearchMappingEmbedded SearchMapping SearchMappingContent MappingPart KW OptDEFAULTSF
+  SearchMappingContent MappingPart OptDefaultSearchField SearchMappingAnnoPart
 
 context-free syntax
 
-  Definition = SearchMapping
-  EntityBodyDeclaration = SearchMappingEmbedded
-  SearchMappingEmbedded.SearchMappingEmbedded = <
-    search mapping {
-      <SearchMappingContent*>
-    }
-  >
-  SearchMapping.SearchMapping = <
+  Definition.SearchMapping = <
     search mapping <Id> {
       <SearchMappingContent*>
     }
   >
+
+  EntityBodyDeclaration.SearchMappingEmbedded = <
+    search mapping {
+      <SearchMappingContent*>
+    }
+  >
+
   SearchMappingContent.SearchNamespaceMapping = <
     namespace by <Id>
   > {prefer}
   SearchMappingContent.SearchNamespaceMappingAlt = <
-  namespace by <Id> ;>
-  SearchMappingContent.SearchFieldMappingAlt = <
-    <OptDEFAULTSF> <KW> <MappingPart*> ;
-  >
-  SearchMappingContent.SearchFieldMappingIndexAlt = <
-    <OptDEFAULTSF> index <Id> <MappingPart*> ;
+    namespace by <Id> ;
   >
   SearchMappingContent.SearchFieldMapping = <
-    <OptDEFAULTSF> <KW> <MappingPart*>
+    <OptDefaultSearchField> <SearchMappingId> <MappingPart*>
+  >
+  SearchMappingContent.SearchFieldMappingAlt = <
+    <OptDefaultSearchField> <SearchMappingId> <MappingPart*> ;
   >
   SearchMappingContent.SearchFieldMappingIndex = <
-    <OptDEFAULTSF> index <Id> <MappingPart*>
+    <OptDefaultSearchField> index <Id> <MappingPart*>
   >
-  MappingPart.FieldName = <as <Id>>
-  MappingPart.AnalyzerName = <using <Id>>
-  MappingPart.BoostAlt = <boosted to <Float>>
-  MappingPart.TargetEntity = <for subclass <Id>>
-  MappingPart.SearchMappingAnno = <( <{SearchMappingAnnoKW ","}*> )>
-  MappingPart.EmbeddedDepth = <depth <Int>>
-  MappingPart.EmbeddedDepthAlt = <with depth <Int>>
-  MappingPart.Boost = <^ <Float>>
-  KW = Id
-  KW = <as> {reject}
-  KW = <using> {reject}
-  KW = <boosted> {reject}
-  KW = <by> {reject}
-  KW = <with> {reject}
-  KW = <index> {reject}
-  KW = <depth> {reject}
-  KW = <for> {reject}
-  OptDEFAULTSF.OptDEFAULTSFNone = <>
-  OptDEFAULTSF = DEFAULTSF
+  SearchMappingContent.SearchFieldMappingIndexAlt = <
+    <OptDefaultSearchField> index <Id> <MappingPart*> ;
+  >
+
+  MappingPart.FieldName         = <as <Id>>
+  MappingPart.AnalyzerName      = <using <Id>>
+  MappingPart.BoostAlt          = <boosted to <Float>>
+  MappingPart.TargetEntity      = <for subclass <Id>>
+  MappingPart.SearchMappingAnno = <( <{SearchMappingAnnoPart ","}*> )>
+  MappingPart.EmbeddedDepth     = <depth <Int>>
+  MappingPart.EmbeddedDepthAlt  = <with depth <Int>>
+  MappingPart.Boost             = <^ <Float>>
+
+  SearchMappingAnnoPart.SearchMappingAnnoSpellCheck   = <spellcheck>
+  SearchMappingAnnoPart.SearchMappingAnnoAutoComplete = <autocomplete>
+
+  OptDefaultSearchField.OptDefaultSearchFieldNone = <>
+  OptDefaultSearchField.DefaultSearchField        = <+>
+
+lexical sorts
+
+  SearchMappingId
 
 lexical syntax
 
-  SA-Key = "analyzer"
-  SA-Key = "name"
-  SA-Key = "boost"
-  SA-Key = "subclass"
-  SA-Key = "depth"
-  DEFAULT = "default"
-  DEFAULT = "default_builtin_analyzer"
-  DEFAULTSF = "+"
+  SearchMappingId = Id
+  SearchMappingId = "as" {reject}
+  SearchMappingId = "using" {reject}
+  SearchMappingId = "boosted" {reject}
+  SearchMappingId = "by" {reject}
+  SearchMappingId = "with" {reject}
+  SearchMappingId = "index" {reject}
+  SearchMappingId = "depth" {reject}
+  SearchMappingId = "for" {reject}
+
   SA-Value = Id
   SA-Value = Float
   SA-Value = Int
-  SearchMappingAnnoKW = "spellcheck"
-  SearchMappingAnnoKW = "autocomplete"
   INDEXORQUERY = "index"
   INDEXORQUERY = "query"
 
@@ -238,16 +246,16 @@ context-free restrictions
 
 lexical syntax
 
-  SearchFieldId = Id 
-  SearchFieldId = "_id" 
-  ENTITY = Id 
-  SEARCHERREF = Id 
-  SearcherKW = "limit" 
-  SearcherKW = "offset" 
-  SearcherKW = "with" 
-  SearcherKW = "order" 
-  SearcherKW = "in" 
-  SearcherKW = "matching" 
+  SearchFieldId = Id
+  SearchFieldId = "_id"
+  ENTITY = Id
+  SEARCHERREF = Id
+  SearcherKW = "limit"
+  SearcherKW = "offset"
+  SearcherKW = "with"
+  SearcherKW = "order"
+  SearcherKW = "in"
+  SearcherKW = "matching"
 
 context-free restrictions
 
@@ -291,20 +299,18 @@ context-free restrictions
 
 context-free syntax
 
-  SearchMappingEmbedded.SearchMappingEmbeddedDepr = <
+  EntityBodyDeclaration.SearchMappingEmbeddedDepr = <
     searchmapping {
       <SearchMappingContent*>
     }
   > {deprecated("keyword `searchmapping` is replaced with `search mapping`")}
-  SearchMapping.SearchMappingDepr = <
+  Definition.SearchMappingDepr = <
     searchmapping <Id> {
       <SearchMappingContent*>
     }
   > {deprecated("keyword `searchmapping` is replaced with `search mapping`")}
-  CharFilter.CharFilterDepr = <charfilter = <CHARFILTERNAME> ( <{Argument ","}*> )> {deprecated("keyword `charfilter` is replaced with `char filter`")}
-  CharFilter.CharFilterNoArgsDepr = <charfilter = <CHARFILTERNAME>> {deprecated("keyword `charfilter` is replaced with `char filter`")}
-  TokenFilter.TokenFilterDepr = <tokenfilter = <TOKENFILTERNAME> ( <{Argument ","}*> )> {deprecated("keyword `tokenfilter` is replaced with `token filter`")}
-  TokenFilter.TokenFilterNoArgsDepr = <tokenfilter = <TOKENFILTERNAME>> {deprecated("keyword `tokenfilter` is replaced with `token filter`")}
+  CharFilter.CharFilterDepr = <charfilter = <Id> <OptArguments>> {deprecated("keyword `charfilter` is replaced with `char filter`")}
+  TokenFilter.TokenFilterDepr = <tokenfilter = <Id> <OptArguments>> {deprecated("keyword `tokenfilter` is replaced with `token filter`")}
   RetrievalExp.AllFacetResults = <all <SearchField> facets from <Exp>> {deprecated("the `all` keyword has been deprecated and has no effect on facet retrieval anymore")}
   FacetExp.DiscreteFacetDefDepr = <( <SearchField> , <Exp> )> {deprecated("the notation: (field,topN) has been replaced with field(topN) ")}
   FacetExp.RangeFacetDefDepr = <( <SearchField> : <{Range ","}+> )> {deprecated("the notation: (field:[min to max], ...) has been replaced with field([min to max], ...) ")}

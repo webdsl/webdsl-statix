@@ -6,12 +6,7 @@ imports
 
 rules
 
-  normalize-search : CharFilterNoArgs(name) -> CharFilter(name, [])
-  normalize-search : CharFilterNoArgsDepr(name) -> CharFilter(name, [])
   normalize-search : CharFilterDepr(name, args) -> CharFilter(name, args)
-
-  normalize-search : TokenFilterNoArgs(name) -> TokenFilter(name, [])
-  normalize-search : TokenFilterNoArgsDepr(name) -> TokenFilter(name, [])
   normalize-search : TokenFilterDepr(name, args) -> TokenFilter(name, args)
 
   normalize-search : ConstraintFilterAlt(constraints) -> ConstraintFilter(constraints)
