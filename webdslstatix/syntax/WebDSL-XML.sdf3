@@ -47,12 +47,12 @@ context-free syntax
 
 lexical syntax
 
-  XMLComment = "<!--" XMLCommentChar* "-->" 
-  XMLCommentChar = ~[\-] 
-  XMLCommentChar = OneDash 
-  XMLCommentChar = TwoDashes 
-  OneDash = [\-] 
-  TwoDashes = [\-] [\-] 
+  XMLComment = "<!--" XMLCommentChar* "-->"
+  XMLCommentChar = ~[\-]
+  XMLCommentChar = OneDash
+  XMLCommentChar = TwoDashes
+  OneDash = [\-]
+  TwoDashes = [\-] [\-]
 
 lexical restrictions
 

@@ -12,19 +12,19 @@ context-free syntax
 
   TemplateElement.DeriveNoBody = <
     derive <Id> from <Exp> for ( <{DeriveProperty ","}*> )
-  > {prefer}
+  >
   TemplateElement.DeriveNoForNoBody = <
     derive <Id> from <Exp>
-  > {prefer}
+  >
   TemplateElement.Derive = <
     derive <Id> from <Exp> for ( <{DeriveProperty ","}*> ) <DeriveBody>
-  > {prefer}
+  >
   TemplateElement.DeriveNoFor = <
     derive <Id> from <Exp> <DeriveBody>
-  > {prefer}
+  >
   TemplateElement.DeriveNoFromNoFor = <
     derive <Id> <DeriveBody>
-  > {prefer}
+  >
 
   DeriveProperty.DeriveDefault = Id
   DeriveProperty.DeriveMode = <<Id> ( <Id> )>
@@ -36,8 +36,8 @@ context-free syntax
   >
 
   TemplateCall = <derive> {reject}
-  Definition.DeriveCrud = <derive crud <Id>> {prefer}
-  Definition.DeriveCrudUpper = <derive CRUD <Id>> {prefer}
+  Definition.DeriveCrud = <derive crud <Id>>
+  Definition.DeriveCrudUpper = <derive CRUD <Id>>
 
 context-free syntax
 
@@ -53,43 +53,43 @@ context-free syntax
     expand <ExpandId+> to <ExpandArgId+> {
       <TemplateElement*>
     }
-  > {prefer}
+  >
   EntityBodyDeclaration.EntityBodyDeclarationExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> {
       <EntityBodyDeclaration*>
     }
-  > {prefer}
+  >
   Statement.StatementExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> {
       <Statement*>
     }
-  > {prefer}
+  >
   ObjectPropertyAssignment.ObjectPropertyAssignmentExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> {
       <ObjectPropertyAssignment*>
     }
-  > {prefer}
+  >
   Definition.DefinitionExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> {
       <Definition*>
     }
-  > {prefer}
-  Exp.ExpExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <Exp> }> {prefer}
-  Attribute.AttributeExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <Attribute> }> {prefer}
-  PropertyAssignment.PropertyAssignmentExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <PropertyAssignment> }> {prefer}
-  FormalArg.FormalArgExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <FormalArg> }> {prefer}
+  >
+  Exp.ExpExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <Exp> }>
+  Attribute.AttributeExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <Attribute> }>
+  PropertyAssignment.PropertyAssignmentExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <PropertyAssignment> }>
+  FormalArg.FormalArgExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <FormalArg> }>
   Case.CaseAltExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> { <Case> }
-  > {prefer}
+  >
   TemplateCaseAlt.TemplateCaseAltExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> { <TemplateCaseAlt> }
-  > {prefer}
+  >
   TypeCaseAlt.TypeCaseAltExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> { <TypeCaseAlt> }
-  > {prefer}
+  >
   TemplateTypeCaseAlt.TemplateTypeCaseAltExpandLocal = <
     expand <ExpandId+> to <ExpandArgId+> { <TemplateTypeCaseAlt> }
-  > {prefer}
+  >
 
   ExpandId = <expandtemplate> {reject}
   ExpandId = <template> {reject}
@@ -106,8 +106,8 @@ lexical sorts
 
 lexical syntax
 
-  ExpandId = [a-zA-Z0-9\_\-]+ 
-  ExpandArgId = Id 
+  ExpandId = [a-zA-Z0-9\_\-]+
+  ExpandArgId = Id
 
 lexical restrictions
 

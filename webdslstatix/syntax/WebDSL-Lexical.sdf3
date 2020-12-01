@@ -28,7 +28,7 @@ lexical syntax
 
   Int = "-"? [0-9]+
   Long = "-"? [0-9]+ "L"
-  Float = "-"? FloatDigits ExponentPart? [fFdD]? 
+  Float = "-"? FloatDigits ExponentPart? [fFdD]?
   FloatDigits = [0-9]* "." [0-9]+
   FloatDigits = [0-9]+
   ExponentPart = [eE] SignedInteger
@@ -50,14 +50,14 @@ context-free sorts
 %% Kernel syntax is required here since we do not want LAYOUT to be parsed between
 %% the first QMLex and StringLex
 syntax
-  
+ 
   %% string literal as expression
   StringValue-CF.StringValue = "\"" StringLex-LEX "\""
-  StringValue-CF.StringInterp = "\"" StringPart-CF* "\"" {avoid}
+  StringValue-CF.StringInterp = "\"" StringPart-CF* "\""
 
   StringPart-CF = SimpleStringPart-CF
   StringPart-CF = StringLexInterp-LEX
-  SimpleStringPart-CF.InterpSimpleExp = "~" SimpleExp-CF 
+  SimpleStringPart-CF.InterpSimpleExp = "~" SimpleExp-CF
 
 context-free restrictions
 
@@ -94,7 +94,7 @@ lexical sorts
 
 lexical syntax
 
-  QMLex = "\"" 
+  QMLex = "\""
   StringLex = StringChar*
   StringLexInterp = StringChar+
   StringChar = ~[\"\n\~\\]
@@ -116,7 +116,7 @@ lexical syntax
   LAYOUT     = "//" ~[\n\r]* NewLineEOF
   LAYOUT     = "/*" InsideComment* "*/"
   InsideComment  = ~[\*]
-  InsideComment  = CommentChar 
+  InsideComment  = CommentChar
   CommentChar    = [\*]
   NewLineEOF = [\n\r]
   NewLineEOF = EOF

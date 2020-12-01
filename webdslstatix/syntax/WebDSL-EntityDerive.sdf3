@@ -11,7 +11,7 @@ context-free sorts
 
 context-free syntax
 
-  TemplateArgExp.ExpEntityDerive = <<Exp> with <ExpEntityDeriveProp*>> {avoid}
+  TemplateArgExp.ExpEntityDerive = <<Exp> with <ExpEntityDeriveProp*>>
   ExpEntityDeriveProp.ExpEntityDeriveProp = <<Id> <OptCallArgs>>
 
   Sort.ArgEntityDerive = <<Id> with <Id> <OptFormalArgs>>

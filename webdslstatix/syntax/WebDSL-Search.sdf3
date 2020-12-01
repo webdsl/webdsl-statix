@@ -45,7 +45,7 @@ context-free sorts
 context-free syntax
 
   SearchableAnno.SearchableAnno = <searchable <OptSAArguments>>
-  SearchNamespaceAnno.SearchNamespaceAnno = <search namespace> {prefer}
+  SearchNamespaceAnno.SearchNamespaceAnno = <search namespace>
   Annotation.SearchableAnnoBoost = <<SearchableAnno> ^ <Float>>
   Annotation = SearchableAnno
   Annotation = SearchNamespaceAnno
@@ -85,7 +85,7 @@ context-free syntax
 
   SearchMappingContent.SearchNamespaceMapping = <
     namespace by <Id>
-  > {prefer}
+  >
   SearchMappingContent.SearchNamespaceMappingAlt = <
     namespace by <Id> ;
   >
@@ -160,7 +160,7 @@ context-free syntax
   SearcherPart = FacetDef
   SearcherPart = SearchAttributes
   SearcherPart = NamespaceConstraint
-  QueryDef.QueryDef = <matching <MatchGroup+>> {prefer}
+  QueryDef.QueryDef = <matching <MatchGroup+>>
   Offset.Start = <offset <Exp>>
   MaxResults.MaxResults = <limit <Exp>>
   SortBy.SortBy = <order by <{SortExp ","}+>>
@@ -179,13 +179,13 @@ context-free syntax
   FilterConstraint.FieldFilterConstraint = <<SearchField> : <Exp>>
   FieldsConstraint.FieldsConstraint = <<{QuerySearchField ","}+> :>
   QuerySearchField.QuerySearchField = <<SearchField> <OptQueryBoost>>
-  QueryConstraint.QueryConstraint = <<{QueryExp ","}+>> {avoid}
+  QueryConstraint.QueryConstraint = <<{QueryExp ","}+>>
   QueryBoost.QueryBoost = <^ <Exp>>
-  MatchGroup.Clause = <<OptBoolOp> ( <MatchGroup+> )> {avoid}
-  MatchGroup.Query = <<OptFieldsConstraint> <QueryConstraint>> {avoid}
+  MatchGroup.Clause = <<OptBoolOp> ( <MatchGroup+> )>
+  MatchGroup.Query = <<OptFieldsConstraint> <QueryConstraint>>
   MatchGroup.MatchAllQuery = <* : *>
-  QueryExp.GroupDef = <<OptBoolOp> ( <QueryExp+> ) <OptSlop>> {prefer}
-  QueryExp.TermDef = <<OptBoolOp> <QueryTerm> <OptSlop>> {avoid}
+  QueryExp.GroupDef = <<OptBoolOp> ( <QueryExp+> ) <OptSlop>>
+  QueryExp.TermDef = <<OptBoolOp> <QueryTerm> <OptSlop>>
   QueryExp.RangeDef = <<OptBoolOp> <Range>>
   Slop.Slop = <~ <Exp>>
   Range.Range = <<RangeOpen> <ExpOrWildCard> to <ExpOrWildCard> <RangeClose>>
@@ -208,7 +208,7 @@ context-free syntax
   Highlight.NormalHighlight = <highlight>
   Highlight.HTMLHighlight = <highlightHTML>
   RetrievalExp.Highlight = <<Highlight> <SearchField> : <Exp> from <Exp>>
-  RetrievalExp.HighlightTags = <<Highlight> <SearchField> : <Exp> from <Exp> with tags ( <Exp> , <Exp> )> {prefer}
+  RetrievalExp.HighlightTags = <<Highlight> <SearchField> : <Exp> from <Exp> with tags ( <Exp> , <Exp> )>
   RetrievalExp.SearchResults = <results from <Exp>>
   RetrievalExp.FacetResults = <<SearchField> facets from <Exp>>
   RetrievalExp.SearchResultsSize = <count from <Exp>>

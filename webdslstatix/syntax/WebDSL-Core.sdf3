@@ -92,7 +92,7 @@ context-free syntax
 
   Definition.Enum = <
     enum <Id> {
-      <{EnumValue ","}*> 
+      <{EnumValue ","}*>
     }
   >
   EnumValue.EnumValue = <<Id> ( <StringValue> )>

@@ -1,4 +1,4 @@
-module WebDSL-AccessControl 
+module WebDSL-AccessControl
 
 imports
   WebDSL-Action
@@ -93,11 +93,11 @@ context-free syntax
 
   TemplateElement.AccessControlImportRules = <
     apply ac rules <Id> ( <{AccessControlImportRulesArg ","}*> )
-  > {prefer}
+  >
 
   AccessControlImportRulesArg.ACVar = Id
 
-  OptMatchArgs.MatchArgs = <( <{FormalArg ","}*> <OptWildCardArg> )> {prefer}
+  OptMatchArgs.MatchArgs = <( <{FormalArg ","}*> <OptWildCardArg> )>
   OptMatchArgs.OptMatchArgsNone = <>
 
   OptId.Id = Id

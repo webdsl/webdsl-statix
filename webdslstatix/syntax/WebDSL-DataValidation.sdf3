@@ -6,22 +6,22 @@ imports
 
 context-free syntax
 
-  Annotation.ValidateCreateAnno = <validatecreate ( <Exp> , <Exp> )> {prefer}
-  Annotation.ValidateUpdateAnno = <validateupdate ( <Exp> , <Exp> )> {prefer}
-  Annotation.ValidateDeleteAnno = <validatedelete ( <Exp> , <Exp> )> {prefer}
-  Annotation.ValidateAnno = <validate ( <Exp> , <Exp> )> {prefer}
-  Annotation.NamedValidateAnno = <<Id> : validate ( <Exp> , <Exp> )> {prefer}
+  Annotation.ValidateCreateAnno = <validatecreate ( <Exp> , <Exp> )>
+  Annotation.ValidateUpdateAnno = <validateupdate ( <Exp> , <Exp> )>
+  Annotation.ValidateDeleteAnno = <validatedelete ( <Exp> , <Exp> )>
+  Annotation.ValidateAnno = <validate ( <Exp> , <Exp> )>
+  Annotation.NamedValidateAnno = <<Id> : validate ( <Exp> , <Exp> )>
 
   EntityBodyDeclaration.ValidateEntity = <
     validate ( <Exp> , <Exp> )
-  > {prefer}
+  >
 
   Statement.ValidateStatement = <
     validate ( <Exp> , <Exp> ) ;
-  > {prefer}
+  >
   Statement.NamedValidateStatement = <
     <Id> : validate ( <Exp> , <Exp> ) ;
-  > {prefer}
+  >
 
-  TemplateCall.ValidationErrors = <validationErrors ( <Id> )> {prefer}
-  TemplateCall.ValidationErrorsEmpty = <validationErrors ( )> {prefer}
+  TemplateCall.ValidationErrors = <validationErrors ( <Id> )>
+  TemplateCall.ValidationErrorsEmpty = <validationErrors ( )>

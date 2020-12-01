@@ -12,7 +12,7 @@ context-free syntax
 
   Definition.Routing = <
     routing {
-      <RoutingElement*> 
+      <RoutingElement*>
     }
   >
   RoutingElement.RoutingReceive = <
