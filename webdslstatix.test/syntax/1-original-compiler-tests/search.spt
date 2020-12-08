@@ -239,4 +239,4 @@ test search statement 24 [[
   function x() {
     Item corrections matching title: userQueryToCorrect limit 20 in namespace list[1];
   }
-]] parse succeeds parse to Test()
+]] parse succeeds

@@ -7,7 +7,7 @@ imports
 
 context-free sorts
 
-  QId FormalArg OptFormalArgs FunctionSortParams FunctionSortParam FunctionSortReturn OptCallArgs
+  QId FormalArg OptFormalArgs FunctionSortParams FunctionSortParam FunctionSortReturn OptCallArgs Sort
 
 context-free syntax
 
@@ -16,8 +16,8 @@ context-free syntax
 
 context-free syntax %% Types
 
-  Sort.SimpleSort = SIMPLESORT
-  Sort.GenericSort = <<GENERICSORT> \< <{Sort ","}+> \>>
+  Sort.SimpleSort = <<SimpleSortLex>>
+  Sort.GenericSort = <<GenericSortLex> \< <{Sort ","}+> \>>
   Sort.ListSort = <[ <Sort> ]>
   Sort.SetSort = <{ <Sort> }>
   Sort.RefSort = <ref <Sort>>

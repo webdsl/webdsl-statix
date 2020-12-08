@@ -290,11 +290,6 @@ test template element typecase 2 [[
   }
 ]] parse succeeds
 
-test test [[
-  typecase( a.b ){
-  }
-]]
-
 test template call variable length template element arg 1 [[
   tabs(
     "Events",

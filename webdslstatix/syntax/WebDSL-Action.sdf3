@@ -153,7 +153,7 @@ context-free syntax
   Exp.CollectionIndex = <<Exp> [ <Exp> ]>
   Exp.This = <this>
 
-  Exp.ObjectCreation = <<SIMPLESORT> {
+  Exp.ObjectCreation = <<SimpleSortLex> {
     <PropAssignment*>
   }>
   PropAssignment.PropAssignment = <<ObjectPropertyAssignment>>

@@ -155,10 +155,10 @@ lexical restrictions
 
 lexical sorts
 
-  SIMPLESORT GENERICSORT
+  SimpleSortLex GenericSortLex
 
 lexical syntax
 
-  SIMPLESORT = Id
-  GENERICSORT = Id
-  GENERICSORT = "Ref" {reject}
+  SimpleSortLex = Id
+  GenericSortLex = Id
+  GenericSortLex = "Ref" {reject}

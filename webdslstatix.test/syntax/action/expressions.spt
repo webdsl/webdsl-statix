@@ -83,9 +83,9 @@ test string no unescaped backslash [[ "\" ]] parse fails
 test string interpolation simple var [[ "hello ~x" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleVar("x"))]))
 test string interpolation simple field access [[ "hello ~x.y" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleFieldAccess(SimpleVar("x"),"y"))]))
 test dot after string interpolation [[ "hello ~x." ]] parse fails
-test string interpolation simple this call no args [[ "hello ~f()" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleThisCall("f", []))]))
-test string interpolation simple this call single arg [[ "hello ~f(x)" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleThisCall("f", [Var("x")]))]))
-test string interpolation simple this call multiple args [[ "hello ~f(x, 2)" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleThisCall("f", [Var("x"), Const(Int("2"))]))]))
+test string interpolation simple this call no args [[ "hello ~f()" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleThisCall(ThisCall("f", [])))]))
+test string interpolation simple this call single arg [[ "hello ~f(x)" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleThisCall(ThisCall("f", [Var("x")])))]))
+test string interpolation simple this call multiple args [[ "hello ~f(x, 2)" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleThisCall(ThisCall("f", [Var("x"), Const(Int("2"))])))]))
 test opening parenthesis after string interp this call [[ "hello ~f(" ]] parse fails
 test string interpolation simple call no args [[ "hello ~a.f()" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleCall(SimpleVar("a"), "f", []))]))
 test string interpolation simple call single arg [[ "hello ~a.f(x)" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleCall(SimpleVar("a"), "f", [Var("x")]))]))

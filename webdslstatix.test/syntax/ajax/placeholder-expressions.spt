@@ -17,7 +17,7 @@ test phexp float decimal [[ 2.0f ]] parse succeeds parse to PHConst(Float("2.0f"
 test phexp string [[ "ph-1" ]] parse succeeds parse to PHConst(StringValue("ph-1"))
 test phexp string interp [[ "ph-~x" ]] parse succeeds parse to PHConst(StringInterp(["ph-", InterpSimpleExp(SimpleVar("x"))]))
 
-test phexp this call [[ getId() ]] parse succeeds parse to PHThisCall("getId", [])
+test phexp this call [[ getId() ]] parse succeeds parse to PHThisCall(ThisCall("getId", []))
 
 test phexp call [[ x.getId() ]] parse succeeds parse to PHCall(Var("x"), "getId", [])
 test phexp call nested [[ x.y().getId() ]] parse succeeds parse to PHCall(Call(Var("x"), "y", []), "getId", [])

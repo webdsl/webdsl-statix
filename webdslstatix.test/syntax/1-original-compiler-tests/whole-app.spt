@@ -2,6 +2,7 @@ module original-compiler-tests/whole-app
 
 language webdsl-statix
 
+// is the derive pages and derivetemplate construct outdated?
 test whole app derivetest [[
   module derivetest
 

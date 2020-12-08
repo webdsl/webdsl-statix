@@ -27,7 +27,7 @@ context-free syntax
 
   PrefetchNode.PrefetchNode = <<OptPrefetchOwnerCast> <Id> <PrefetchNodeMod*> <PrefetchTemplateArgsOpt> <PrefetchCondition> <PrefetchWhereOpt> <PrefetchChildrenOpt>>
   OptPrefetchOwnerCast.OptPrefetchOwnerCastNone = <>
-  OptPrefetchOwnerCast.PrefetchOwnerCast = <<SIMPLESORT> .>
+  OptPrefetchOwnerCast.PrefetchOwnerCast = <<SimpleSortLex> .>
   PrefetchNodeMod.NoEmptyBatch = <no-empty-batch>
   PrefetchNodeMod.FetchEarly = <fetch-early>
 
@@ -68,7 +68,7 @@ context-free syntax
   PrefetchCondVal.PrefetchSub = <<PrefetchCondVal> - <PrefetchCondVal>> {left}
 
   OptSimpleSort.OptSimpleSortNone = <>
-  OptSimpleSort.OptSimpleSortSome = SIMPLESORT
+  OptSimpleSort.OptSimpleSortSome = SimpleSortLex
 
 context-free priorities
 

@@ -2,6 +2,7 @@ module WebDSL-DataModel
 
 imports
   WebDSL-Action
+  WebDSL-Core
   WebDSL-Lexical
 
 context-free sorts
@@ -40,10 +41,6 @@ context-free syntax
 context-free restrictions
 
   "cache" -/- [a-zA-Z0-9\_]
-
-context-free sorts
-
-  Sort Annotation
 
 context-free syntax
 
@@ -105,6 +102,10 @@ context-free syntax
   PropKind.Ref = <-\>>
   PropKind.Comp = <\<\>>
   PropKind.AnyProp = <:>
+
+context-free sorts
+
+  Annotation
 
 context-free syntax
 

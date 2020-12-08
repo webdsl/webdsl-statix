@@ -311,9 +311,9 @@ context-free sorts
 
 context-free syntax
 
-  PropertyAssignment.PropertySubmitColon = <<SubmitProp> : <ActionCallOrInline>>
-  PropertyAssignment.PropertySubmitAssign = <<SubmitProp> := <ActionCallOrInline>>
-  PropertyAssignment.PropertySubmit = <<SubmitProp> = <ActionCallOrInline>>
+  PropertyAssignment.PropertySubmitColon = <<SubmitProp> : <ActionCallOrInlineOrExp>>
+  PropertyAssignment.PropertySubmitAssign = <<SubmitProp> := <ActionCallOrInlineOrExp>>
+  PropertyAssignment.PropertySubmit = <<SubmitProp> = <ActionCallOrInlineOrExp>>
   PropertyAssignment.PropertyAssignmentColon = <<PropertyAssignmentId> : <Exp>>
   PropertyAssignment.PropertyAssignmentAssign = <<PropertyAssignmentId> := <Exp>>
   PropertyAssignment.PropertyAssignment = <<PropertyAssignmentId> = <Exp>>
@@ -397,6 +397,7 @@ context-free syntax
   TemplateElement.RenderAction = <render <Block>>
   TemplateElement.AllPhasesAction = <allphases <Block>>
   TemplateElement.ValidateAction = <validate <Block>>
+  TemplateElement.ValidateElement = <validate ( <Exp> , <Exp> )>
   Action.Action = <action <ActionModifier*> <Id> <OptFormalArgs> <Block>>
   ActionModifier.ActionModifierIgnoreValidation = <ignore-validation>
   TemplateCallId.QualifiedElementsCall = <<TemplateId> .elements>
@@ -404,7 +405,7 @@ context-free syntax
 
 context-free sorts
 
-  FormalVarArg ExpVarArg
+  FormalVarArg ExpVarArg ExpOrTemplateArg
 
 context-free syntax
 
@@ -414,11 +415,18 @@ context-free syntax
     <Id> . <TemplateCall>
   >
   Exp.TemplateVarArgExp = <[ <{ExpVarArg ","}+> ]>
-  ExpVarArg.ExpVarArg = <( <{Exp ","}*> )>
   ExpVarArg.ExpVarArgFor = <for ( <Id> : <Sort> in <Exp> <OptFilter> ) { <{ExpVarArg ","}*> }>
   ExpVarArg.ExpVarArgForInferred = <for ( <Id> in <Exp> <OptFilter> ) { <{ExpVarArg ","}*> }>
   ExpVarArg.ExpVarArgForAll = <for ( <Id> : <Sort> <OptFilter> ) { <{ExpVarArg ","}*> }>
   ExpVarArg.ExpVarArgForCount = <for ( <Id> : Int from <Exp> to <Exp> ) { <{ExpVarArg ","}*> }>
+  ExpVarArg.ExpVarArg = <( <{ExpOrTemplateArg ","}*> )>
+
+  ExpOrTemplateArg.ExpVarArgExp = <<Exp>>
+  ExpOrTemplateArg.ExpVarArgElements = <{ <TemplateElement*> }>
+
+context-free priorities
+
+  ExpOrTemplateArg.ExpVarArgExp <0> .> Exp.SetCreation
 
 context-free sorts
 
