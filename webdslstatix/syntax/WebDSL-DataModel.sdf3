@@ -48,41 +48,41 @@ context-free sorts
 context-free syntax
 
   Definition.GlobalVarDecl = <
-    var <Id> : <Sort>
+    var <VarId> : <Sort>
   >
   Definition.GlobalVarDeclDepr = <
-    var <Id> : <Sort> ;
+    var <VarId> : <Sort> ;
   > {deprecated("remove ;")}
   Definition.GlobalVarDeclInit = <
-    var <Id> : <Sort> := <Exp>
+    var <VarId> : <Sort> := <Exp>
   >
   Definition.GlobalVarDeclInitDepr = <
-    var <Id> : <Sort> := <Exp> ;
+    var <VarId> : <Sort> := <Exp> ;
   > {deprecated("remove ;")}
   Definition.GlobalVarDeclInitInferred = <
-    var <Id> := <Exp>
+    var <VarId> := <Exp>
   >
   Definition.GlobalVarDeclInitInferredDepr = <
-    var <Id> := <Exp> ;
+    var <VarId> := <Exp> ;
   > {deprecated("remove ;")}
   Definition.RequestVarDecl = <
-    request var <Id> : <Sort>
+    request var <VarId> : <Sort>
   >
   Definition.RequestVarDeclDepr = <
-    request var <Id> : <Sort> ;
-  >
+    request var <VarId> : <Sort> ;
+  > {deprecated("remove ;")}
   Definition.RequestVarDeclInit = <
-    request var <Id> : <Sort> := <Exp>
+    request var <VarId> : <Sort> := <Exp>
   >
   Definition.RequestVarDeclInitDepr = <
-    request var <Id> : <Sort> := <Exp> ;
-  >
+    request var <VarId> : <Sort> := <Exp> ;
+  > {deprecated("remove ;")}
   Definition.RequestVarDeclInitInferred = <
-    request var <Id> := <Exp>
+    request var <VarId> := <Exp>
   >
   Definition.RequestVarDeclInitInferredDepr = <
-    request var <Id> := <Exp> ;
-  >
+    request var <VarId> := <Exp> ;
+  > {deprecated("remove ;")}
 
 context-free sorts
 
@@ -91,10 +91,10 @@ context-free sorts
 context-free syntax
 
   EntityBodyDeclaration.Property = <
-    <Id> <PropKind> <Sort> <OptPropAnnos>
+    <VarId> <PropKind> <Sort> <OptPropAnnos>
   >
   EntityBodyDeclaration.DerivedProperty = <
-    <Id> <PropKind> <Sort> <OptPropAnnos> := <Exp>
+    <VarId> <PropKind> <Sort> <OptPropAnnos> := <Exp>
   >
   EntityBodyDeclaration.CachedEntity = <
     cache
@@ -108,7 +108,7 @@ context-free syntax
 
 context-free syntax
 
-  Annotation.SimpleAnno = Id
+  Annotation.SimpleAnno = AnnotationId
   Annotation.InverseAnno = <inverse = <Id> . <Id>>
   Annotation.IncompleteInverseAnno = <inverse = <Id>>
   Annotation.InverseSlaveAnno = <inverseSlave = <Id> . <Id>>
@@ -126,3 +126,12 @@ context-free syntax
   Annotation.CollationAnno = <collation ( <Id> )>
   Annotation.IdErrorAnno = <iderror = <StringValue>>
   Annotation.IdEmptyErrorAnno = <idemptyerror = <StringValue>>
+
+lexical sorts
+
+  AnnotationId
+
+lexical syntax
+
+  AnnotationId = Id
+  AnnotationId = "searchable" {reject}

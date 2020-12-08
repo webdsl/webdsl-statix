@@ -37,13 +37,13 @@ context-free syntax
   Placeholder.PlaceholderHtml = <placeholder \< <Id> \> <Id> {
     <TemplateElement*>
   }>
-  Placeholder.PlaceholderHtmlExp = <placeholder \< <Id> \> <Exp> {
+  Placeholder.PlaceholderHtmlExp = <placeholder \< <Id> \> <PHExp> {
     <TemplateElement*>
   }>
   Placeholder.Placeholder = <placeholder <Id> {
     <TemplateElement*>
   }>
-  Placeholder.PlaceholderExp = <placeholder <Exp> {
+  Placeholder.PlaceholderExp = <placeholder <PHExp> {
     <TemplateElement*>
   }>
 
@@ -62,9 +62,9 @@ context-free sorts
 
 context-free syntax
 
-  PHExp.PHThisCall = <<Id> ( <{Exp ","}*> )>
-  PHExp.PHCall = <<Exp> . <Id> ( <{Exp ","}*> )>
+  PHExp.PHThisCall = ThisCall
+  PHExp.PHCall = <<Exp> . <FunId> ( <{Exp ","}*> )>
   PHExp.PHFieldAccess = <<Exp> . <Id>>
   PHExp.PHCollectionIndex = <<Exp> [ <Exp> ]>
   PHExp.PHAdd = <<Exp> + <Exp>>
-  PHExp = ConstValue
+  PHExp.PHConst = ConstValue

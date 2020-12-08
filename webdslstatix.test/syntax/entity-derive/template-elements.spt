@@ -14,31 +14,31 @@ fixture [[
 // template call entity argument
 test entity derive template argument exp [[
   x(e with y)
-]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("y", OptCallArgsNone())])], OptTCallPropAssignsNone(), TemplateBodyNone())
+]] parse succeeds parse to TemplateCall(TemplateCallId("x"), TCallArgs([ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("y", OptCallArgsNone())])]), OptTCallPropAssignsNone(), TemplateBodyNone())
 
 test entity derive template argument exp call [[
   x(getValue() with y)
-]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(ThisCall("getValue", []), [ExpEntityDeriveProp("y", OptCallArgsNone())])], OptTCallPropAssignsNone(), TemplateBodyNone())
+]] parse succeeds parse to TemplateCall(TemplateCallId("x"), TCallArgs([ExpEntityDerive(ThisCall("getValue", []), [ExpEntityDeriveProp("y", OptCallArgsNone())])]), OptTCallPropAssignsNone(), TemplateBodyNone())
 
 test entity derive template argument exp empty args [[
   x(e with y())
-]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("y", CallArgs([]))])], OptTCallPropAssignsNone(), TemplateBodyNone())
+]] parse succeeds parse to TemplateCall(TemplateCallId("x"), TCallArgs([ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("y", CallArgs([]))])]), OptTCallPropAssignsNone(), TemplateBodyNone())
 
 test entity derive template argument exp single arg [[
   x(e with y(1))
-]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("y", CallArgs([Int("1")]))])], OptTCallPropAssignsNone(), TemplateBodyNone())
+]] parse succeeds parse to TemplateCall(TemplateCallId("x"), TCallArgs([ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("y", CallArgs([Const(Int("1"))]))])]), OptTCallPropAssignsNone(), TemplateBodyNone())
 
 test entity derive template argument exp multiple args [[
   x(e with y(1, 2))
-]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("y", CallArgs([Int("1"), Int("2")]))])], OptTCallPropAssignsNone(), TemplateBodyNone())
+]] parse succeeds parse to TemplateCall(TemplateCallId("x"), TCallArgs([ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("y", CallArgs([Const(Int("1")), Const(Int("2"))]))])]), OptTCallPropAssignsNone(), TemplateBodyNone())
 
 test entity derive template argument exp two props [[
   x(e with a b)
-]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("a", OptCallArgsNone()), ExpEntityDeriveProp("b", OptCallArgsNone())])], OptTCallPropAssignsNone(), TemplateBodyNone())
+]] parse succeeds parse to TemplateCall(TemplateCallId("x"), TCallArgs([ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("a", OptCallArgsNone()), ExpEntityDeriveProp("b", OptCallArgsNone())])]), OptTCallPropAssignsNone(), TemplateBodyNone())
 
 test entity derive template argument exp three props [[
   x(e with a b c)
-]] parse succeeds parse to TemplateCall("x", [ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("a", OptCallArgsNone()), ExpEntityDeriveProp("b", OptCallArgsNone()), ExpEntityDeriveProp("c", OptCallArgsNone())])], OptTCallPropAssignsNone(), TemplateBodyNone())
+]] parse succeeds parse to TemplateCall(TemplateCallId("x"), TCallArgs([ExpEntityDerive(Var("e"), [ExpEntityDeriveProp("a", OptCallArgsNone()), ExpEntityDeriveProp("b", OptCallArgsNone()), ExpEntityDeriveProp("c", OptCallArgsNone())])]), OptTCallPropAssignsNone(), TemplateBodyNone())
 
 
 // entity derive foreach template element

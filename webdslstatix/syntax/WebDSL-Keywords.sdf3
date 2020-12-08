@@ -3,49 +3,105 @@ module WebDSL-Keywords
 imports
   WebDSL-Lexical
 
-context-free syntax
-
-  Id = <function> {reject}
-  Id = <return> {reject}
-  Id = <as> {reject}
-  Id = <define> {reject}
-  Id = <for> {reject}
-
 context-free restrictions
 
   "as" -/- [a-zA-Z0-9\_]
 
-context-free syntax
+lexical syntax // id
 
-  TemplateCallIdLex = <define> {reject}
-  TemplateCallIdLex = <template> {reject}
-  TemplateCallIdLex = <var> {reject}
-  TemplateCallIdLex = <for> {reject}
-  TemplateCallIdLex = <if> {reject}
-  TemplateCallIdLex = <else> {reject}
-  TemplateCallIdLex = <as> {reject}
-  TemplateCallIdLex = <is> {reject}
-  TemplateCallIdLex = <null> {reject}
-  TemplateCallIdLex = <and> {reject}
-  TemplateCallIdLex = <or> {reject}
-  TemplateCallIdLex = <order> {reject}
-  TemplateCallIdLex = <by> {reject}
-  TemplateCallIdLex = <where> {reject}
-  TemplateCallIdLex = <in> {reject}
-  TemplateCallIdLex = <navigate> {reject}
-  TemplateCallIdLex = <action> {reject}
-  TemplateCallIdLex = <submit> {reject}
-  TemplateCallIdLex = <goto> {reject}
-  TemplateCallIdLex = <foreach> {reject}
-  TemplateCallIdLex = <request> {reject}
-  TemplateCallIdLex = <local> {reject}
-  TemplateCallIdLex = <init> {reject}
-  TemplateCallIdLex = <databind> {reject}
-  TemplateCallIdLex = <derive> {reject}
-  TemplateCallIdLex = <rules> {reject}
-  TemplateCallIdLex = <actionLink> {reject}
-  TemplateCallIdLex = <submitlink> {reject}
-  TemplateCallIdLex = <downloadlink> {reject}
-  TemplateCallIdLex = <outputimage> {reject}
-  TemplateCallIdLex = <placeholder> {reject}
-  TemplateCallIdLex = <placeholdervar> {reject}
+  Id = "true" {reject}
+  Id = "false" {reject}
+  Id = "null" {reject}
+  Id = "global" {reject}
+  Id = "session" {reject}
+  Id = "default" {reject}
+  Id = "function" {reject}
+  Id = "return" {reject}
+  Id = "action" {reject}
+
+  Id = "throw" {reject}
+  Id = "try" {reject}
+
+  Id = "this" {reject}
+
+  Id = "namespace" {reject}
+
+lexical syntax // var id
+
+  VarId = "List" {reject}
+  VarId = "Set" {reject}
+
+  VarId = "id" {reject}
+
+lexical syntax // fun id
+
+  FunId = "goto" {reject}
+
+  FunId = "renderemail" {reject}
+  FunId = "email" {reject}
+  FunId = "sendemail" {reject}
+  FunId = "rendertemplate" {reject}
+  FunId = "validatetemplate" {reject}
+
+  FunId = "validate" {reject}
+
+  FunId = "replace" {reject}
+  FunId = "append" {reject}
+  FunId = "visibility" {reject}
+  FunId = "relocate" {reject}
+  FunId = "restyle" {reject}
+  FunId = "clear" {reject}
+  FunId = "refresh" {reject}
+  FunId = "runscript" {reject}
+
+lexical syntax // template call id
+
+  TemplateId = "define" {reject}
+  TemplateId = "template" {reject}
+  TemplateId = "var" {reject}
+  TemplateId = "for" {reject}
+  TemplateId = "if" {reject}
+  TemplateId = "else" {reject}
+  TemplateId = "as" {reject}
+  TemplateId = "is" {reject}
+  TemplateId = "and" {reject}
+  TemplateId = "or" {reject}
+  TemplateId = "order" {reject}
+  TemplateId = "by" {reject}
+  TemplateId = "where" {reject}
+  TemplateId = "in" {reject}
+  TemplateId = "navigate" {reject}
+  TemplateId = "action" {reject}
+  TemplateId = "submit" {reject}
+  TemplateId = "goto" {reject}
+  TemplateId = "foreach" {reject}
+  TemplateId = "request" {reject}
+  TemplateId = "local" {reject}
+  TemplateId = "init" {reject}
+  TemplateId = "databind" {reject}
+  TemplateId = "derive" {reject}
+  TemplateId = "rules" {reject}
+  TemplateId = "actionLink" {reject}
+  TemplateId = "submitlink" {reject}
+  TemplateId = "downloadlink" {reject}
+  TemplateId = "outputimage" {reject}
+  TemplateId = "placeholder" {reject}
+  TemplateId = "placeholdervar" {reject}
+  TemplateId = "validationErrors" {reject}
+  TemplateId = "htmlwrapper" {reject}
+
+  TemplateId = "expand" {reject}
+
+  TemplateId = "case" {reject}
+  TemplateId = "typecase" {reject}
+  TemplateId = "validate" {reject}
+  TemplateId = "render" {reject}
+
+context-free restrictions
+
+  "page"
+  "local"
+  "email"
+  "feed"
+  "template"
+  "placeholder" -/- [a-zA-Z0-9]

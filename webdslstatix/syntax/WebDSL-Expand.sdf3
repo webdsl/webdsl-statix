@@ -1,6 +1,7 @@
 module WebDSL-Expand
 
 imports
+  WebDSL-Action
   WebDSL-Lexical
   WebDSL-UI
 
@@ -36,8 +37,11 @@ context-free syntax
   >
 
   TemplateCall = <derive> {reject}
-  Definition.DeriveCrud = <derive crud <Id>>
-  Definition.DeriveCrudUpper = <derive CRUD <Id>>
+  Definition.DeriveCrud = <derive crud <Id>> {case-insensitive}
+
+context-free priorities
+
+  TemplateElement.DeriveNoForNoBody <3> .> Exp.ObjectCreation
 
 context-free syntax
 

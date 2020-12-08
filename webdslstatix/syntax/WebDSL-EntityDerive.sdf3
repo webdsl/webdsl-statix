@@ -12,9 +12,9 @@ context-free sorts
 context-free syntax
 
   TemplateArgExp.ExpEntityDerive = <<Exp> with <ExpEntityDeriveProp*>>
-  ExpEntityDeriveProp.ExpEntityDeriveProp = <<Id> <OptCallArgs>>
+  ExpEntityDeriveProp.ExpEntityDeriveProp = <<DeriveArgPropId> <OptCallArgs>>
 
-  Sort.ArgEntityDerive = <<Id> with <Id> <OptFormalArgs>>
+  Sort.ArgEntityDerive = <<Id> with <DeriveArgPropId> <OptFormalArgs>>
 
   TemplateElement.ForeachElementEntityDerive = <
     foreach <Id> {
@@ -26,3 +26,16 @@ context-free syntax
       <Statement*>
     }
   >
+
+lexical sorts
+
+  DeriveArgPropId
+
+lexical syntax
+
+  DeriveArgPropId = Id
+  DeriveArgPropId = "filter" {reject}
+  DeriveArgPropId = "filters" {reject}
+  DeriveArgPropId = "facet" {reject}
+  DeriveArgPropId = "facets" {reject}
+  DeriveArgPropId = "tags" {reject}

@@ -38,8 +38,8 @@ lexical syntax
   JSChar = SmallerThan
   SmallerThan = [\<]
 
-  NCName = "script" {reject}
-  NCName = "style" {reject}
+  XMLTagName = "script" {reject}
+  XMLTagName = "style" {reject}
 
 lexical restrictions
 

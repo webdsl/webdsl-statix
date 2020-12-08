@@ -31,7 +31,7 @@ test prefetch node multiple mods [[
 
 test prefetch node single template arg [[
   y templates[ t(this) ]
-]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgs([TemplateArgOrThis("t", [This()])]), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildrenOptNone())
+]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgs([TemplateArgOrThis("t", [TArgThis()])]), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildrenOptNone())
 
 test prefetch node single template arg with sort [[
   y templates[ t(Ent) ]
@@ -39,7 +39,7 @@ test prefetch node single template arg with sort [[
 
 test prefetch node multiple template args [[
   y templates[ t(this), t2(this as Ent) ]
-]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgs([TemplateArgOrThis("t", [This()]), TemplateArgOrThis("t2", [PrefetchThisCast(SimpleSort("Ent"))])]), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildrenOptNone())
+]] parse succeeds parse to PrefetchNode(OptPrefetchOwnerCastNone(), "y", [], PrefetchTemplateArgs([TemplateArgOrThis("t", [TArgThis()]), TemplateArgOrThis("t2", [PrefetchThisCast(SimpleSort("Ent"))])]), PrefetchConditionNone(), PrefetchWhereOptNone(), PrefetchChildrenOptNone())
 
 test prefetch node with condition [[
   y if(true)

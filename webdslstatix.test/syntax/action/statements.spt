@@ -13,7 +13,7 @@ fixture [[
 // expression as statement
 test expression add as statment [[
   1+2;
-]] parse succeeds parse to Stat(Add(Int("1"), Int("2")))
+]] parse succeeds parse to Stat(Add(Const(Int("1")), Const(Int("2"))))
 
 test function call as statement [[
   x.f();
@@ -39,11 +39,11 @@ test block multiple statements [[
 // return statement
 test return statement [[
   return 1;
-]] parse succeeds parse to Return(Int("1"))
+]] parse succeeds parse to Return(Const(Int("1")))
 
 test return statement nested [[
   return 1+2;
-]] parse succeeds parse to Return(Add(Int("1"), Int("2")))
+]] parse succeeds parse to Return(Add(Const(Int("1")), Const(Int("2"))))
 
 test return empty [[
   return;
@@ -52,7 +52,7 @@ test return empty [[
 test dead code [[
   return 1;
   return 2;
-]] parse succeeds parse to !ATerm [Return(Int("1")), Return(Int("2"))]
+]] parse succeeds parse to !ATerm [Return(Const(Int("1"))), Return(Const(Int("2")))]
 
 
 // go to statement
@@ -64,15 +64,6 @@ test goto [[
   goto ( root() );
 ]] parse succeeds parse to GoToAlt(PageCall("root", []))
 
-// schedule
-test schedule for [[
-  schedule doWork() for DateTime("11/09/2020 00:00:00");
-]] parse succeeds parse to Schedule(ThisCall("doWork", []),ThisCall("DateTime", [StringValue("11/09/2020 00:00:00")]))
-
-test schedule now [[
-  schedule doWork();
-]] parse succeeds parse to ScheduleNoFor(ThisCall("doWork", []))
-
 // variable declaration
 test var decl [[
   var x : Int;
@@ -80,11 +71,11 @@ test var decl [[
 
 test var decl init [[
   var x : Int := 1;
-]] parse succeeds parse to VarDeclInit("x", SimpleSort("Int"), Int("1"))
+]] parse succeeds parse to VarDeclInit("x", SimpleSort("Int"), Const(Int("1")))
 
 test var decl init inferred [[
   var x := 1;
-]] parse succeeds parse to VarDeclInitInferred("x", Int("1"))
+]] parse succeeds parse to VarDeclInitInferred("x", Const(Int("1")))
 
 // if statements
 
@@ -99,7 +90,7 @@ test if no else [[
 
 test if nested condition [[
   if (1+2 >= 3) { }
-]] parse succeeds parse to IfNoElse(LargerThanOrEqual(Add(Int("1"),Int("2")),Int("3")), Block([]))
+]] parse succeeds parse to IfNoElse(LargerThanOrEqual(Add(Const(Int("1")),Const(Int("2"))),Const(Int("3"))), Block([]))
 
 test if else if else [[
   if (false) { }
@@ -128,7 +119,7 @@ test case statement [[
     1 { }
     2 { }
   }
-]] parse succeeds parse to CaseStmt([Var("x")], [CaseAlt([Int("1")], Block([])), CaseAlt([Int("2")], Block([]))])
+]] parse succeeds parse to CaseStmt([Var("x")], [CaseAlt([Const(Int("1"))], Block([])), CaseAlt([Const(Int("2"))], Block([]))])
 
 test case statement stmts[[
   case (x) {
@@ -141,7 +132,7 @@ test case statement stmts[[
         var z : String;
       }
   }
-]] parse succeeds parse to CaseStmt([Var("x")], [CaseAlt([Int("1")], Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))])), CaseAlt([Int("2")], Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))]))])
+]] parse succeeds parse to CaseStmt([Var("x")], [CaseAlt([Const(Int("1"))], Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))])), CaseAlt([Const(Int("2"))], Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))]))])
 
 test case statement no cases [[
   case (x) { }
@@ -151,7 +142,7 @@ test case statement expression as case [[
   case (x+x) {
     1+1 { }
   }
-]] parse succeeds parse to CaseStmt([Add(Var("x"), Var("x"))], [CaseAlt([Add(Int("1"), Int("1"))], Block([]))])
+]] parse succeeds parse to CaseStmt([Add(Var("x"), Var("x"))], [CaseAlt([Add(Const(Int("1")), Const(Int("1")))], Block([]))])
 
 test case statement no expressions [[
   case () { }
@@ -166,7 +157,7 @@ test case statement multiple expressions and cases [[
     1, 1 { }
     2, 2 { }
   }
-]] parse succeeds parse to CaseStmt([Var("x"), Var("y")], [CaseAlt([Int("1"), Int("1")], Block([])), CaseAlt([Int("2"), Int("2")], Block([]))])
+]] parse succeeds parse to CaseStmt([Var("x"), Var("y")], [CaseAlt([Const(Int("1")), Const(Int("1"))], Block([])), CaseAlt([Const(Int("2")), Const(Int("2"))], Block([]))])
 
 test case statement only default [[
  case (x) {
@@ -179,14 +170,14 @@ test case statement default last [[
     1 { }
     default { }
   }
-]] parse succeeds parse to CaseStmt([Var("x")], [CaseAlt([Int("1")], Block([])), CaseAltDefault(Block([]))])
+]] parse succeeds parse to CaseStmt([Var("x")], [CaseAlt([Const(Int("1"))], Block([])), CaseAltDefault(Block([]))])
 
 test case statement default first [[
  case (x) {
     default { }
     1 { }
   }
-]] parse succeeds parse to CaseStmt([Var("x")], [CaseAltDefault(Block([])), CaseAlt([Int("1")], Block([]))])
+]] parse succeeds parse to CaseStmt([Var("x")], [CaseAltDefault(Block([])), CaseAlt([Const(Int("1"))], Block([]))])
 
 // typecase statements
 
@@ -255,7 +246,7 @@ test for loop multiple stmts [[
 
 test filter for loop [[
   for (x : Ent in xs where x.y == 1) { }
-]] parse succeeds parse to ForStmt("x", SimpleSort("Ent"), Var("xs"), FilterNoOrderByNoLimit(Eq(FieldAccess(Var("x"), "y"), Int("1"))), Block([]))
+]] parse succeeds parse to ForStmt("x", SimpleSort("Ent"), Var("xs"), OptFilterSome(FilterNoOrderByNoLimit(Eq(FieldAccess(Var("x"), "y"), Const(Int("1"))))), Block([]))
 
 test for loop inferred [[
   for (x in xs) { }
@@ -270,7 +261,7 @@ test for loop inferred multiple stmts [[
 
 test filter inferred for loop [[
   for (x in xs where x.y == 1) { }
-]] parse succeeds parse to ForStmtInferred("x", Var("xs"), FilterNoOrderByNoLimit(Eq(FieldAccess(Var("x"), "y"), Int("1"))), Block([]))
+]] parse succeeds parse to ForStmtInferred("x", Var("xs"), OptFilterSome(FilterNoOrderByNoLimit(Eq(FieldAccess(Var("x"), "y"), Const(Int("1"))))), Block([]))
 
 test for all loop [[
   for (u : User) { }
@@ -285,18 +276,18 @@ test for all loop multiple stmts [[
 
 test filter for all loop [[
   for (u : User where u.x == 1) { }
-]] parse succeeds parse to ForAllStmt("u", SimpleSort("User"), FilterNoOrderByNoLimit(Eq(FieldAccess(Var("u"), "x"), Int("1"))), Block([]))
+]] parse succeeds parse to ForAllStmt("u", SimpleSort("User"), OptFilterSome(FilterNoOrderByNoLimit(Eq(FieldAccess(Var("u"), "x"), Const(Int("1"))))), Block([]))
 
 test for count statement [[
   for (x : Int from 13 to 37) { }
-]] parse succeeds parse to ForCountStmt("x", Int("13"), Int("37"), Block([]))
+]] parse succeeds parse to ForCountStmt("x", Const(Int("13")), Const(Int("37")), Block([]))
 
 test for count statement multiple stmts [[
   for (x : Int from 13 to 37) {
     var y : Int;
     var z : String;
   }
-]] parse succeeds parse to ForCountStmt("x", Int("13"), Int("37"), Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))]))
+]] parse succeeds parse to ForCountStmt("x", Const(Int("13")), Const(Int("37")), Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))]))
 
 test for count statement no filter [[
   for (x : Int from 13 to 37 where x > 1) { }
@@ -304,15 +295,15 @@ test for count statement no filter [[
 
 test while statement [[
   while (1>2) { }
-]] parse succeeds parse to WhileStmt(LargerThan(Int("1"),Int("2")), Block([]))
+]] parse succeeds parse to WhileStmt(LargerThan(Const(Int("1")),Const(Int("2"))), Block([]))
 
 test while statement multiple stmts [[
   while (1>2) {
     var y : Int;
     var z : String;
   }
-]] parse succeeds parse to WhileStmt(LargerThan(Int("1"),Int("2")), Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))]))
+]] parse succeeds parse to WhileStmt(LargerThan(Const(Int("1")),Const(Int("2"))), Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))]))
 
 // reassignment
-test assignment [[ x := 2; ]] parse succeeds parse to Assignment(Var("x"), Int("2"))
-test field assignment [[ x.y := 2; ]] parse succeeds parse to Assignment(FieldAccess(Var("x"), "y"), Int("2"))
+test assignment [[ x := 2; ]] parse succeeds parse to Assignment(Var("x"), Const(Int("2")))
+test field assignment [[ x.y := 2; ]] parse succeeds parse to Assignment(FieldAccess(Var("x"), "y"), Const(Int("2")))

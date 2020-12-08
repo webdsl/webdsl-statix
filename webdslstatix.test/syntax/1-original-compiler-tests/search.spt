@@ -94,6 +94,7 @@ test searchable entity property [[
   }
 ]] parse succeeds
 
+// added non-transitive priority rules for this one but it doesn't seem to work
 test search statement 1 [[
   function x() {
     var x2 := search Movie matching title,abstract: (+"hello" -"goodbye");
@@ -130,6 +131,7 @@ test search statement 6 [[
   }
 ]] parse succeeds
 
+// what does the block after namespace mean? should be an expression there
 test search statement 7 [[
   function x() {
     search Entry limit 25 in namespace {};
@@ -190,6 +192,7 @@ test search statement 16 [[
   }
 ]] parse succeeds
 
+// is this an old construct that's not supported anymore?
 test search statement 17 [[
   function x() {
     highlight entity.text for mySearcher on ~description surround with ("<b>","</b>");
@@ -236,4 +239,4 @@ test search statement 24 [[
   function x() {
     Item corrections matching title: userQueryToCorrect limit 20 in namespace list[1];
   }
-]] parse succeeds
+]] parse succeeds parse to Test()

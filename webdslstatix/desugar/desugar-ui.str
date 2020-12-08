@@ -50,7 +50,7 @@ rules
   normalize-ui : PropertyAssignmentColon(x, val) -> PropertyAssignment(x, val)
   normalize-ui : PropertyAssignmentAssign(x, val) -> PropertyAssignment(x, val)
 
-  normalize-ui : HTMLWrapperAssignsCommaSep(attributes) -> HTMLWrapperAssigns(attributes)
+  normalize-ui : HTMLWrapperAssignComma(attribute) -> HTMLWrapperAssign(attribute)
 
   normalize-ui :
     IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)], OptElseTemplNone()){anno*} -> IfTempl(e1, elem1*, [IfTempl(e2, elem2*, [])]){anno*}

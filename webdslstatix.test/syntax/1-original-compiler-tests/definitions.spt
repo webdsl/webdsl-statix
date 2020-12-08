@@ -80,6 +80,7 @@ test define page span [[
   }
 ]] parse succeeds
 
+// why should render be allowed as template id?
 test define page with all blocks [[
   define page span root(){
     action root(){

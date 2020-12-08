@@ -41,13 +41,13 @@ test property assignment attribute selection [[
   template t() {
     div[div attributes]
   }
-]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([]), OptTemplateArgsNone(), [TemplateCall("div", OptTCallArgsNone(), [AttributeSelection("div")], TemplateBodyNone())]))
+]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([]), OptTemplateArgsNone(), [TemplateCall(TemplateCallId("div"), OptTCallArgsNone(), TCallPropAssigns([AttributeSelection("div")]), TemplateBodyNone())]))
 
 test property assignment attribute selection ignore default [[
   template t() {
     div[ignore default onclick]
   }
-]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([]), OptTemplateArgsNone(), [TemplateCall("div", OptTCallArgsNone(), [AttributeIgnoreDefault("onclick")], TemplateBodyNone())]))
+]] parse succeeds parse to TemplateDefinition(DefineTemplate([], "t", FormalArgs([]), OptTemplateArgsNone(), [TemplateCall(TemplateCallId("div"), OptTCallArgsNone(), TCallPropAssigns([AttributeIgnoreDefault("onclick")]), TemplateBodyNone())]))
 
 test xml attribute selection [[
   template t() {

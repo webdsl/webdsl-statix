@@ -21,15 +21,15 @@ context-free syntax
 
   Definition.TemplateDefinition = TemplateDefinition
   TemplateDefinition.Define = <
-    define <Modifier*> <Id> <OptFormalArgs> <OptTemplateArgs> {
+    define <Modifier*> <TemplateId> <OptFormalArgs> <OptTemplateArgs> {
       <TemplateElement*>
     }
   >
   OptTemplateArgs.TemplateArgs = <requires <{TemplateArg ","}*>>
   OptTemplateArgs.OptTemplateArgsNone = <>
-  TemplateArg.TemplateArg = <<Id> ( <{Sort ","}*> )>
+  TemplateArg.TemplateArg = <<TemplateId> ( <{Sort ","}*> )>
   TemplateDefinition.LocalRedefine = <
-    define <Modifier*> <Id> ( <{FormalArg ","}*> ) = <Id> <OptLocalRedefineArgs>
+    define <Modifier*> <TemplateId> ( <{FormalArg ","}*> ) = <TemplateId> <OptLocalRedefineArgs>
   >
   OptLocalRedefineArgs.OptLocalRedefineArgsNone = <>
   OptLocalRedefineArgs.LocalRedefineArgs = <( * , <{LocalRedefineArg ","}+> )>
@@ -40,7 +40,7 @@ context-free syntax
     }
   >
   TemplateDefinition.DefineTemplate = <
-    <Modifier*> template <Id> <OptFormalArgs> <OptTemplateArgs> {
+    <Modifier*> template <TemplateId> <OptFormalArgs> <OptTemplateArgs> {
       <TemplateElement*>
     }
   >
@@ -75,22 +75,22 @@ context-free sorts
 context-free syntax
 
   VarDecl.TemplateVarDecl = <
-    var <Id> : <Sort>
+    var <VarId> : <Sort>
   >
   VarDecl.TemplateVarDeclDepr = <
-    var <Id> : <Sort> ;
+    var <VarId> : <Sort> ;
   > {deprecated("remove ;")}
   VarDecl.TemplateVarDeclInit = <
-    var <Id> : <Sort> := <Exp>
+    var <VarId> : <Sort> := <Exp>
   >
   VarDecl.TemplateVarDeclInitDepr = <
-    var <Id> : <Sort> := <Exp> ;
+    var <VarId> : <Sort> := <Exp> ;
   > {deprecated("remove ;")}
   VarDecl.TemplateVarDeclInitInferred = <
-    var <Id> := <Exp>
+    var <VarId> := <Exp>
   >
   VarDecl.TemplateVarDeclInitInferredDepr = <
-    var <Id> := <Exp> ;
+    var <VarId> := <Exp> ;
   > {deprecated("remove ;")}
   TemplateElement = VarDecl
   TemplateElement.RequestScopeTemplate = <
@@ -131,22 +131,22 @@ context-free sorts
 context-free syntax
 
   TemplateElement.For = <
-    for ( <Id> : <Sort> in <Exp> <OptFilter> ) {
+    for ( <VarId> : <Sort> in <Exp> <OptFilter> ) {
       <TemplateElement*>
     } <ForSeparator>
   >
   TemplateElement.ForInferred = <
-    for ( <Id> in <Exp> <OptFilter> ) {
+    for ( <VarId> in <Exp> <OptFilter> ) {
       <TemplateElement*>
     } <ForSeparator>
   >
   TemplateElement.ForAll = <
-    for ( <Id> : <Sort> <OptFilter> ) {
+    for ( <VarId> : <Sort> <OptFilter> ) {
       <TemplateElement*>
     } <ForSeparator>
   >
   TemplateElement.ForCount = <
-    for ( <Id> : Int from <Exp> to <Exp> ) {
+    for ( <VarId> : Int from <Exp> to <Exp> ) {
       <TemplateElement*>
     } <ForSeparator>
   >
@@ -177,7 +177,7 @@ context-free syntax
     default { <TemplateElement*> }
   >
   TemplateElement.TemplateTypeCase = <
-    typecase ( <Exp> as <Id> ) {
+    typecase ( <Exp> <OptTypeAlias> ) {
       <TemplateTypeCaseAlt*>
     }
   >
@@ -197,6 +197,10 @@ context-free syntax
     }
   >
 
+context-free priorities
+
+  TemplateElement.TemplateTypeCase <2> .> Exp.Cast
+
 context-free sorts
 
   OptTCallArgs OptTCallPropAssigns TemplateBody ArgDefine
@@ -206,11 +210,11 @@ context-free syntax
   TemplateCall.TemplateCall = <
     <TemplateCallId> <OptTCallArgs> <OptTCallPropAssigns> <TemplateBody>
   >
-  OptTCallArgs = <( <{TemplateArgExp ","}*> )>
+  OptTCallArgs.TCallArgs = <( <{TemplateArgExp ","}*> )>
   OptTCallArgs.OptTCallArgsNone = <>
   TemplateArgExp.Exp = Exp
   TemplateArgExp.TemplateElementsArgument = <{ <TemplateElement*> }>
-  OptTCallPropAssigns = <[ <{PropertyAssignment ","}*> ]>
+  OptTCallPropAssigns.TCallPropAssigns = <[ <{PropertyAssignment ","}*> ]>
   OptTCallPropAssigns.OptTCallPropAssignsNone = <>
   TemplateBody.TemplateBody = <{
     <TemplateElement*>
@@ -246,7 +250,7 @@ context-free syntax
 
 context-free sorts
 
-  ActionCallOrInline ActionCall InlineAction
+  ActionCallOrInline
 
 context-free syntax
 
@@ -298,28 +302,21 @@ context-free syntax
   TemplateElement.OutputImage = <
     outputimage <ActionCallOrInline> [ <{PropertyAssignment ","}*> ] { <TemplateElement*> }
   >
-  ActionCallOrInline = ActionCall
-  ActionCallOrInline = InlineAction
-  ActionCall.ActionCall = <<Id> ( <{Exp ","}*> )>
-  InlineAction.InlineAction = <action <Block>>
-  Sort = <action> {reject}
-  TemplateCall = <action> {reject}
-  Exp = <action> {reject}
-  PropertyValue = <action> {reject}
+  ActionCallOrInline.ActionCall = ThisCall
+  ActionCallOrInline.InlineAction = <action <Block>>
 
 context-free sorts
 
-  PropertyValue ActionCallOrInlineOrExp
+  ActionCallOrInlineOrExp PropertySubmitMultiple PropertySubmitExp
 
 context-free syntax
 
   PropertyAssignment.PropertySubmitColon = <<SubmitProp> : <ActionCallOrInline>>
   PropertyAssignment.PropertySubmitAssign = <<SubmitProp> := <ActionCallOrInline>>
   PropertyAssignment.PropertySubmit = <<SubmitProp> = <ActionCallOrInline>>
-  PropertyAssignment.PropertyAssignmentColon = <<ExtendedId> : <PropertyValue>>
-  PropertyAssignment.PropertyAssignmentAssign = <<ExtendedId> := <PropertyValue>>
-  PropertyAssignment.PropertyAssignment = <<ExtendedId> = <PropertyValue>>
-  PropertyValue = Exp
+  PropertyAssignment.PropertyAssignmentColon = <<PropertyAssignmentId> : <Exp>>
+  PropertyAssignment.PropertyAssignmentAssign = <<PropertyAssignmentId> := <Exp>>
+  PropertyAssignment.PropertyAssignment = <<PropertyAssignmentId> = <Exp>>
   PropertyAssignment.TemplateCallPropertyAjax = <ajax>
   PropertyAssignment.TemplateCallPropertyNoLoadingFeedback = <no loading feedback>
   PropertyAssignment.TemplateCallPropertySecure = <secure>
@@ -327,15 +324,40 @@ context-free syntax
   PropertyAssignment.TemplateCallPropertyNotSecure = <not-secure>
   PropertyAssignment.TemplateCallPropertyNotNull = <not null>
   PropertyAssignment = CommonAttribute
-  PropertyAssignment.PropertySubmitMultiple = <<SubmitProp> = <{ActionCallOrInlineOrExp ";"}+>>
+  PropertyAssignment = PropertySubmitMultiple
+  PropertySubmitMultiple.PropertySubmitMultiple = <<SubmitProp> = <{ActionCallOrInlineOrExp ";"}+>>
   ActionCallOrInlineOrExp = ActionCallOrInline
-  ActionCallOrInlineOrExp = PropertyValue
+  ActionCallOrInlineOrExp = PropertySubmitExp
+  PropertySubmitExp = Exp
   TemplateElement = OutputShorthand
+
+  // require at least two actions to get this constructor
+  PropertySubmitMultiple = <<SubmitProp> = <ActionCallOrInlineOrExp>> {reject}
+
+  PropertySubmitExp = ThisCall {reject}
+
+lexical sorts
+
+  PropertyAssignmentId
+
+lexical syntax
+
+  PropertyAssignmentId = ExtendedId
+  PropertyAssignmentId = SubmitProp {reject}
+
+context-free sorts
+
+  TextInterp
 
 syntax
 
   TemplateElement-CF.Text = "\"" StringLex-LEX "\""
-  TemplateElement-CF.TextInterp = "\"" StringPart-CF* "\""
+  TemplateElement-CF = TextInterp-CF
+  TextInterp-CF.TextInterp = "\"" StringPart-CF* "\""
+
+context-free syntax
+
+  TextInterp = "\"" StringLex "\"" {reject}
 
 lexical syntax
 
@@ -377,8 +399,8 @@ context-free syntax
   TemplateElement.ValidateAction = <validate <Block>>
   Action.Action = <action <ActionModifier*> <Id> <OptFormalArgs> <Block>>
   ActionModifier.ActionModifierIgnoreValidation = <ignore-validation>
-  TemplateCallId.QualifiedElementsCall = <<TemplateCallIdLex> .elements>
-  TemplateCallId = TemplateCallIdLex
+  TemplateCallId.QualifiedElementsCall = <<TemplateId> .elements>
+  TemplateCallId.TemplateCallId = TemplateId
 
 context-free sorts
 
@@ -400,20 +422,19 @@ context-free syntax
 
 context-free sorts
 
-  HTMLWrapper HTMLWrapperAssigns HTMLWrapperBody
+  HTMLWrapper HTMLWrapperAssigns HTMLWrapperBody HTMLWrapperAssign
 
 context-free syntax
 
   HTMLWrapper.HTMLWrapper = <
     htmlwrapper <Id> <Id> <HTMLWrapperAssigns>
   >
-  HTMLWrapperAssigns.HTMLWrapperAssignsCommaSep = <[
-    <{Attribute ","}*>
-  ]>
-  HTMLWrapperAssigns.HTMLWrapperAssigns = <[
-    <Attribute*> ]
-  >
+  HTMLWrapperAssigns.HTMLWrapperAssigns = <[<HTMLWrapperAssign*> ]>
   HTMLWrapperAssigns.HTMLWrapperAssignsNone = <>
+
+  HTMLWrapperAssign.HTMLWrapperAssign = <<Attribute>>
+  HTMLWrapperAssign.HTMLWrapperAssignComma = <<Attribute> ,>
+
   TemplateDefinition = HTMLWrapper
   TemplateDefinition.HTMLWrapperMultiple = <
     htmlwrapper {
@@ -424,17 +445,13 @@ context-free syntax
 
 context-free sorts
 
-  TemplateId
+  TemplateName
 
 context-free syntax
 
-  TemplateId.TemplateId = <id>
-  Exp = TemplateId
-
-lexical syntax
-
-  VarId = "id" {reject}
+  TemplateName.TemplateName = <id>
+  Exp = TemplateName
 
 context-free restrictions
 
-  TemplateId -/- [a-zA-Z0-9\_]
+  TemplateName -/- [a-zA-Z0-9\_]

@@ -21,9 +21,9 @@ test attribute id attributes not allowed [[ attributes=y ]] parse fails
 
 // attribute assign
 test attribute assign [[ x=y ]] parse succeeds parse to AttributeAssign("x", Var("y"))
-test attribute assign string [[ x="y" ]] parse succeeds parse to AttributeAssign("x", StringValue("y"))
-test attribute assign string interp [[ x="y~z" ]] parse succeeds parse to AttributeAssign("x", StringInterp(["y", InterpSimpleExp(SimpleVar("z"))]))
-test attribute assign addition [[ x="y"+z ]] parse succeeds parse to AttributeAssign("x", Add(StringValue("y"), Var("z")))
+test attribute assign string [[ x="y" ]] parse succeeds parse to AttributeAssign("x", Const(StringValue("y")))
+test attribute assign string interp [[ x="y~z" ]] parse succeeds parse to AttributeAssign("x", Const(StringInterp(["y", InterpSimpleExp(SimpleVar("z"))])))
+test attribute assign addition [[ x="y"+z ]] parse succeeds parse to AttributeAssign("x", Add(Const(StringValue("y")), Var("z")))
 test attribute assign function call [[ x=y.z() ]] parse succeeds parse to AttributeAssign("x", Call(Var("y"), "z", []))
 
 

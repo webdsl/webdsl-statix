@@ -35,7 +35,7 @@ context-free syntax
   PrefetchTemplateArgsOpt.PrefetchTemplateArgs = <templates [ <{TemplateArgOrThis ","}+> ]>
   TemplateArgOrThis.TemplateArgOrThis = <<Id> ( <{SortOrThis ","}*> )>
   SortOrThis.Sort = Sort
-  SortOrThis.This = <this>
+  SortOrThis.TArgThis = <this>
   SortOrThis.PrefetchThisCast = <this as <Sort>>
 
   PrefetchCondition.PrefetchConditionNone = <>
@@ -58,7 +58,7 @@ context-free syntax
   PrefetchCondVal.PrefetchTrue = <true>
   PrefetchCondVal.PrefetchFalse = <false>
   PrefetchCondVal.PrefetchNull = <null>
-  PrefetchCondVal = ConstValue
+  PrefetchCondVal.PrefetchConst = ConstValue
   PrefetchCondVal.PrefetchCondVar = Id
   PrefetchCondVal.RelativeFieldAccess = <<OptSimpleSort> . <Id>> {left}
   PrefetchCondVal.PrefetchMul = <<PrefetchCondVal> * <PrefetchCondVal>> {left}

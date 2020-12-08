@@ -1,6 +1,7 @@
 module WebDSL-Search
 
 imports
+  WebDSL-Action
   WebDSL-Core
   WebDSL-Lexical
 
@@ -149,7 +150,7 @@ context-free sorts
 
 context-free syntax
 
-  Exp = SearcherDef
+  Exp.SearcherDef = SearcherDef
   SearcherDef.SearcherInit = <search <ENTITY> <SearcherPart*>>
   SearcherDef.SearcherRefMod = <~ <Exp> <SearcherPart+>>
   SearcherPart = ConstraintFilter
@@ -198,7 +199,7 @@ context-free syntax
   RangeClose.IncludingClose = <]>
   BoolOp.Must = <+>
   BoolOp.MustNot = <->
-  QueryTerm = Exp
+  QueryTerm.QueryTermExp = <<Exp>>
   QueryTerm = SearcherDef {reject}
   SortExp.SortDef = <<SearchField> <OptDirection>>
   Direction.AscendingAbbr = <asc>
@@ -216,7 +217,7 @@ context-free syntax
   RetrievalExp.Suggest = <<ENTITY> <SuggestType> <SuggestionPart+>>
   SuggestType.AutoComplete = <completions>
   SuggestType.SpellCheck = <corrections>
-  Exp = RetrievalExp
+  Exp.RetrievalExp = RetrievalExp
   SearchField.SearchFieldExp = <~ <Exp>>
   SearchField = PlainField
   PlainField.SearchFieldPlainBase = SearchFieldId
@@ -238,6 +239,11 @@ context-free syntax
   OptSlop = Slop
   OptDirection.OptDirectionNone = <>
   OptDirection = Direction
+
+context-free priorities
+
+  QueryTerm.QueryTermExp <0> .> Exp.Sub,
+  QueryTerm.QueryTermExp <0> .> Exp.Add
 
 context-free restrictions
 

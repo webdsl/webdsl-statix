@@ -18,11 +18,11 @@ test javascript empty block [[
 
 test javascript single attribute [[
   <script id="x"></script>
-]] parse succeeds parse to JSElement([Attribute("id", StringValue("x"))], [])
+]] parse succeeds parse to JSElement([Attribute("id", Const(StringValue("x")))], [])
 
 test javascript multiple attributes [[
   <script id="x" class="y"></script>
-]] parse succeeds parse to JSElement([Attribute("id", StringValue("x")), Attribute("class", StringValue("y"))], [])
+]] parse succeeds parse to JSElement([Attribute("id", Const(StringValue("x"))), Attribute("class", Const(StringValue("y")))], [])
 
 test javascript [[
   <script>alert("x");</script>
@@ -36,6 +36,7 @@ test javascript multiline [[
   </script>
 ]] parse succeeds
 
+// can't get an escaped tilde to work yet
 test javascript escaped tilde [[
   <script>alert("\~");</script>
 ]] parse succeeds parse to JSElement([], [JSString("alert(\""), JSTilde(), JSString("\");")])
@@ -60,11 +61,11 @@ test style empty block [[
 
 test style single attribute [[
   <style id="x"></style>
-]] parse succeeds parse to StyleElement([Attribute("id", StringValue("x"))], [])
+]] parse succeeds parse to StyleElement([Attribute("id", Const(StringValue("x")))], [])
 
 test style multiple attributes [[
   <style id="x" class="y"></style>
-]] parse succeeds parse to StyleElement([Attribute("id", StringValue("x")), Attribute("class", StringValue("y"))], [])
+]] parse succeeds parse to StyleElement([Attribute("id", Const(StringValue("x"))), Attribute("class", Const(StringValue("y")))], [])
 
 test style [[
   <style>.x{ color: red; }</style>
@@ -83,6 +84,7 @@ test style multiline [[
   </style>
 ]] parse succeeds
 
+// can't get an escaped tilde to work yet
 test style escaped tilde [[
   <style>.\~x{ color: red }</style>
 ]] parse succeeds parse to StyleElement([], [JSString("."), JSTilde(), JSString("x{ color: red }")])

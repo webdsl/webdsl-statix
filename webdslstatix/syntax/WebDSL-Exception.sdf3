@@ -25,4 +25,4 @@ context-free syntax
     try <Block> <Catch+>
   >
 
-  Catch.Catch = <catch ( <Id> : <Sort> ) <Block>>
+  Catch.Catch = <catch ( <VarId> : <Sort> ) <Block>>

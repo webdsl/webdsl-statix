@@ -14,11 +14,11 @@ fixture [[
 // throw exception
 test throw exception element [[
   throw Ex{}
-]] parse succeeds parse to ThrowTemplate([ObjectCreation(SimpleSort("Ex"), [])])
+]] parse succeeds parse to ThrowTemplate([ObjectCreation("Ex", [])])
 
 test throw multiple exceptions element [[
   throw Ex1{}, Ex2{}
-]] parse succeeds parse to ThrowTemplate([ObjectCreation(SimpleSort("Ex1"), []), ObjectCreation(SimpleSort("Ex2"), [])])
+]] parse succeeds parse to ThrowTemplate([ObjectCreation("Ex1", []), ObjectCreation("Ex2", [])])
 
 test throw at least one exception element [[
   throw

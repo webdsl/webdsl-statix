@@ -13,23 +13,23 @@ fixture [[
 // rule types
 test rule type page [[
   rule page root { true }
-]] parse succeeds parse to Rule(AccessControlRule("page", "root", OptMatchArgsNone(), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePage(), "root", OptMatchArgsNone(), True(), []))
 
 test rule type action [[
   rule action logIn { true }
-]] parse succeeds parse to Rule(AccessControlRule("action", "logIn", OptMatchArgsNone(), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypeAction(), "logIn", OptMatchArgsNone(), True(), []))
 
 test rule type template [[
   rule template content { true }
-]] parse succeeds parse to Rule(AccessControlRule("template", "content", OptMatchArgsNone(), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypeTemplate(), "content", OptMatchArgsNone(), True(), []))
 
 test rule type ajaxtemplate [[
   rule ajaxtemplate ajaxContent { true }
-]] parse succeeds parse to Rule(AccessControlRule("ajaxtemplate", "ajaxContent", OptMatchArgsNone(), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypeAjaxTemplate(), "ajaxContent", OptMatchArgsNone(), True(), []))
 
 test rule type pointcut [[
   rule pointcut openPages { true }
-]] parse succeeds parse to Rule(AccessControlRule("pointcut", "openPages", OptMatchArgsNone(), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePointcut(), "openPages", OptMatchArgsNone(), True(), []))
 
 test unknown rule type [[
   rule ajaxpage root { true }
@@ -38,19 +38,19 @@ test unknown rule type [[
 // rule match id
 test match id simple [[
   rule page homepage { true }
-]] parse succeeds parse to Rule(AccessControlRule("page", "homepage", OptMatchArgsNone(), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePage(), "homepage", OptMatchArgsNone(), True(), []))
 
 test match id wildcard [[
   rule page page* { true }
-]] parse succeeds parse to Rule(AccessControlRule("page", "page*", OptMatchArgsNone(), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePage(), "page*", OptMatchArgsNone(), True(), []))
 
 test match id only wildcard [[
   rule page * { true }
-]] parse succeeds parse to Rule(AccessControlRule("page", "*", OptMatchArgsNone(), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePage(), "*", OptMatchArgsNone(), True(), []))
 
 test match id dash and underscore [[
   rule page a-b_c* { true }
-]] parse succeeds parse to Rule(AccessControlRule("page", "a-b_c*", OptMatchArgsNone(), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePage(), "a-b_c*", OptMatchArgsNone(), True(), []))
 
 test match id start with dash [[
   rule page -root { true }
@@ -63,31 +63,31 @@ test match id start with underscore [[
 // match args
 test match args none [[
   rule page root { true }
-]] parse succeeds parse to Rule(AccessControlRule("page", "root", OptMatchArgsNone(), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePage(), "root", OptMatchArgsNone(), True(), []))
 
 test match args empty [[
   rule page root() { true }
-]] parse succeeds parse to Rule(AccessControlRule("page", "root", MatchArgs([], OptWildCardArgNone()), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePage(), "root", MatchArgs([], OptWildCardArgNone()), True(), []))
 
 test match args single [[
   rule page home(x : Int) { true }
-]] parse succeeds parse to Rule(AccessControlRule("page", "home", MatchArgs([Arg("x", SimpleSort("Int"))], OptWildCardArgNone()), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePage(), "home", MatchArgs([Arg("x", SimpleSort("Int"))], OptWildCardArgNone()), True(), []))
 
 test match args multiple [[
   rule page home(x : Int, y : String) { true }
-]] parse succeeds parse to Rule(AccessControlRule("page", "home", MatchArgs([Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("String"))], OptWildCardArgNone()), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePage(), "home", MatchArgs([Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("String"))], OptWildCardArgNone()), True(), []))
 
 test match args single wildcard [[
   rule page home(x : Int *) { true }
-]] parse succeeds parse to Rule(AccessControlRule("page", "home", MatchArgs([Arg("x", SimpleSort("Int"))], WildCardArg()), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePage(), "home", MatchArgs([Arg("x", SimpleSort("Int"))], WildCardArg()), True(), []))
 
 test match args multiple wildcard [[
   rule page home(x : Int, y : String *) { true }
-]] parse succeeds parse to Rule(AccessControlRule("page", "home", MatchArgs([Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("String"))], WildCardArg()), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePage(), "home", MatchArgs([Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("String"))], WildCardArg()), True(), []))
 
 test match args only wildcard [[
   rule page home(*) { true }
-]] parse succeeds parse to Rule(AccessControlRule("page", "home", MatchArgs([], WildCardArg()), True(), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePage(), "home", MatchArgs([], WildCardArg()), True(), []))
 
 // predicates
 test predicate [[
@@ -112,7 +112,7 @@ test predicate no exp [[
 
 test predicate nested exp [[
   predicate isAdmin { (1+2) == (2+1) }
-]] parse succeeds parse to PredicateAc("isAdmin", OptFormalArgsNone(), Eq(Add(Int("1"), Int("2")), Add(Int("2"), Int("1"))))
+]] parse succeeds parse to PredicateAc("isAdmin", OptFormalArgsNone(), Eq(Add(Const(Int("1")), Const(Int("2"))), Add(Const(Int("2")), Const(Int("1")))))
 
 // rules expression 
 
@@ -126,7 +126,7 @@ test rule no exp [[
 
 test rule nested exp [[
   rule page root { (1+2) == (2+1) }
-]] parse succeeds parse to Rule(AccessControlRule("page", "root", OptMatchArgsNone(), Eq(Add(Int("1"), Int("2")), Add(Int("2"), Int("1"))), []))
+]] parse succeeds parse to Rule(AccessControlRule(ACTypePage(), "root", OptMatchArgsNone(), Eq(Add(Const(Int("1")), Const(Int("2"))), Add(Const(Int("2")), Const(Int("1")))), []))
 
 // pointcut definition
 
@@ -142,21 +142,21 @@ test pointcut single element [[
   pointcut memberContent() {
     page root()
   }
-]] parse succeeds parse to AccessControlPointcut("memberContent", [], [AccessControlPointcutElement("page", "root", [], OptWildCardArgNone())])
+]] parse succeeds parse to AccessControlPointcut("memberContent", [], [AccessControlPointcutElement(ACTypePage(), "root", [], OptWildCardArgNone())])
 
 test pointcut multiple elements [[
   pointcut memberContent() {
     page root(),
     page home()
   }
-]] parse succeeds parse to AccessControlPointcut("memberContent", [], [AccessControlPointcutElement("page", "root", [], OptWildCardArgNone()), AccessControlPointcutElement("page", "home", [], OptWildCardArgNone())])
+]] parse succeeds parse to AccessControlPointcut("memberContent", [], [AccessControlPointcutElement(ACTypePage(), "root", [], OptWildCardArgNone()), AccessControlPointcutElement(ACTypePage(), "home", [], OptWildCardArgNone())])
 
 // pointcut element
 test pointcut element [[
   pointcut memberContent() {
     page root()
   }
-]] parse succeeds parse to AccessControlPointcut("memberContent", [], [AccessControlPointcutElement("page", "root", [], OptWildCardArgNone())])
+]] parse succeeds parse to AccessControlPointcut("memberContent", [], [AccessControlPointcutElement(ACTypePage(), "root", [], OptWildCardArgNone())])
 
 test pointcut element args not optional [[
   pointcut memberContent() {
@@ -168,25 +168,25 @@ test pointcut element single arg [[
   pointcut memberContent(x : Int) {
     page root(x)
   }
-]] parse succeeds parse to AccessControlPointcut("memberContent", [Arg("x", SimpleSort("Int"))], [AccessControlPointcutElement("page", "root", ["x"], OptWildCardArgNone())])
+]] parse succeeds parse to AccessControlPointcut("memberContent", [Arg("x", SimpleSort("Int"))], [AccessControlPointcutElement(ACTypePage(), "root", ["x"], OptWildCardArgNone())])
 
 test pointcut element multiple args [[
   pointcut memberContent(x : Int, y : Int) {
     page root(x, y)
   }
-]] parse succeeds parse to AccessControlPointcut("memberContent", [Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("Int"))], [AccessControlPointcutElement("page", "root", ["x", "y"], OptWildCardArgNone())])
+]] parse succeeds parse to AccessControlPointcut("memberContent", [Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("Int"))], [AccessControlPointcutElement(ACTypePage(), "root", ["x", "y"], OptWildCardArgNone())])
 
 test pointcut element no args wildcard [[
   pointcut memberContent() {
     page root(*)
   }
-]] parse succeeds parse to AccessControlPointcut("memberContent", [], [AccessControlPointcutElement("page", "root", [], WildCardArg())])
+]] parse succeeds parse to AccessControlPointcut("memberContent", [], [AccessControlPointcutElement(ACTypePage(), "root", [], WildCardArg())])
 
 test pointcut element multiple args wildcard [[
   pointcut memberContent(x : Int, y : Int) {
     page root(x, y *)
   }
-]] parse succeeds parse to AccessControlPointcut("memberContent", [Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("Int"))], [AccessControlPointcutElement("page", "root", ["x", "y"], WildCardArg())])
+]] parse succeeds parse to AccessControlPointcut("memberContent", [Arg("x", SimpleSort("Int")), Arg("y", SimpleSort("Int"))], [AccessControlPointcutElement(ACTypePage(), "root", ["x", "y"], WildCardArg())])
 
 test pointcut element wildcard before args [[
   pointcut memberContent(x : Int, y : Int) {

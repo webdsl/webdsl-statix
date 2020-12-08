@@ -27,7 +27,7 @@ test prefetch statement at least one template arg [[
 
 test prefetch statement with multiple template args [[
   prefetch-for x templates[t1(), t2(Int), t3(Int, this, Int)] { }
-]] parse succeeds parse to PrefetchForStmt("x", PrefetchTemplateArgs([TemplateArgOrThis("t1", []), TemplateArgOrThis("t2", [Sort(SimpleSort("Int"))]), TemplateArgOrThis("t3", [Sort(SimpleSort("Int")), This(), Sort(SimpleSort("Int"))])]), PrefetchWhereOptNone(), PrefetchChildren([]))
+]] parse succeeds parse to PrefetchForStmt("x", PrefetchTemplateArgs([TemplateArgOrThis("t1", []), TemplateArgOrThis("t2", [Sort(SimpleSort("Int"))]), TemplateArgOrThis("t3", [Sort(SimpleSort("Int")), TArgThis(), Sort(SimpleSort("Int"))])]), PrefetchWhereOptNone(), PrefetchChildren([]))
 
 
 // where options

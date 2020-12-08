@@ -64,11 +64,11 @@ test function ref call no return empty args [[
 
 test function ref call single arg [[
   function.f(Int)(1)
-]] parse succeeds parse to FunctionRefCall("f", [SimpleSort("Int")], OptSortNone(), [Int("1")])
+]] parse succeeds parse to FunctionRefCall("f", [SimpleSort("Int")], OptSortNone(), [Const(Int("1"))])
 
 test function ref call multiple args arg [[
   function.f(Int, Int)(1, 2)
-]] parse succeeds parse to FunctionRefCall("f", [SimpleSort("Int"), SimpleSort("Int")], OptSortNone(), [Int("1"), Int("2")])
+]] parse succeeds parse to FunctionRefCall("f", [SimpleSort("Int"), SimpleSort("Int")], OptSortNone(), [Const(Int("1")), Const(Int("2"))])
 
 test function ref call return [[
   function.f() : Int ()
@@ -78,8 +78,8 @@ test function ref call return [[
 // function ref partial call
 test function ref partial call no return [[
   function.f(Int, Int)(*, 2)
-]] parse succeeds parse to FunctionRefCallPartial("f", [SimpleSort("Int"), SimpleSort("Int")], OptSortNone(), [Int("2")])
+]] parse succeeds parse to FunctionRefCallPartial("f", [SimpleSort("Int"), SimpleSort("Int")], OptSortNone(), [Const(Int("2"))])
 
 test function ref partial call [[
   function.f(Int, Int) : Int (*, 2)
-]] parse succeeds parse to FunctionRefCallPartial("f", [SimpleSort("Int"), SimpleSort("Int")], OptSortSome(SimpleSort("Int")), [Int("2")])
+]] parse succeeds parse to FunctionRefCallPartial("f", [SimpleSort("Int"), SimpleSort("Int")], OptSortSome(SimpleSort("Int")), [Const(Int("2"))])

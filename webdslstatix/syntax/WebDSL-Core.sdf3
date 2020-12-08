@@ -28,27 +28,16 @@ context-free syntax %% Types
   FunctionSortParams.FunctionSortParams = <( <{FunctionSortParam ","}*> )>
   FunctionSortParams.FunctionSortParamsNone = <>
   FunctionSortParam.UnnamedArg = Sort
-  FunctionSortParam.NamedArg = <<Id> : <Sort>>
+  FunctionSortParam.NamedArg = <<VarId> : <Sort>>
   FunctionSortReturn.FunctionSortReturn = <: <Sort>>
   FunctionSortReturn.FunctionSortReturnNone = <>
 
-  FormalArg.Arg = <<Id> : <Sort>>
+  FormalArg.Arg = <<VarId> : <Sort>>
   OptFormalArgs.FormalArgs = <( <{FormalArg ","}*> )>
   OptFormalArgs.OptFormalArgsNone = <>
 
   OptCallArgs.CallArgs = <( <{Exp ","}*> )>
   OptCallArgs.OptCallArgsNone = <>
-
-lexical sorts
-
-  SIMPLESORT GENERICSORT
-
-lexical syntax
-
-  SIMPLESORT = Id
-  SIMPLESORT = "function" {reject}
-  GENERICSORT = Id
-  GENERICSORT = "Ref" {reject}
 
 context-free sorts
 
