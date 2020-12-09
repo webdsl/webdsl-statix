@@ -8,7 +8,7 @@ imports
 
 rules // functions
 
-  typeOfExp(s, c@ThisCall(f, argExps)) = t :- {argTypes nameCompatibleFunSigs mostSpecificFunSigs f'}
+  typeOfExp(s, ThisCall2Exp(c@ThisCall(f, argExps))) = t :- {argTypes nameCompatibleFunSigs mostSpecificFunSigs f'}
     argTypes == typesOfExps(s, argExps),
     nameCompatibleFunSigs == nameCompatibleFunSigs(s, f),
     mostSpecificFunSigs == mostSpecificFunSigs(argTypes, typeCompatibleFunSigs(nameCompatibleFunSigs, argTypes)),
