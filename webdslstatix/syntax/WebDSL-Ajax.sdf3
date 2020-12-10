@@ -37,13 +37,13 @@ context-free syntax
   Placeholder.PlaceholderHtml = <placeholder \< <Id> \> <Id> {
     <TemplateElement*>
   }>
-  Placeholder.PlaceholderHtmlExp = <placeholder \< <Id> \> <PHExp> {
+  Placeholder.PlaceholderHtmlExp = <placeholder \< <Id> \> <Exp> {
     <TemplateElement*>
   }>
   Placeholder.Placeholder = <placeholder <Id> {
     <TemplateElement*>
   }>
-  Placeholder.PlaceholderExp = <placeholder <PHExp> {
+  Placeholder.PlaceholderExp = <placeholder <Exp> {
     <TemplateElement*>
   }>
 
@@ -55,6 +55,11 @@ context-free syntax
   TemplateElement = PlaceholderVar
 
   PlaceholderVar.PlaceholderVar = <placeholdervar <Id>>
+
+context-free priorities
+
+  Placeholder.PlaceholderHtmlExp <4> .> Exp.Var,
+  Placeholder.PlaceholderExp <1> .> Exp.Var
 
 context-free sorts
 

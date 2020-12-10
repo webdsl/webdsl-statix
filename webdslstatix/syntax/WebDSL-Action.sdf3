@@ -159,10 +159,10 @@ context-free syntax
   PropAssignment.PropAssignment = <<ObjectPropertyAssignment>>
   PropAssignment.PropAssignmentComma = <<ObjectPropertyAssignment> ,>
   ObjectPropertyAssignment.ObjectPropertyAssignment = <
-    <VarId> := <Exp>
+    <Id> := <Exp>
   >
   ObjectPropertyAssignment.IncompleteObjectPropertyAssignment = <
-    <VarId>
+    <Id>
   >
   Statement.Assignment = <
     <Exp> := <Exp> ;
@@ -175,7 +175,7 @@ context-free syntax
   Exp.TypedSetCreation = <Set \< <Sort> \> ( <{Exp ","}*> )>
   Exp = ThisCall
   ThisCall.ThisCall = <<FunId> ( <{Exp ","}*> )>
-  Exp.Call = <<Exp> . <FunId> ( <{Exp ","}*> )>
+  Exp.Call = <<Exp> . <Id> ( <{Exp ","}*> )>
   Exp.IsA = <<Exp> is a <Sort>>
   Exp.Cast = <<Exp> as <Sort>>
   Exp.InColl = <<Exp> in <Exp>>
@@ -250,8 +250,6 @@ context-free syntax
   Statement.HqlStatement = <
     <HQLDeleteStatement> ;
   >
-
-  Exp = <<HQLQueryRule> . <Id>> {reject}
 
 context-free priorities
 

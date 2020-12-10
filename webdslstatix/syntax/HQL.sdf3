@@ -32,6 +32,8 @@ context-free sorts
 
 context-free syntax
 
+  HqlExp.HqlTest = <hqltest <HQLQueryRule>>
+
   HQLStatement.DeleteStatement = HQLDeleteStatement
   HQLStatement.SelectStatement = HQLQueryRule
 
@@ -96,8 +98,10 @@ context-free syntax
   HQLOrderByClauseOpt.OrderByClause = <order by <{HQLOrderElement ","}+>>
   HQLOrderByClauseOpt.OrderByClauseNone = <>
   HQLOrderElement.OrderElement = <<HQLExpression> <HQLAscOrDescOpt>>
+
   HQLAscOrDescOpt.HQLAscending      = <ascending>
   HQLAscOrDescOpt.HQLAscendingAbbr  = <asc>
+
   HQLAscOrDescOpt.HQLDescending     = <descending>
   HQLAscOrDescOpt.HQLDescendingAbbr = <desc>
   HQLAscOrDescOpt.AscOrDescNone     = <>
@@ -206,7 +210,7 @@ lexical syntax
 context-free priorities
 
   {
-    HQLPath.Path
+    HQLExpression.HQLPath
     HQLExpression.HQLExpressions
     HQLExpression.HQLAvg
     HQLExpression.HQLSum
