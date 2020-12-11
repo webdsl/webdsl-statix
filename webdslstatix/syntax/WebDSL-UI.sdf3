@@ -126,7 +126,7 @@ context-free syntax
 
 context-free sorts
 
-  ForSeparator ElseIfTempl ElseTempl OptElseTempl
+  ForSeparator ElseIfTempl OptElseTempl
 
 context-free syntax
 
@@ -152,17 +152,30 @@ context-free syntax
   >
   ForSeparator.ForSeparator = <separated-by { <TemplateElement*> }>
   ForSeparator.ForSeparatorNone = <>
+
+  TemplateElement.IfTempl = <
+    if ( <Exp> ) {
+      <TemplateElement*>
+    } else {
+      <TemplateElement*>
+    }
+  >
+  TemplateElement.IfNoElseTempl = <
+    if ( <Exp> ) {
+      <TemplateElement*>
+    }
+  >
   TemplateElement.IfElseIfTempl = <
     if ( <Exp> ) {
       <TemplateElement*>
-    } <ElseIfTempl*> <OptElseTempl>
+    } <ElseIfTempl+> <OptElseTempl>
   >
   OptElseTempl.OptElseTemplNone = <>
-  OptElseTempl.OptElseTemplSome = ElseTempl
-  ElseIfTempl.ElseIfTempl = <else if ( <Exp> ) {
+  OptElseTempl.ElseTempl = <else {
     <TemplateElement*>
   }>
-  ElseTempl.ElseTempl = <else {
+
+  ElseIfTempl.ElseIfTempl = <else if ( <Exp> ) {
     <TemplateElement*>
   }>
   TemplateElement.TemplateCase = <
@@ -186,15 +199,6 @@ context-free syntax
   >
   TemplateTypeCaseAlt.TemplateTypeCaseDefault = <
     default { <TemplateElement*> }
-  >
-
-  // conditional templates are desugared to this constructor:
-  TemplateElement.IfTempl = <
-    if ( <Exp> ) {
-      <TemplateElement*>
-    } else {
-      <TemplateElement*>
-    }
   >
 
 context-free priorities

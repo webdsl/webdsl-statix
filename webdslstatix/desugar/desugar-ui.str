@@ -55,14 +55,11 @@ rules
   normalize-ui :
     IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)], OptElseTemplNone()){anno*} -> IfTempl(e1, elem1*, [IfTempl(e2, elem2*, [])]){anno*}
 
-  normalize-ui :
-    IfElseIfTempl(e1, elem1*, [], OptElseTemplNone()){anno*} -> IfTempl(e1, elem1*, []){anno*}
+  normalize-ui:
+    IfNoElseTempl(e1, elem1*) -> IfTempl(e1, elem1*, [])
 
   normalize-ui :
-    IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)], OptElseTemplSome(ElseTempl(elem3*))){anno*} -> IfTempl(e1, elem1*, [IfTempl(e2, elem2*, elem3*)]){anno*}
-
-  normalize-ui :
-    IfElseIfTempl(e1, elem1*, [], OptElseTemplSome(ElseTempl(elem3*))){anno*} -> IfTempl(e1, elem1*, elem3*){anno*}
+    IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)], ElseTempl(elem3*)){anno*} -> IfTempl(e1, elem1*, [IfTempl(e2, elem2*, elem3*)]){anno*}
 
   normalize-ui :
     IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)|elseif*@[_|_]], elem){anno*} ->
