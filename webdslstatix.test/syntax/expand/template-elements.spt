@@ -169,7 +169,7 @@ test expand local as template cases [[
       x { "x" }
     }
   }
-]] parse succeeds parse to TemplateCase([Var("a")], [TemplateCaseAltExpandLocal(["1", "2", "3", "4"], ["x"], TemplateCaseAlt([Var("x")], [Text("x")]))])
+]] parse succeeds parse to TemplateCase([Var("a")], [TemplateCaseAltExpandLocal(["1", "2", "3", "4"], ["x"], TemplateCaseAlt(TemplateCaseExps([Var("x")]), [Text("x")]))])
 
 
 // template typecase expand local
@@ -179,4 +179,4 @@ test expand local as template type cases [[
       x { "x" }
     }
   }
-]] parse succeeds parse to TemplateTypeCase(Var("a"), TypeAlias("b"), [TemplateTypeCaseAltExpandLocal(["Int", "Long", "Float", "String", "Bool"], ["x"], TemplateTypeCaseAlt(SimpleSort("x"), [Text("x")]))])
+]] parse succeeds parse to TemplateTypeCase(Var("a"), TypeAlias("b"), [TemplateTypeCaseAltExpandLocal(["Int", "Long", "Float", "String", "Bool"], ["x"], TemplateTypeCaseAlt(TemplateTypeCaseSort(SimpleSort("x")), [Text("x")]))])

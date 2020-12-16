@@ -119,7 +119,7 @@ test case statement [[
     1 { }
     2 { }
   }
-]] parse succeeds parse to CaseStmt([Var("x")], [CaseAlt([Const(Int("1"))], Block([])), CaseAlt([Const(Int("2"))], Block([]))])
+]] parse succeeds parse to CaseStmt([Var("x")], [CaseAlt(CaseExps([Const(Int("1"))]), Block([])), CaseAlt(CaseExps([Const(Int("2"))]), Block([]))])
 
 test case statement stmts[[
   case (x) {
@@ -132,7 +132,7 @@ test case statement stmts[[
         var z : String;
       }
   }
-]] parse succeeds parse to CaseStmt([Var("x")], [CaseAlt([Const(Int("1"))], Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))])), CaseAlt([Const(Int("2"))], Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))]))])
+]] parse succeeds parse to CaseStmt([Var("x")], [CaseAlt(CaseExps([Const(Int("1"))]), Block([VarDecl("y",SimpleSort("Int")), VarDecl("z",SimpleSort("String"))])), CaseAlt(CaseExps([Const(Int("2"))]), Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))]))])
 
 test case statement no cases [[
   case (x) { }
@@ -142,7 +142,7 @@ test case statement expression as case [[
   case (x+x) {
     1+1 { }
   }
-]] parse succeeds parse to CaseStmt([Add(Var("x"), Var("x"))], [CaseAlt([Add(Const(Int("1")), Const(Int("1")))], Block([]))])
+]] parse succeeds parse to CaseStmt([Add(Var("x"), Var("x"))], [CaseAlt(CaseExps([Add(Const(Int("1")), Const(Int("1")))]), Block([]))])
 
 test case statement no expressions [[
   case () { }
@@ -157,7 +157,7 @@ test case statement multiple expressions and cases [[
     1, 1 { }
     2, 2 { }
   }
-]] parse succeeds parse to CaseStmt([Var("x"), Var("y")], [CaseAlt([Const(Int("1")), Const(Int("1"))], Block([])), CaseAlt([Const(Int("2")), Const(Int("2"))], Block([]))])
+]] parse succeeds parse to CaseStmt([Var("x"), Var("y")], [CaseAlt(CaseExps([Const(Int("1")), Const(Int("1"))]), Block([])), CaseAlt(CaseExps([Const(Int("2")), Const(Int("2"))]), Block([]))])
 
 test case statement only default [[
  case (x) {
@@ -170,14 +170,14 @@ test case statement default last [[
     1 { }
     default { }
   }
-]] parse succeeds parse to CaseStmt([Var("x")], [CaseAlt([Const(Int("1"))], Block([])), CaseAltDefault(Block([]))])
+]] parse succeeds parse to CaseStmt([Var("x")], [CaseAlt(CaseExps([Const(Int("1"))]), Block([])), CaseAltDefault(Block([]))])
 
 test case statement default first [[
  case (x) {
     default { }
     1 { }
   }
-]] parse succeeds parse to CaseStmt([Var("x")], [CaseAltDefault(Block([])), CaseAlt([Const(Int("1"))], Block([]))])
+]] parse succeeds parse to CaseStmt([Var("x")], [CaseAltDefault(Block([])), CaseAlt(CaseExps([Const(Int("1"))]), Block([]))])
 
 // typecase statements
 
@@ -193,14 +193,14 @@ test typecase single case [[
   typecase (x) {
     Int { }
   }
-]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(SimpleSort("Int"), Block([]))])
+]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(TypeCaseSort(SimpleSort("Int")), Block([]))])
 
 test typecase multiple cases [[
   typecase (x) {
     Int { }
     String { }
   }
-]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(SimpleSort("Int"), Block([])), TypeCaseAlt(SimpleSort("String"), Block([]))])
+]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(TypeCaseSort(SimpleSort("Int")), Block([])), TypeCaseAlt(TypeCaseSort(SimpleSort("String")), Block([]))])
 
 test typecase default case [[
   typecase (x) {
@@ -215,21 +215,21 @@ test typecase multiple stmts [[
       var z : String;
     }
   }
-]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(SimpleSort("Int"), Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))]))])
+]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(TypeCaseSort(SimpleSort("Int")), Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))]))])
 
 test typecase default last [[
   typecase (x) {
     Int { }
     default { }
   }
-]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(SimpleSort("Int"), Block([])), TypeCaseAltDefault(Block([]))])
+]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(TypeCaseSort(SimpleSort("Int")), Block([])), TypeCaseAltDefault(Block([]))])
 
 test typecase default first [[
   typecase (x) {
     default { }
     Int { }
   }
-]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAltDefault(Block([])), TypeCaseAlt(SimpleSort("Int"), Block([]))])
+]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAltDefault(Block([])), TypeCaseAlt(TypeCaseSort(SimpleSort("Int")), Block([]))])
 
 
 // for and while loops
@@ -246,7 +246,7 @@ test for loop multiple stmts [[
 
 test filter for loop [[
   for (x : Ent in xs where x.y == 1) { }
-]] parse succeeds parse to ForStmt("x", SimpleSort("Ent"), Var("xs"), OptFilterSome(FilterNoOrderByNoLimit(Eq(FieldAccess(Var("x"), "y"), Const(Int("1"))))), Block([]))
+]] parse succeeds parse to ForStmt("x", SimpleSort("Ent"), Var("xs"), OptFilterSome(FilterNoOrderByNoLimit(Eq(FieldAccess(FAExp(Var("x")), "y"), Const(Int("1"))))), Block([]))
 
 test for loop inferred [[
   for (x in xs) { }
@@ -261,7 +261,7 @@ test for loop inferred multiple stmts [[
 
 test filter inferred for loop [[
   for (x in xs where x.y == 1) { }
-]] parse succeeds parse to ForStmtInferred("x", Var("xs"), OptFilterSome(FilterNoOrderByNoLimit(Eq(FieldAccess(Var("x"), "y"), Const(Int("1"))))), Block([]))
+]] parse succeeds parse to ForStmtInferred("x", Var("xs"), OptFilterSome(FilterNoOrderByNoLimit(Eq(FieldAccess(FAExp(Var("x")), "y"), Const(Int("1"))))), Block([]))
 
 test for all loop [[
   for (u : User) { }
@@ -276,7 +276,7 @@ test for all loop multiple stmts [[
 
 test filter for all loop [[
   for (u : User where u.x == 1) { }
-]] parse succeeds parse to ForAllStmt("u", SimpleSort("User"), OptFilterSome(FilterNoOrderByNoLimit(Eq(FieldAccess(Var("u"), "x"), Const(Int("1"))))), Block([]))
+]] parse succeeds parse to ForAllStmt("u", SimpleSort("User"), OptFilterSome(FilterNoOrderByNoLimit(Eq(FieldAccess(FAExp(Var("u")), "x"), Const(Int("1"))))), Block([]))
 
 test for count statement [[
   for (x : Int from 13 to 37) { }
@@ -306,4 +306,4 @@ test while statement multiple stmts [[
 
 // reassignment
 test assignment [[ x := 2; ]] parse succeeds parse to Assignment(Var("x"), Const(Int("2")))
-test field assignment [[ x.y := 2; ]] parse succeeds parse to Assignment(FieldAccess(Var("x"), "y"), Const(Int("2")))
+test field assignment [[ x.y := 2; ]] parse succeeds parse to Assignment(FieldAccess(FAExp(Var("x")), "y"), Const(Int("2")))

@@ -24,6 +24,12 @@ context-free syntax %% Types
   Sort.RefSortAlt = <Ref \< <Sort> \>>
   Sort.FunctionSort = <function <FunctionSortParams> <FunctionSortReturn>>
 
+lexical syntax
+
+  SimpleSortLex = "function" {reject}
+
+context-free syntax
+
   %% function type; optionally specify (named) args and return type
   FunctionSortParams.FunctionSortParams = <( <{FunctionSortParam ","}*> )>
   FunctionSortParams.FunctionSortParamsNone = <>

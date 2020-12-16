@@ -9,16 +9,6 @@ context-free restrictions
 
 lexical syntax // id
 
-  Id = "true" {reject}
-  Id = "false" {reject}
-  Id = "null" {reject}
-  Id = "global" {reject}
-  Id = "session" {reject}
-  Id = "default" {reject}
-  Id = "function" {reject}
-  Id = "return" {reject}
-  Id = "action" {reject}
-
   Id = "throw" {reject}
   Id = "try" {reject}
 
@@ -28,6 +18,16 @@ lexical syntax // id
 
 lexical syntax // var id
 
+  VarId = "true" {reject}
+  VarId = "false" {reject}
+  VarId = "null" {reject}
+  // VarId = "global" {reject}
+  // VarId = "session" {reject}
+  // VarId = "default" {reject}
+  VarId = "function" {reject}
+  VarId = "return" {reject}
+  VarId = "action" {reject}
+
   VarId = "List" {reject}
   VarId = "Set" {reject}
 
@@ -35,24 +35,24 @@ lexical syntax // var id
 
 lexical syntax // fun id
 
-  FunId = "goto" {reject}
+//  FunId = "goto" {reject}
 
-  FunId = "renderemail" {reject}
-  FunId = "email" {reject}
-  FunId = "sendemail" {reject}
-  FunId = "rendertemplate" {reject}
-  FunId = "validatetemplate" {reject}
+//  FunId = "renderemail" {reject}
+//  FunId = "email" {reject}
+//  FunId = "sendemail" {reject}
+//  FunId = "rendertemplate" {reject}
+//  FunId = "validatetemplate" {reject}
 
-  FunId = "validate" {reject}
-
-  FunId = "replace" {reject}
-  FunId = "append" {reject}
-  FunId = "visibility" {reject}
-  FunId = "relocate" {reject}
-  FunId = "restyle" {reject}
-  FunId = "clear" {reject}
-  FunId = "refresh" {reject}
-  FunId = "runscript" {reject}
+//  FunId = "validate" {reject}
+//
+//  FunId = "replace" {reject}
+//  FunId = "append" {reject}
+//  FunId = "visibility" {reject}
+//  FunId = "relocate" {reject}
+//  FunId = "restyle" {reject}
+//  FunId = "clear" {reject}
+//  FunId = "refresh" {reject}
+//  FunId = "runscript" {reject}
 
 lexical syntax // template call id
 
@@ -71,14 +71,14 @@ lexical syntax // template call id
   TemplateId = "where" {reject}
   TemplateId = "in" {reject}
   TemplateId = "navigate" {reject}
-  TemplateId = "action" {reject}
+//  TemplateId = "action" {reject}
   TemplateId = "submit" {reject}
   TemplateId = "goto" {reject}
   TemplateId = "foreach" {reject}
   TemplateId = "request" {reject}
   TemplateId = "local" {reject}
-  TemplateId = "init" {reject}
-  TemplateId = "databind" {reject}
+//  TemplateId = "init" {reject}
+//  TemplateId = "databind" {reject}
   TemplateId = "derive" {reject}
   TemplateId = "rules" {reject}
   TemplateId = "actionLink" {reject}
@@ -94,8 +94,8 @@ lexical syntax // template call id
 
   TemplateId = "case" {reject}
   TemplateId = "typecase" {reject}
-  TemplateId = "validate" {reject}
-  TemplateId = "render" {reject}
+  // TemplateId = "validate" {reject}
+  // TemplateId = "render" {reject}
 
 context-free restrictions
 

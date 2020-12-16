@@ -27,6 +27,19 @@ context-free syntax
   AjaxStatement.AjaxRefresh = <refresh ( )>
   AjaxStatement.AjaxRunScript = <runscript ( <Exp> )>
 
+context-free syntax
+
+  ThisCall = <replace ( <Exp> , <TemplateCall> )> {reject}
+  ThisCall = <append ( <Exp> , <TemplateCall> )> {reject}
+  ThisCall = <visibility ( <Exp> , <AjaxVisibility> )> {reject}
+  ThisCall = <relocate ( <PageCall> )> {reject}
+  ThisCall = <restyle ( <Exp> , <Exp> )> {reject}
+  ThisCall = <clear ( <Exp> )> {reject}
+  ThisCall = <refresh ( )> {reject}
+  ThisCall = <runscript ( <Exp> )> {reject}
+
+context-free syntax
+
   TemplateElement = <
     <Placeholder>
   >
@@ -68,7 +81,7 @@ context-free sorts
 context-free syntax
 
   PHExp.PHThisCall = ThisCall
-  PHExp.PHCall = <<Exp> . <FunId> ( <{Exp ","}*> )>
+  PHExp.PHCall = <<Exp> . <Id> ( <{Exp ","}*> )>
   PHExp.PHFieldAccess = <<Exp> . <Id>>
   PHExp.PHCollectionIndex = <<Exp> [ <Exp> ]>
   PHExp.PHAdd = <<Exp> + <Exp>>

@@ -58,6 +58,8 @@ context-free syntax
     goto ( <PageCall> );
   >
 
+  ThisCall = <goto ( <PageCall> )> {reject}
+
   Statement.VarDecl = <
     var <VarId> : <Sort>;
   >
@@ -93,7 +95,7 @@ context-free syntax
     }
   >
   Case.CaseAlt = <
-    <{Exp ","}+> <Block>
+    <CaseAltExps> <Block>
   >
   Case.CaseAltDefault = <
     default <Block>
@@ -107,11 +109,23 @@ context-free syntax
   OptTypeAlias.TypeAlias = <as <Id>>
   OptTypeAlias.OptTypeAliasNone = <>
   TypeCaseAlt.TypeCaseAlt = <
-    <Sort> <Block>
+    <TypeCaseAltSort> <Block>
   >
   TypeCaseAlt.TypeCaseAltDefault = <
     default <Block>
   >
+
+context-free sorts
+
+  CaseAltExps TypeCaseAltSort
+
+context-free syntax
+
+  CaseAltExps.CaseExps = <<{Exp ","}+>>
+  CaseAltExps = <default> {reject}
+
+  TypeCaseAltSort.TypeCaseSort = <<Sort>>
+  TypeCaseAltSort = <default> {reject}
 
 context-free priorities
 
@@ -137,25 +151,37 @@ context-free syntax
 
 context-free sorts
 
-  ConstValue Exp PropAssignment ObjectPropertyAssignment Mapping ThisCall
+  ConstValue Exp PropAssignment ObjectPropertyAssignment Mapping ThisCall FAExp
 
 context-free syntax
+
+  Exp.Const = ConstValue
 
   ConstValue.Int = Int
   ConstValue.Long = Long
   ConstValue.Float = Float
   ConstValue = StringValue
-  Exp.Const = ConstValue
+
   Exp.Var = VarId
-  Exp.GlobalVar = <global . <VarId>>
-  Exp.SessionVar = <session . <VarId>>
-  Exp.FieldAccess = <<Exp> . <Id>>
+  Exp.FieldAccess = <<FAExp> . <Id>>
   Exp.CollectionIndex = <<Exp> [ <Exp> ]>
   Exp.This = <this>
+
+  FAExp.FAExp = <<Exp>>
+  FAExp.FAGlobal = <global>
+  FAExp.FASession = <session>
+
+lexical syntax
+
+  VarId = "global" {reject}
+  VarId = "session" {reject}
+
+context-free syntax
 
   Exp.ObjectCreation = <<SimpleSortLex> {
     <PropAssignment*>
   }>
+
   PropAssignment.PropAssignment = <<ObjectPropertyAssignment>>
   PropAssignment.PropAssignmentComma = <<ObjectPropertyAssignment> ,>
   ObjectPropertyAssignment.ObjectPropertyAssignment = <
@@ -184,7 +210,7 @@ context-free syntax
 
   OutputShorthand.OutputShorthand = <~ ( <Exp> )>
   SimpleExp.SimpleThisCall = ThisCall
-  SimpleExp.SimpleCall = <<SimpleExp> . <FunId> ( <{Exp ","}*> )>
+  SimpleExp.SimpleCall = <<SimpleExp> . <Id> ( <{Exp ","}*> )>
 
 syntax
 
@@ -306,5 +332,13 @@ context-free syntax
 
   Exp.RenderTemplateFunctionCall = <rendertemplate ( <TemplateCall> )>
   Exp.ValidateTemplateFunctionCall = <validatetemplate ( <TemplateCall> )>
-  
 
+context-free syntax
+
+  ThisCall = <renderemail ( <EmailCall> )> {reject}
+  ThisCall = <email ( <EmailCall> )> {reject}
+  ThisCall = <email <EmailCall>> {reject}
+  ThisCall = <sendemail ( <EmailCall> )> {reject}
+
+  ThisCall = <rendertemplate ( <TemplateCall> )> {reject}
+  ThisCall = <validatetemplate ( <TemplateCall> )> {reject}

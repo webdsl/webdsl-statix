@@ -21,7 +21,7 @@ context-free syntax
 
   Definition.TemplateDefinition = TemplateDefinition
   TemplateDefinition.Define = <
-    define <Modifier*> <TemplateId> <OptFormalArgs> <OptTemplateArgs> {
+    define <Modifier*> <Id> <OptFormalArgs> <OptTemplateArgs> {
       <TemplateElement*>
     }
   >
@@ -184,7 +184,7 @@ context-free syntax
     }
   >
   TemplateCaseAlt.TemplateCaseAlt = <
-    <{Exp ","}+> { <TemplateElement*> }
+    <TemplateCaseAltExps> { <TemplateElement*> }
   >
   TemplateCaseAlt.TemplateCaseAltDefault = <
     default { <TemplateElement*> }
@@ -195,11 +195,23 @@ context-free syntax
     }
   >
   TemplateTypeCaseAlt.TemplateTypeCaseAlt = <
-    <Sort> { <TemplateElement*> }
+    <TemplateTypeCaseAltSort> { <TemplateElement*> }
   >
   TemplateTypeCaseAlt.TemplateTypeCaseDefault = <
     default { <TemplateElement*> }
   >
+
+context-free sorts
+
+  TemplateCaseAltExps TemplateTypeCaseAltSort
+
+context-free syntax
+
+  TemplateCaseAltExps.TemplateCaseExps = <<{Exp ","}+>>
+  TemplateCaseAltExps = <default> {reject}
+
+  TemplateTypeCaseAltSort.TemplateTypeCaseSort = <<Sort>>
+  TemplateTypeCaseAltSort = <default> {reject}
 
 context-free priorities
 
@@ -406,6 +418,16 @@ context-free syntax
   ActionModifier.ActionModifierIgnoreValidation = <ignore-validation>
   TemplateCallId.QualifiedElementsCall = <<TemplateId> .elements>
   TemplateCallId.TemplateCallId = TemplateId
+
+context-free syntax // reject rules
+
+  TemplateCall = <init <Block>> {reject}
+  TemplateCall = <databind <Block>> {reject}
+  TemplateCall = <render <Block>> {reject}
+  TemplateCall = <allphases <Block>> {reject}
+  TemplateCall = <validate <Block>> {reject}
+  TemplateCall = <validate ( <Exp> , <Exp> )> {reject}
+  TemplateCall = <action> {reject}
 
 context-free sorts
 

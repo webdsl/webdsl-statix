@@ -14,19 +14,19 @@ test validate as statement [[
   function f() {
     validate(x.length == 1, "error" + "");
   }
-]] parse succeeds parse to GlobalFunction(Function("f", FormalArgs([]), OptSortNone(), Block([ValidateStatement(Eq(FieldAccess(Var("x"),"length"),Const(Int("1"))),Add(Const(StringValue("error")),Const(StringValue(""))))])))
+]] parse succeeds parse to GlobalFunction(Function("f", FormalArgs([]), OptSortNone(), Block([ValidateStatement(Eq(FieldAccess(FAExp(Var("x")), "length"),Const(Int("1"))),Add(Const(StringValue("error")),Const(StringValue(""))))])))
 
 test named validate as statement [[
   function f() {
     y : validate(x.length == 1, "error" + "");
   }
-]] parse succeeds parse to GlobalFunction(Function("f", FormalArgs([]), OptSortNone(), Block([NamedValidateStatement("y", Eq(FieldAccess(Var("x"),"length"),Const(Int("1"))),Add(Const(StringValue("error")),Const(StringValue(""))))])))
+]] parse succeeds parse to GlobalFunction(Function("f", FormalArgs([]), OptSortNone(), Block([NamedValidateStatement("y", Eq(FieldAccess(FAExp(Var("x")),"length"),Const(Int("1"))),Add(Const(StringValue("error")),Const(StringValue(""))))])))
 
 test named validate as statement underscores and numbers [[
   function f() {
     yZ_1 : validate(x.length == 1, "error" + "");
   }
-]] parse succeeds parse to GlobalFunction(Function("f", FormalArgs([]), OptSortNone(), Block([NamedValidateStatement("yZ_1", Eq(FieldAccess(Var("x"),"length"),Const(Int("1"))),Add(Const(StringValue("error")),Const(StringValue(""))))])))
+]] parse succeeds parse to GlobalFunction(Function("f", FormalArgs([]), OptSortNone(), Block([NamedValidateStatement("yZ_1", Eq(FieldAccess(FAExp(Var("x")),"length"),Const(Int("1"))),Add(Const(StringValue("error")),Const(StringValue(""))))])))
 
 test named validate as statement start with number [[
   function f() {

@@ -26,7 +26,7 @@ test throw at least one exception statement [[
 
 test throw expression statement [[
   throw f().x;
-]] parse succeeds parse to ThrowStatement([FieldAccess(ThisCall("f", []), "x")])
+]] parse succeeds parse to ThrowStatement([FieldAccess(FAExp(ThisCall("f", [])), "x")])
 
 
 // try catch
