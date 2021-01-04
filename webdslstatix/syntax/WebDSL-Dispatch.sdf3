@@ -43,9 +43,9 @@ context-free syntax
   DispatchNavigateButton.DispatchNavigateButton = <
     navigate ( <Exp> , <{DispatchNavigateCall "/"}+> )
   >
-  DispatchNavigate = <navigate ( <Id> ( <{Exp ","}*> ) ) { <TemplateElement*> }> {reject}
-  DispatchNavigateButton = <navigate ( <Exp> , <Id> ( <{Exp ","}*> ) ) { <TemplateElement*> }> {reject}
-  TemplateCall = <navigate ( <Exp> / <Exp> ) <TemplateBody>> {reject}
-  TemplateCall = <navigate ( <Exp> , <Exp> / <Exp> ) <TemplateBody>> {reject}
   DispatchNavigateCall.DispatchNavigateCall = <<Id> ( <{Exp ","}*> )>
   DispatchNavigateCall.DispatchNavigateCallNoArg = Id
+
+lexical syntax
+
+  TemplateId = "navigate" {reject}

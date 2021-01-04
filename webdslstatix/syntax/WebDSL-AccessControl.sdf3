@@ -95,6 +95,12 @@ context-free syntax
     apply ac rules <Id> ( <{AccessControlImportRulesArg ","}*> )
   >
 
+lexical syntax
+
+  TemplateId = "rules" {reject}
+
+context-free syntax
+
   AccessControlImportRulesArg.ACVar = Id
 
   OptMatchArgs.MatchArgs = <( <{FormalArg ","}*> <OptWildCardArg> )>

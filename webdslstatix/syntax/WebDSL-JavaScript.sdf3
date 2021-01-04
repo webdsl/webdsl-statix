@@ -25,7 +25,6 @@ syntax
 
   JSPart-CF.JSExp = "~" Exp-CF
   JSPart-CF.JSString = JSString-LEX
-  JSPart-CF.JSTilde = "\\~"
 
 lexical sorts
 
@@ -34,9 +33,15 @@ lexical sorts
 lexical syntax
 
   JSString = JSChar+
+  JSString = JSChar* "\\" {reject}
+
   JSChar = ~[\<\~]
+
   JSChar = SmallerThan
   SmallerThan = [\<]
+
+  JSChar = JSTilde
+  JSTilde = "\\~"
 
   XMLTagName = "script" {reject}
   XMLTagName = "style" {reject}

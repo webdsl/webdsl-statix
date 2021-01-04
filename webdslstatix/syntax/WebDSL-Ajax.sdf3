@@ -69,6 +69,15 @@ context-free syntax
 
   PlaceholderVar.PlaceholderVar = <placeholdervar <Id>>
 
+lexical syntax
+
+  TemplateId = "placeholder" {reject}
+  TemplateId = "placeholdervar" {reject}
+
+lexical restrictions
+
+  "placeholder" -/- [a-zA-Z0-9]
+
 context-free priorities
 
   Placeholder.PlaceholderHtmlExp <4> .> Exp.Var,

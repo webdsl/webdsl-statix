@@ -38,6 +38,12 @@ context-free syntax
   SortOrThis.TArgThis = <this>
   SortOrThis.PrefetchThisCast = <this as <Sort>>
 
+lexical syntax
+
+  SimpleSortLex = "this" {reject}
+
+context-free syntax
+
   PrefetchCondition.PrefetchConditionNone = <>
   PrefetchCondition.PrefetchCondition = <if ( <PrefetchCond> )>
   PrefetchWhereOpt.PrefetchWhereOptNone = <>

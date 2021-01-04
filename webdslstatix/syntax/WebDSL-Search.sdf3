@@ -7,7 +7,7 @@ imports
 
 lexical sorts
 
-  SA-Value SearcherKW SearchFieldId ENTITY SEARCHERREF INDEXORQUERY
+  SA-Value SearcherKW SearchFieldId SEARCHERREF INDEXORQUERY
 
 context-free sorts
 
@@ -151,7 +151,7 @@ context-free sorts
 context-free syntax
 
   Exp.SearcherDef = SearcherDef
-  SearcherDef.SearcherInit = <search <ENTITY> <SearcherPart*>>
+  SearcherDef.SearcherInit = <search <SimpleSortLex> <SearcherPart*>>
   SearcherDef.SearcherRefMod = <~ <Exp> <SearcherPart+>>
   SearcherPart = ConstraintFilter
   SearcherPart = QueryDef
@@ -214,7 +214,7 @@ context-free syntax
   RetrievalExp.FacetResults = <<SearchField> facets from <Exp>>
   RetrievalExp.SearchResultsSize = <count from <Exp>>
   RetrievalExp.SearchTimeString = <searchtime from <Exp>>
-  RetrievalExp.Suggest = <<ENTITY> <SuggestType> <SuggestionPart+>>
+  RetrievalExp.Suggest = <<SimpleSortLex> <SuggestType> <SuggestionPart+>>
   SuggestType.AutoComplete = <completions>
   SuggestType.SpellCheck = <corrections>
   Exp.RetrievalExp = RetrievalExp
@@ -254,7 +254,6 @@ lexical syntax
 
   SearchFieldId = Id
   SearchFieldId = "_id"
-  ENTITY = Id
   SEARCHERREF = Id
   SearcherKW = "limit"
   SearcherKW = "offset"

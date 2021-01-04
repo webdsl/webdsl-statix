@@ -61,10 +61,6 @@ test dispatch navigate [[
   navigate(x) { }
 ]] parse succeeds parse to DispatchNavigate([DispatchNavigateCallNoArg("x")], [])
 
-test dispatch navigate at least one call [[
-  navigate() { }
-]] parse fails
-
 test dispatch navigate multiple calls [[
   navigate(x / y) { }
 ]] parse succeeds parse to DispatchNavigate([DispatchNavigateCallNoArg("x"), DispatchNavigateCallNoArg("y")], [])

@@ -36,6 +36,10 @@ context-free syntax
   Exp.FunctionRefCall = <function . <FunId> ( <{Sort ","}*> ) <OptSort> ( <{Exp ","}*> )>
   Exp.FunctionRefCallPartial = <function . <FunId> ( <{Sort ","}*> ) <OptSort> ( * , <{Exp ","}*> )>
 
+lexical syntax
+
+  VarId = "function" {reject}
+
 context-free syntax
 
   Block.Block = <{
@@ -51,6 +55,13 @@ context-free syntax
   Statement.ReturnEmpty = <
     return;
   >
+
+context-free priorities
+
+  Statement.Stat <0> .> Exp.Var
+
+context-free syntax
+
   Statement.GoTo = <
     goto <PageCall>;
   >
@@ -168,13 +179,20 @@ context-free syntax
   Exp.This = <this>
 
   FAExp.FAExp = <<Exp>>
+  FAExp.FAVar = <<FAVarId>>
   FAExp.FAGlobal = <global>
   FAExp.FASession = <session>
 
+context-free priorities
+
+  FAExp.FAExp <0> .> Exp.Var
+
 lexical syntax
 
-  VarId = "global" {reject}
-  VarId = "session" {reject}
+  VarId = "this" {reject}
+
+  FAVarId = "global" {reject}
+  FAVarId = "session" {reject}
 
 context-free syntax
 
@@ -199,6 +217,14 @@ context-free syntax
   Exp.SetCreation = <{ <{Exp ","}+> }>
   Exp.TypedListCreation = <List \< <Sort> \> ( <{Exp ","}*> )>
   Exp.TypedSetCreation = <Set \< <Sort> \> ( <{Exp ","}*> )>
+
+lexical syntax
+
+  VarId = "List" {reject}
+  VarId = "Set" {reject}
+
+context-free syntax
+
   Exp = ThisCall
   ThisCall.ThisCall = <<FunId> ( <{Exp ","}*> )>
   Exp.Call = <<Exp> . <Id> ( <{Exp ","}*> )>
@@ -232,9 +258,19 @@ context-free syntax
   Exp.LargerThanOrEqual = <<Exp> \>= <Exp>> {left}
   Exp.SmallerThan = <<Exp> \< <Exp>> {left}
   Exp.SmallerThanOrEqual = <<Exp> \<= <Exp>> {left}
+
   Exp.True = <true>
   Exp.False = <false>
   Exp.Null = <null>
+
+lexical syntax
+
+  VarId = "true" {reject}
+  VarId = "false" {reject}
+  VarId = "null" {reject}
+
+context-free syntax
+
   Exp.And = <<Exp> && <Exp>> {left}
   Exp.Or = <<Exp> || <Exp>> {left}
   Exp.Not = <! <Exp>>

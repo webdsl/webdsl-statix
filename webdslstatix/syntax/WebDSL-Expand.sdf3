@@ -36,8 +36,13 @@ context-free syntax
     <Id> { <TemplateElement*> }
   >
 
-  TemplateCall = <derive> {reject}
   Definition.DeriveCrud = <derive crud <Id>> {case-insensitive}
+
+lexical syntax
+
+  TemplateId = "derive" {reject}
+  TemplateId = "from" {reject}
+  TemplateId = "for" {reject}
 
 context-free priorities
 
@@ -95,14 +100,7 @@ context-free syntax
     expand <ExpandId+> to <ExpandArgId+> { <TemplateTypeCaseAlt> }
   >
 
-  ExpandId = <expandtemplate> {reject}
-  ExpandId = <template> {reject}
-  ExpandId = <expand> {reject}
-  ExpandId = <to> {reject}
-  ExpandArgId = <expandtemplate> {reject}
-  ExpandArgId = <template> {reject}
-  ExpandArgId = <expand> {reject}
-  ExpandArgId = <to> {reject}
+
 
 lexical sorts
 
@@ -112,6 +110,18 @@ lexical syntax
 
   ExpandId = [a-zA-Z0-9\_\-]+
   ExpandArgId = Id
+
+  ExpandId = "expandtemplate" {reject}
+  ExpandId = "template" {reject}
+  ExpandId = "expand" {reject}
+  ExpandId = "to" {reject}
+
+  ExpandArgId = "expandtemplate" {reject}
+  ExpandArgId = "template" {reject}
+  ExpandArgId = "expand" {reject}
+  ExpandArgId = "to" {reject}
+
+  TemplateId = "expand" {reject}
 
 lexical restrictions
 

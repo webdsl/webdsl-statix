@@ -26,3 +26,8 @@ context-free syntax
   >
 
   Catch.Catch = <catch ( <VarId> : <Sort> ) <Block>>
+
+lexical syntax
+
+  TemplateId = "try" {reject}
+  TemplateId = "throw" {reject}

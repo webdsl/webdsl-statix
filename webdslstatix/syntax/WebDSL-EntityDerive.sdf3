@@ -39,3 +39,5 @@ lexical syntax
   DeriveArgPropId = "facet" {reject}
   DeriveArgPropId = "facets" {reject}
   DeriveArgPropId = "tags" {reject}
+
+  TemplateId = "foreach" {reject}

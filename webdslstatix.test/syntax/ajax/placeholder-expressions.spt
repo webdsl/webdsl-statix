@@ -23,7 +23,7 @@ test phexp call [[ x.getId() ]] parse succeeds parse to PHCall(Var("x"), "getId"
 test phexp call nested [[ x.y().getId() ]] parse succeeds parse to PHCall(Call(Var("x"), "y", []), "getId", [])
 
 test phexp field access [[ x.y ]] parse succeeds parse to PHFieldAccess(Var("x"), "y")
-test phexp field access nested [[ x.y.z ]] parse succeeds parse to PHFieldAccess(FieldAccess(FAExp(Var("x")), "y"), "z")
+test phexp field access nested [[ x.y.z ]] parse succeeds parse to PHFieldAccess(FieldAccess(FAVar("x"), "y"), "z")
 
 test phexp collection index [[ x[0] ]] parse succeeds parse to PHCollectionIndex(Var("x"), Const(Int("0")))
 

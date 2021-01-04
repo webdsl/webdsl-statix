@@ -39,7 +39,7 @@ test javascript multiline [[
 // can't get an escaped tilde to work yet
 test javascript escaped tilde [[
   <script>alert("\~");</script>
-]] parse succeeds parse to JSElement([], [JSString("alert(\""), JSTilde(), JSString("\");")])
+]] parse succeeds parse to JSElement([], [JSString("alert(\"\~\");")])
 
 test javascript string interp [[
   <script>alert("~x");</script>
@@ -87,7 +87,7 @@ test style multiline [[
 // can't get an escaped tilde to work yet
 test style escaped tilde [[
   <style>.\~x{ color: red }</style>
-]] parse succeeds parse to StyleElement([], [JSString("."), JSTilde(), JSString("x{ color: red }")])
+]] parse succeeds parse to StyleElement([], [JSString(".\~x{ color: red }")])
 
 test style string interp [[
   <style>.x{color: ~y}</style>

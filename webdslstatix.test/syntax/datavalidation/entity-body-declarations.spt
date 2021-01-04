@@ -44,8 +44,8 @@ test entity property annotation named validate start with underscore [[
 // entity validation
 test validate entity [[
   validate(x.length == 1, "error")
-]] parse succeeds parse to ValidateEntity(Eq(FieldAccess(Var("x"), "length"), Const(Int("1"))), Const(StringValue("error")))
+]] parse succeeds parse to ValidateEntity(Eq(FieldAccess(FAVar("x"), "length"), Const(Int("1"))), Const(StringValue("error")))
 
 test validate entity expression as error[[
   validate(x.length == 1, "error" + "")
-]] parse succeeds parse to ValidateEntity(Eq(FieldAccess(Var("x"), "length"), Const(Int("1"))), Add(Const(StringValue("error")), Const(StringValue(""))))
+]] parse succeeds parse to ValidateEntity(Eq(FieldAccess(FAVar("x"), "length"), Const(Int("1"))), Add(Const(StringValue("error")), Const(StringValue(""))))

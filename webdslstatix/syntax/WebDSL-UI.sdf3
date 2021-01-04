@@ -201,6 +201,11 @@ context-free syntax
     default { <TemplateElement*> }
   >
 
+lexical syntax
+
+  TemplateId = "case" {reject}
+  TemplateId = "typecase" {reject}
+
 context-free sorts
 
   TemplateCaseAltExps TemplateTypeCaseAltSort
@@ -320,6 +325,15 @@ context-free syntax
   >
   ActionCallOrInline.ActionCall = ThisCall
   ActionCallOrInline.InlineAction = <action <Block>>
+
+lexical syntax
+
+  TemplateId = "action" {reject}
+  TemplateId = "actionLink" {reject}
+  TemplateId = "submit" {reject}
+  TemplateId = "submitlink" {reject}
+  TemplateId = "downloadlink" {reject}
+  TemplateId = "outputimage" {reject}
 
 context-free sorts
 
@@ -485,6 +499,10 @@ context-free syntax
 
   TemplateName.TemplateName = <id>
   Exp = TemplateName
+
+lexical syntax
+
+  VarId = "id" {reject}
 
 context-free restrictions
 

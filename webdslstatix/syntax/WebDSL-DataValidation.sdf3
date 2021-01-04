@@ -19,9 +19,16 @@ context-free syntax
   Statement.ValidateStatement = <
     validate ( <Exp> , <Exp> ) ;
   >
+
   Statement.NamedValidateStatement = <
     <Id> : validate ( <Exp> , <Exp> ) ;
   >
 
+  ThisCall = <validate ( <Exp> , <Exp> )> {reject}
+
   TemplateCall.ValidationErrors = <validationErrors ( <Id> )>
   TemplateCall.ValidationErrorsEmpty = <validationErrors ( )>
+
+lexical syntax
+
+  TemplateId = "validationErrors" {reject}
