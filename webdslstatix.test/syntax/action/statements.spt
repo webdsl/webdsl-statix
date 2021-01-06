@@ -102,10 +102,6 @@ test if else if [[
   if (false) { } else if (false) { }
 ]] parse succeeds parse to IfWithElseIf(False(), Block([]), [ElseIf(False(), Block([]))], OptElseNone())
 
-test else if no layout [[
-  if(false){}elseif(false){}
-]] parse succeeds parse to IfWithElseIf(False(), Block([]), [ElseIf(False(), Block([]))], OptElseNone())
-
 test multiple else ifs [[
   if (false) { }
   else if (false) {  }
@@ -193,14 +189,14 @@ test typecase single case [[
   typecase (x) {
     Int { }
   }
-]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(TypeCaseSort(SimpleSort("Int")), Block([]))])
+]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(SimpleSort("Int"), Block([]))])
 
 test typecase multiple cases [[
   typecase (x) {
     Int { }
     String { }
   }
-]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(TypeCaseSort(SimpleSort("Int")), Block([])), TypeCaseAlt(TypeCaseSort(SimpleSort("String")), Block([]))])
+]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(SimpleSort("Int"), Block([])), TypeCaseAlt(SimpleSort("String"), Block([]))])
 
 test typecase default case [[
   typecase (x) {
@@ -215,21 +211,21 @@ test typecase multiple stmts [[
       var z : String;
     }
   }
-]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(TypeCaseSort(SimpleSort("Int")), Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))]))])
+]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(SimpleSort("Int"), Block([VarDecl("y",SimpleSort("Int")),VarDecl("z",SimpleSort("String"))]))])
 
 test typecase default last [[
   typecase (x) {
     Int { }
     default { }
   }
-]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(TypeCaseSort(SimpleSort("Int")), Block([])), TypeCaseAltDefault(Block([]))])
+]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAlt(SimpleSort("Int"), Block([])), TypeCaseAltDefault(Block([]))])
 
 test typecase default first [[
   typecase (x) {
     default { }
     Int { }
   }
-]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAltDefault(Block([])), TypeCaseAlt(TypeCaseSort(SimpleSort("Int")), Block([]))])
+]] parse succeeds parse to TypeCaseStmt(Var("x"), OptTypeAliasNone(), [TypeCaseAltDefault(Block([])), TypeCaseAlt(SimpleSort("Int"), Block([]))])
 
 
 // for and while loops

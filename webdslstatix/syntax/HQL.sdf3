@@ -3,6 +3,7 @@ module HQL
 imports
 
   WebDSL-Action
+  WebDSL-Lexical
 
 lexical sorts
 
@@ -123,6 +124,14 @@ lexical syntax
   HQLIdentifier = "by" {reject}
   HQLIdentifier = "order" {reject}
 
+  TemplateId = "select" {reject}
+  TemplateId = "from" {reject}
+  TemplateId = "by" {reject}
+  TemplateId = "order" {reject}
+  TemplateId = "having" {reject}
+  TemplateId = "where" {reject}
+  TemplateId = "as" {reject}
+
 context-free sorts
 
   HQLExpression HQLConstant
@@ -206,6 +215,11 @@ lexical syntax
   HQLIdentifier = "false" {reject}
   HQLIdentifier = "empty" {reject}
   HQLIdentifier = "null" {reject}
+
+  TemplateId = "empty" {reject}
+  TemplateId = "or" {reject}
+  TemplateId = "and" {reject}
+  TemplateId = "not" {reject}
 
 context-free priorities
 

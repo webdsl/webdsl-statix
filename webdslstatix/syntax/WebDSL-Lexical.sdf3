@@ -49,30 +49,21 @@ lexical restrictions
 
 context-free sorts
 
-  StringValue StringInterp StringPart SimpleStringPart
+  String StringPart
 
 %% Kernel syntax is required here since we do not want LAYOUT to be parsed between
 %% the first QMLex and StringLex
 syntax
 
-  %% string literal as expression
-  StringValue-CF.StringValue = "\"" StringLex-LEX "\""
-  StringValue-CF = StringInterp-CF
+  String-CF.String = "\"" StringPart-CF* "\""
 
-  StringInterp-CF.StringInterp = "\"" StringPart-CF* "\""
-
-  StringPart-CF = SimpleStringPart-CF
-  StringPart-CF = StringLexInterp-LEX
-  SimpleStringPart-CF.InterpSimpleExp = "~" SimpleExp-CF
-
-context-free syntax
-
-  StringInterp = "\"" StringLex "\"" {reject}
+  StringPart-CF.InterpValue = "~" SimpleExp-CF
+  StringPart-CF.StringValue = StringLex-LEX
 
 context-free restrictions
 
-  SimpleStringPart -/- [\.\(]    %% make fieldaccess/call not part of string that follows
-                                 %% use parentheses variant if a . is needed in the string
+  StringPart -/- [\.\(]
+
 context-free sorts
 
   OutputShorthand
@@ -99,13 +90,12 @@ context-free syntax
 
 lexical sorts
 
-  QMLex StringLex StringLexInterp StringChar HexPart
+  QMLex StringLex StringChar HexPart
 
 lexical syntax
 
   QMLex = "\""
-  StringLex = StringChar*
-  StringLexInterp = StringChar+
+  StringLex = StringChar+
   StringChar = ~[\"\n\~\\]
   StringChar = "\\" [0-9btnfr\'\"\\\~]
   HexPart = [0-9a-fA-F]
@@ -113,8 +103,7 @@ lexical syntax
 
 lexical restrictions
 
-  StringLex
-  StringLexInterp -/- ~[\"\n\~]
+  StringLex -/- ~[\"\n\~]
 
 lexical sorts
 
@@ -160,6 +149,10 @@ lexical sorts
 
 lexical syntax
 
-  SimpleSortLex = Id
+  SimpleSortLex = [A-Z] [a-zA-Z0-9\_]*
   GenericSortLex = Id
   GenericSortLex = "Ref" {reject}
+
+lexical restrictions
+
+  SimpleSortLex -/- [a-zA-Z0-9\_]

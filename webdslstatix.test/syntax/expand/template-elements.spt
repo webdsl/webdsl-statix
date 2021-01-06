@@ -131,13 +131,13 @@ test expand template element single element [[
   expand a to x {
     "x"
   }
-]] parse succeeds parse to TemplateElementExpandLocal(["a"], ["x"], [Text("x")])
+]] parse succeeds parse to TemplateElementExpandLocal(["a"], ["x"], [Text([StringValue("x")])])
 
 test expand template element multiple elements [[
   expand a to x {
     "x" "y"
   }
-]] parse succeeds parse to TemplateElementExpandLocal(["a"], ["x"], [Text("x"), Text("y")])
+]] parse succeeds parse to TemplateElementExpandLocal(["a"], ["x"], [Text([StringValue("x")]), Text([StringValue("y")])])
 
 test expand template first expandid [[
   expand _a to x { }
@@ -169,7 +169,7 @@ test expand local as template cases [[
       x { "x" }
     }
   }
-]] parse succeeds parse to TemplateCase([Var("a")], [TemplateCaseAltExpandLocal(["1", "2", "3", "4"], ["x"], TemplateCaseAlt(TemplateCaseExps([Var("x")]), [Text("x")]))])
+]] parse succeeds parse to TemplateCase([Var("a")], [TemplateCaseAltExpandLocal(["1", "2", "3", "4"], ["x"], TemplateCaseAlt(TemplateCaseExps([Var("x")]), [Text([StringValue("x")])]))])
 
 
 // template typecase expand local
@@ -179,4 +179,4 @@ test expand local as template type cases [[
       x { "x" }
     }
   }
-]] parse succeeds parse to TemplateTypeCase(Var("a"), TypeAlias("b"), [TemplateTypeCaseAltExpandLocal(["Int", "Long", "Float", "String", "Bool"], ["x"], TemplateTypeCaseAlt(TemplateTypeCaseSort(SimpleSort("x")), [Text("x")]))])
+]] parse succeeds parse to TemplateTypeCase(Var("a"), TypeAlias("b"), [TemplateTypeCaseAltExpandLocal(["Int", "Long", "Float", "String", "Bool"], ["x"], "x", [Text([StringValue("x")])])])

@@ -62,14 +62,14 @@ test foreach entity derive template element single template element [[
   foreach props {
     "x"
   }
-]] parse succeeds parse to ForeachElementEntityDerive("props", [Text("x")])
+]] parse succeeds parse to ForeachElementEntityDerive("props", [Text([StringValue("x")])])
 
 test foreach entity derive template element multiple template elements [[
   foreach props {
     "x"
     "y"
   }
-]] parse succeeds parse to ForeachElementEntityDerive("props", [Text("x"), Text("y")])
+]] parse succeeds parse to ForeachElementEntityDerive("props", [Text([StringValue("x")]), Text([StringValue("y")])])
 
 
 // entity derive foreach statement

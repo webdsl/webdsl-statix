@@ -7,6 +7,10 @@ imports
   WebDSL-Lexical
   WebDSL-XML
 
+template options
+
+  keyword -/- [a-zA-Z0-9\-\_]
+
 context-free sorts
 
   TemplateDefinition Modifier TemplateElement OptFilter PageCall TemplateCall PropertyAssignment
@@ -102,6 +106,11 @@ context-free syntax
   TemplateElement = TemplateDefinition
   TemplateElement = TemplateCall
 
+lexical syntax
+
+  TemplateId = "request" {reject}
+  TemplateId = "local" {reject}
+
 context-free sorts
 
   Filter OrderExp Limit
@@ -195,7 +204,7 @@ context-free syntax
     }
   >
   TemplateTypeCaseAlt.TemplateTypeCaseAlt = <
-    <TemplateTypeCaseAltSort> { <TemplateElement*> }
+    <Sort> { <TemplateElement*> }
   >
   TemplateTypeCaseAlt.TemplateTypeCaseDefault = <
     default { <TemplateElement*> }
@@ -208,15 +217,12 @@ lexical syntax
 
 context-free sorts
 
-  TemplateCaseAltExps TemplateTypeCaseAltSort
+  TemplateCaseAltExps
 
 context-free syntax
 
   TemplateCaseAltExps.TemplateCaseExps = <<{Exp ","}+>>
   TemplateCaseAltExps = <default> {reject}
-
-  TemplateTypeCaseAltSort.TemplateTypeCaseSort = <<Sort>>
-  TemplateTypeCaseAltSort = <default> {reject}
 
 context-free priorities
 
@@ -375,19 +381,9 @@ lexical syntax
   PropertyAssignmentId = ExtendedId
   PropertyAssignmentId = SubmitProp {reject}
 
-context-free sorts
-
-  TextInterp
-
 syntax
 
-  TemplateElement-CF.Text = "\"" StringLex-LEX "\""
-  TemplateElement-CF = TextInterp-CF
-  TextInterp-CF.TextInterp = "\"" StringPart-CF* "\""
-
-context-free syntax
-
-  TextInterp = "\"" StringLex "\"" {reject}
+  TemplateElement-CF.Text = "\"" StringPart-CF* "\""
 
 lexical syntax
 
@@ -439,9 +435,11 @@ context-free syntax // reject rules
   TemplateCall = <databind <Block>> {reject}
   TemplateCall = <render <Block>> {reject}
   TemplateCall = <allphases <Block>> {reject}
-  TemplateCall = <validate <Block>> {reject}
-  TemplateCall = <validate ( <Exp> , <Exp> )> {reject}
   TemplateCall = <action> {reject}
+
+lexical syntax
+
+  TemplateId = "validate" {reject}
 
 context-free sorts
 
@@ -490,6 +488,10 @@ context-free syntax
     }
   >
   HTMLWrapperBody.HTMLWrapperBody = <<Id> <Id> <HTMLWrapperAssigns>>
+
+lexical syntax
+
+  TemplateId = "htmlwrapper" {reject}
 
 context-free sorts
 

@@ -90,7 +90,7 @@ context-free syntax
       <{EnumValue ","}*>
     }
   >
-  EnumValue.EnumValue = <<Id> ( <StringValue> )>
+  EnumValue.EnumValue = <<Id> ( <String> )>
 
 context-free sorts
 

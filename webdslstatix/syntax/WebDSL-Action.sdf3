@@ -56,6 +56,10 @@ context-free syntax
     return;
   >
 
+lexical syntax
+
+  VarId = "return" {reject}
+
 context-free priorities
 
   Statement.Stat <0> .> Exp.Var
@@ -120,7 +124,7 @@ context-free syntax
   OptTypeAlias.TypeAlias = <as <Id>>
   OptTypeAlias.OptTypeAliasNone = <>
   TypeCaseAlt.TypeCaseAlt = <
-    <TypeCaseAltSort> <Block>
+    <Sort> <Block>
   >
   TypeCaseAlt.TypeCaseAltDefault = <
     default <Block>
@@ -128,15 +132,12 @@ context-free syntax
 
 context-free sorts
 
-  CaseAltExps TypeCaseAltSort
+  CaseAltExps
 
 context-free syntax
 
   CaseAltExps.CaseExps = <<{Exp ","}+>>
   CaseAltExps = <default> {reject}
-
-  TypeCaseAltSort.TypeCaseSort = <<Sort>>
-  TypeCaseAltSort = <default> {reject}
 
 context-free priorities
 
@@ -171,7 +172,7 @@ context-free syntax
   ConstValue.Int = Int
   ConstValue.Long = Long
   ConstValue.Float = Float
-  ConstValue = StringValue
+  ConstValue = String
 
   Exp.Var = VarId
   Exp.FieldAccess = <<FAExp> . <Id>>
@@ -269,6 +270,10 @@ lexical syntax
   VarId = "false" {reject}
   VarId = "null" {reject}
 
+  TemplateId = "true" {reject}
+  TemplateId = "false" {reject}
+  TemplateId = "null" {reject}
+
 context-free syntax
 
   Exp.And = <<Exp> && <Exp>> {left}
@@ -350,7 +355,6 @@ context-free priorities
   { Exp.HqlExp } >
   { Exp.IfExp } >
   {
-    Exp.SearcherDef
     Exp.RetrievalExp
   }
 

@@ -11,10 +11,10 @@ fixture [[
 
 // simple sort
 test simple sort [[ var x : Int ]] parse succeeds parse to GlobalVarDecl("x", SimpleSort("Int"))
-test simple sort lower case [[ var x : sort ]] parse succeeds parse to GlobalVarDecl("x", SimpleSort("sort"))
 test simple sort upper case [[ var x : SORT ]] parse succeeds parse to GlobalVarDecl("x", SimpleSort("SORT"))
-test simple sort numbers [[ var x : sort0 ]] parse succeeds parse to GlobalVarDecl("x", SimpleSort("sort0"))
-test simple sort underscore [[ var x : sort_ ]] parse succeeds parse to GlobalVarDecl("x", SimpleSort("sort_"))
+test simple sort numbers [[ var x : Sort0 ]] parse succeeds parse to GlobalVarDecl("x", SimpleSort("Sort0"))
+test simple sort underscore [[ var x : Sort_ ]] parse succeeds parse to GlobalVarDecl("x", SimpleSort("Sort_"))
+test simple sort lower case [[ var x : sort ]] parse fails
 test simple sort dash [[ var x : sort- ]] parse fails
 test simple sort start with underscore [[ var x : _sort ]] parse fails
 test simple sort start with number [[ var x : 0sort ]] parse fails

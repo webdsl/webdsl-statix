@@ -65,9 +65,9 @@ test float exponent no integer after [[ 1e ]] parse fails
 
 
 // strings
-test empty string [[ "" ]] parse succeeds parse to Const(StringValue(""))
-test string single word [[ "hello" ]] parse succeeds parse to Const(StringValue("hello"))
-test string multiple words [[ "hello world" ]] parse succeeds parse to Const(StringValue("hello world"))
+test empty string [[ "" ]] parse succeeds parse to Const(String([]))
+test string single word [[ "hello" ]] parse succeeds parse to Const(String([StringValue("hello")]))
+test string multiple words [[ "hello world" ]] parse succeeds parse to Const(String([StringValue("hello world")]))
 test string escapeable characters [[ "\0 \1 \2 \3 \4 \5 \6 \7 \8 \9 \b \t \n \f \r \' \" \\ \~" ]] parse succeeds
 
 // string disallowed characters
@@ -80,16 +80,16 @@ test string no unescaped tilde [[ "~" ]] parse fails
 test string no unescaped backslash [[ "\" ]] parse fails
 
 // string interpolation
-test string interpolation simple var [[ "hello ~x" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleVar("x"))]))
-test string interpolation simple field access [[ "hello ~x.y" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleFieldAccess(SimpleVar("x"),"y"))]))
+test string interpolation simple var [[ "hello ~x" ]] parse succeeds parse to Const(String([StringValue("hello "), InterpValue(SimpleVar("x"))]))
+test string interpolation simple field access [[ "hello ~x.y" ]] parse succeeds parse to Const(String([StringValue("hello "), InterpValue(SimpleFieldAccess(SimpleVar("x"),"y"))]))
 test dot after string interpolation [[ "hello ~x." ]] parse fails
-test string interpolation simple this call no args [[ "hello ~f()" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleThisCall(ThisCall("f", [])))]))
-test string interpolation simple this call single arg [[ "hello ~f(x)" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleThisCall(ThisCall("f", [Var("x")])))]))
-test string interpolation simple this call multiple args [[ "hello ~f(x, 2)" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleThisCall(ThisCall("f", [Var("x"), Const(Int("2"))])))]))
+test string interpolation simple this call no args [[ "hello ~f()" ]] parse succeeds parse to Const(String([StringValue("hello "), InterpValue(SimpleThisCall(ThisCall("f", [])))]))
+test string interpolation simple this call single arg [[ "hello ~f(x)" ]] parse succeeds parse to Const(String([StringValue("hello "), InterpValue(SimpleThisCall(ThisCall("f", [Var("x")])))]))
+test string interpolation simple this call multiple args [[ "hello ~f(x, 2)" ]] parse succeeds parse to Const(String([StringValue("hello "), InterpValue(SimpleThisCall(ThisCall("f", [Var("x"), Const(Int("2"))])))]))
 test opening parenthesis after string interp this call [[ "hello ~f(" ]] parse fails
-test string interpolation simple call no args [[ "hello ~a.f()" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleCall(SimpleVar("a"), "f", []))]))
-test string interpolation simple call single arg [[ "hello ~a.f(x)" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleCall(SimpleVar("a"), "f", [Var("x")]))]))
-test string interpolation simple call multiple args [[ "hello ~a.f(x, 2)" ]] parse succeeds parse to Const(StringInterp(["hello ", InterpSimpleExp(SimpleCall(SimpleVar("a"), "f", [Var("x"), Const(Int("2"))]))]))
+test string interpolation simple call no args [[ "hello ~a.f()" ]] parse succeeds parse to Const(String([StringValue("hello "), InterpValue(SimpleCall(SimpleVar("a"), "f", []))]))
+test string interpolation simple call single arg [[ "hello ~a.f(x)" ]] parse succeeds parse to Const(String([StringValue("hello "), InterpValue(SimpleCall(SimpleVar("a"), "f", [Var("x")]))]))
+test string interpolation simple call multiple args [[ "hello ~a.f(x, 2)" ]] parse succeeds parse to Const(String([StringValue("hello "), InterpValue(SimpleCall(SimpleVar("a"), "f", [Var("x"), Const(Int("2"))]))]))
 test opening parenthesis after string interp call [[ "hello ~a.f(" ]] parse fails
 
 // var ids

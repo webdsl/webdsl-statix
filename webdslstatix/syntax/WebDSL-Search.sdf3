@@ -37,7 +37,7 @@ context-free syntax
   OptArguments.OptArgumentsNone = <>
   OptArguments.Arguments = <( <{Argument ","}*> )>
 
-  Argument.Argument = <<Id> = <StringValue>>
+  Argument.Argument = <<Id> = <String>>
 
 context-free sorts
 

@@ -43,11 +43,11 @@ test dispatch entry multiple args [[
 
 test dispatch entry single template element [[
   x { "x" }
-]] parse succeeds parse to DispatchEntry("x", OptFormalArgsNone(), [Text("x")])
+]] parse succeeds parse to DispatchEntry("x", OptFormalArgsNone(), [Text([StringValue("x")])])
 
 test dispatch entry multiple template elements [[
   x { "x" "y" }
-]] parse succeeds parse to DispatchEntry("x", OptFormalArgsNone(), [Text("x"), Text("y")])
+]] parse succeeds parse to DispatchEntry("x", OptFormalArgsNone(), [Text([StringValue("x")]), Text([StringValue("y")])])
 
 
 // dispatch entity
@@ -59,10 +59,10 @@ test dispatch entity single template element [[
   x : Ent {
     "x"
   }
-]] parse succeeds parse to DispatchEntity("x", SimpleSort("Ent"), [Text("x")])
+]] parse succeeds parse to DispatchEntity("x", SimpleSort("Ent"), [Text([StringValue("x")])])
 
 test dispatch entity [[
   x : Ent {
     "x" "y"
   }
-]] parse succeeds parse to DispatchEntity("x", SimpleSort("Ent"), [Text("x"), Text("y")])
+]] parse succeeds parse to DispatchEntity("x", SimpleSort("Ent"), [Text([StringValue("x")]), Text([StringValue("y")])])

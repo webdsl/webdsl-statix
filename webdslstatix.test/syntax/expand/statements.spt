@@ -46,4 +46,4 @@ test expand local as type cases [[
       x { x(); }
     }
   }
-]] parse succeeds parse to TypeCaseStmt(Var("a"), TypeAlias("b"), [TypeCaseAltExpandLocal(["Int", "Long", "Float", "String", "Bool"], ["x"], TypeCaseAlt(TypeCaseSort(SimpleSort("x")), Block([Stat(ThisCall("x", []))])))])
+]] parse succeeds parse to TypeCaseStmt(Var("a"), TypeAlias("b"), [TypeCaseAltExpandLocal(["Int", "Long", "Float", "String", "Bool"], ["x"], "x", Block([Stat(ThisCall("x", []))]))])

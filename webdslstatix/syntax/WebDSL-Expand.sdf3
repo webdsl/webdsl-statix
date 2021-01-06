@@ -88,16 +88,24 @@ context-free syntax
   PropertyAssignment.PropertyAssignmentExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <PropertyAssignment> }>
   FormalArg.FormalArgExpandLocal = <expand <ExpandId+> to <ExpandArgId+> { <FormalArg> }>
   Case.CaseAltExpandLocal = <
-    expand <ExpandId+> to <ExpandArgId+> { <Case> }
+    expand <ExpandId+> to <ExpandArgId+> {
+      <Case>
+    }
   >
   TemplateCaseAlt.TemplateCaseAltExpandLocal = <
-    expand <ExpandId+> to <ExpandArgId+> { <TemplateCaseAlt> }
+    expand <ExpandId+> to <ExpandArgId+> {
+      <TemplateCaseAlt>
+    }
   >
   TypeCaseAlt.TypeCaseAltExpandLocal = <
-    expand <ExpandId+> to <ExpandArgId+> { <TypeCaseAlt> }
+    expand <ExpandId+> to <ExpandArgId+> {
+      <ExpandArgId> <Block>
+    }
   >
   TemplateTypeCaseAlt.TemplateTypeCaseAltExpandLocal = <
-    expand <ExpandId+> to <ExpandArgId+> { <TemplateTypeCaseAlt> }
+    expand <ExpandId+> to <ExpandArgId+> {
+      <ExpandArgId> { <TemplateElement*> }
+    }
   >
 
 
