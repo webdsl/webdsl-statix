@@ -55,7 +55,7 @@ context-free sorts
 %% the first QMLex and StringLex
 syntax
 
-  String-CF.String = "\"" StringPart-CF* "\""
+  String-CF.StringParts = "\"" StringPart-CF* "\""
 
   StringPart-CF.InterpValue = "~" SimpleExp-CF
   StringPart-CF.StringValue = StringLex-LEX

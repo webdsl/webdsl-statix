@@ -22,8 +22,8 @@ rules
 
   normalize-ui : OptFormalArgsNone() -> FormalArgs([])
   normalize-ui : OptTemplateArgsNone() -> TemplateArgs([])
-  normalize-ui : OptTCallArgsNone() -> []
-  normalize-ui : OptTCallPropAssignsNone() -> []
+  normalize-ui : OptTCallArgsNone() -> TCallArgs([])
+  normalize-ui : OptTCallPropAssignsNone() -> TCallPropAssigns([])
   normalize-ui : TemplateBodyNone() -> TemplateBody([])
   normalize-ui : HTMLWrapperAssignsNone() -> HTMLWrapperAssigns([])
 

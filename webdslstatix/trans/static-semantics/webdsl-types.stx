@@ -64,10 +64,8 @@ rules // types of constant expressions
   typeOfExp(_, Const(exp@Float(_))) = FLOAT() :-
     @exp.type := FLOAT().
 
-  typeOfExp(_, Const(StringValue2ConstValue(exp@StringValue(_)))) = STRING() :-
-    @exp.type := STRING().
-
-  typeOfExp(_, Const(StringValue2ConstValue(StringInterp2StringValue(exp@StringInterp(_))))) = STRING() :-
+  typeOfExp(_, Const(exp@String(_))) = STRING() :-
+    // TO-DO: check expressions in string parts
     @exp.type := STRING().
 
   typeOfExp(_, exp@True()) = BOOL() :-
