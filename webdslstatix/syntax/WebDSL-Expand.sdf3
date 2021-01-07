@@ -38,10 +38,13 @@ context-free syntax
 
   Definition.DeriveCrud = <derive crud <Id>> {case-insensitive}
 
+context-free syntax
+
+  TemplateCall = <from> {reject}
+
 lexical syntax
 
   TemplateId = "derive" {reject}
-  TemplateId = "from" {reject}
   TemplateId = "for" {reject}
 
 context-free priorities

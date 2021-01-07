@@ -187,6 +187,14 @@ context-free syntax
   ElseIfTempl.ElseIfTempl = <else if ( <Exp> ) {
     <TemplateElement*>
   }>
+
+lexical syntax
+
+  TemplateId = "if" {reject}
+  TemplateId = "else" {reject}
+
+context-free syntax
+
   TemplateElement.TemplateCase = <
     case ( <{Exp ","}+> ) {
       <TemplateCaseAlt*>
@@ -423,7 +431,6 @@ context-free syntax
   TemplateElement.RenderAction = <render <Block>>
   TemplateElement.AllPhasesAction = <allphases <Block>>
   TemplateElement.ValidateAction = <validate <Block>>
-  TemplateElement.ValidateElement = <validate ( <Exp> , <Exp> )>
   Action.Action = <action <ActionModifier*> <Id> <OptFormalArgs> <Block>>
   ActionModifier.ActionModifierIgnoreValidation = <ignore-validation>
   TemplateCallId.QualifiedElementsCall = <<TemplateId> .elements>
@@ -436,10 +443,7 @@ context-free syntax // reject rules
   TemplateCall = <render <Block>> {reject}
   TemplateCall = <allphases <Block>> {reject}
   TemplateCall = <action> {reject}
-
-lexical syntax
-
-  TemplateId = "validate" {reject}
+  TemplateCall = <validate <Block>> {reject}
 
 context-free sorts
 

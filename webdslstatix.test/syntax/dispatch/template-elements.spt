@@ -90,7 +90,7 @@ test dispatch navigate multiple template elements [[
 // dispatch navigate button
 test dispatch navigate button [[
   navigate("button-" + "x", x)
-]] parse succeeds parse to DispatchNavigateButton(Add(Const(String([StringValue("button-")])), Const(String([StringValue("x")]))), [DispatchNavigateCallNoArg("x")])
+]] parse succeeds parse to DispatchNavigateButton(Add(Const(StringConst(String([StringValue("button-")]))), Const(StringConst(String([StringValue("x")])))), [DispatchNavigateCallNoArg("x")])
 
 test dispatch navigate button at least one call [[
   navigate("button-" + "x")
@@ -98,12 +98,12 @@ test dispatch navigate button at least one call [[
 
 test dispatch navigate button multiple calls [[
   navigate("button-" + "x", x / y)
-]] parse succeeds parse to DispatchNavigateButton(Add(Const(String([StringValue("button-")])), Const(String([StringValue("x")]))), [DispatchNavigateCallNoArg("x"), DispatchNavigateCallNoArg("y")])
+]] parse succeeds parse to DispatchNavigateButton(Add(Const(StringConst(String([StringValue("button-")]))), Const(StringConst(String([StringValue("x")])))), [DispatchNavigateCallNoArg("x"), DispatchNavigateCallNoArg("y")])
 
 test dispatch navigate button three calls [[
   navigate("button-" + "x", x / y / z)
-]] parse succeeds parse to DispatchNavigateButton(Add(Const(String([StringValue("button-")])), Const(String([StringValue("x")]))), [DispatchNavigateCallNoArg("x"), DispatchNavigateCallNoArg("y"), DispatchNavigateCallNoArg("z")])
+]] parse succeeds parse to DispatchNavigateButton(Add(Const(StringConst(String([StringValue("button-")]))), Const(StringConst(String([StringValue("x")])))), [DispatchNavigateCallNoArg("x"), DispatchNavigateCallNoArg("y"), DispatchNavigateCallNoArg("z")])
 
 test dispatch navigate button multiple calls with args [[
   navigate("button-" + "x", x(1, 2) / y(3, 4))
-]] parse succeeds parse to DispatchNavigateButton(Add(Const(String([StringValue("button-")])), Const(String([StringValue("x")]))), [DispatchNavigateCall("x", [Const(Int("1")), Const(Int("2"))]), DispatchNavigateCall("y", [Const(Int("3")), Const(Int("4"))])])
+]] parse succeeds parse to DispatchNavigateButton(Add(Const(StringConst(String([StringValue("button-")]))), Const(StringConst(String([StringValue("x")])))), [DispatchNavigateCall("x", [Const(Int("1")), Const(Int("2"))]), DispatchNavigateCall("y", [Const(Int("3")), Const(Int("4"))])])

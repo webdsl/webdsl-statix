@@ -3,6 +3,7 @@ module WebDSL-DataValidation
 imports
   WebDSL-Action
   WebDSL-Lexical
+  WebDSL-UI
 
 context-free syntax
 

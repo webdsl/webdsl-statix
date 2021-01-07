@@ -18,11 +18,11 @@ test javascript empty block [[
 
 test javascript single attribute [[
   <script id="x"></script>
-]] parse succeeds parse to JSElement([Attribute("id", Const(String([StringValue("x")])))], [])
+]] parse succeeds parse to JSElement([Attribute("id", Const(StringConst(String([StringValue("x")]))))], [])
 
 test javascript multiple attributes [[
   <script id="x" class="y"></script>
-]] parse succeeds parse to JSElement([Attribute("id", Const(String([StringValue("x")]))), Attribute("class", Const(String([StringValue("y")])))], [])
+]] parse succeeds parse to JSElement([Attribute("id", Const(StringConst(String([StringValue("x")])))), Attribute("class", Const(StringConst(String([StringValue("y")]))))], [])
 
 test javascript [[
   <script>alert("x");</script>
@@ -61,11 +61,11 @@ test style empty block [[
 
 test style single attribute [[
   <style id="x"></style>
-]] parse succeeds parse to StyleElement([Attribute("id", Const(String([StringValue("x")])))], [])
+]] parse succeeds parse to StyleElement([Attribute("id", Const(StringConst(String([StringValue("x")]))))], [])
 
 test style multiple attributes [[
   <style id="x" class="y"></style>
-]] parse succeeds parse to StyleElement([Attribute("id", Const(String([StringValue("x")]))), Attribute("class", Const(String([StringValue("y")])))], [])
+]] parse succeeds parse to StyleElement([Attribute("id", Const(StringConst(String([StringValue("x")])))), Attribute("class", Const(StringConst(String([StringValue("y")]))))], [])
 
 test style [[
   <style>.x{ color: red; }</style>

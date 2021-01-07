@@ -4,6 +4,7 @@ imports
 
   WebDSL-Action
   WebDSL-Lexical
+  WebDSL-UI
 
 lexical sorts
 
@@ -124,13 +125,15 @@ lexical syntax
   HQLIdentifier = "by" {reject}
   HQLIdentifier = "order" {reject}
 
-  TemplateId = "select" {reject}
-  TemplateId = "from" {reject}
   TemplateId = "by" {reject}
   TemplateId = "order" {reject}
   TemplateId = "having" {reject}
   TemplateId = "where" {reject}
   TemplateId = "as" {reject}
+
+context-free syntax
+
+  TemplateCall = <select> {reject}
 
 context-free sorts
 
@@ -216,10 +219,13 @@ lexical syntax
   HQLIdentifier = "empty" {reject}
   HQLIdentifier = "null" {reject}
 
-  TemplateId = "empty" {reject}
   TemplateId = "or" {reject}
   TemplateId = "and" {reject}
   TemplateId = "not" {reject}
+
+context-free syntax
+
+  TemplateCall = <empty> {reject}
 
 context-free priorities
 

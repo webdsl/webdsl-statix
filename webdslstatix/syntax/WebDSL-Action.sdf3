@@ -172,7 +172,7 @@ context-free syntax
   ConstValue.Int = Int
   ConstValue.Long = Long
   ConstValue.Float = Float
-  ConstValue.String = String
+  ConstValue.StringConst = String
 
   Exp.Var = VarId
   Exp.FieldAccess = <<FAExp> . <Id>>
