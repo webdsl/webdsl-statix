@@ -15,7 +15,7 @@ test phexp long [[ 1L ]] parse succeeds parse to PHConst(Long("1L"))
 test phexp float [[ 1f ]] parse succeeds parse to PHConst(Float("1f"))
 test phexp float decimal [[ 2.0f ]] parse succeeds parse to PHConst(Float("2.0f"))
 test phexp string [[ "ph-1" ]] parse succeeds parse to PHConst(StringConst(String([StringValue("ph-1")])))
-test phexp string interp [[ "ph-~x" ]] parse succeeds parse to PHConst(StringConst(String([StringValue("ph-"), InterpValue(InterpExp(SimpleVar("x")))])))
+test phexp string interp [[ "ph-~x" ]] parse succeeds parse to PHConst(StringConst(String([StringValue("ph-"), InterpValue(InterpSimpleExp(SimpleVar("x")))])))
 
 test phexp this call [[ getId() ]] parse succeeds parse to PHThisCall(ThisCall("getId", []))
 

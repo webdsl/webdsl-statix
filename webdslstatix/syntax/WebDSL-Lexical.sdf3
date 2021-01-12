@@ -60,7 +60,7 @@ syntax
   StringPart-CF.StringValue = StringLex-LEX
   StringPart-CF.InterpValue = "~" StringInterpExp-CF
 
-  StringInterpExp-CF.InterpExp = SimpleExp-CF
+  StringInterpExp-CF.InterpSimpleExp = SimpleExp-CF
 
 context-free restrictions
 
