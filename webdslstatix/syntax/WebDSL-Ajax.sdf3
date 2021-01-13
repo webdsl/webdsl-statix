@@ -13,7 +13,7 @@ context-free syntax
 
   Statement.AjaxStatement = <
     <AjaxStatement> ;
-  > {prefer}
+  >
 
   AjaxStatement.AjaxReplace = <replace ( <Exp> , <TemplateCall> )>
   AjaxStatement.AjaxAppend = <append ( <Exp> , <TemplateCall> )>
@@ -25,7 +25,20 @@ context-free syntax
   AjaxStatement.AjaxRestyle = <restyle ( <Exp> , <Exp> )>
   AjaxStatement.AjaxClear = <clear ( <Exp> )>
   AjaxStatement.AjaxRefresh = <refresh ( )>
-  AjaxStatement.AjaxRunScript = <runscript ( <Exp> )> {prefer}
+  AjaxStatement.AjaxRunScript = <runscript ( <Exp> )>
+
+context-free syntax
+
+  ThisCall = <replace ( <Exp> , <TemplateCall> )> {reject}
+  ThisCall = <append ( <Exp> , <TemplateCall> )> {reject}
+  ThisCall = <visibility ( <Exp> , <AjaxVisibility> )> {reject}
+  ThisCall = <relocate ( <PageCall> )> {reject}
+  ThisCall = <restyle ( <Exp> , <Exp> )> {reject}
+  ThisCall = <clear ( <Exp> )> {reject}
+  ThisCall = <refresh ( )> {reject}
+  ThisCall = <runscript ( <Exp> )> {reject}
+
+context-free syntax
 
   TemplateElement = <
     <Placeholder>
@@ -36,25 +49,39 @@ context-free syntax
 
   Placeholder.PlaceholderHtml = <placeholder \< <Id> \> <Id> {
     <TemplateElement*>
-  }> {prefer}
+  }>
   Placeholder.PlaceholderHtmlExp = <placeholder \< <Id> \> <Exp> {
     <TemplateElement*>
   }>
   Placeholder.Placeholder = <placeholder <Id> {
     <TemplateElement*>
-  }> {prefer}
+  }>
   Placeholder.PlaceholderExp = <placeholder <Exp> {
     <TemplateElement*>
   }>
 
-  PlaceholderWithAjaxCall.PlaceholderAjaxHtml = <placeholder \< <Id> \> <Id> <TemplateCall>> {prefer}
+  PlaceholderWithAjaxCall.PlaceholderAjaxHtml = <placeholder \< <Id> \> <Id> <TemplateCall>>
   PlaceholderWithAjaxCall.PlaceholderAjaxHtmlExp = <placeholder \< <Id> \> <PHExp> <TemplateCall>>
-  PlaceholderWithAjaxCall.PlaceholderAjax = <placeholder <Id> <TemplateCall>> {prefer}
+  PlaceholderWithAjaxCall.PlaceholderAjax = <placeholder <Id> <TemplateCall>>
   PlaceholderWithAjaxCall.PlaceholderAjaxExp = <placeholder <PHExp> <TemplateCall>>
 
   TemplateElement = PlaceholderVar
 
-  PlaceholderVar.PlaceholderVar = <placeholdervar <Id>> {prefer}
+  PlaceholderVar.PlaceholderVar = <placeholdervar <Id>>
+
+lexical syntax
+
+  TemplateId = "placeholder" {reject}
+  TemplateId = "placeholdervar" {reject}
+
+lexical restrictions
+
+  "placeholder" -/- [a-zA-Z0-9]
+
+context-free priorities
+
+  Placeholder.PlaceholderHtmlExp <4> .> Exp.Var,
+  Placeholder.PlaceholderExp <1> .> Exp.Var
 
 context-free sorts
 
@@ -62,9 +89,9 @@ context-free sorts
 
 context-free syntax
 
-  PHExp.PHThisCall = <<Id> ( <{Exp ","}*> )>
+  PHExp.PHThisCall = ThisCall
   PHExp.PHCall = <<Exp> . <Id> ( <{Exp ","}*> )>
-  PHExp.PHFieldAccess = <<Exp> . <Id>> {prefer}
-  PHExp.PHCollectionIndex = <<Exp> [ <Exp> ]> {prefer}
+  PHExp.PHFieldAccess = <<Exp> . <Id>>
+  PHExp.PHCollectionIndex = <<Exp> [ <Exp> ]>
   PHExp.PHAdd = <<Exp> + <Exp>>
-  PHExp = ConstValue
+  PHExp.PHConst = ConstValue

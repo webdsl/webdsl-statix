@@ -6,16 +6,17 @@ imports
 lexical sorts
 
   HTML5VoidElement XMLComment XMLCommentChar OneDash TwoDashes QualName Qualifier NCName
+  XMLTagName
 
 context-free syntax
 
   TemplateElement.XMLEmptyElement = <
-    \< <QualName> <Attribute*> /\>
+    \< <XMLTagName> <Attribute*> /\>
   >
   TemplateElement.XMLElement = <
-    \< <QualName> <Attribute*> \>
+    \< <XMLTagName> <Attribute*> \>
       <TemplateElement*>
-    \</ <QualName> \>
+    \</ <XMLTagName> \>
   >
 
 context-free syntax
@@ -47,12 +48,12 @@ context-free syntax
 
 lexical syntax
 
-  XMLComment = "<!--" XMLCommentChar* "-->" 
-  XMLCommentChar = ~[\-] 
-  XMLCommentChar = OneDash 
-  XMLCommentChar = TwoDashes 
-  OneDash = [\-] 
-  TwoDashes = [\-] [\-] 
+  XMLComment = "<!--" XMLCommentChar* "-->"
+  XMLCommentChar = ~[\-]
+  XMLCommentChar = OneDash
+  XMLCommentChar = TwoDashes
+  OneDash = [\-]
+  TwoDashes = [\-] [\-]
 
 lexical restrictions
 
@@ -79,6 +80,7 @@ context-free syntax
 
 lexical syntax
 
+  XMLTagName = QualName
   QualName = Qualifier? NCName
   Qualifier = NCName ":"
   NCName = [A-Za-z\_] [A-Za-z0-9\.\-\_]*

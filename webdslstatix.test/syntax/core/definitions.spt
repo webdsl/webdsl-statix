@@ -52,14 +52,14 @@ test enum single value [[
   enum x {
     a("a")
   }
-]] parse succeeds parse to Enum("x", [EnumValue("a", StringValue("a"))])
+]] parse succeeds parse to Enum("x", [EnumValue("a", String([StringValue("a")]))])
 
 test enum multiple values [[
   enum x {
     a("a"),
     b("b")
   }
-]] parse succeeds parse to Enum("x", [EnumValue("a", StringValue("a")), EnumValue("b", StringValue("b"))])
+]] parse succeeds parse to Enum("x", [EnumValue("a", String([StringValue("a")])), EnumValue("b", String([StringValue("b")]))])
 
 test enum values without commas [[
   enum x {

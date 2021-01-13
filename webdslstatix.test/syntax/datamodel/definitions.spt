@@ -143,19 +143,19 @@ test global var decl (deprecated) [[
 
 test global var decl init [[
   var x : Int := 1
-]] parse succeeds parse to GlobalVarDeclInit("x", SimpleSort("Int"), Int("1"))
+]] parse succeeds parse to GlobalVarDeclInit("x", SimpleSort("Int"), Const(Int("1")))
 
 test global var decl init (deprecated) [[
   var x : Int := 1;
-]] parse succeeds parse to GlobalVarDeclInitDepr("x", SimpleSort("Int"), Int("1"))
+]] parse succeeds parse to GlobalVarDeclInitDepr("x", SimpleSort("Int"), Const(Int("1")))
 
 test global var decl init inferred [[
   var x := 1
-]] parse succeeds parse to GlobalVarDeclInitInferred("x", Int("1"))
+]] parse succeeds parse to GlobalVarDeclInitInferred("x", Const(Int("1")))
 
 test global var decl init inferred (deprecated) [[
   var x := 1;
-]] parse succeeds parse to GlobalVarDeclInitInferredDepr("x", Int("1"))
+]] parse succeeds parse to GlobalVarDeclInitInferredDepr("x", Const(Int("1")))
 
 
 // request var declarations
@@ -181,16 +181,16 @@ test request var decl (deprecated) [[
 
 test request var decl init [[
   request var x : Int := 1
-]] parse succeeds parse to RequestVarDeclInit("x", SimpleSort("Int"), Int("1"))
+]] parse succeeds parse to RequestVarDeclInit("x", SimpleSort("Int"), Const(Int("1")))
 
 test request var decl init (deprecated) [[
   request var x : Int := 1;
-]] parse succeeds parse to RequestVarDeclInitDepr("x", SimpleSort("Int"), Int("1"))
+]] parse succeeds parse to RequestVarDeclInitDepr("x", SimpleSort("Int"), Const(Int("1")))
 
 test request var decl init inferred [[
   request var x := 1
-]] parse succeeds parse to RequestVarDeclInitInferred("x", Int("1"))
+]] parse succeeds parse to RequestVarDeclInitInferred("x", Const(Int("1")))
 
 test request var decl init inferred (deprecated) [[
   request var x := 1;
-]] parse succeeds parse to RequestVarDeclInitInferredDepr("x", Int("1"))
+]] parse succeeds parse to RequestVarDeclInitInferredDepr("x", Const(Int("1")))

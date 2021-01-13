@@ -14,27 +14,27 @@ fixture [[
 // entity property annotation
 test entity property annotation validate create [[
   x : Int (validatecreate(x == 1, "error" + ""))
-]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([ValidateCreateAnno(Eq(Var("x"), Int("1")), Add(StringValue("error"), StringValue("")))]))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([ValidateCreateAnno(Eq(Var("x"), Const(Int("1"))), Add(Const(StringConst(String([StringValue("error")]))), Const(StringConst(String([])))))]))
 
 test entity property annotation validate update [[
   x : Int (validateupdate(x == 1, "error" + ""))
-]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([ValidateUpdateAnno(Eq(Var("x"), Int("1")), Add(StringValue("error"), StringValue("")))]))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([ValidateUpdateAnno(Eq(Var("x"), Const(Int("1"))), Add(Const(StringConst(String([StringValue("error")]))), Const(StringConst(String([])))))]))
 
 test entity property annotation validate delete [[
   x : Int (validatedelete(x == 1, "error" + ""))
-]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([ValidateDeleteAnno(Eq(Var("x"), Int("1")), Add(StringValue("error"), StringValue("")))]))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([ValidateDeleteAnno(Eq(Var("x"), Const(Int("1"))), Add(Const(StringConst(String([StringValue("error")]))), Const(StringConst(String([])))))]))
 
 test entity property annotation validate [[
   x : Int (validate(x == 1, "error" + ""))
-]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([ValidateAnno(Eq(Var("x"), Int("1")), Add(StringValue("error"), StringValue("")))]))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([ValidateAnno(Eq(Var("x"), Const(Int("1"))), Add(Const(StringConst(String([StringValue("error")]))), Const(StringConst(String([])))))]))
 
 test entity property annotation named validate [[
   x : Int (y : validate(x == 1, "error" + ""))
-]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([NamedValidateAnno("y", Eq(Var("x"), Int("1")), Add(StringValue("error"), StringValue("")))]))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([NamedValidateAnno("y", Eq(Var("x"), Const(Int("1"))), Add(Const(StringConst(String([StringValue("error")]))), Const(StringConst(String([])))))]))
 
 test entity property annotation named validate underscores numbers [[
   x : Int (yZ_1 : validate(x == 1, "error" + ""))
-]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([NamedValidateAnno("yZ_1", Eq(Var("x"), Int("1")), Add(StringValue("error"), StringValue("")))]))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([NamedValidateAnno("yZ_1", Eq(Var("x"), Const(Int("1"))), Add(Const(StringConst(String([StringValue("error")]))), Const(StringConst(String([])))))]))
 
 test entity property annotation named validate start with underscore [[
   x : Int (_y : validate(x == 1, "error" + ""))
@@ -44,8 +44,8 @@ test entity property annotation named validate start with underscore [[
 // entity validation
 test validate entity [[
   validate(x.length == 1, "error")
-]] parse succeeds parse to ValidateEntity(Eq(FieldAccess(Var("x"), "length"), Int("1")), StringValue("error"))
+]] parse succeeds parse to ValidateEntity(Eq(FieldAccess(FAVar("x"), "length"), Const(Int("1"))), Const(StringConst(String([StringValue("error")]))))
 
 test validate entity expression as error[[
   validate(x.length == 1, "error" + "")
-]] parse succeeds parse to ValidateEntity(Eq(FieldAccess(Var("x"), "length"), Int("1")), Add(StringValue("error"), StringValue("")))
+]] parse succeeds parse to ValidateEntity(Eq(FieldAccess(FAVar("x"), "length"), Const(Int("1"))), Add(Const(StringConst(String([StringValue("error")]))), Const(StringConst(String([])))))

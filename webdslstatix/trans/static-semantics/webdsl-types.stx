@@ -55,19 +55,17 @@ rules // types of constant expressions
   typeOfExp(_, exp@Null()) = NULL() :-
     @exp.type := NULL().
 
-  typeOfExp(_, ConstValue2Exp(exp@Int(_))) = INT() :-
+  typeOfExp(_, Const(exp@Int(_))) = INT() :-
     @exp.type := INT().
 
-  typeOfExp(_, ConstValue2Exp(exp@Long(_))) = LONG() :-
+  typeOfExp(_, Const(exp@Long(_))) = LONG() :-
     @exp.type := LONG().
 
-  typeOfExp(_, ConstValue2Exp(exp@Float(_))) = FLOAT() :-
+  typeOfExp(_, Const(exp@Float(_))) = FLOAT() :-
     @exp.type := FLOAT().
 
-  typeOfExp(_, ConstValue2Exp(StringValue2ConstValue(exp@StringValue(_)))) = STRING() :-
-    @exp.type := STRING().
-
-  typeOfExp(_, ConstValue2Exp(StringValue2ConstValue(exp@StringInterp(_)))) = STRING() :-
+  typeOfExp(_, Const(exp@StringConst(_))) = STRING() :-
+    // TO-DO: check expressions in string parts
     @exp.type := STRING().
 
   typeOfExp(_, exp@True()) = BOOL() :-

@@ -94,6 +94,7 @@ test searchable entity property [[
   }
 ]] parse succeeds
 
+// added non-transitive priority rules for this one but it doesn't seem to work
 test search statement 1 [[
   function x() {
     var x2 := search Movie matching title,abstract: (+"hello" -"goodbye");
@@ -132,7 +133,7 @@ test search statement 6 [[
 
 test search statement 7 [[
   function x() {
-    search Entry limit 25 in namespace {};
+    search Entry limit 25 in namespace y;
   }
 ]] parse succeeds
 
@@ -192,47 +193,41 @@ test search statement 16 [[
 
 test search statement 17 [[
   function x() {
-    highlight entity.text for mySearcher on ~description surround with ("<b>","</b>");
+    author facets from mySearcher;
   }
 ]] parse succeeds
 
 test search statement 18 [[
   function x() {
-    author facets from mySearcher;
+    results from mySearcher;
   }
 ]] parse succeeds
 
 test search statement 19 [[
   function x() {
-    results from mySearcher;
+    count from mySearcher;
   }
 ]] parse succeeds
 
 test search statement 20 [[
   function x() {
-    count from mySearcher;
+    search Entry matching +"TERM" "alaaf" title, desc: -"noTerm";
   }
 ]] parse succeeds
 
 test search statement 21 [[
   function x() {
-    search Entry matching +"TERM" "alaaf" title, desc: -"noTerm";
+    searchtime from mySearcher;
   }
 ]] parse succeeds
 
 test search statement 22 [[
   function x() {
-    searchtime from mySearcher;
-  }
-]] parse succeeds
-
-test search statement 23 [[
-  function x() {
     Publication completions matching author.name: userQueryToComplete limit 10 in namespace "WebDSL";
   }
 ]] parse succeeds
 
-test search statement 24 [[
+test search statement 23 [[
   function x() {
     Item corrections matching title: userQueryToCorrect limit 20 in namespace list[1];
   }

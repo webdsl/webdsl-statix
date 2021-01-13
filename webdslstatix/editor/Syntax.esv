@@ -14,10 +14,16 @@ language
   block comment : "/*" * "*/"
   fences        : [ ] ( ) { }
 
+// WebDSL strings are not recognized as builtin strings, this small colorer fixes the string value coloring
+colorer
+
+  _.String       : blue
+  StringLex      : blue
+
 menus
-  
+
   menu: "Syntax" (openeditor)
-    
+
     action: "Format"                         = editor-format (source)
     action: "Show AST"                       = debug-show-aterm (source)
     action: "Show desugared AST"             = debug-show-desugared-aterm (source)

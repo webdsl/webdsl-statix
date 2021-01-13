@@ -4,6 +4,7 @@ imports
   WebDSL-Core
   WebDSL-DataModel
   WebDSL-Lexical
+  WebDSL-Search
   WebDSL-UI
   HQL
 
@@ -14,7 +15,7 @@ context-free sorts
 context-free syntax
 
   Function.Function = <
-    function <Id> <OptFormalArgs> <OptSort> <Block>
+    function <FunId> <OptFormalArgs> <OptSort> <Block>
   >
   OptSort.OptSortNone = <>
   OptSort.OptSortSome = <: <Sort>>
@@ -31,9 +32,13 @@ context-free syntax
 context-free syntax
 
   Exp.FunctionExp = <function <OptFormalArgs> <OptSort> <Block>>
-  Exp.FunctionRef = <function . <Id> ( <{Sort ","}*> ) <OptSort>>
-  Exp.FunctionRefCall = <function . <Id> ( <{Sort ","}*> ) <OptSort> ( <{Exp ","}*> )>
-  Exp.FunctionRefCallPartial = <function . <Id> ( <{Sort ","}*> ) <OptSort> ( * , <{Exp ","}*> )>
+  Exp.FunctionRef = <function . <FunId> ( <{Sort ","}*> ) <OptSort>>
+  Exp.FunctionRefCall = <function . <FunId> ( <{Sort ","}*> ) <OptSort> ( <{Exp ","}*> )>
+  Exp.FunctionRefCallPartial = <function . <FunId> ( <{Sort ","}*> ) <OptSort> ( * , <{Exp ","}*> )>
+
+lexical syntax
+
+  VarId = "function" {reject}
 
 context-free syntax
 
@@ -50,21 +55,35 @@ context-free syntax
   Statement.ReturnEmpty = <
     return;
   >
+
+lexical syntax
+
+  VarId = "return" {reject}
+  FunId = "return" {reject}
+
+context-free priorities
+
+  Statement.Stat <0> .> Exp.Var
+
+context-free syntax
+
   Statement.GoTo = <
     goto <PageCall>;
-  > {prefer}
+  >
   Statement.GoToAlt = <
     goto ( <PageCall> );
-  > {prefer}
+  >
+
+  ThisCall = <goto ( <PageCall> )> {reject}
 
   Statement.VarDecl = <
-    var <Id> : <Sort>;
+    var <VarId> : <Sort>;
   >
   Statement.VarDeclInit = <
-    var <Id> : <Sort> := <Exp>;
+    var <VarId> : <Sort> := <Exp>;
   >
   Statement.VarDeclInitInferred = <
-    var <Id> := <Exp>;
+    var <VarId> := <Exp>;
   >
 
 context-free sorts
@@ -92,11 +111,11 @@ context-free syntax
     }
   >
   Case.CaseAlt = <
-    <{Exp ","}+> <Block>
+    <CaseAltExps> <Block>
   >
   Case.CaseAltDefault = <
     default <Block>
-  > {prefer}
+  >
 
   Statement.TypeCaseStmt = <
     typecase ( <Exp> <OptTypeAlias> ) {
@@ -110,21 +129,34 @@ context-free syntax
   >
   TypeCaseAlt.TypeCaseAltDefault = <
     default <Block>
-  > {prefer}
+  >
+
+context-free sorts
+
+  CaseAltExps
+
+context-free syntax
+
+  CaseAltExps.CaseExps = <<{Exp ","}+>>
+  CaseAltExps = <default> {reject}
+
+context-free priorities
+
+  Statement.TypeCaseStmt <2> .> Exp.Cast
 
 context-free syntax
 
   Statement.ForStmt = <
-    for ( <Id> : <Sort> in <Exp> <OptFilter> ) <Block>
+    for ( <VarId> : <Sort> in <Exp> <OptFilter> ) <Block>
   >
   Statement.ForStmtInferred = <
-    for ( <Id> in <Exp> <OptFilter> ) <Block>
+    for ( <VarId> in <Exp> <OptFilter> ) <Block>
   >
   Statement.ForAllStmt = <
-    for ( <Id> : <Sort> <OptFilter> ) <Block>
+    for ( <VarId> : <Sort> <OptFilter> ) <Block>
   >
   Statement.ForCountStmt = <
-    for ( <Id> : Int from <Exp> to <Exp> ) <Block>
+    for ( <VarId> : Int from <Exp> to <Exp> ) <Block>
   >
   Statement.WhileStmt = <
     while ( <Exp> ) <Block>
@@ -132,61 +164,91 @@ context-free syntax
 
 context-free sorts
 
-  ConstValue Exp ObjectCreation ObjectPropertyAssignment Mapping
+  ConstValue Exp PropAssignment ObjectPropertyAssignment Mapping ThisCall FAExp
 
 context-free syntax
+
+  Exp.Const = ConstValue
 
   ConstValue.Int = Int
   ConstValue.Long = Long
   ConstValue.Float = Float
-  ConstValue = StringValue
-  Exp = ConstValue
+  ConstValue.StringConst = String
+
   Exp.Var = VarId
-  Exp = <in> {reject}
-  Exp.GlobalVar = <global . <Id>> {prefer}
-  Exp.SessionVar = <session . <Id>> {prefer}
-  Exp.FieldAccess = <<Exp> . <Id>>
-  Exp.CollectionIndex = <<Exp> [ <Exp> ]> {prefer}
-  ObjectCreation.ObjectCreationAlt = <<Sort> {
-    <ObjectPropertyAssignment*>
+  Exp.FieldAccess = <<FAExp> . <Id>>
+  Exp.CollectionIndex = <<Exp> [ <Exp> ]>
+  Exp.This = <this>
+
+  FAExp.FAExp = <<Exp>>
+  FAExp.FAVar = <<FAVarId>>
+  FAExp.FAGlobal = <global>
+  FAExp.FASession = <session>
+
+context-free priorities
+
+  FAExp.FAExp <0> .> Exp.Var
+
+lexical syntax
+
+  VarId = "this" {reject}
+
+  FAVarId = "global" {reject}
+  FAVarId = "session" {reject}
+
+context-free syntax
+
+  Exp.ObjectCreation = <<SimpleSortLex> {
+    <PropAssignment*>
   }>
-  ObjectCreation.ObjectCreation = <<Sort> {
-    <{ObjectPropertyAssignment ","}*>
-  }> {prefer}
-  Exp = ObjectCreation
+
+  PropAssignment.PropAssignment = <<ObjectPropertyAssignment>>
+  PropAssignment.PropAssignmentComma = <<ObjectPropertyAssignment> ,>
   ObjectPropertyAssignment.ObjectPropertyAssignment = <
     <Id> := <Exp>
   >
+
+/*
+  used in sdf2 definition as workaround to get working autocompletion:
   ObjectPropertyAssignment.IncompleteObjectPropertyAssignment = <
     <Id>
   >
+*/
+
   Statement.Assignment = <
     <Exp> := <Exp> ;
   >
-  Exp.MapCreation = <[ <Mapping*> ]> {avoid}
+
+  Exp.MapCreation = <[ <Mapping+> ]>
   Mapping.Mapping = <<Exp> -\> <Exp>>
   Exp.ListCreation = <[ <{Exp ","}*> ]>
   Exp.SetCreation = <{ <{Exp ","}+> }>
-  Exp.TypedListCreation = <List \< <Sort> \> ( <{Exp ","}*> )> {prefer}
-  Exp.TypedSetCreation = <Set \< <Sort> \> ( <{Exp ","}*> )> {prefer}
-  Exp.ThisCall = <<Id> ( <{Exp ","}*> )>
+  Exp.TypedListCreation = <List \< <Sort> \> ( <{Exp ","}*> )>
+  Exp.TypedSetCreation = <Set \< <Sort> \> ( <{Exp ","}*> )>
+
+lexical syntax
+
+  VarId = "List" {reject}
+  VarId = "Set" {reject}
+
+context-free syntax
+
+  Exp = ThisCall
+  ThisCall.ThisCall = <<FunId> ( <{Exp ","}*> )>
   Exp.Call = <<Exp> . <Id> ( <{Exp ","}*> )>
   Exp.IsA = <<Exp> is a <Sort>>
-  Exp.Cast = <<Exp> as <Sort>> {avoid}
+  Exp.Cast = <<Exp> as <Sort>>
+  Exp.InColl = <<Exp> in <Exp>>
 
   Exp.IfExp = <if ( <Exp> ) <Exp> else <Exp>>
 
   OutputShorthand.OutputShorthand = <~ ( <Exp> )>
-  SimpleExp.SimpleThisCall = <<Id> ( <{Exp ","}*> )>
+  SimpleExp.SimpleThisCall = ThisCall
   SimpleExp.SimpleCall = <<SimpleExp> . <Id> ( <{Exp ","}*> )>
 
 syntax
 
   StringPart-CF.InterpExp = "~" "(" Exp-CF ")"
-
-context-free syntax
-
-  Exp.InColl = <<Exp> in <Exp>>
 
 context-free restrictions
 
@@ -194,7 +256,7 @@ context-free restrictions
 
 context-free sorts
 
-  OptGroupBy ForExp
+  OptGroupBy GroupBy ForExp
 
 context-free syntax
 
@@ -204,18 +266,36 @@ context-free syntax
   Exp.LargerThanOrEqual = <<Exp> \>= <Exp>> {left}
   Exp.SmallerThan = <<Exp> \< <Exp>> {left}
   Exp.SmallerThanOrEqual = <<Exp> \<= <Exp>> {left}
-  Exp.True = <true> {prefer}
-  Exp.False = <false> {prefer}
-  Exp.Null = <null> {prefer}
+
+  Exp.True = <true>
+  Exp.False = <false>
+  Exp.Null = <null>
+
+lexical syntax
+
+  VarId = "true" {reject}
+  VarId = "false" {reject}
+  VarId = "null" {reject}
+
+  TemplateId = "true" {reject}
+  TemplateId = "false" {reject}
+  TemplateId = "null" {reject}
+
+context-free syntax
+
   Exp.And = <<Exp> && <Exp>> {left}
   Exp.Or = <<Exp> || <Exp>> {left}
   Exp.Not = <! <Exp>>
   Exp = <( <Exp> )> {bracket}
-  ForExp.ForExp = <[ <Exp> | <Id> <OptSort> in <Exp> <OptFilter> <OptGroupBy> ]>
-  ForExp.ForExpAlt = <[ <Id> <OptSort> in <Exp> <OptFilter> <OptGroupBy> ]>
+  ForExp.ForExp = <[ <Exp> | <VarId> <OptSort> in <Exp> <OptFilter> <OptGroupBy> ]>
+  ForExp.ForExpShortSort = <[ <VarId> : <Sort> in <Exp> ]>
+  ForExp.ForExpShortFilter = <[ <VarId> <OptSort> in <Exp> <Filter> ]>
+  ForExp.ForExpShortGroupBy = <[ <VarId> <OptSort> in <Exp> <GroupBy> ]>
+  ForExp.ForExpShort = <[ <VarId> <OptSort> in <Exp> <Filter> <GroupBy> ]>
   Exp = ForExp
-  OptGroupBy.GroupBy = <group by <Exp>>
+  OptGroupBy.OptGroupBySome = GroupBy
   OptGroupBy.OptGroupByNone = <>
+  GroupBy.GroupBy = <group by <Exp>>
   Exp.AndForExp = <And <ForExp>>
   Exp.OrForExp = <Or <ForExp>>
   Exp.Mul = <<Exp> * <Exp>> {left}
@@ -244,8 +324,6 @@ context-free syntax
   Statement.HqlStatement = <
     <HQLDeleteStatement> ;
   >
-
-  Exp = <<HQLQueryRule> . <Id>> {reject}
 
 context-free priorities
 
@@ -282,7 +360,9 @@ context-free priorities
   {left : Exp.And } >
   {left : Exp.Or } >
   { Exp.HqlExp } >
-  { Exp.IfExp }
+  { Exp.IfExp } >
+  { Exp.RetrievalExp } >
+  { Exp.SearcherDef }
 
 context-free sorts
 
@@ -290,13 +370,21 @@ context-free sorts
 
 context-free syntax
 
-  EmailCall.EmailCall = <<Id> ( <{Exp ","}*> )> 
-  Exp.RenderEmailFunctionCall = <renderemail ( <EmailCall> )> {prefer}
-  Exp.EmailFunctionCall = <email ( <EmailCall> )> {prefer}
-  Exp.EmailFunctionCallAlt = <email <EmailCall>> {prefer}
-  Exp.SendEmailFunctionCall = <sendemail ( <EmailCall> )> {prefer}
+  Exp.RenderEmailFunctionCall = <renderemail ( <EmailCall> )>
+  Exp.EmailFunctionCall = <email ( <EmailCall> )>
+  Exp.EmailFunctionCallAlt = <email <EmailCall>>
+  Exp.SendEmailFunctionCall = <sendemail ( <EmailCall> )>
+  EmailCall.EmailCall = <<Id> ( <{Exp ","}*> )>
+
+  Exp.RenderTemplateFunctionCall = <rendertemplate ( <TemplateCall> )>
+  Exp.ValidateTemplateFunctionCall = <validatetemplate ( <TemplateCall> )>
 
 context-free syntax
 
-  Exp.RenderTemplateFunctionCall = <rendertemplate ( <TemplateCall> )> {prefer}
-  Exp.ValidateTemplateFunctionCall = <validatetemplate ( <TemplateCall> )> {prefer}
+  ThisCall = <renderemail ( <EmailCall> )> {reject}
+  ThisCall = <email ( <EmailCall> )> {reject}
+  ThisCall = <email <EmailCall>> {reject}
+  ThisCall = <sendemail ( <EmailCall> )> {reject}
+
+  ThisCall = <rendertemplate ( <TemplateCall> )> {reject}
+  ThisCall = <validatetemplate ( <TemplateCall> )> {reject}

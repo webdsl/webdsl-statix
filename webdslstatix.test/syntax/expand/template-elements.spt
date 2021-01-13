@@ -109,13 +109,13 @@ test derive body element single element [[
   derive x from y for () {
     z { a }
   }
-]] parse succeeds parse to Derive("x", Var("y"), [], DeriveBody([DeriveBodyElement("z", [TemplateCall("a", OptTCallArgsNone(), OptTCallPropAssignsNone(), TemplateBodyNone())])]))
+]] parse succeeds parse to Derive("x", Var("y"), [], DeriveBody([DeriveBodyElement("z", [TemplateCall(TemplateCallId("a"), OptTCallArgsNone(), OptTCallPropAssignsNone(), TemplateBodyNone())])]))
 
 test derive body element multiple elements [[
   derive x from y for () {
     z { a b }
   }
-]] parse succeeds parse to Derive("x", Var("y"), [], DeriveBody([DeriveBodyElement("z", [TemplateCall("a", OptTCallArgsNone(), OptTCallPropAssignsNone(), TemplateBodyNone()), TemplateCall("b", OptTCallArgsNone(), OptTCallPropAssignsNone(), TemplateBodyNone())])]))
+]] parse succeeds parse to Derive("x", Var("y"), [], DeriveBody([DeriveBodyElement("z", [TemplateCall(TemplateCallId("a"), OptTCallArgsNone(), OptTCallPropAssignsNone(), TemplateBodyNone()), TemplateCall(TemplateCallId("b"), OptTCallArgsNone(), OptTCallPropAssignsNone(), TemplateBodyNone())])]))
 
 
 // expand template element local
@@ -131,13 +131,13 @@ test expand template element single element [[
   expand a to x {
     "x"
   }
-]] parse succeeds parse to TemplateElementExpandLocal(["a", "b", "c", "d"], ["x", "y"], [Text("x")])
+]] parse succeeds parse to TemplateElementExpandLocal(["a"], ["x"], [Text([StringValue("x")])])
 
 test expand template element multiple elements [[
   expand a to x {
     "x" "y"
   }
-]] parse succeeds parse to TemplateElementExpandLocal(["a", "b", "c", "d"], ["x", "y"], [Text("x"), Text("y")])
+]] parse succeeds parse to TemplateElementExpandLocal(["a"], ["x"], [Text([StringValue("x")]), Text([StringValue("y")])])
 
 test expand template first expandid [[
   expand _a to x { }
@@ -159,7 +159,7 @@ test expand local as attribute [[
 // property assignment expand local
 test expand local as property assignment [[
   div [expand a 1 b 2 to x y { x=y }] {}
-]] parse succeeds parse to TemplateCall("div", OptTCallArgsNone(), [PropertyAssignmentExpandLocal(["a", "1", "b", "2"], ["x", "y"], PropertyAssignment("x", Var("y")))], TemplateBody([]))
+]] parse succeeds parse to TemplateCall(TemplateCallId("div"), OptTCallArgsNone(), TCallPropAssigns([PropertyAssignmentExpandLocal(["a", "1", "b", "2"], ["x", "y"], PropertyAssignment("x", Var("y")))]), TemplateBody([]))
 
 
 // template case expand local
@@ -169,7 +169,7 @@ test expand local as template cases [[
       x { "x" }
     }
   }
-]] parse succeeds parse to TemplateCase([Var("a")], [TemplateCaseAltExpandLocal(["1", "2", "3", "4"], ["x"], TemplateCaseAlt([Var("x")], [Text("x")]))])
+]] parse succeeds parse to TemplateCase([Var("a")], [TemplateCaseAltExpandLocal(["1", "2", "3", "4"], ["x"], TemplateCaseAlt(TemplateCaseExps([Var("x")]), [Text([StringValue("x")])]))])
 
 
 // template typecase expand local
@@ -179,4 +179,4 @@ test expand local as template type cases [[
       x { "x" }
     }
   }
-]] parse succeeds parse to TemplateTypeCase(Var("a"), "b", [TemplateTypeCaseAltExpandLocal(["Int", "Long", "Float", "String", "Bool"], ["x"], TemplateTypeCaseAlt(SimpleSort("x"), [Text("x")]))])
+]] parse succeeds parse to TemplateTypeCase(Var("a"), TypeAlias("b"), [TemplateTypeCaseAltExpandLocal(["Int", "Long", "Float", "String", "Bool"], ["x"], "x", [Text([StringValue("x")])])])

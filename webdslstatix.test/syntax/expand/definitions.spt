@@ -16,11 +16,7 @@ test derive crud lower case [[
 
 test derive crud upper case [[
   derive CRUD x
-]] parse succeeds parse to DeriveCrudUpper("x")
-
-test derive crud mixed case [[
-  derive Crud x
-]] parse fails
+]] parse succeeds parse to DeriveCrud("x")
 
 
 // expand id

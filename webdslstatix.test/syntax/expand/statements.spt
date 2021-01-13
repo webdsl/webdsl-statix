@@ -26,7 +26,7 @@ test expand as object property assignment [[
       x := y
     }
   };
-]] parse succeeds parse to VarDeclInitInferred("x", ObjectCreation(SimpleSort("Ent"), [ObjectPropertyAssignmentExpandLocal(["a", "1", "b", "2"], ["x", "y"], [ObjectPropertyAssignment("x", Var("y"))])]))
+]] parse succeeds parse to VarDeclInitInferred("x", ObjectCreation("Ent", [PropAssignment(ObjectPropertyAssignmentExpandLocal(["a", "1", "b", "2"], ["x", "y"], [ObjectPropertyAssignment("x", Var("y"))]))]))
 
 
 // case expand local
@@ -36,7 +36,7 @@ test expand local as cases [[
       x { x(); }
     }
   }
-]] parse succeeds parse to CaseStmt([Var("a")], [CaseAltExpandLocal(["1", "2", "3", "4"], ["x"], CaseAlt([Var("x")], Block([Stat(ThisCall("x", []))])))])
+]] parse succeeds parse to CaseStmt([Var("a")], [CaseAltExpandLocal(["1", "2", "3", "4"], ["x"], CaseAlt(CaseExps([Var("x")]), Block([Stat(ThisCall("x", []))])))])
 
 
 // typecase expand local
@@ -46,4 +46,4 @@ test expand local as type cases [[
       x { x(); }
     }
   }
-]] parse succeeds parse to TypeCaseStmt(Var("a"), "b", [TypeCaseAltExpandLocal(["Int", "Long", "Float", "String", "Bool"], ["x"], TypeCaseAlt(SimpleSort("x"), Block([Stat(ThisCall("x", []))])))])
+]] parse succeeds parse to TypeCaseStmt(Var("a"), TypeAlias("b"), [TypeCaseAltExpandLocal(["Int", "Long", "Float", "String", "Bool"], ["x"], "x", Block([Stat(ThisCall("x", []))]))])

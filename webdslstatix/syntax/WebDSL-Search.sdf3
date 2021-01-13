@@ -1,12 +1,13 @@
 module WebDSL-Search
 
 imports
+  WebDSL-Action
   WebDSL-Core
   WebDSL-Lexical
 
 lexical sorts
 
-  SA-Value SearcherKW SearchFieldId ENTITY SEARCHERREF INDEXORQUERY
+  SA-Value SearcherKW SearchFieldId SEARCHERREF INDEXORQUERY
 
 context-free sorts
 
@@ -36,7 +37,7 @@ context-free syntax
   OptArguments.OptArgumentsNone = <>
   OptArguments.Arguments = <( <{Argument ","}*> )>
 
-  Argument.Argument = <<Id> = <StringValue>>
+  Argument.Argument = <<Id> = <String>>
 
 context-free sorts
 
@@ -45,7 +46,7 @@ context-free sorts
 context-free syntax
 
   SearchableAnno.SearchableAnno = <searchable <OptSAArguments>>
-  SearchNamespaceAnno.SearchNamespaceAnno = <search namespace> {prefer}
+  SearchNamespaceAnno.SearchNamespaceAnno = <search namespace>
   Annotation.SearchableAnnoBoost = <<SearchableAnno> ^ <Float>>
   Annotation = SearchableAnno
   Annotation = SearchNamespaceAnno
@@ -85,7 +86,7 @@ context-free syntax
 
   SearchMappingContent.SearchNamespaceMapping = <
     namespace by <Id>
-  > {prefer}
+  >
   SearchMappingContent.SearchNamespaceMappingAlt = <
     namespace by <Id> ;
   >
@@ -149,8 +150,8 @@ context-free sorts
 
 context-free syntax
 
-  Exp = SearcherDef
-  SearcherDef.SearcherInit = <search <ENTITY> <SearcherPart*>>
+  Exp.SearcherDef = SearcherDef
+  SearcherDef.SearcherInit = <search <SimpleSortLex> <SearcherPart*>>
   SearcherDef.SearcherRefMod = <~ <Exp> <SearcherPart+>>
   SearcherPart = ConstraintFilter
   SearcherPart = QueryDef
@@ -160,7 +161,7 @@ context-free syntax
   SearcherPart = FacetDef
   SearcherPart = SearchAttributes
   SearcherPart = NamespaceConstraint
-  QueryDef.QueryDef = <matching <MatchGroup+>> {prefer}
+  QueryDef.QueryDef = <matching <MatchGroup+>>
   Offset.Start = <offset <Exp>>
   MaxResults.MaxResults = <limit <Exp>>
   SortBy.SortBy = <order by <{SortExp ","}+>>
@@ -179,13 +180,13 @@ context-free syntax
   FilterConstraint.FieldFilterConstraint = <<SearchField> : <Exp>>
   FieldsConstraint.FieldsConstraint = <<{QuerySearchField ","}+> :>
   QuerySearchField.QuerySearchField = <<SearchField> <OptQueryBoost>>
-  QueryConstraint.QueryConstraint = <<{QueryExp ","}+>> {avoid}
+  QueryConstraint.QueryConstraint = <<{QueryExp ","}+>>
   QueryBoost.QueryBoost = <^ <Exp>>
-  MatchGroup.Clause = <<OptBoolOp> ( <MatchGroup+> )> {avoid}
-  MatchGroup.Query = <<OptFieldsConstraint> <QueryConstraint>> {avoid}
+  MatchGroup.Clause = <<OptBoolOp> ( <MatchGroup+> )>
+  MatchGroup.Query = <<OptFieldsConstraint> <QueryConstraint>>
   MatchGroup.MatchAllQuery = <* : *>
-  QueryExp.GroupDef = <<OptBoolOp> ( <QueryExp+> ) <OptSlop>> {prefer}
-  QueryExp.TermDef = <<OptBoolOp> <QueryTerm> <OptSlop>> {avoid}
+  QueryExp.GroupDef = <<OptBoolOp> ( <QueryExp+> ) <OptSlop>>
+  QueryExp.TermDef = <<OptBoolOp> <QueryTerm> <OptSlop>>
   QueryExp.RangeDef = <<OptBoolOp> <Range>>
   Slop.Slop = <~ <Exp>>
   Range.Range = <<RangeOpen> <ExpOrWildCard> to <ExpOrWildCard> <RangeClose>>
@@ -198,7 +199,7 @@ context-free syntax
   RangeClose.IncludingClose = <]>
   BoolOp.Must = <+>
   BoolOp.MustNot = <->
-  QueryTerm = Exp
+  QueryTerm.QueryTermExp = <<Exp>>
   QueryTerm = SearcherDef {reject}
   SortExp.SortDef = <<SearchField> <OptDirection>>
   Direction.AscendingAbbr = <asc>
@@ -208,15 +209,15 @@ context-free syntax
   Highlight.NormalHighlight = <highlight>
   Highlight.HTMLHighlight = <highlightHTML>
   RetrievalExp.Highlight = <<Highlight> <SearchField> : <Exp> from <Exp>>
-  RetrievalExp.HighlightTags = <<Highlight> <SearchField> : <Exp> from <Exp> with tags ( <Exp> , <Exp> )> {prefer}
+  RetrievalExp.HighlightTags = <<Highlight> <SearchField> : <Exp> from <Exp> with tags ( <Exp> , <Exp> )>
   RetrievalExp.SearchResults = <results from <Exp>>
   RetrievalExp.FacetResults = <<SearchField> facets from <Exp>>
   RetrievalExp.SearchResultsSize = <count from <Exp>>
   RetrievalExp.SearchTimeString = <searchtime from <Exp>>
-  RetrievalExp.Suggest = <<ENTITY> <SuggestType> <SuggestionPart+>>
+  RetrievalExp.Suggest = <<SimpleSortLex> <SuggestType> <SuggestionPart+>>
   SuggestType.AutoComplete = <completions>
   SuggestType.SpellCheck = <corrections>
-  Exp = RetrievalExp
+  Exp.RetrievalExp = RetrievalExp
   SearchField.SearchFieldExp = <~ <Exp>>
   SearchField = PlainField
   PlainField.SearchFieldPlainBase = SearchFieldId
@@ -239,6 +240,11 @@ context-free syntax
   OptDirection.OptDirectionNone = <>
   OptDirection = Direction
 
+context-free priorities
+
+  QueryTerm.QueryTermExp <0> .> Exp.Sub,
+  QueryTerm.QueryTermExp <0> .> Exp.Add
+
 context-free restrictions
 
   BoolOp -/- [0-9]
@@ -248,7 +254,6 @@ lexical syntax
 
   SearchFieldId = Id
   SearchFieldId = "_id"
-  ENTITY = Id
   SEARCHERREF = Id
   SearcherKW = "limit"
   SearcherKW = "offset"

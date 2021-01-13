@@ -13,7 +13,7 @@ context-free syntax
   Exp.RegexCall = <<RegexExp> . <Id> ( <{Exp ","}*> )>
   RegexExp.RegexPattern = </ <Pattern> />
   Pattern.SingleBranch = Branche
-  Pattern.TupleBranch = <<Pattern> | <Pattern>> {right, prefer}
+  Pattern.TupleBranch = <<Pattern> | <Pattern>> {right}
 
 context-free sorts
 
@@ -163,7 +163,7 @@ context-free syntax
   EndInputBoundry.EndInputBoundry = <\\Z>
   EndInputFinalBoundry.EndInputFinalBoundry = <\\z>
   BackReference.BackReference = <\\ <BackReferenceLex>>
-  Space.Space = <\\ >
+  Space.Space = "\\ "
   BracketCharacter = DoubleQuote
   BracketCharacter = OctalChar
   BracketCharacter = HexHexChar
@@ -227,7 +227,7 @@ context-free syntax
 
 lexical syntax
 
-  QuotablePatternSymbol = [\|\$\*\+\?\.\{\}\(\)\&\]\[\-\^\\\!\#\%\'\,\:\;\<\=\>\@\_\`\~\/] 
+  QuotablePatternSymbol = [\|\$\*\+\?\.\{\}\(\)\&\]\[\-\^\\\!\#\%\'\,\:\;\<\=\>\@\_\`\~\/]
 
 context-free syntax
 
@@ -239,15 +239,15 @@ lexical sorts
 
 lexical syntax
 
-  Integer = [0-9]+ 
-  BackReferenceLex = [1-9] [0-9]* 
-  OctalValue = [0-7] 
-  OctalValue = [0-7] [0-7] 
-  OctalValue = [0-3] [0-7] [0-7] 
-  TwoHexValue = [0-9A-Fa-f] [0-9A-Fa-f] 
-  FourHexValue = [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f] 
-  ControlValue = [0-9] 
-  ControlValue = [0-9] [0-9] 
+  Integer = [0-9]+
+  BackReferenceLex = [1-9] [0-9]*
+  OctalValue = [0-7]
+  OctalValue = [0-7] [0-7]
+  OctalValue = [0-3] [0-7] [0-7]
+  TwoHexValue = [0-9A-Fa-f] [0-9A-Fa-f]
+  FourHexValue = [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f] [0-9A-Fa-f]
+  ControlValue = [0-9]
+  ControlValue = [0-9] [0-9]
 
 context-free sorts
 
@@ -255,11 +255,11 @@ context-free sorts
 
 context-free syntax
 
-  RegexId.RegexId = RegexID 
+  RegexId.RegexId = RegexID
 
 lexical syntax
 
-  RegexID = [A-Za-z\_\$] [A-Za-z0-9\_\$]* 
+  RegexID = [A-Za-z\_\$] [A-Za-z0-9\_\$]*
   RegexID = "true" {reject}
   RegexID = "false" {reject}
   RegexID = "null" {reject}

@@ -55,7 +55,14 @@ rules // variables
     variableType(s, x) == t,
     @exp.type := t.
 
-  typeOfExp(s, FieldAccess(exp, x)) = propertyType :- {s_entity}
+  typeOfExp(s, FieldAccess(exp@FAVar(var), x)) = propertyType :- {s_entity varType}
+    variableType(s, var) == varType,
+    @exp.type := varType,
+    varType == ENTITY(s_entity) | error $[Cannot resolve [exp] to an entity] @exp,
+    propertyType(s_entity, x) == propertyType,
+    @x.type := propertyType.
+
+  typeOfExp(s, FieldAccess(FAExp(exp), x)) = propertyType :- {s_entity}
     typeOfExp(s, exp) == ENTITY(s_entity) | error $[Cannot resolve [exp] to an entity] @exp,
     propertyType(s_entity, x) == propertyType,
     @x.type := propertyType.

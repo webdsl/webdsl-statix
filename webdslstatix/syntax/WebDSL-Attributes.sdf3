@@ -6,8 +6,7 @@ imports
 
 context-free sorts
 
-  AttributeSelection AttributeCollectionOverride AttributeElem
-  AttributeId AttributeIncludeIgnore Attribute
+  AttributeSelection AttributeCollectionOverride AttributeElem AttributeIncludeIgnore Attribute
 
 context-free syntax
 
@@ -24,11 +23,15 @@ context-free syntax
   AttributeCollectionOverride.AttributeCollectionOverrideNone = <>
   AttributeCollectionOverride.AttributeCollectionOverride = <override>
 
-context-free syntax
+lexical sorts
+
+  AttributeId
+
+lexical syntax
 
   AttributeId = Id
-  AttributeId = <all> {reject}
-  AttributeId = <attributes> {reject}
+  AttributeId = "all" {reject}
+  AttributeId = "attributes" {reject}
 
 context-free syntax
 

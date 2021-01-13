@@ -32,7 +32,7 @@ test property name dont start with underscores [[
 // derived properties
 test derived property [[
   x : Int := 1
-]] parse succeeds parse to DerivedProperty("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone(), Int("1"))
+]] parse succeeds parse to DerivedProperty("x", AnyProp(), SimpleSort("Int"), OptPropAnnosNone(), Const(Int("1")))
 
 test derived property function call [[
   x : Int := x()
@@ -124,19 +124,19 @@ test property not empty annotation [[
 
 test property allowed annotation [[
   x : Int (allowed = 1)
-]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([AllowedAnno(Int("1"))]))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([AllowedAnno(Const(Int("1")))]))
 
 test property allowed more complicated exp [[
   x : Int (allowed = f() + 2)
-]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([AllowedAnno(Add(ThisCall("f", []), Int("2")))]))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([AllowedAnno(Add(ThisCall("f", []), Const(Int("2"))))]))
 
 test property default annotation [[
   x : Int (default = 1)
-]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([DefaultAnno(Int("1"))]))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([DefaultAnno(Const(Int("1")))]))
 
 test property default more complicated exp [[
   x : Int (default = f() + 2)
-]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([DefaultAnno(Add(ThisCall("f", []), Int("2")))]))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([DefaultAnno(Add(ThisCall("f", []), Const(Int("2"))))]))
 
 test property length annotation [[
   x : Int (length = 1)
@@ -148,7 +148,7 @@ test property length only int allowed [[
 
 test property format annotation [[
   x : Int (format = "")
-]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([FormatAnno(StringValue(""))]))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([FormatAnno(String([]))]))
 
 test property format only stringvalue allowed [[
   x : Int (format = "" + "")
@@ -172,7 +172,7 @@ test property collation annotation [[
 
 test property iderror annotation [[
   x : Int (iderror = "")
-]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([IdErrorAnno(StringValue(""))]))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([IdErrorAnno(String([]))]))
 
 test property iderror only stringvalue allowed [[
   x : Int (iderror = "" + "")
@@ -180,7 +180,7 @@ test property iderror only stringvalue allowed [[
 
 test property idemptyerror annotation [[
   x : Int (idemptyerror = "")
-]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([IdEmptyErrorAnno(StringValue(""))]))
+]] parse succeeds parse to Property("x", AnyProp(), SimpleSort("Int"), PropAnnos([IdEmptyErrorAnno(String([]))]))
 
 test property iderrorempty only stringvalue allowed [[
   x : Int (iderrorempty = "" + "")

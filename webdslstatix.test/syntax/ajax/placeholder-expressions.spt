@@ -10,21 +10,21 @@ fixture [[
   }
 ]]
 
-test phexp int [[ 1 ]] parse succeeds parse to Int("1")
-test phexp long [[ 1L ]] parse succeeds parse to Long("1L")
-test phexp float [[ 1f ]] parse succeeds parse to Float("1f")
-test phexp float decimal [[ 2.0f ]] parse succeeds parse to Float("2.0f")
-test phexp string [[ "ph-1" ]] parse succeeds parse to StringValue("ph-1")
-test phexp string interp [[ "ph-~x" ]] parse succeeds parse to StringInterp(["ph-", InterpSimpleExp(SimpleVar("x"))])
+test phexp int [[ 1 ]] parse succeeds parse to PHConst(Int("1"))
+test phexp long [[ 1L ]] parse succeeds parse to PHConst(Long("1L"))
+test phexp float [[ 1f ]] parse succeeds parse to PHConst(Float("1f"))
+test phexp float decimal [[ 2.0f ]] parse succeeds parse to PHConst(Float("2.0f"))
+test phexp string [[ "ph-1" ]] parse succeeds parse to PHConst(StringConst(String([StringValue("ph-1")])))
+test phexp string interp [[ "ph-~x" ]] parse succeeds parse to PHConst(StringConst(String([StringValue("ph-"), InterpValue(InterpSimpleExp(SimpleVar("x")))])))
 
-test phexp this call [[ getId() ]] parse succeeds parse to PHThisCall("getId", [])
+test phexp this call [[ getId() ]] parse succeeds parse to PHThisCall(ThisCall("getId", []))
 
 test phexp call [[ x.getId() ]] parse succeeds parse to PHCall(Var("x"), "getId", [])
 test phexp call nested [[ x.y().getId() ]] parse succeeds parse to PHCall(Call(Var("x"), "y", []), "getId", [])
 
 test phexp field access [[ x.y ]] parse succeeds parse to PHFieldAccess(Var("x"), "y")
-test phexp field access nested [[ x.y.z ]] parse succeeds parse to PHFieldAccess(FieldAccess(Var("x"), "y"), "z")
+test phexp field access nested [[ x.y.z ]] parse succeeds parse to PHFieldAccess(FieldAccess(FAVar("x"), "y"), "z")
 
-test phexp collection index [[ x[0] ]] parse succeeds parse to PHCollectionIndex(Var("x"), Int("0"))
+test phexp collection index [[ x[0] ]] parse succeeds parse to PHCollectionIndex(Var("x"), Const(Int("0")))
 
-test phexp add [[ "ph-"+"1" ]] parse succeeds parse to PHAdd(StringValue("ph-"), StringValue("1"))
+test phexp add [[ "ph-"+"1" ]] parse succeeds parse to PHAdd(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")]))))

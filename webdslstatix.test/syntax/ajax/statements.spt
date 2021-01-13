@@ -14,17 +14,17 @@ fixture [[
 // replace
 test ajax replace [[
   replace(ph, content());
-]] parse succeeds parse to AjaxStatement(AjaxReplace(Var("ph"), TemplateCall("content" ,[], OptTCallPropAssignsNone(), TemplateBodyNone())))
+]] parse succeeds parse to AjaxStatement(AjaxReplace(Var("ph"), TemplateCall(TemplateCallId("content"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone())))
 
 test ajax replace string [[
   replace("ph", content());
-]] parse succeeds parse to AjaxStatement(AjaxReplace(StringValue("ph"), TemplateCall("content" ,[], OptTCallPropAssignsNone(), TemplateBodyNone())))
+]] parse succeeds parse to AjaxStatement(AjaxReplace(Const(StringConst(String([StringValue("ph")]))), TemplateCall(TemplateCallId("content"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone())))
 
 
 // append
 test ajax append [[
   append(ph, content());
-]] parse succeeds parse to AjaxStatement(AjaxAppend(Var("ph"), TemplateCall("content" ,[], OptTCallPropAssignsNone(), TemplateBodyNone())))
+]] parse succeeds parse to AjaxStatement(AjaxAppend(Var("ph"), TemplateCall(TemplateCallId("content"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone())))
 
 
 // set visibility
@@ -50,7 +50,7 @@ test ajax relocate [[
 // restyle
 test ajax restyle [[
   restyle(ph, "class");
-]] parse succeeds parse to AjaxStatement(AjaxRestyle(Var("ph"), StringValue("class")))
+]] parse succeeds parse to AjaxStatement(AjaxRestyle(Var("ph"), Const(StringConst(String([StringValue("class")])))))
 
 
 // clear
@@ -68,4 +68,4 @@ test ajax refresh [[
 // run script
 test ajax run script [[
   runscript("console.log('')");
-]] parse succeeds parse to AjaxStatement(AjaxRunScript(StringValue("console.log('')")))
+]] parse succeeds parse to AjaxStatement(AjaxRunScript(Const(StringConst(String([StringValue("console.log('')")])))))

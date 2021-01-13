@@ -13,7 +13,6 @@ imports
   WebDSL-Exception
   WebDSL-Expand
   WebDSL-JavaScript
-  WebDSL-Keywords
   WebDSL-Lexical
   WebDSL-Native
   WebDSL-Prefetch

@@ -14,11 +14,11 @@ fixture [[
 // throw exception
 test throw exception statement [[
   throw Ex{};
-]] parse succeeds parse to ThrowStatement([ObjectCreation(SimpleSort("Ex"), [])])
+]] parse succeeds parse to ThrowStatement([ObjectCreation("Ex", [])])
 
 test throw multiple exceptions statement [[
   throw Ex1{}, Ex2{};
-]] parse succeeds parse to ThrowStatement([ObjectCreation(SimpleSort("Ex1"), []), ObjectCreation(SimpleSort("Ex2"), [])])
+]] parse succeeds parse to ThrowStatement([ObjectCreation("Ex1", []), ObjectCreation("Ex2", [])])
 
 test throw at least one exception statement [[
   throw;
@@ -26,7 +26,7 @@ test throw at least one exception statement [[
 
 test throw expression statement [[
   throw f().x;
-]] parse succeeds parse to ThrowStatement([FieldAccess(ThisCall("f", []), "x")])
+]] parse succeeds parse to ThrowStatement([FieldAccess(FAExp(ThisCall("f", [])), "x")])
 
 
 // try catch

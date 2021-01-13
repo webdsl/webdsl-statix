@@ -3,6 +3,8 @@ module HQL
 imports
 
   WebDSL-Action
+  WebDSL-Lexical
+  WebDSL-UI
 
 lexical sorts
 
@@ -31,6 +33,8 @@ context-free sorts
   HQLWithClauseOpt HQLFromRange
 
 context-free syntax
+
+  HqlExp.HqlTest = <hqltest <HQLQueryRule>>
 
   HQLStatement.DeleteStatement = HQLDeleteStatement
   HQLStatement.SelectStatement = HQLQueryRule
@@ -96,8 +100,10 @@ context-free syntax
   HQLOrderByClauseOpt.OrderByClause = <order by <{HQLOrderElement ","}+>>
   HQLOrderByClauseOpt.OrderByClauseNone = <>
   HQLOrderElement.OrderElement = <<HQLExpression> <HQLAscOrDescOpt>>
+
   HQLAscOrDescOpt.HQLAscending      = <ascending>
   HQLAscOrDescOpt.HQLAscendingAbbr  = <asc>
+
   HQLAscOrDescOpt.HQLDescending     = <descending>
   HQLAscOrDescOpt.HQLDescendingAbbr = <desc>
   HQLAscOrDescOpt.AscOrDescNone     = <>
@@ -119,6 +125,17 @@ lexical syntax
   HQLIdentifier = "by" {reject}
   HQLIdentifier = "order" {reject}
 
+  TemplateId = "by" {reject}
+  TemplateId = "order" {reject}
+  TemplateId = "having" {reject}
+  TemplateId = "where" {reject}
+  TemplateId = "as" {reject}
+  TemplateId = "in" {reject}
+
+context-free syntax
+
+  TemplateCall = <select> {reject}
+
 context-free sorts
 
   HQLExpression HQLConstant
@@ -130,8 +147,8 @@ context-free syntax
   HQLExpression.HQLPath = HQLPath
 
   HQLExpression.HQLExpressions = <( <{HQLExpression ","}+> )>
-  HQLExpression.HQLQueryRule = <( <HQLQueryRule> )> {prefer}
-  HQLExpression.HQLQueryRuleAlt = HQLQueryRule {avoid}
+  HQLExpression.HQLQueryRule = <( <HQLQueryRule> )>
+  HQLExpression.HQLQueryRuleAlt = HQLQueryRule
 
   HQLExpression.QueryOr   = <<HQLExpression> or <HQLExpression>>
   HQLExpression.QueryAnd  = <<HQLExpression> and <HQLExpression>>
@@ -203,10 +220,18 @@ lexical syntax
   HQLIdentifier = "empty" {reject}
   HQLIdentifier = "null" {reject}
 
+  TemplateId = "or" {reject}
+  TemplateId = "and" {reject}
+  TemplateId = "not" {reject}
+
+context-free syntax
+
+  TemplateCall = <empty> {reject}
+
 context-free priorities
 
   {
-    HQLPath.Path
+    HQLExpression.HQLPath
     HQLExpression.HQLExpressions
     HQLExpression.HQLAvg
     HQLExpression.HQLSum

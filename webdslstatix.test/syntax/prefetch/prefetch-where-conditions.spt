@@ -14,27 +14,27 @@ fixture [[
 // prefetch condition expressions
 test prefetch where condition eq [[
   1 == 1
-]] parse succeeds parse to PrefetchEq(Int("1"), Int("1"))
+]] parse succeeds parse to PrefetchEq(PrefetchConst(Int("1")), PrefetchConst(Int("1")))
 
 test prefetch where condition not eq [[
   1 != 1
-]] parse succeeds parse to PrefetchNotEq(Int("1"), Int("1"))
+]] parse succeeds parse to PrefetchNotEq(PrefetchConst(Int("1")), PrefetchConst(Int("1")))
 
 test prefetch where condition gt [[
   1 > 1
-]] parse succeeds parse to PrefetchLargerThan(Int("1"), Int("1"))
+]] parse succeeds parse to PrefetchLargerThan(PrefetchConst(Int("1")), PrefetchConst(Int("1")))
 
 test prefetch where condition gte [[
   1 >= 1
-]] parse succeeds parse to PrefetchLargerThanOrEqual(Int("1"), Int("1"))
+]] parse succeeds parse to PrefetchLargerThanOrEqual(PrefetchConst(Int("1")), PrefetchConst(Int("1")))
 
 test prefetch where condition lt [[
   1 < 1
-]] parse succeeds parse to PrefetchSmallerThan(Int("1"), Int("1"))
+]] parse succeeds parse to PrefetchSmallerThan(PrefetchConst(Int("1")), PrefetchConst(Int("1")))
 
 test prefetch where condition lte [[
   1 <= 1
-]] parse succeeds parse to PrefetchSmallerThanOrEqual(Int("1"), Int("1"))
+]] parse succeeds parse to PrefetchSmallerThanOrEqual(PrefetchConst(Int("1")), PrefetchConst(Int("1")))
 
 test prefetch where condition and [[
   true && true
@@ -68,15 +68,15 @@ test prefetch where condition null [[
 
 test prefetch where condition int [[
   1
-]] parse succeeds parse to Int("1")
+]] parse succeeds parse to PrefetchConst(Int("1"))
 
 test prefetch where condition long [[
   1L
-]] parse succeeds parse to Long("1L")
+]] parse succeeds parse to PrefetchConst(Long("1L"))
 
 test prefetch where condition float [[
   1.0f
-]] parse succeeds parse to Float("1.0f")
+]] parse succeeds parse to PrefetchConst(Float("1.0f"))
 
 test prefetch where condition var [[
   y
@@ -92,26 +92,26 @@ test prefetch where condition this fieldaccess [[
 
 test prefetch where condition mul [[
   1 * 1
-]] parse succeeds parse to PrefetchMul(Int("1"), Int("1"))
+]] parse succeeds parse to PrefetchMul(PrefetchConst(Int("1")), PrefetchConst(Int("1")))
 
 test prefetch where condition div [[
   1 / 1
-]] parse succeeds parse to PrefetchDiv(Int("1"), Int("1"))
+]] parse succeeds parse to PrefetchDiv(PrefetchConst(Int("1")), PrefetchConst(Int("1")))
 
 test prefetch where condition mod [[
   1 % 1
-]] parse succeeds parse to PrefetchMod(Int("1"), Int("1"))
+]] parse succeeds parse to PrefetchMod(PrefetchConst(Int("1")), PrefetchConst(Int("1")))
 
 test prefetch where condition add [[
   1 + 1
-]] parse succeeds parse to PrefetchAdd(Int("1"), Int("1"))
+]] parse succeeds parse to PrefetchAdd(PrefetchConst(Int("1")), PrefetchConst(Int("1")))
 
 test prefetch where condition sub [[
   1 - 1
-]] parse succeeds parse to PrefetchSub(Int("1"), Int("1"))
+]] parse succeeds parse to PrefetchSub(PrefetchConst(Int("1")), PrefetchConst(Int("1")))
 
 
 // prefetch condition value nesting
 test prefetch where condition mul, div, mod, sub, add [[
   2 + 5 / 1 - 3 % 3
-]] parse succeeds parse to PrefetchSub(PrefetchAdd(Int("2"), PrefetchDiv(Int("5"), Int("1"))), PrefetchMod(Int("3"), Int("3")))
+]] parse succeeds parse to PrefetchSub(PrefetchAdd(PrefetchConst(Int("2")), PrefetchDiv(PrefetchConst(Int("5")), PrefetchConst(Int("1")))), PrefetchMod(PrefetchConst(Int("3")), PrefetchConst(Int("3"))))

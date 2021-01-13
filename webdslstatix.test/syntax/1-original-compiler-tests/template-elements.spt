@@ -72,11 +72,12 @@ test select attributes [[
   </div>
 ]] parse succeeds
 
+// what does the onclick property mean with the string concatenation?
 test attributes template call [[
   container[
     class ="scopediv border rndButton "+attribute("class",""),
     onclick = ""+attribute("onclick",""),
-    style  = attribute("style"),  
+    style  = attribute("style"),
     all attributes,
     attributes "style",
     attributes ["style"],
@@ -122,9 +123,18 @@ test style tag with variables [[
 
 test databind [[  databind{ var p := "24242"; }]] parse succeeds
 
-test htmlwrapper 1 [[  htmlwrapper gridContainerFluid gridrow[class="container-fluid" role=""] ]] parse succeeds
-test htmlwrapper 2 [[  htmlwrapper gridContainerFluid gridrow[class="container-fluid", role=""] ]] parse succeeds
-test htmlwrapper 3 [[  htmlwrapper gridContainerFluid gridrow]] parse succeeds
+test htmlwrapper 1 [[
+  htmlwrapper gridContainerFluid gridrow[class="container-fluid" role=""]
+]] parse succeeds
+
+test htmlwrapper 2 [[
+  htmlwrapper gridContainerFluid gridrow[class="container-fluid", role=""]
+]] parse succeeds
+
+test htmlwrapper 3 [[
+  htmlwrapper gridContainerFluid gridrow
+]] parse succeeds
+
 test htmlwrapper 4 [[
   htmlwrapper {
     gridContainerFluid gridrow[class="container-fluid" role=""]
@@ -153,7 +163,9 @@ test htmlwrapper 4 [[
   }
 ]] parse succeeds
 
-test multiple actions calls [[  bla[class="123", onkeyup=validator();""+attribute("onkeyup"), onchange=bla()] ]] parse succeeds
+test multiple actions calls [[
+  bla[class="123", onkeyup=validator();""+attribute("onkeyup"), onchange=bla()]
+]] parse succeeds
 
 test navigate 1 [[ navigate bla("dfgdf",45,45,45.5)[sdfsf := "fdgdfgdf", dfsf := 3]{"1" "3rwef" bla() }]] parse succeeds
 test navigate 2 [[ navigate(bla("dfgdf",45,45,45.5))[]{}]] parse succeeds

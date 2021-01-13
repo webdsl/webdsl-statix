@@ -23,9 +23,8 @@ context-free sorts
 
 syntax
 
-  JSPart-CF.JSExp = "~" Exp-CF {prefer}
+  JSPart-CF.JSExp = "~" Exp-CF
   JSPart-CF.JSString = JSString-LEX
-  JSPart-CF.JSTilde = "\\~" {prefer}
 
 lexical sorts
 
@@ -34,12 +33,18 @@ lexical sorts
 lexical syntax
 
   JSString = JSChar+
+  JSString = JSChar* "\\" {reject}
+
   JSChar = ~[\<\~]
+
   JSChar = SmallerThan
   SmallerThan = [\<]
 
-  NCName = "script" {reject}
-  NCName = "style" {reject}
+  JSChar = JSTilde
+  JSTilde = "\\~"
+
+  XMLTagName = "script" {reject}
+  XMLTagName = "style" {reject}
 
 lexical restrictions
 

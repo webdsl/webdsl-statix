@@ -16,7 +16,6 @@ rules
   normalize = normalize-action
   normalize = normalize-core
   normalize = normalize-data
-  normalize = normalize-expand
   normalize = normalize-native
   normalize = normalize-test
   normalize = normalize-ui

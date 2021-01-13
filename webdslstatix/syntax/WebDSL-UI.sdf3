@@ -7,6 +7,10 @@ imports
   WebDSL-Lexical
   WebDSL-XML
 
+template options
+
+  keyword -/- [a-zA-Z0-9\-\_]
+
 context-free sorts
 
   TemplateDefinition Modifier TemplateElement OptFilter PageCall TemplateCall PropertyAssignment
@@ -25,11 +29,11 @@ context-free syntax
       <TemplateElement*>
     }
   >
-  OptTemplateArgs.TemplateArgs = <requires <{TemplateArg ","}*>> {prefer}
+  OptTemplateArgs.TemplateArgs = <requires <{TemplateArg ","}*>>
   OptTemplateArgs.OptTemplateArgsNone = <>
-  TemplateArg.TemplateArg = <<Id> ( <{Sort ","}*> )>
+  TemplateArg.TemplateArg = <<TemplateId> ( <{Sort ","}*> )>
   TemplateDefinition.LocalRedefine = <
-    define <Modifier*> <Id> ( <{FormalArg ","}*> ) = <Id> <OptLocalRedefineArgs>
+    define <Modifier*> <TemplateId> ( <{FormalArg ","}*> ) = <TemplateId> <OptLocalRedefineArgs>
   >
   OptLocalRedefineArgs.OptLocalRedefineArgsNone = <>
   OptLocalRedefineArgs.LocalRedefineArgs = <( * , <{LocalRedefineArg ","}+> )>
@@ -40,7 +44,7 @@ context-free syntax
     }
   >
   TemplateDefinition.DefineTemplate = <
-    <Modifier*> template <Id> <OptFormalArgs> <OptTemplateArgs> {
+    <Modifier*> template <TemplateId> <OptFormalArgs> <OptTemplateArgs> {
       <TemplateElement*>
     }
   >
@@ -68,6 +72,13 @@ context-free syntax
   TemplateElement = InitAction
   TemplateElement = Action
 
+  TemplateCall = <<Modifier>> {reject}
+
+lexical syntax
+
+  TemplateId = "template" {reject}
+  TemplateId = "define" {reject}
+
 context-free sorts
 
   VarDecl
@@ -75,22 +86,22 @@ context-free sorts
 context-free syntax
 
   VarDecl.TemplateVarDecl = <
-    var <Id> : <Sort>
+    var <VarId> : <Sort>
   >
   VarDecl.TemplateVarDeclDepr = <
-    var <Id> : <Sort> ;
+    var <VarId> : <Sort> ;
   > {deprecated("remove ;")}
   VarDecl.TemplateVarDeclInit = <
-    var <Id> : <Sort> := <Exp>
+    var <VarId> : <Sort> := <Exp>
   >
   VarDecl.TemplateVarDeclInitDepr = <
-    var <Id> : <Sort> := <Exp> ;
+    var <VarId> : <Sort> := <Exp> ;
   > {deprecated("remove ;")}
   VarDecl.TemplateVarDeclInitInferred = <
-    var <Id> := <Exp>
+    var <VarId> := <Exp>
   >
   VarDecl.TemplateVarDeclInitInferredDepr = <
-    var <Id> := <Exp> ;
+    var <VarId> := <Exp> ;
   > {deprecated("remove ;")}
   TemplateElement = VarDecl
   TemplateElement.RequestScopeTemplate = <
@@ -100,7 +111,12 @@ context-free syntax
     local <VarDecl>
   >
   TemplateElement = TemplateDefinition
-  TemplateElement = TemplateCall {avoid}
+  TemplateElement = TemplateCall
+
+lexical syntax
+
+  TemplateId = "request" {reject}
+  TemplateId = "local" {reject}
 
 context-free sorts
 
@@ -126,58 +142,79 @@ context-free syntax
 
 context-free sorts
 
-  ForSeparator ElseIfTempl ElseTempl OptElseTempl
+  ForSeparator ElseIfTempl OptElseTempl
 
 context-free syntax
 
   TemplateElement.For = <
-    for ( <Id> : <Sort> in <Exp> <OptFilter> ) {
+    for ( <VarId> : <Sort> in <Exp> <OptFilter> ) {
       <TemplateElement*>
     } <ForSeparator>
   >
   TemplateElement.ForInferred = <
-    for ( <Id> in <Exp> <OptFilter> ) {
+    for ( <VarId> in <Exp> <OptFilter> ) {
       <TemplateElement*>
     } <ForSeparator>
   >
   TemplateElement.ForAll = <
-    for ( <Id> : <Sort> <OptFilter> ) {
+    for ( <VarId> : <Sort> <OptFilter> ) {
       <TemplateElement*>
     } <ForSeparator>
   >
   TemplateElement.ForCount = <
-    for ( <Id> : Int from <Exp> to <Exp> ) {
+    for ( <VarId> : Int from <Exp> to <Exp> ) {
       <TemplateElement*>
     } <ForSeparator>
   >
   ForSeparator.ForSeparator = <separated-by { <TemplateElement*> }>
   ForSeparator.ForSeparatorNone = <>
+
+  TemplateElement.IfTempl = <
+    if ( <Exp> ) {
+      <TemplateElement*>
+    } else {
+      <TemplateElement*>
+    }
+  >
+  TemplateElement.IfNoElseTempl = <
+    if ( <Exp> ) {
+      <TemplateElement*>
+    }
+  >
   TemplateElement.IfElseIfTempl = <
     if ( <Exp> ) {
       <TemplateElement*>
-    } <ElseIfTempl*> <OptElseTempl>
-  > {prefer}
+    } <ElseIfTempl+> <OptElseTempl>
+  >
   OptElseTempl.OptElseTemplNone = <>
-  OptElseTempl.OptElseTemplSome = ElseTempl
+  OptElseTempl.ElseTempl = <else {
+    <TemplateElement*>
+  }>
+
   ElseIfTempl.ElseIfTempl = <else if ( <Exp> ) {
     <TemplateElement*>
-  }> {prefer}
-  ElseTempl.ElseTempl = <else {
-    <TemplateElement*>
-  }> {prefer}
+  }>
+
+lexical syntax
+
+  TemplateId = "if" {reject}
+  TemplateId = "else" {reject}
+
+context-free syntax
+
   TemplateElement.TemplateCase = <
     case ( <{Exp ","}+> ) {
       <TemplateCaseAlt*>
     }
   >
   TemplateCaseAlt.TemplateCaseAlt = <
-    <{Exp ","}+> { <TemplateElement*> }
+    <TemplateCaseAltExps> { <TemplateElement*> }
   >
   TemplateCaseAlt.TemplateCaseAltDefault = <
     default { <TemplateElement*> }
-  > {prefer}
+  >
   TemplateElement.TemplateTypeCase = <
-    typecase ( <Exp> as <Id> ) {
+    typecase ( <Exp> <OptTypeAlias> ) {
       <TemplateTypeCaseAlt*>
     }
   >
@@ -186,16 +223,25 @@ context-free syntax
   >
   TemplateTypeCaseAlt.TemplateTypeCaseDefault = <
     default { <TemplateElement*> }
-  > {prefer}
+  >
 
-  // conditional templates are desugared to this constructor:
-  TemplateElement.IfTempl = <
-    if ( <Exp> ) {
-      <TemplateElement*>
-    } else {
-      <TemplateElement*>
-    }
-  > {avoid}
+lexical syntax
+
+  TemplateId = "case" {reject}
+  TemplateId = "typecase" {reject}
+
+context-free sorts
+
+  TemplateCaseAltExps
+
+context-free syntax
+
+  TemplateCaseAltExps.TemplateCaseExps = <<{Exp ","}+>>
+  TemplateCaseAltExps = <default> {reject}
+
+context-free priorities
+
+  TemplateElement.TemplateTypeCase <2> .> Exp.Cast
 
 context-free sorts
 
@@ -206,11 +252,11 @@ context-free syntax
   TemplateCall.TemplateCall = <
     <TemplateCallId> <OptTCallArgs> <OptTCallPropAssigns> <TemplateBody>
   >
-  OptTCallArgs = <( <{TemplateArgExp ","}*> )>
+  OptTCallArgs.TCallArgs = <( <{TemplateArgExp ","}*> )>
   OptTCallArgs.OptTCallArgsNone = <>
   TemplateArgExp.Exp = Exp
   TemplateArgExp.TemplateElementsArgument = <{ <TemplateElement*> }>
-  OptTCallPropAssigns = <[ <{PropertyAssignment ","}*> ]>
+  OptTCallPropAssigns.TCallPropAssigns = <[ <{PropertyAssignment ","}*> ]>
   OptTCallPropAssigns.OptTCallPropAssignsNone = <>
   TemplateBody.TemplateBody = <{
     <TemplateElement*>
@@ -230,137 +276,154 @@ context-free syntax
 
   TemplateElement.NavigateCallParenthesesNoProps = <
     navigate ( <PageCall> ) { <TemplateElement*> }
-  > {prefer}
+  >
   TemplateElement.NavigateCallParentheses = <
     navigate ( <PageCall> ) [ <{PropertyAssignment ","}*> ] { <TemplateElement*> }
-  > {prefer}
+  >
   TemplateElement.NavigateCallNoProps = <
     navigate <PageCall> { <TemplateElement*> }
-  > {prefer}
+  >
   TemplateElement.NavigateCall = <
     navigate <PageCall> [ <{PropertyAssignment ","}*> ] { <TemplateElement*> }
-  > {prefer}
+  >
   PageCall.PageCall = <
     <PageId> ( <{Exp ","}*> )
   >
 
 context-free sorts
 
-  ActionCallOrInline ActionCall InlineAction
+  ActionCallOrInline
 
 context-free syntax
 
   TemplateElement.SubmitActionNoProps = <
     action ( <Exp> , <ActionCallOrInline> )
-  > {prefer}
+  >
   TemplateElement.SubmitAction = <
     action ( <Exp> , <ActionCallOrInline> ) [ <{PropertyAssignment ","}*> ]
-  > {prefer}
+  >
   TemplateElement.SubmitLinkActionNoProps = <
     actionLink ( <Exp> , <ActionCallOrInline> )
-  > {prefer}
+  >
   TemplateElement.SubmitLinkAction = <
     actionLink ( <Exp> , <ActionCallOrInline> ) [ <{PropertyAssignment ","}*> ]
-  > {prefer}
+  >
   TemplateElement.SubmitNoProps = <
     submit ( <Exp> , <ActionCallOrInline> )
-  > {prefer}
+  >
   TemplateElement.Submit = <
     submit ( <Exp> , <ActionCallOrInline> ) [ <{PropertyAssignment ","}*> ]
-  > {prefer}
+  >
   TemplateElement.SubmitLinkNoProps = <
     submitlink ( <Exp> , <ActionCallOrInline> )
-  > {prefer}
+  >
   TemplateElement.SubmitLink = <
     submitlink ( <Exp> , <ActionCallOrInline> ) [ <{PropertyAssignment ","}*> ]
-  > {prefer}
+  >
   TemplateElement.SubmitElemNoProps = <
     submit <ActionCallOrInline> { <TemplateElement*> }
-  > {prefer}
+  >
   TemplateElement.SubmitElem = <
     submit <ActionCallOrInline> [ <{PropertyAssignment ","}*> ] { <TemplateElement*> }
-  > {prefer}
+  >
   TemplateElement.SubmitLinkElemNoProps = <
     submitlink <ActionCallOrInline> { <TemplateElement*> }
-  > {prefer}
+  >
   TemplateElement.SubmitLinkElem = <
     submitlink <ActionCallOrInline> [ <{PropertyAssignment ","}*> ] { <TemplateElement*> }
-  > {prefer}
+  >
   TemplateElement.DownloadLinkNoProps = <
     downloadlink <ActionCallOrInline> { <TemplateElement*> }
-  > {prefer}
+  >
   TemplateElement.DownloadLink = <
     downloadlink <ActionCallOrInline> [ <{PropertyAssignment ","}*> ] { <TemplateElement*> }
-  > {prefer}
+  >
   TemplateElement.OutputImageNoProps = <
     outputimage <ActionCallOrInline> { <TemplateElement*> }
-  > {prefer}
+  >
   TemplateElement.OutputImage = <
     outputimage <ActionCallOrInline> [ <{PropertyAssignment ","}*> ] { <TemplateElement*> }
-  > {prefer}
-  ActionCallOrInline = ActionCall
-  ActionCallOrInline = InlineAction
-  ActionCall.ActionCall = <<Id> ( <{Exp ","}*> )>
-  InlineAction.InlineAction = <action <Block>>
-  Sort = <action> {reject}
-  TemplateCall = <action> {reject}
-  Exp = <action> {reject}
-  PropertyValue = <action> {reject}
-
-context-free sorts
-
-  PropertyValue ActionCallOrInlineOrExp
-
-context-free syntax
-
-  PropertyAssignment.PropertySubmitColon = <<SubmitProp> : <ActionCallOrInline>> {prefer}
-  PropertyAssignment.PropertySubmitAssign = <<SubmitProp> := <ActionCallOrInline>> {prefer}
-  PropertyAssignment.PropertySubmit = <<SubmitProp> = <ActionCallOrInline>> {prefer}
-  PropertyAssignment.PropertyAssignmentColon = <<ExtendedId> : <PropertyValue>>
-  PropertyAssignment.PropertyAssignmentAssign = <<ExtendedId> := <PropertyValue>>
-  PropertyAssignment.PropertyAssignment = <<ExtendedId> = <PropertyValue>>
-  PropertyValue = Exp
-  PropertyAssignment.TemplateCallPropertyAjax = <ajax> {prefer}
-  PropertyAssignment.TemplateCallPropertyNoLoadingFeedback = <no loading feedback> {prefer}
-  PropertyAssignment.TemplateCallPropertySecure = <secure> {prefer}
-  PropertyAssignment.TemplateCallPropertyIgnoreValidation = <ignore-validation> {prefer}
-  PropertyAssignment.TemplateCallPropertyNotSecure = <not-secure> {prefer}
-  PropertyAssignment.TemplateCallPropertyNotNull = <not null> {prefer}
-  PropertyAssignment = CommonAttribute
-  PropertyAssignment.PropertySubmitMultiple = <<SubmitProp> = <{ActionCallOrInlineOrExp ";"}+>> {avoid}
-  ActionCallOrInlineOrExp = ActionCallOrInline {prefer}
-  ActionCallOrInlineOrExp = PropertyValue
-  TemplateElement = OutputShorthand
-
-syntax
-
-  TemplateElement-CF.Text = "\"" StringLex-LEX "\""
-  TemplateElement-CF.TextInterp = "\"" StringPart-CF* "\"" {avoid}
+  >
+  ActionCallOrInline.ActionCall = ThisCall
+  ActionCallOrInline.InlineAction = <action <Block>>
 
 lexical syntax
 
-  SubmitProp = "onabort" 
-  SubmitProp = "onblur" 
-  SubmitProp = "onchange" 
-  SubmitProp = "onclick" 
-  SubmitProp = "ondblclick" 
-  SubmitProp = "onerror" 
-  SubmitProp = "onfocus" 
-  SubmitProp = "onkeydown" 
-  SubmitProp = "onkeypress" 
-  SubmitProp = "onkeyup" 
-  SubmitProp = "onload" 
-  SubmitProp = "onmousedown" 
-  SubmitProp = "onmousemove" 
-  SubmitProp = "onmouseout" 
-  SubmitProp = "onmouseover" 
-  SubmitProp = "onmouseup" 
-  SubmitProp = "onreset" 
-  SubmitProp = "onresize" 
-  SubmitProp = "onselect" 
-  SubmitProp = "onsubmit" 
-  SubmitProp = "onunload" 
-  SubmitProp = "oninput" 
+  TemplateId = "action" {reject}
+  TemplateId = "actionLink" {reject}
+  TemplateId = "submit" {reject}
+  TemplateId = "submitlink" {reject}
+  TemplateId = "downloadlink" {reject}
+  TemplateId = "outputimage" {reject}
+
+context-free sorts
+
+  ActionCallOrInlineOrExp PropertySubmitMultiple PropertySubmitExp
+
+context-free syntax
+
+  PropertyAssignment.PropertySubmitColon = <<SubmitProp> : <ActionCallOrInlineOrExp>>
+  PropertyAssignment.PropertySubmitAssign = <<SubmitProp> := <ActionCallOrInlineOrExp>>
+  PropertyAssignment.PropertySubmit = <<SubmitProp> = <ActionCallOrInlineOrExp>>
+  PropertyAssignment.PropertyAssignmentColon = <<PropertyAssignmentId> : <Exp>>
+  PropertyAssignment.PropertyAssignmentAssign = <<PropertyAssignmentId> := <Exp>>
+  PropertyAssignment.PropertyAssignment = <<PropertyAssignmentId> = <Exp>>
+  PropertyAssignment.TemplateCallPropertyAjax = <ajax>
+  PropertyAssignment.TemplateCallPropertyNoLoadingFeedback = <no loading feedback>
+  PropertyAssignment.TemplateCallPropertySecure = <secure>
+  PropertyAssignment.TemplateCallPropertyIgnoreValidation = <ignore-validation>
+  PropertyAssignment.TemplateCallPropertyNotSecure = <not-secure>
+  PropertyAssignment.TemplateCallPropertyNotNull = <not null>
+  PropertyAssignment = CommonAttribute
+  PropertyAssignment = PropertySubmitMultiple
+  PropertySubmitMultiple.PropertySubmitMultiple = <<SubmitProp> = <{ActionCallOrInlineOrExp ";"}+>>
+  ActionCallOrInlineOrExp = ActionCallOrInline
+  ActionCallOrInlineOrExp = PropertySubmitExp
+  PropertySubmitExp = Exp
+  TemplateElement = OutputShorthand
+
+  // require at least two actions to get this constructor
+  PropertySubmitMultiple = <<SubmitProp> = <ActionCallOrInlineOrExp>> {reject}
+
+  PropertySubmitExp = ThisCall {reject}
+
+lexical sorts
+
+  PropertyAssignmentId
+
+lexical syntax
+
+  PropertyAssignmentId = ExtendedId
+  PropertyAssignmentId = SubmitProp {reject}
+
+syntax
+
+  TemplateElement-CF.Text = "\"" StringPart-CF* "\""
+
+lexical syntax
+
+  SubmitProp = "onabort"
+  SubmitProp = "onblur"
+  SubmitProp = "onchange"
+  SubmitProp = "onclick"
+  SubmitProp = "ondblclick"
+  SubmitProp = "onerror"
+  SubmitProp = "onfocus"
+  SubmitProp = "onkeydown"
+  SubmitProp = "onkeypress"
+  SubmitProp = "onkeyup"
+  SubmitProp = "onload"
+  SubmitProp = "onmousedown"
+  SubmitProp = "onmousemove"
+  SubmitProp = "onmouseout"
+  SubmitProp = "onmouseover"
+  SubmitProp = "onmouseup"
+  SubmitProp = "onreset"
+  SubmitProp = "onresize"
+  SubmitProp = "onselect"
+  SubmitProp = "onsubmit"
+  SubmitProp = "onunload"
+  SubmitProp = "oninput"
 
 context-free sorts
 
@@ -370,19 +433,28 @@ context-free syntax
 
   TemplateCall = <separated-by { <TemplateElement*> }> {reject}
   Definition = InitAction
-  InitAction.InitAction = <init <Block>> {prefer}
-  TemplateElement.DataBindAction = <databind <Block>> {prefer}
-  TemplateElement.RenderAction = <render <Block>> {prefer}
-  TemplateElement.AllPhasesAction = <allphases <Block>> {prefer}
-  TemplateElement.ValidateAction = <validate <Block>> {prefer}
+  InitAction.InitAction = <init <Block>>
+  TemplateElement.DataBindAction = <databind <Block>>
+  TemplateElement.RenderAction = <render <Block>>
+  TemplateElement.AllPhasesAction = <allphases <Block>>
+  TemplateElement.ValidateAction = <validate <Block>>
   Action.Action = <action <ActionModifier*> <Id> <OptFormalArgs> <Block>>
   ActionModifier.ActionModifierIgnoreValidation = <ignore-validation>
-  TemplateCallId.QualifiedElementsCall = <<TemplateCallIdLex> .elements> {prefer}
-  TemplateCallId = TemplateCallIdLex
+  TemplateCallId.QualifiedElementsCall = <<TemplateId> .elements>
+  TemplateCallId.TemplateCallId = TemplateId
+
+context-free syntax // reject rules
+
+  TemplateCall = <init <Block>> {reject}
+  TemplateCall = <databind <Block>> {reject}
+  TemplateCall = <render <Block>> {reject}
+  TemplateCall = <allphases <Block>> {reject}
+  TemplateCall = <action> {reject}
+  TemplateCall = <validate <Block>> {reject}
 
 context-free sorts
 
-  FormalVarArg ExpVarArg
+  FormalVarArg ExpVarArg ExpOrTemplateArg
 
 context-free syntax
 
@@ -390,30 +462,36 @@ context-free syntax
   FormalVarArg.FormalVarArg = <<Id> : <Sort>>
   TemplateCall.MemberTemplateCall = <
     <Id> . <TemplateCall>
-  > {avoid}
+  >
   Exp.TemplateVarArgExp = <[ <{ExpVarArg ","}+> ]>
-  ExpVarArg.ExpVarArg = <( <{Exp ","}*> )>
   ExpVarArg.ExpVarArgFor = <for ( <Id> : <Sort> in <Exp> <OptFilter> ) { <{ExpVarArg ","}*> }>
   ExpVarArg.ExpVarArgForInferred = <for ( <Id> in <Exp> <OptFilter> ) { <{ExpVarArg ","}*> }>
   ExpVarArg.ExpVarArgForAll = <for ( <Id> : <Sort> <OptFilter> ) { <{ExpVarArg ","}*> }>
   ExpVarArg.ExpVarArgForCount = <for ( <Id> : Int from <Exp> to <Exp> ) { <{ExpVarArg ","}*> }>
+  ExpVarArg.ExpVarArg = <( <{ExpOrTemplateArg ","}*> )>
+
+  ExpOrTemplateArg.ExpVarArgExp = <<Exp>>
+  ExpOrTemplateArg.ExpVarArgElements = <{ <TemplateElement*> }>
+
+context-free priorities
+
+  ExpOrTemplateArg.ExpVarArgExp <0> .> Exp.SetCreation
 
 context-free sorts
 
-  HTMLWrapper HTMLWrapperAssigns HTMLWrapperBody
+  HTMLWrapper HTMLWrapperAssigns HTMLWrapperBody HTMLWrapperAssign
 
 context-free syntax
 
   HTMLWrapper.HTMLWrapper = <
     htmlwrapper <Id> <Id> <HTMLWrapperAssigns>
   >
-  HTMLWrapperAssigns.HTMLWrapperAssignsCommaSep = <[
-    <{Attribute ","}*>
-  ]>
-  HTMLWrapperAssigns.HTMLWrapperAssigns = <[
-    <Attribute*> ]
-  > {prefer}
+  HTMLWrapperAssigns.HTMLWrapperAssigns = <[<HTMLWrapperAssign*> ]>
   HTMLWrapperAssigns.HTMLWrapperAssignsNone = <>
+
+  HTMLWrapperAssign.HTMLWrapperAssign = <<Attribute>>
+  HTMLWrapperAssign.HTMLWrapperAssignComma = <<Attribute> ,>
+
   TemplateDefinition = HTMLWrapper
   TemplateDefinition.HTMLWrapperMultiple = <
     htmlwrapper {
@@ -422,14 +500,18 @@ context-free syntax
   >
   HTMLWrapperBody.HTMLWrapperBody = <<Id> <Id> <HTMLWrapperAssigns>>
 
+lexical syntax
+
+  TemplateId = "htmlwrapper" {reject}
+
 context-free sorts
 
-  TemplateId
+  TemplateName
 
 context-free syntax
 
-  TemplateId.TemplateId = <id>
-  Exp = TemplateId
+  TemplateName.TemplateName = <id>
+  Exp = TemplateName
 
 lexical syntax
 
@@ -437,4 +519,4 @@ lexical syntax
 
 context-free restrictions
 
-  TemplateId -/- [a-zA-Z0-9\_]
+  TemplateName -/- [a-zA-Z0-9\_]
