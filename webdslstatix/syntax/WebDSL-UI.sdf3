@@ -72,6 +72,13 @@ context-free syntax
   TemplateElement = InitAction
   TemplateElement = Action
 
+  TemplateCall = <<Modifier>> {reject}
+
+lexical syntax
+
+  TemplateId = "template" {reject}
+  TemplateId = "define" {reject}
+
 context-free sorts
 
   VarDecl

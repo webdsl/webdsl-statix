@@ -130,6 +130,7 @@ lexical syntax
   TemplateId = "having" {reject}
   TemplateId = "where" {reject}
   TemplateId = "as" {reject}
+  TemplateId = "in" {reject}
 
 context-free syntax
 

@@ -120,7 +120,6 @@ test object creation single assignment [[ Ent{ x := 1 } ]] parse succeeds parse 
 test object creation exp as assignment [[ Ent{ x := y.z } ]] parse succeeds parse to ObjectCreation("Ent", [PropAssignment(ObjectPropertyAssignment("x", FieldAccess(FAVar("y"), "z")))])
 test object creation multiple assignments [[ Ent{ x := 1, y := 2 } ]] parse succeeds parse to ObjectCreation("Ent", [PropAssignmentComma(ObjectPropertyAssignment("x", Const(Int("1")))), PropAssignment(ObjectPropertyAssignment("y", Const(Int("2"))))])
 test object creation multiple assignments alternative [[ Ent{ x := 1 y := 2 } ]] parse succeeds parse to ObjectCreation("Ent", [PropAssignment(ObjectPropertyAssignment("x", Const(Int("1")))), PropAssignment(ObjectPropertyAssignment("y", Const(Int("2"))))])
-test object creation incomplete property assignment [[ Ent{ x } ]] parse succeeds parse to ObjectCreation("Ent", [PropAssignment(IncompleteObjectPropertyAssignment("x"))])
 
 // map creation
 test map creation single assignment [[ [1 -> 2] ]] parse succeeds parse to MapCreation([Mapping(Const(Int("1")), Const(Int("2")))])

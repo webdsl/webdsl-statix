@@ -46,6 +46,8 @@ context-free syntax
   DispatchNavigateCall.DispatchNavigateCall = <<Id> ( <{Exp ","}*> )>
   DispatchNavigateCall.DispatchNavigateCallNoArg = Id
 
+  DispatchNavigate = <navigate ( <DispatchNavigateCall> ) { <TemplateElement*> }> {reject}
+
 lexical syntax
 
   TemplateId = "navigate" {reject}

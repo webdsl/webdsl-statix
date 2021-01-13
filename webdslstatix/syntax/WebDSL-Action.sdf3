@@ -59,6 +59,7 @@ context-free syntax
 lexical syntax
 
   VarId = "return" {reject}
+  FunId = "return" {reject}
 
 context-free priorities
 
@@ -206,12 +207,18 @@ context-free syntax
   ObjectPropertyAssignment.ObjectPropertyAssignment = <
     <Id> := <Exp>
   >
+
+/*
+  used in sdf2 definition as workaround to get working autocompletion:
   ObjectPropertyAssignment.IncompleteObjectPropertyAssignment = <
     <Id>
   >
+*/
+
   Statement.Assignment = <
     <Exp> := <Exp> ;
   >
+
   Exp.MapCreation = <[ <Mapping+> ]>
   Mapping.Mapping = <<Exp> -\> <Exp>>
   Exp.ListCreation = <[ <{Exp ","}*> ]>
@@ -354,9 +361,8 @@ context-free priorities
   {left : Exp.Or } >
   { Exp.HqlExp } >
   { Exp.IfExp } >
-  {
-    Exp.RetrievalExp
-  }
+  { Exp.RetrievalExp } >
+  { Exp.SearcherDef }
 
 context-free sorts
 
