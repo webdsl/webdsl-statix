@@ -146,7 +146,7 @@ context-free sorts
   NamespaceConstraint SearchAttribute FacetExp FilterConstraint FieldsConstraint QuerySearchField QueryConstraint
   QueryBoost MatchGroup QueryExp Slop Range ExpOrWildCard RangeOpen RangeClose BoolOp QueryTerm SortExp Direction
   Highlight RetrievalExp SuggestType SearchField PlainField SuggestionPart OptQueryBoost OptBoolOp
-  OptFieldsConstraint OptSlop OptDirection
+  OptFieldsConstraint OptSlop OptDirection GroupDef
 
 context-free syntax
 
@@ -185,9 +185,11 @@ context-free syntax
   MatchGroup.Clause = <<OptBoolOp> ( <MatchGroup+> )>
   MatchGroup.Query = <<OptFieldsConstraint> <QueryConstraint>>
   MatchGroup.MatchAllQuery = <* : *>
-  QueryExp.GroupDef = <<OptBoolOp> ( <QueryExp+> ) <OptSlop>>
   QueryExp.TermDef = <<OptBoolOp> <QueryTerm> <OptSlop>>
   QueryExp.RangeDef = <<OptBoolOp> <Range>>
+  QueryExp.QueryExpGroupDef = GroupDef
+  GroupDef.GroupDef = <<OptBoolOp> ( <QueryExp+> ) <OptSlop>>
+  GroupDef = <<OptBoolOp> ( <Exp> ) <OptSlop>> {reject}
   Slop.Slop = <~ <Exp>>
   Range.Range = <<RangeOpen> <ExpOrWildCard> to <ExpOrWildCard> <RangeClose>>
   Range.RangeAlt = <<RangeOpen> <ExpOrWildCard> TO <ExpOrWildCard> <RangeClose>>
@@ -201,6 +203,7 @@ context-free syntax
   BoolOp.MustNot = <->
   QueryTerm.QueryTermExp = <<Exp>>
   QueryTerm = SearcherDef {reject}
+
   SortExp.SortDef = <<SearchField> <OptDirection>>
   Direction.AscendingAbbr = <asc>
   Direction.Ascending = <ascending>
@@ -226,9 +229,11 @@ context-free syntax
   SuggestionPart.SuggestTerm = <matching <FieldsConstraint> <Exp>>
   SuggestionPart = NamespaceConstraint
   SuggestionPart = MaxResults
+
   QueryTerm = SearcherKW {reject}
   QueryTerm = <<SearcherKW> ( <Exp> )> {reject}
   QueryTerm = <[ <{Exp ","}*> ]> {reject}
+
   OptQueryBoost.OptQueryBoostNone = <>
   OptQueryBoost = QueryBoost
   OptBoolOp.OptBoolOpNone = <>
