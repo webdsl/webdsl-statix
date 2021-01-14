@@ -1,0 +1,18 @@
+module analysis/analysis-fails/id-property-wrongtype
+
+language webdsl-statix
+
+test id-property-wrongtype [[
+//Id property must be a string type
+
+application test
+
+entity Test {
+
+	nr :: Bool(id)
+	
+}
+
+define page root() { }
+]] analysis fails
+

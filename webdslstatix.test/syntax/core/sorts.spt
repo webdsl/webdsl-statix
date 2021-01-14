@@ -1,4 +1,4 @@
-module core/sorts
+module syntax/core/sorts
 
 language webdsl-statix
 

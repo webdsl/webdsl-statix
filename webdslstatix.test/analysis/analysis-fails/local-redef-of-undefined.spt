@@ -1,0 +1,18 @@
+module analysis/analysis-fails/local-redef-of-undefined
+
+language webdsl-statix
+
+test local-redef-of-undefined [[
+//#2 must be defined globally to allow local override
+
+application bla
+
+   define page root(){
+     define localBody(){}
+   }
+
+   define page root1(){
+     define localBody(){}
+   }
+]] analysis fails
+

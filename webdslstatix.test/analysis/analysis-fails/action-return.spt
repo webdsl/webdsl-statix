@@ -1,0 +1,16 @@
+module analysis/analysis-fails/action-return
+
+language webdsl-statix
+
+test action-return [[
+//There is no page with signature
+
+application test
+
+  define page root(){
+    action root(){
+      return roott();
+    }
+  }
+]] analysis fails
+

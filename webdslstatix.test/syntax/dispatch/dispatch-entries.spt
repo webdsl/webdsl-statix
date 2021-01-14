@@ -1,4 +1,4 @@
-module dispatch/dispatch-entries
+module syntax/dispatch/dispatch-entries
 
 language webdsl-statix
 

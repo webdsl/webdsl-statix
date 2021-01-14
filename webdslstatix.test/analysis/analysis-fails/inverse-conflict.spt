@@ -1,0 +1,20 @@
+module analysis/analysis-fails/inverse-conflict
+
+language webdsl-statix
+
+test inverse-conflict [[
+//#2 Inverse annotation
+
+application test
+
+  entity A { 
+    b -> B (optional)
+  } 
+  entity B { 
+    a1 -> A (inverse=A.b) 
+    a2 -> A (inverse=A.b) 
+  }
+    
+  define page root(){}
+]] analysis fails
+

@@ -1,0 +1,16 @@
+module analysis/analysis-fails/vardeclinitglobal
+
+language webdsl-statix
+
+test vardeclinitglobal [[
+//can only be of a defined entity type
+application test
+
+  var a :Int := 3
+
+  function do() {
+
+    
+  }
+]] analysis fails
+

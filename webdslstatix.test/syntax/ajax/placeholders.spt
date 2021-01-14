@@ -1,4 +1,4 @@
-module ajax/placeholders
+module syntax/ajax/placeholders
 
 language webdsl-statix
 

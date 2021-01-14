@@ -1,4 +1,4 @@
-module expand/definitions
+module syntax/expand/definitions
 
 language webdsl-statix
 

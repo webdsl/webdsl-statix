@@ -1,0 +1,23 @@
+module analysis/analysis-fails/webservice/notExcistingProperty
+
+language webdsl-statix
+
+test notExcistingProperty [[
+//#1 no property noname in entity User
+application test
+
+
+	
+  entity User {
+  	name2 :: String
+  	
+    synchronization configuration {
+   		
+    	toplevel name property : noname 
+    }  
+  }
+ 
+
+  define page root(){}
+]] analysis fails
+

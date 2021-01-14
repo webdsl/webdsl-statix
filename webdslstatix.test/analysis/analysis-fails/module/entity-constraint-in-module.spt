@@ -1,0 +1,16 @@
+module analysis/analysis-fails/module/entity-constraint-in-module
+
+language webdsl-statix
+
+test entity-constraint-in-module [[
+module goto
+
+entity XYZ {
+
+	name :: String
+	name :: Int
+
+}
+	
+]] analysis fails
+

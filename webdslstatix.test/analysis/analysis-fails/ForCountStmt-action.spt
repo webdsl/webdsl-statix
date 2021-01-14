@@ -1,0 +1,15 @@
+module analysis/analysis-fails/ForCountStmt-action
+
+language webdsl-statix
+
+test ForCountStmt-action [[
+//Expression should be of type
+
+application test
+
+  function root(){
+    for(i:Int from 0 to "7"){
+    }
+  }
+]] analysis fails
+

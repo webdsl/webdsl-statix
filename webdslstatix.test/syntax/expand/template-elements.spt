@@ -1,4 +1,4 @@
-module expand/template-elements
+module syntax/expand/template-elements
 
 language webdsl-statix
 

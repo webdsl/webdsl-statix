@@ -1,0 +1,13 @@
+module analysis/analysis-fails/page-arg-object
+
+language webdsl-statix
+
+test page-arg-object [[
+//not allowed in page arguments
+application test
+
+  define page test(o: Object) {
+    "test"
+  }
+]] analysis fails
+

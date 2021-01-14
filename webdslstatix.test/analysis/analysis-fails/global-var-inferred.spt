@@ -1,0 +1,15 @@
+module analysis/analysis-fails/global-var-inferred
+
+language webdsl-statix
+
+test global-var-inferred [[
+//Circular variable definition detected
+
+application test
+
+define page root() {}
+
+var one := two
+var two := one
+]] analysis fails
+

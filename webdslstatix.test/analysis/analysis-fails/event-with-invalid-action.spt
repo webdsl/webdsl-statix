@@ -1,0 +1,15 @@
+module analysis/analysis-fails/event-with-invalid-action
+
+language webdsl-statix
+
+test event-with-invalid-action [[
+//Cannot find action with signature
+application test
+
+  define page root(){
+    action tst(){}
+  
+    block[onclick := test()]{"bla"}
+  }
+]] analysis fails
+

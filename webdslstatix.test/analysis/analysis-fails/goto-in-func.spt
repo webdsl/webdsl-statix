@@ -1,0 +1,26 @@
+module analysis/analysis-fails/goto-in-func
+
+language webdsl-statix
+
+test goto-in-func [[
+//Goto can only be used inside an action
+
+application test
+
+section functions
+
+function x() {
+	goto otherPage();
+}
+
+define page root() {
+  init {
+    goto otherPage();
+  }
+  
+}
+
+
+define page otherPage() { }
+]] analysis fails
+

@@ -1,0 +1,17 @@
+module analysis/analysis-succeeds/created-modified-generated-props
+
+language webdsl-statix
+
+test created-modified-generated-props [[
+application createdmodified
+
+  entity Something {
+  
+  }
+
+  page root(){
+    output(Something{}.created)
+    output(Something{}.modified)
+  }
+]] analysis succeeds
+

@@ -1,0 +1,20 @@
+module analysis/analysis-succeeds/webservice/onlyTopLevel
+
+language webdsl-statix
+
+test onlyTopLevel [[
+application test
+
+  entity User {
+    name2 :: String
+    
+    synchronization configuration{
+    	
+    	toplevel name property : name2   
+    }
+  }
+ 
+
+  define page root(){}
+]] analysis succeeds
+

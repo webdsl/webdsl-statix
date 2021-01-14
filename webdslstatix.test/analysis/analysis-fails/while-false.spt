@@ -1,0 +1,18 @@
+module analysis/analysis-fails/while-false
+
+language webdsl-statix
+
+test while-false [[
+//'while(false)' block is unreachable.
+
+application test
+
+  define page root(){
+    action test(){
+      while(false){
+        log("test");
+      }
+    }
+  }
+]] analysis fails
+

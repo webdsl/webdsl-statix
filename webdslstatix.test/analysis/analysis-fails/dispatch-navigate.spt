@@ -1,0 +1,19 @@
+module analysis/analysis-fails/dispatch-navigate
+
+language webdsl-statix
+
+test dispatch-navigate [[
+//Not a valid navigate link
+application test
+
+  entity Journal{
+    title :: String
+  }
+
+  define page root(){
+    for(jo:Journal){
+      navigate(hom/jo/dfg/g/df){ "show" output(jo.title) } 
+    }
+  }
+]] analysis fails
+

@@ -1,5 +1,0 @@
-case(""+true,5,f>fd){
-  Tmp{} {}
-  Tmp{} {}
-  default { ""; }
-}

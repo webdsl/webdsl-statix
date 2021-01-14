@@ -1,0 +1,20 @@
+module analysis/analysis-succeeds/ajaxinlineaction
+
+language webdsl-statix
+
+test ajaxinlineaction [[
+application test
+
+section pages
+
+define page root() {
+  placeholder hoi {
+    block[onclick = action { replace (hoi , mytemplate()); }  ] { "hoi1"}
+  } 
+}
+
+define ajax mytemplate() {
+  "hoi2"
+}
+]] analysis succeeds
+

@@ -1,4 +1,4 @@
-module native/definitions
+module syntax/native/definitions
 
 language webdsl-statix
 

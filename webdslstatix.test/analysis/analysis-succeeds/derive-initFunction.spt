@@ -1,0 +1,19 @@
+module analysis/analysis-succeeds/derive-initFunction
+
+language webdsl-statix
+
+test derive-initFunction [[
+application derive
+
+  entity CostSheet { 
+    function initialize() { init(); }
+    function init() { }
+  }
+
+  var cost := CostSheet{ }
+    
+  define page root() {
+    derive initFunction from cost
+  }
+]] analysis succeeds
+

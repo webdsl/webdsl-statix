@@ -1,0 +1,18 @@
+module analysis/analysis-fails/action-assignment
+
+language webdsl-statix
+
+test action-assignment [[
+//with signature x()
+application test
+
+define page root() {
+
+	var z := x()
+
+	action x() {
+	
+	}
+}
+]] analysis fails
+

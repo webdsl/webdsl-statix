@@ -1,0 +1,20 @@
+module analysis/analysis-succeeds/vardeclinit
+
+language webdsl-statix
+
+test vardeclinit [[
+// Variable a not defined
+
+application test
+
+section functions
+
+  function do() {
+    var a : Int := 3;
+  }
+
+define page root() {
+
+}
+]] analysis succeeds
+

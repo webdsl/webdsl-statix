@@ -1,0 +1,18 @@
+module analysis/analysis-fails/templatemarkdown
+
+language webdsl-statix
+
+test templatemarkdown [[
+//Template with signature
+//not defined
+application test 
+
+// Should also typecheck a shorthand name
+
+define page root() {
+
+  nav(3)
+
+}
+]] analysis fails
+

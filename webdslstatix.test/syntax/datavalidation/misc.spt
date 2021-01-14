@@ -1,4 +1,4 @@
-module datavalidation/misc
+module syntax/datavalidation/misc
 
 language webdsl-statix
 

@@ -1,0 +1,15 @@
+module analysis/analysis-fails/type-unknown
+
+language webdsl-statix
+
+test type-unknown [[
+//'something' not defined
+
+application test
+
+define page root() {
+  var amount := something
+  showPriceReception(amount)
+}
+]] analysis fails
+

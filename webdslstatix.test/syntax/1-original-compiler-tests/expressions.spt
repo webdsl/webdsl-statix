@@ -1,4 +1,4 @@
-module original-compiler-tests/expressions
+module syntax/original-compiler-tests/expressions
 
 language webdsl-statix
 

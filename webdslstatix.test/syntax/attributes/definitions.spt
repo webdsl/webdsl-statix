@@ -1,4 +1,4 @@
-module attributes/definitions
+module syntax/attributes/definitions
 
 language webdsl-statix
 

@@ -1,4 +1,4 @@
-module exceptions/statements
+module syntax/exceptions/statements
 
 language webdsl-statix
 

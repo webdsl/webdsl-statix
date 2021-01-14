@@ -1,0 +1,53 @@
+module analysis/analysis-succeeds/ac/deriveeditpage
+
+language webdsl-statix
+
+test deriveeditpage [[
+application test
+
+section datamodel
+
+  define override body() {
+    "default body"
+  }
+  
+  principal is User with credentials name
+
+  entity User{
+    name :: String
+  }
+
+  define override main() 
+  {
+    "main"
+    body()
+  }
+
+  define page root(){
+    "home"
+    main()
+    var u:User := User{}
+    define body()
+    {
+      "body"
+      navigate(editUser(u)){"editpage"}
+      var s :String
+      form{ input(s) action("login with name",action{ authenticate(s); })}
+    }
+   }
+   
+  define page editUser(u : User) {
+    "edit page"
+    derive editPage from u
+  }
+  
+  
+  access control rules
+    rule page editUser(us: User)
+    {
+      us != null
+    }
+    rule page root(){true}
+    rule template main(){true}
+]] analysis succeeds
+

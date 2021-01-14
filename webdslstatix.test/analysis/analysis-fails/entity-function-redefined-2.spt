@@ -1,0 +1,34 @@
+module analysis/analysis-fails/entity-function-redefined-2
+
+language webdsl-statix
+
+test entity-function-redefined-2 [[
+//Function with signature test(Int, String) of entity 'User' is defined multiple times.
+application test
+
+  entity User{
+    name :: String
+
+  }
+  
+  extend entity User{
+
+    function test(a:Int,b:String):String
+    {
+      return "test";
+    }
+  }
+  extend entity User{
+    
+    function test(a:Int,b:String):String
+    {
+      return "test";
+    }
+  }
+  
+  define page root(){
+    var u:User := User{}
+    output(u.name)
+   }
+]] analysis fails
+

@@ -1,4 +1,4 @@
-module exceptions/template-elements
+module syntax/exceptions/template-elements
 
 language webdsl-statix
 

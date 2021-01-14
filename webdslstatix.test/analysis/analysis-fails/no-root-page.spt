@@ -1,0 +1,13 @@
+module analysis/analysis-fails/no-root-page
+
+language webdsl-statix
+
+test no-root-page [[
+//no root page
+application test
+
+define page notRoot() {
+
+}
+]] analysis fails
+

@@ -1,0 +1,18 @@
+module analysis/analysis-succeeds/type-anno-regression
+
+language webdsl-statix
+
+test type-anno-regression [[
+application test
+
+  entity Pub {
+    bibs -> Set<Bib> := getbibs()
+    function getbibs() : Set<Bib> { return Set<Bib>(); }
+  }
+  
+  entity Bib {
+  }
+ 
+  define page root(){}
+]] analysis succeeds
+

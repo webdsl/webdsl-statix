@@ -1,0 +1,15 @@
+module analysis/analysis-fails/entity-constraint-module
+
+language webdsl-statix
+
+test entity-constraint-module [[
+//Property 'name' of entity 'XYZ' is defined multiple times
+application test
+
+imports module/entity-constraint-in-module
+
+ define page root() {
+    "default body"
+  }
+]] analysis fails
+

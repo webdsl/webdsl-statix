@@ -1,1 +1,0 @@
-bla[class="123", onkeyup=validator();""+attribute("onkeyup"), onchange=bla()]

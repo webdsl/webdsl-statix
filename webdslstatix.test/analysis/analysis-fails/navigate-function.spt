@@ -1,0 +1,19 @@
+module analysis/analysis-fails/navigate-function
+
+language webdsl-statix
+
+test navigate-function [[
+//no page with signature testpge
+application test
+
+  define page root(){
+    output(navigate(testpge(432,"3wnrof4twh")))
+  }
+  
+  define page testpage(i:Int,s:String)
+  {
+    output(i)
+    output(s)
+  }
+]] analysis fails
+

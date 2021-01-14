@@ -1,4 +1,4 @@
-module prefetch/prefetch-where-conditions
+module syntax/prefetch/prefetch-where-conditions
 
 language webdsl-statix
 

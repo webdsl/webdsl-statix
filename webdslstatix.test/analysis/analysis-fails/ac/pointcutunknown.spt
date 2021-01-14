@@ -1,0 +1,21 @@
+module analysis/analysis-fails/ac/pointcutunknown
+
+language webdsl-statix
+
+test pointcutunknown [[
+//does not exist
+
+application test
+
+define page root() {
+}
+
+access control rules
+
+  rule pointcut somepointcut(a:Int)
+  {
+    true
+  }
+  
+]] analysis fails
+

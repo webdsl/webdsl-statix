@@ -1,4 +1,4 @@
-module dispatch/template-elements
+module syntax/dispatch/template-elements
 
 language webdsl-statix
 

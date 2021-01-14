@@ -1,4 +1,4 @@
-module regex/expressions
+module syntax/regex/expressions
 
 language webdsl-statix
 

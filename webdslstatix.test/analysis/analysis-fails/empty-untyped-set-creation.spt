@@ -1,0 +1,16 @@
+module analysis/analysis-fails/empty-untyped-set-creation
+
+language webdsl-statix
+
+test empty-untyped-set-creation [[
+//No property length defined for TemplateElements
+
+// old error:
+// Type cannot be determined for empty untyped set creation
+application test
+ 
+  define page root(){
+    output({}.length)
+  }
+]] analysis fails
+

@@ -1,0 +1,18 @@
+module analysis/analysis-fails/webservice/empty
+
+language webdsl-statix
+
+test empty [[
+//#1 synchronization framework requires at least one TopLevelEntity
+application test
+
+  entity User {
+    name :: String
+    
+    synchronization configuration {}
+  }
+ 
+
+  define page root(){}
+]] analysis fails
+

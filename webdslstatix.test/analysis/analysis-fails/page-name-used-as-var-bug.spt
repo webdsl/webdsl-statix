@@ -1,0 +1,16 @@
+module analysis/analysis-fails/page-name-used-as-var-bug
+
+language webdsl-statix
+
+test page-name-used-as-var-bug [[
+//Variable 'root' not defined
+
+application test
+  
+  page root(){
+    	input(root)
+  }
+  
+  
+]] analysis fails
+

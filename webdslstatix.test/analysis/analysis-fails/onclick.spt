@@ -1,0 +1,22 @@
+module analysis/analysis-fails/onclick
+
+language webdsl-statix
+
+test onclick [[
+//Cannot find action with signature
+
+application test
+
+  define page root(){
+    output("dafsdsf")[onclick := fi() ]
+    
+    placeholder bla{}
+    
+    action fill(){
+      replace(bla,templ{ "bla" });
+    }
+  }
+
+  function fi(){}
+]] analysis fails
+

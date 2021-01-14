@@ -1,0 +1,16 @@
+module analysis/analysis-fails/inputnonexistent
+
+language webdsl-statix
+
+test inputnonexistent [[
+//not defined
+
+application test
+
+section functions
+
+define page home(i : Int) {
+  input(nonexistent)
+}
+]] analysis fails
+

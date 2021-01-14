@@ -1,0 +1,18 @@
+module analysis/analysis-fails/assignment-type
+
+language webdsl-statix
+
+test assignment-type [[
+//is incompatible with type in left-hand side
+application test
+
+define page root() {
+}
+
+function test(){
+  var s := "rwefd";
+  s := 34;
+   
+}
+]] analysis fails
+

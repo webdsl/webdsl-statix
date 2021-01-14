@@ -1,4 +1,4 @@
-module prefecth/statements
+module syntax/prefecth/statements
 
 language webdsl-statix
 

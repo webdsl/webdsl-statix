@@ -1,0 +1,20 @@
+module analysis/analysis-fails/page-as-template
+
+language webdsl-statix
+
+test page-as-template [[
+//Cannot use page as template
+//Template with signature
+
+application test
+
+  entity Entity0 {
+    property :: String
+  }
+
+  define page root() {
+    var e := Entity0{}
+    root()
+  }
+]] analysis fails
+

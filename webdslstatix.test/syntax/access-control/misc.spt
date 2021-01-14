@@ -1,4 +1,4 @@
-module access-control/misc
+module syntax/access-control/misc
 
 language webdsl-statix
 

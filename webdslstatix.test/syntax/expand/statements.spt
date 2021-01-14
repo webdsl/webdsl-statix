@@ -1,4 +1,4 @@
-module expand/statements
+module syntax/expand/statements
 
 language webdsl-statix
 

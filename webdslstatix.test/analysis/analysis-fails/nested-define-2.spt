@@ -1,0 +1,25 @@
+module analysis/analysis-fails/nested-define-2
+
+language webdsl-statix
+
+test nested-define-2 [[
+//define is nested too deeply
+
+application test
+
+  entity Task {
+    description    :: String
+  }
+  
+  define page root()
+  {
+    define one(){
+      define two(){}
+    }
+  }
+
+  define one(){}
+  define two(){}
+ 
+]] analysis fails
+

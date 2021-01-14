@@ -1,0 +1,13 @@
+module analysis/analysis-fails/event-without-action
+
+language webdsl-statix
+
+test event-without-action [[
+//Property 'onclick' requires an action call, inline action or String expression
+application test
+
+  define page root(){
+    block[onclick := 83]{"bla"}
+  }
+]] analysis fails
+

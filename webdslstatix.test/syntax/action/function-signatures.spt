@@ -1,4 +1,4 @@
-module action/function-signatures
+module syntax/action/function-signatures
 
 language webdsl-statix
 

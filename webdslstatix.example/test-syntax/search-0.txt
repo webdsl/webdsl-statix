@@ -1,6 +1,0 @@
-default analyzer sc {
-    tokenizer = StandardTokenizerFactory
-    token filter = StandardFilterFactory
-    token filter = LowerCaseFilterFactory
-    token filter = StopFilterFactory(words = "hallo")
-    }

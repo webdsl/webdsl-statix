@@ -1,8 +1,0 @@
-template test(){
-  filterFacets(
-    search ProgramSlot
-      matching program.key:+program.key
-      with facet location.name(40)
-      with facet startDate(20), allowedRooms, minDate.getTime(), maxDate.getTime()
-   )     
-}

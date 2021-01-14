@@ -1,4 +1,4 @@
-module access-control/rules
+module syntax/access-control/rules
 
 language webdsl-statix
 

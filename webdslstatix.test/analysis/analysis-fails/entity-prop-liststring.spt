@@ -1,0 +1,16 @@
+module analysis/analysis-fails/entity-prop-liststring
+
+language webdsl-statix
+
+test entity-prop-liststring [[
+//Expected: collection of Entity types. Encountered: List<String>
+application test
+
+entity Test{
+  test -> List<String>
+}
+
+define page root() {
+}
+]] analysis fails
+

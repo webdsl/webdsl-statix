@@ -1,0 +1,18 @@
+module analysis/analysis-fails/ajaxtemplate-2
+
+language webdsl-statix
+
+test ajaxtemplate-2 [[
+//A page cannot be an ajax template
+
+application test
+
+  define page root() {
+
+  }
+  
+  define ajax page bla(i:Int){
+    output(i)
+  }
+]] analysis fails
+

@@ -1,4 +1,4 @@
-module lexical/var-ids
+module syntax/lexical/var-ids
 
 language webdsl-statix
 

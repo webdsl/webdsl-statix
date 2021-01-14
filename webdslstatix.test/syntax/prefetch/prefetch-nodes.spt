@@ -1,4 +1,4 @@
-module prefetch/prefetch-nodes
+module syntax/prefetch/prefetch-nodes
 
 language webdsl-statix
 

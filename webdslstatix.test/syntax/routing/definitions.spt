@@ -1,4 +1,4 @@
-module routing/definitions
+module syntax/routing/definitions
 
 language webdsl-statix
 

@@ -1,4 +1,4 @@
-module datamodel/entity-body-declarations
+module syntax/datamodel/entity-body-declarations
 
 language webdsl-statix
 

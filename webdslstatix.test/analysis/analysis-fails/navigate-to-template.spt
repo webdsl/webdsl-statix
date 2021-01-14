@@ -1,0 +1,18 @@
+module analysis/analysis-fails/navigate-to-template
+
+language webdsl-statix
+
+test navigate-to-template [[
+//#2 There is no page with signature
+
+application test
+
+  define page root() {
+    navigate(bla()){""}
+    navigate(bla1()){""}
+  }
+  
+  define bla(){}
+  define ajax bla1(){}
+]] analysis fails
+

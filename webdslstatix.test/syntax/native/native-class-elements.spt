@@ -1,4 +1,4 @@
-module native/native-class-elements
+module syntax/native/native-class-elements
 
 language webdsl-statix
 

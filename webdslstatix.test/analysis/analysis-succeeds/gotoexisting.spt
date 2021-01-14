@@ -1,0 +1,20 @@
+module analysis/analysis-succeeds/gotoexisting
+
+language webdsl-statix
+
+test gotoexisting [[
+application test
+
+section functions
+
+define page root() {
+  init {
+    goto firstPage(7);
+  }
+}
+
+define page firstPage(i : Int) {
+  text("Yeah")
+}
+]] analysis succeeds
+

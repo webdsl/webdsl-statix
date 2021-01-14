@@ -1,0 +1,13 @@
+module analysis/analysis-fails/forexp-and
+
+language webdsl-statix
+
+test forexp-and [[
+//should contain a collection of Bool type
+application test
+
+  define page root() {
+    var list : Bool := And [ i | i : String in ["1","2"] ]
+  }
+]] analysis fails
+

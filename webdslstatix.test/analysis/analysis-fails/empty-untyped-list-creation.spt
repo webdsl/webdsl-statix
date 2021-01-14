@@ -1,0 +1,13 @@
+module analysis/analysis-fails/empty-untyped-list-creation
+
+language webdsl-statix
+
+test empty-untyped-list-creation [[
+//Type cannot be determined for empty untyped list creation
+application test
+ 
+  define page root(){
+    output([].length)
+  }
+]] analysis fails
+

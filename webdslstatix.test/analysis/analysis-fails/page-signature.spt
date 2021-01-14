@@ -1,0 +1,17 @@
+module analysis/analysis-fails/page-signature
+
+language webdsl-statix
+
+test page-signature [[
+//There is no page with signature test(String).
+application test
+
+define page root () {
+
+	navigate(test("a","b")) { }
+	navigate(test("a")) { }
+}
+
+define page test(a : String, b : String) { } 
+]] analysis fails
+

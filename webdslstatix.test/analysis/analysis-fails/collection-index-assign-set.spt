@@ -1,0 +1,19 @@
+module analysis/analysis-fails/collection-index-assign-set
+
+language webdsl-statix
+
+test collection-index-assign-set [[
+//Indexed access
+
+application test
+
+define page root() {
+}
+
+function test(){
+  var set := {"fd3edf","eftrf"};
+  set[0] := "dfgsdf";
+   
+}
+]] analysis fails
+

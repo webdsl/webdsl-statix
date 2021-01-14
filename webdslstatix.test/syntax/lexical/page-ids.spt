@@ -1,4 +1,4 @@
-module lexical/page-ids
+module syntax/lexical/page-ids
 
 language webdsl-statix
 

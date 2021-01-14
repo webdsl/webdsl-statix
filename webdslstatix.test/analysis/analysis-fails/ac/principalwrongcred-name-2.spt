@@ -1,0 +1,20 @@
+module analysis/analysis-fails/ac/principalwrongcred-name-2
+
+language webdsl-statix
+
+test principalwrongcred-name-2 [[
+//Principal credential type 'User' does not have a 'name' property, a property with 'name' annotation is not sufficient for use as credential.
+
+application test
+
+section principal
+
+entity User{
+  username :: String (name)  := "234rtfg"
+}
+
+principal is User with credentials name
+
+define page root(){}
+]] analysis fails
+

@@ -1,4 +1,4 @@
-module original-compiler-tests/template-elements
+module syntax/original-compiler-tests/template-elements
 
 language webdsl-statix
 

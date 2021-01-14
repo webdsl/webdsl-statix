@@ -1,4 +1,4 @@
-module action/statements
+module syntax/action/statements
 
 language webdsl-statix
 

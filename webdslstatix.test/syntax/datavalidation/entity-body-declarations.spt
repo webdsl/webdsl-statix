@@ -1,4 +1,4 @@
-module datavalidation/entity-body-declarations
+module syntax/datavalidation/entity-body-declarations
 
 language webdsl-statix
 

@@ -1,0 +1,20 @@
+module analysis/analysis-fails/instantiate-builtin
+
+language webdsl-statix
+
+test instantiate-builtin [[
+// Cannot instantiate built-in type 'Date'
+
+application test
+
+function f() {
+    
+    var d := Date{};
+    
+}
+
+define page root() {
+
+}
+]] analysis fails
+

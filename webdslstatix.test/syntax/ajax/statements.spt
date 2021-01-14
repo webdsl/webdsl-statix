@@ -1,4 +1,4 @@
-module ajax/statements
+module syntax/ajax/statements
 
 language webdsl-statix
 

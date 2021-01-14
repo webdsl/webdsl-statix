@@ -1,4 +1,4 @@
-module javascript/template-elements
+module syntax/javascript/template-elements
 
 language webdsl-statix
 

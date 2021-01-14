@@ -1,1 +1,0 @@
-ajax template foo(){"bar"}

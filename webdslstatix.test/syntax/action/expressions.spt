@@ -1,4 +1,4 @@
-module action/expressions
+module syntax/action/expressions
 
 language webdsl-statix
 

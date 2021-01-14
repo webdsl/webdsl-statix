@@ -1,0 +1,14 @@
+module analysis/analysis-fails/action-return-inline
+
+language webdsl-statix
+
+test action-return-inline [[
+//There is no page with signature
+
+application test
+
+  define page root(){
+    submit action{return roott();} {"1"}
+  }
+]] analysis fails
+

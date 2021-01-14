@@ -1,4 +1,4 @@
-module access-control/definitions
+module syntax/access-control/definitions
 
 language webdsl-statix
 

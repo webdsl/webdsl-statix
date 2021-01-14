@@ -1,0 +1,17 @@
+module analysis/analysis-fails/globalvar-no-init
+
+language webdsl-statix
+
+test globalvar-no-init [[
+//Global variable 'one' must be initialized
+
+application test
+
+entity Test {
+}
+
+var one : Test
+
+define page root(){}
+]] analysis fails
+

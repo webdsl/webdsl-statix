@@ -1,0 +1,16 @@
+module analysis/analysis-fails/idannosession
+
+language webdsl-statix
+
+test idannosession [[
+//Id annotation not allowed in session entities
+
+application test
+
+section datamodel
+
+  session SuperUser {
+    fullname :: String (id)
+  }
+]] analysis fails
+

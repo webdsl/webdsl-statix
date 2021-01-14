@@ -1,0 +1,9 @@
+module analysis/analysis-fails/module
+
+language webdsl-statix
+
+test module [[
+//Main .app file needs to start with "application"
+module test
+]] analysis fails
+

@@ -1,4 +1,4 @@
-module prefecth/template-elements
+module syntax/prefecth/template-elements
 
 language webdsl-statix
 

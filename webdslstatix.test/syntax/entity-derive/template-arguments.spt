@@ -1,4 +1,4 @@
-module entity-derive/template-arguments
+module syntax/entity-derive/template-arguments
 
 language webdsl-statix
 

@@ -1,3 +1,0 @@
-section foo
-test bar { assert(true); }
-test {assert(false); } 

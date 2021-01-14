@@ -1,5 +1,0 @@
-typecase( a.b as y ){
-  String { }
-  Foo { }
-  default { "" }
-}

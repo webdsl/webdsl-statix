@@ -1,4 +1,4 @@
-module core/definitions
+module syntax/core/definitions
 
 language webdsl-statix
 

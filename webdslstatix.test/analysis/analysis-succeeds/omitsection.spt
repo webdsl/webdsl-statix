@@ -1,0 +1,10 @@
+module analysis/analysis-succeeds/omitsection
+
+language webdsl-statix
+
+test omitsection [[
+application test
+
+  define page root(){}
+]] analysis succeeds
+
