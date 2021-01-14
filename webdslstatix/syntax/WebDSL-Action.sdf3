@@ -246,6 +246,11 @@ context-free syntax
   SimpleExp.SimpleThisCall = ThisCall
   SimpleExp.SimpleCall = <<SimpleExp> . <Id> ( <{Exp ","}*> )>
 
+lexical syntax
+
+  VarId = "if" {reject}
+  VarId = "else" {reject}
+
 syntax
 
   StringPart-CF.InterpExp = "~" "(" Exp-CF ")"
@@ -360,9 +365,9 @@ context-free priorities
   {left : Exp.And } >
   {left : Exp.Or } >
   { Exp.HqlExp } >
-  { Exp.IfExp } >
   { Exp.RetrievalExp } >
-  { Exp.SearcherDef }
+  { Exp.SearcherDef } >
+  { Exp.IfExp }
 
 context-free sorts
 
