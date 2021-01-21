@@ -16,9 +16,9 @@ rules // Analysis
   // see README.md for details on how to switch to multi-file analysis
 
   // single-file analysis
-  editor-analyze = stx-editor-analyze(pre-analyze, post-analyze|"statics", "applicationOk")
-  pre-analyze = desugar-all; explicate-injections-webdsl-statix-Unit
-  post-analyze = implicate-injections-webdsl-statix-Unit
+  editor-analyze  = stx-editor-analyze(pre-analyze, post-analyze|"statics", "applicationOk")
+  pre-analyze     = desugar-all; origin-track-forced(explicate-injections-webdsl-statix-Unit)
+  post-analyze    =              origin-track-forced(implicate-injections-webdsl-statix-Unit)
 
   // multi-file analysis
 //  editor-analyze = stx-editor-analyze(id|"statics", "projectOk", "fileOk")
