@@ -1,5 +1,7 @@
 application entity_property_propkinds_and_sorts
 
+  page root { }
+
   entity Ent1 {
     // propkinds with entities
     pke1 : Ent1

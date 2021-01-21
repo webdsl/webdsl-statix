@@ -1,5 +1,7 @@
 application entity_type_compatibility
 
+  page root { }
+
   entity Ent1{}
   entity Ent2 : Ent1{}
   entity Ent3 : Ent2{}

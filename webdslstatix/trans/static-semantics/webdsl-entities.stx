@@ -9,14 +9,14 @@ imports
 rules // entity declaration
 
   // entity x : super { ... }
-  defOk(s_global, e@Entity(x, super, bodydecs)) :- {s_entity s_super entity_scopes}
+  defOk(s_global, e@Entity(x, super, bodydecs)) :- {s_entity s_super}
     typeOfDecl of Entity{super} in s_global |-> [(_, (_, ENTITY(s_super)))] | error $[Entity [super] is not defined] @super,
     new s_entity, s_entity -INHERIT-> s_super,
     noCircularInheritance(s_entity) | error $[Circular inhertitance detected] @e,
     declEntity(s_global, s_entity, x, bodydecs).
 
   // entity x { ... }
-  defOk(s_global, EntityNoSuper(x, bodydecs)) :- {s_entity entity_scopes}
+  defOk(s_global, EntityNoSuper(x, bodydecs)) :- {s_entity}
     new s_entity, s_entity -IMPORT-> s_global,
     declEntity(s_global, s_entity, x, bodydecs).
 
