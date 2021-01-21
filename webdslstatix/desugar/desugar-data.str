@@ -5,11 +5,11 @@ imports
 
 rules
 
-  normalize-data : OptPropAnnosNone() -> []
+  normalize-data : OptPropAnnosNone() -> PropAnnos([])
   normalize-data : ListSort(x) -> GenericSort("List", [x])
   normalize-data : SetSort(x) -> GenericSort("Set", [x])
-  normalize-data : FunctionSortParamsNone() -> []
-  normalize-data : FunctionSortReturnNone() -> SimpleSort("Void")
+  normalize-data : FunctionSortParamsNone() -> FunctionSortParams([])
+  normalize-data : FunctionSortReturnNone() -> FunctionSortReturn(SimpleSort("Void"))
 
   normalize-data : GlobalVarDeclDepr(x, sort) -> GlobalVarDecl(x, sort)
   normalize-data : GlobalVarDeclInitDepr(x, sort, exp) -> GlobalVarDeclInit(x, sort, exp)

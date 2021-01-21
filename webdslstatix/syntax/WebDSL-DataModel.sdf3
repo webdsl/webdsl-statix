@@ -88,10 +88,10 @@ context-free sorts
 context-free syntax
 
   EntityBodyDeclaration.Property = <
-    <VarId> <PropKind> <Sort> <OptPropAnnos>
+    <PropertyId> <PropKind> <Sort> <OptPropAnnos>
   >
   EntityBodyDeclaration.DerivedProperty = <
-    <VarId> <PropKind> <Sort> <OptPropAnnos> := <Exp>
+    <PropertyId> <PropKind> <Sort> <OptPropAnnos> := <Exp>
   >
   EntityBodyDeclaration.CachedEntity = <
     cache

@@ -2,7 +2,7 @@ module WebDSL-Lexical
 
 lexical sorts
 
-  TemplateId VarId FAVarId FunId Id PageId ExtendedId ModuleName SectionName
+  TemplateId VarId FAVarId FunId PropertyId Id PageId ExtendedId ModuleName SectionName
 
 lexical syntax
 
@@ -10,6 +10,7 @@ lexical syntax
   VarId = Id
   FAVarId = VarId
   FunId = Id
+  PropertyId = Id
   Id = [a-zA-Z] [a-zA-Z0-9\_]*
   PageId = [a-zA-Z] [a-zA-Z0-9\_\-]*
   ExtendedId = [a-zA-Z0-9\-\_\.]+
