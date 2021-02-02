@@ -6,51 +6,35 @@ imports
   static-semantics/webdsl-types
   static-semantics/webdsl
 
-rules // functions
+rules // functions calls
 
-  typeOfExp(s, ThisCall2Exp(c@ThisCall(f, argExps))) = t :- {argTypes nameCompatibleFunSigs mostSpecificFunSigs f'}
-    argTypes == typesOfExps(s, argExps),
-    nameCompatibleFunSigs == nameCompatibleFunSigs(s, f),
-    mostSpecificFunSigs == mostSpecificFunSigs(argTypes, typeCompatibleFunSigs(nameCompatibleFunSigs, argTypes)),
-    mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @c,
-    mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @c,
-    mostSpecificFunSigs == [(Function{f'}, (_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @c,
-    @f.ref := f',
-    @f.type := t.
+  typeOfExp(s, ThisCall2Exp(ThisCall(f, argExps))) = t :-
+    t == typeOfFunctionCall(s, s, f, argExps, FALSE()).
 
-  typeOfSimpleExp(s, SimpleThisCall(c@ThisCall(f, argExps))) = t :- {argTypes nameCompatibleFunSigs mostSpecificFunSigs f'}
-    argTypes == typesOfExps(s, argExps),
-    nameCompatibleFunSigs == nameCompatibleFunSigs(s, f),
-    mostSpecificFunSigs == mostSpecificFunSigs(argTypes, typeCompatibleFunSigs(nameCompatibleFunSigs, argTypes)),
-    mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @c,
-    mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @c,
-    mostSpecificFunSigs == [(Function{f'}, (_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @c,
-    @f.ref := f',
-    @f.type := t.
+  typeOfSimpleExp(s, SimpleThisCall(ThisCall(f, argExps))) = t :-
+    t == typeOfFunctionCall(s, s, f, argExps, FALSE()).
 
-  typeOfExp(s, c@Call(exp, f, argExps)) = t :- {argTypes s_entity nameCompatibleFunSigs mostSpecificFunSigs f'}
-    argTypes == typesOfExps(s, argExps),
+  typeOfExp(s, Call(exp, f, argExps)) = t :- {s_entity/* argTypes nameCompatibleFunSigs mostSpecificFunSigs f'*/}
     typeOfExp(s, exp) == ENTITY(s_entity),
-    nameCompatibleFunSigs == nameCompatibleFunSigsInEntity(s_entity, f),
+    t == typeOfFunctionCall(s, s_entity, f, argExps, TRUE()).
+
+  typeOfSimpleExp(s, SimpleCall(exp, f, argExps)) = t :- {s_entity/* argTypes nameCompatibleFunSigs mostSpecificFunSigs f'*/}
+    typeOfSimpleExp(s, exp) == ENTITY(s_entity),
+    t == typeOfFunctionCall(s, s_entity, f, argExps, TRUE()).
+
+  // The last boolean argument indicates whether the function definition needs to be found within the enclosing entity of scope fundef_scope
+  typeOfFunctionCall : scope * scope * string * list(Exp) * BOOL -> TYPE
+  typeOfFunctionCall(arg_scope, fundef_scope, f, argExps, restrictToEnclosingEntity) = t :- {argTypes nameCompatibleFunSigs mostSpecificFunSigs f'}
+    argTypes == typesOfExps(arg_scope, argExps),
+    nameCompatibleFunSigs == nameCompatibleFunSigs(fundef_scope, f, restrictToEnclosingEntity),
     mostSpecificFunSigs == mostSpecificFunSigs(argTypes, typeCompatibleFunSigs(nameCompatibleFunSigs, argTypes)),
-    mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @c,
-    mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @c,
-    mostSpecificFunSigs == [(Function{f'}, (_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @c,
-    //TO-DO: filter mostSpecificFunSigs for correct overriding according to known subtype at compile time
+    mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @f,
+    mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @f,
+    mostSpecificFunSigs == [(Function{f'}, (_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @f,
     @f.ref := f',
     @f.type := t.
 
-  typeOfSimpleExp(s, c@SimpleCall(exp, f, argExps)) = t :- {argTypes s_entity nameCompatibleFunSigs mostSpecificFunSigs f'}
-    argTypes == typesOfExps(s, argExps),
-    typeOfSimpleExp(s, exp) == ENTITY(s_entity),
-    nameCompatibleFunSigs == nameCompatibleFunSigsInEntity(s_entity, f),
-    mostSpecificFunSigs == mostSpecificFunSigs(argTypes, typeCompatibleFunSigs(nameCompatibleFunSigs, argTypes)),
-    mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @c,
-    mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @c,
-    mostSpecificFunSigs == [(Function{f'}, (_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @c,
-    //TO-DO: filter mostSpecificFunSigs for correct overriding according to known subtype at compile time
-    @f.ref := f',
-    @f.type := t.
+rules // function definitions
 
   // global functions
   defOk(s, GlobalFunction(f)) :- globalFunctionOk(s, f).
@@ -137,12 +121,12 @@ rules // functions
 
 rules  // rules and functions for function overloading
 
-  nameCompatibleFunSigs : scope * string -> list((path * (occurrence * FUNSIG)))
-  nameCompatibleFunSigs(s, f) = res :-
+  // The last boolean argument indicates whether the function definition needs to be found within the enclosing entity of scope s
+  nameCompatibleFunSigs : scope * string * BOOL -> list((path * (occurrence * FUNSIG)))
+  nameCompatibleFunSigs(s, f, FALSE()) = res :-
     typeOfFunDecl of Function{f} in s |-> res.
 
-  nameCompatibleFunSigsInEntity : scope * string -> list((path * (occurrence * FUNSIG)))
-  nameCompatibleFunSigsInEntity(s, f) = res :-
+  nameCompatibleFunSigs(s, f, TRUE()) = res :-
     query typeOfFunDecl filter EXTEND? (INHERIT EXTEND?)*
                         and { Function{f'} :- f' == f }
                         in s |-> res.
