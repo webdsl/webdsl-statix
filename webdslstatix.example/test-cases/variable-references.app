@@ -4,21 +4,21 @@ application variable_references
   var b : Ent1 := a
   var c : Ent1 := c
 
-  var d : Ent1 := Ent1{}
-  var d : Ent1 := Ent1{}
+  var d : Ent1 := Ent1{} // error: Duplicate definition of "d" in this context
+  var d : Ent1 := Ent1{} // error: Duplicate definition of "d" in this context
 
   var other : Ent1 := Ent1{}
 
   entity Ent1 {
     name   : String
-    name2  : String // error: Property 'name2' of entity 'Ent1' is defined multiple times
-    name2  : String // error: Property 'name2' of entity 'Ent1' is defined multiple times
+    name2  : String // error: Duplicate definition of "name2" in this context
+    name2  : String // error: Duplicate definition of "name2" in this context
     name3  : String
     others : List<Ent1>
   }
 
   entity Ent2 : Ent1 {
-    name3 : String // error: Property 'name3' of entity 'Ent2' is defined multiple times
+    name3 : String // error: Cannot override existing entity property "name3"
     other : Ent1
 
     function ent2func1(other : Ent1) : Ent1 {

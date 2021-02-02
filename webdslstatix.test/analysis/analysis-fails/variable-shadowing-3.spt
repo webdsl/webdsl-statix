@@ -92,7 +92,7 @@ expand rvar1 rvar2 gvar1 gvar2 svar to x {
     }
   }
   page x14 {
-    output([x | x: Int in [1]]) // ForExp
+    output([x | x: Int in [1] ]) // ForExp
   }
 }
 

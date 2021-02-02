@@ -30,7 +30,7 @@ section datamodel
       var u22:User := User{name := "charlie" self := u2};
       var u33:User := User{name := "dave" self := u3};
       u0.childrenset := {u1,u2};
-      u0.children := [fr.self | fr : User in [u11,u22,u33]];
+      u0.children := [fr.self | fr : User in [u11,u22,u33] ];
     }
 
     if(u1 in u0.children)
@@ -91,8 +91,8 @@ section datamodel
 
 
 test implicittype {
-  assert([x | x in [1,2,3]] == [1,2,3]);
-  assert([y.id | y in [Lab{},Lab{}]].length == 2);
+  assert([x | x in [1,2,3] ] == [1,2,3]);
+  assert([y.id | y in [Lab{},Lab{}] ].length == 2);
   assert([x.parseInt() | x in ["1","2"] where x == "1"] == [1]);
 }
 
@@ -138,15 +138,15 @@ init {
 }
 
 test groupby {
-  assert([x | x in [1,2,3] group by x] == [[1],[2],[3]] );
-  assert([e.i | e in [gb1,gb2,gb3,gb4] group by e.i] == [[0,0],[1,1]]);
-  assert([e | e in [gb1,gb2,gb3,gb4] group by e.s] == [[gb1,gb3],[gb2],[gb4]]);
-  assert([e | e in [gb1,gb2,gb3,gb4] order by e.s group by e.s] == [[gb4],[gb2],[gb1,gb3]]);
-  assert([e | e in [gb1,gb2,gb3,gb4] order by e.s, e.i desc group by e.s] == [[gb4],[gb2],[gb3,gb1]]);
-  assert([e | e in [gb1,gb2,gb3,gb4] group by e.nested.i] == [[gb1],[gb2, gb4],[gb3]]);
-  assert([e | e in [gb1,gb2,gb3,gb4] group by e.nested] == [[gb1],[gb2],[gb3],[gb4]]);
-  assert([e | e in [gb4,gb5,gb6,gb7] group by e.nested] == [[gb4,gb5],[gb6,gb7]]);
-  assert([e | e in [gb1,gb2,gb3] group by now().after(e.d)] == [[gb1,gb3],[gb2]]);
+  assert([x | x in [1,2,3] group by x] == [ [1],[2],[3] ] );
+  assert([e.i | e in [gb1,gb2,gb3,gb4] group by e.i] == [ [0,0],[1,1] ]);
+  assert([e | e in [gb1,gb2,gb3,gb4] group by e.s] == [ [gb1,gb3],[gb2],[gb4] ]);
+  assert([e | e in [gb1,gb2,gb3,gb4] order by e.s group by e.s] == [ [gb4],[gb2],[gb1,gb3] ]);
+  assert([e | e in [gb1,gb2,gb3,gb4] order by e.s, e.i desc group by e.s] == [ [gb4],[gb2],[gb3,gb1] ]);
+  assert([e | e in [gb1,gb2,gb3,gb4] group by e.nested.i] == [ [gb1],[gb2, gb4],[gb3] ]);
+  assert([e | e in [gb1,gb2,gb3,gb4] group by e.nested] == [ [gb1],[gb2],[gb3],[gb4] ]);
+  assert([e | e in [gb4,gb5,gb6,gb7] group by e.nested] == [ [gb4,gb5],[gb6,gb7] ]);
+  assert([e | e in [gb1,gb2,gb3] group by now().after(e.d)] == [ [gb1,gb3],[gb2] ]);
 }
 
 test nested {

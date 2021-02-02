@@ -30,9 +30,9 @@ init {
     s.add(tmp);
   }
 
-  var e1 : Ent := Ent { name := "e1" propA := s[0] propB := s[3] lazy := s[2] lst := [s[0]] set := {s[3]} };
-  var e2 : Ent := Ent { name := "e2" propA := s[1] propB := s[4] lazy := s[5] lst := [s[7]] set := {s[9]} };
-  var e3 : Ent := Ent { name := "e3" propA := s[2] propB := s[5] lazy := s[6] lst := [s[8]] set := {s[10]} };
+  var e1 : Ent := Ent { name := "e1" propA := s[0] propB := s[3] lazy := s[2] lst := [s[0] ] set := {s[3]} };
+  var e2 : Ent := Ent { name := "e2" propA := s[1] propB := s[4] lazy := s[5] lst := [s[7] ] set := {s[9]} };
+  var e3 : Ent := Ent { name := "e3" propA := s[2] propB := s[5] lazy := s[6] lst := [s[8] ] set := {s[10]} };
   e1.save();
   e2.save();
   e3.save();

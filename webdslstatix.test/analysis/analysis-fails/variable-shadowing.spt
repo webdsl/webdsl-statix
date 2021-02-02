@@ -41,7 +41,7 @@ application shadowing
       for(a:Int from 0 to 5){} // ForCountStmt
     }
     
-    output([a | a:Int in [1]]) // ForExp
+    output([a | a:Int in [1] ]) // ForExp
     
   }
   
