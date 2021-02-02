@@ -7,23 +7,27 @@ imports
 
 rules // page definitions
 
-  defOk(s, TemplateDefinition(DefinePage(mods, x, FormalArgs(fargs), TemplateArgs(targs), elements))) :-
+  defOk(s_global, TemplateDefinition(DefinePage(mods, x, FormalArgs(fargs), TemplateArgs(targs), elements))) :- {s_page}
     // TO-DO: analyse mods
     targs == [] | error $[Template arguments are not allowed on page definitions] @targs,
-    declPage(s, x, typesOfArgs(s, fargs)).
-    // TO-DO: analyse elements
+    declPage(s_global, x, typesOfArgs(s_global, fargs)),
+    new s_page, s_page -IMPORT-> s_global,
+    // TO-DO: delcare fargs in s_page
+    templateElementsOk(s_page, elements).
 
   declPage : scope * string * list(TYPE)
   declPage(s, p, args) :-
     s -> Ui{p} with typeOfDecl PAGE(args),
-    typeOfDecl of Ui{p} in s |-> [(_, (_, PAGE(args)))] | error $[Page [p] is defined multiple times] @p.
+    typeOfDecl of Ui{p} in s |-> [(_, (_, PAGE(_)))] | error $[Page [p] is defined multiple times] @p.
 
 rules // template definitions
 
-  defOk(s, TemplateDefinition(DefineTemplate(mods, t, FormalArgs(fargs), TemplateArgs(targs), elements))) :-
+  defOk(s_global, TemplateDefinition(DefineTemplate(mods, t, FormalArgs(fargs), TemplateArgs(targs), elements))) :- {s_page}
     // TO-DO: analyse mods
-    declTemplate(s, t, typesOfArgs(s, fargs), typesOfTemplateArgs(s, targs)).
-    // TO-DO: analyse elements
+    declTemplate(s_global, t, typesOfArgs(s_global, fargs), typesOfTemplateArgs(s_global, targs)),
+    new s_page, s_page -IMPORT-> s_global,
+    // TO-DO: delcare fargs and targs in s_page
+    templateElementsOk(s_page, elements).
 
 
   declTemplate : scope * string * list(TYPE) * list((string * list(TYPE)))
@@ -38,6 +42,21 @@ rules // template definitions
   amountOfTemplateDeclsWithArgs([], _, n) = n.
   amountOfTemplateDeclsWithArgs([ TEMPLATE(args, _) | tail], args, n) = amountOfTemplateDeclsWithArgs(tail, args, i) :- i #= n + 1.
   amountOfTemplateDeclsWithArgs([ _ | tail], args, n) = amountOfTemplateDeclsWithArgs(tail, args, n).
+
+rules // template elements
+
+  templateElementOk(s, s_next, Text(parts)) :-
+    stringPartsOk(s, parts).
+
+  templateElementOk : scope * scope * TemplateElement // TYPE argument is the return type in a function
+  templateElementOk(_, _, e) :- false | error $[This template element is not yet implemented] @e.
+
+  templateElementsOk : scope * list(TemplateElement)
+  templateElementsOk(_, []).
+  templateElementsOk(s, [element | tail]) :- {s_next}
+    new s_next, s_next -P-> s,
+    templateElementOk(s, s_next, element),
+    templateElementsOk(s_next, tail).
 
 rules // utils
 

@@ -106,6 +106,9 @@ rules // typing
   typeOfExp : scope * Exp -> TYPE
   typeOfExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
 
+  typeOfSimpleExp : scope * SimpleExp -> TYPE
+  typeOfSimpleExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
+
   typesCompatible : list(TYPE) * list(TYPE) -> BOOL
   typesCompatible([], []) = TRUE().
   typesCompatible([], [_|_]) = FALSE().

@@ -64,16 +64,23 @@ rules // types of constant expressions
   typeOfExp(_, Const(exp@Float(_))) = FLOAT() :-
     @exp.type := FLOAT().
 
-  typeOfExp(_, Const(exp@StringConst(_))) = STRING() :-
-    // TO-DO: check expressions in string parts
-    @exp.type := STRING().
-
   typeOfExp(_, exp@True()) = BOOL() :-
     @exp.type := BOOL().
 
   typeOfExp(_, exp@False()) = BOOL() :-
     @exp.type := BOOL().
 
+  typeOfExp(s, Const(exp@StringConst(String(parts)))) = STRING() :-
+    stringPartsOk(s, parts),
+    @exp.type := STRING().
+
+  stringPartsOk maps stringPartOk(*, list(*))
+  stringPartOk : scope * StringPart
+  stringPartOk(s, StringValue(_)).
+  stringPartOk(s, InterpExp(exp)) :-
+    inequalType(typeOfExp(s, exp), UNTYPED()).
+  stringPartOk(s, InterpValue(InterpSimpleExp(simple_exp))) :-
+    inequalType(typeOfSimpleExp(s, simple_exp), UNTYPED()).
 
 rules // type compatibility of constants
 

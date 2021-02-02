@@ -39,6 +39,7 @@ rules
     declVar(s, "securityContext", ENTITY(s_security_context)).
 
   acDefOk(s, Rule(AccessControlRule(_, _, _, exp, nested))) :-
+    // TO-DO: check correct reference using type and match id
     nestedAcRulesOk(s, nested),
     equalType(typeOfExp(s, exp), BOOL()) | error $[Rule should result in a boolean expression] @exp.
 

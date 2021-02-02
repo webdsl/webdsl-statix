@@ -18,9 +18,31 @@ rules // functions
     @f.ref := f',
     @f.type := t.
 
+  typeOfSimpleExp(s, SimpleThisCall(c@ThisCall(f, argExps))) = t :- {argTypes nameCompatibleFunSigs mostSpecificFunSigs f'}
+    argTypes == typesOfExps(s, argExps),
+    nameCompatibleFunSigs == nameCompatibleFunSigs(s, f),
+    mostSpecificFunSigs == mostSpecificFunSigs(argTypes, typeCompatibleFunSigs(nameCompatibleFunSigs, argTypes)),
+    mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @c,
+    mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @c,
+    mostSpecificFunSigs == [(Function{f'}, (_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @c,
+    @f.ref := f',
+    @f.type := t.
+
   typeOfExp(s, c@Call(exp, f, argExps)) = t :- {argTypes s_entity nameCompatibleFunSigs mostSpecificFunSigs f'}
     argTypes == typesOfExps(s, argExps),
     typeOfExp(s, exp) == ENTITY(s_entity),
+    nameCompatibleFunSigs == nameCompatibleFunSigsInEntity(s_entity, f),
+    mostSpecificFunSigs == mostSpecificFunSigs(argTypes, typeCompatibleFunSigs(nameCompatibleFunSigs, argTypes)),
+    mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @c,
+    mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @c,
+    mostSpecificFunSigs == [(Function{f'}, (_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @c,
+    //TO-DO: filter mostSpecificFunSigs for correct overriding according to known subtype at compile time
+    @f.ref := f',
+    @f.type := t.
+
+  typeOfSimpleExp(s, c@SimpleCall(exp, f, argExps)) = t :- {argTypes s_entity nameCompatibleFunSigs mostSpecificFunSigs f'}
+    argTypes == typesOfExps(s, argExps),
+    typeOfSimpleExp(s, exp) == ENTITY(s_entity),
     nameCompatibleFunSigs == nameCompatibleFunSigsInEntity(s_entity, f),
     mostSpecificFunSigs == mostSpecificFunSigs(argTypes, typeCompatibleFunSigs(nameCompatibleFunSigs, argTypes)),
     mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @c,
