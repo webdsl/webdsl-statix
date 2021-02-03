@@ -22,31 +22,27 @@ rules // page definitions
 
 rules // template definitions
 
-  defOk(s_global, TemplateDefinition(DefineTemplate(mods, t, FormalArgs(fargs), TemplateArgs(targs), elements))) :- {s_page}
+  defOk(s_global, TemplateDefinition(DefineTemplate(mods, t, FormalArgs(fargs), TemplateArgs(targs), elements))) :- {s_template}
     // TO-DO: analyse mods
     declTemplate(s_global, t, typesOfArgs(s_global, fargs), typesOfTemplateArgs(s_global, targs)),
-    new s_page, s_page -IMPORT-> s_global,
+    new s_template, s_template -IMPORT-> s_global,
     // TO-DO: delcare fargs and targs in s_page
-    templateElementsOk(s_page, elements).
-
+    templateElementsOk(s_template, elements).
 
   declTemplate : scope * string * list(TYPE) * list((string * list(TYPE)))
-  declTemplate(s, t, args, targs) :- {result}
-    s -> Ui{t} with typeOfDecl TEMPLATE(args, targs),
-    typeOfDecl of Ui{t} in s |-> result,
-    amountOfTemplateDeclsWithArgs(typesOfQueryResult(result), args, 0) == 1
-      | error $[Duplicate definition of template [t] with argument types [args]] @t.
+  declTemplate(s, t, fargTypes, targTypes) :- {result}
+    s -> Ui{t} with typeOfTemplateDecl (fargTypes, targTypes),
+    typeOfTemplateDecl of Ui{t} in s |-> result,
+    amountOfTemplateDeclsWithArgs(typesOfQueryResult(result), fargTypes, 0) == 1
+      | error $[Duplicate definition of template [t] with argument types [fargTypes]] @t.
 
   // helper function that results in the amount of template definitions with the given argument types
-  amountOfTemplateDeclsWithArgs : list(TYPE) * list(TYPE) * int -> int
+  amountOfTemplateDeclsWithArgs : list(TEMPLATESIG) * list(TYPE) * int -> int
   amountOfTemplateDeclsWithArgs([], _, n) = n.
-  amountOfTemplateDeclsWithArgs([ TEMPLATE(args, _) | tail], args, n) = amountOfTemplateDeclsWithArgs(tail, args, i) :- i #= n + 1.
+  amountOfTemplateDeclsWithArgs([ (args, _) | tail], args, n) = amountOfTemplateDeclsWithArgs(tail, args, i) :- i #= n + 1.
   amountOfTemplateDeclsWithArgs([ _ | tail], args, n) = amountOfTemplateDeclsWithArgs(tail, args, n).
 
 rules // template elements
-
-  templateElementOk(s, s_next, Text(parts)) :-
-    stringPartsOk(s, parts).
 
   templateElementOk : scope * scope * TemplateElement // TYPE argument is the return type in a function
   templateElementOk(_, _, e) :- false | error $[This template element is not yet implemented] @e.
@@ -58,6 +54,100 @@ rules // template elements
     templateElementOk(s, s_next, element),
     templateElementsOk(s_next, tail).
 
+  templateElementOk(s, s_next, Text(parts)) :-
+    stringPartsOk(s, parts).
+
+rules // template calls
+
+  templateElementOk(s, _, TemplateCall2TemplateElement(tc)) :-
+    templateCallOk(s, tc).
+
+  templateCallOk : scope * TemplateCall
+  templateCallOk(s, TemplateCall(TemplateCallId(t), TCallArgs(targs), propAssigns, body)) :- {argTypes nameCompatibleTemplateSigs mostSpecificTemplateSigs t'}
+    argTypes == typesOfTemplateArgExps(s, targs),
+    nameCompatibleTemplateSigs == nameCompatibleTemplateSigs(s, t),
+    mostSpecificTemplateSigs == mostSpecificTemplateSigs(argTypes, typeCompatibleTemplateSigs(nameCompatibleTemplateSigs, argTypes)),
+    mostSpecificTemplateSigs != [] | error $[No template definition with compatible argument types for function [t]] @t,
+    mostSpecificTemplateSigs != [_|[_|_]] | error $[Multiple template definitions with equally specific argument types for function [t]] @t,
+    mostSpecificTemplateSigs == [(Ui{t'}, (_, _))] | error $[Zero or multiple template definitions with equally specific argument types for function [t]] @t,
+    @t.ref := t'.
+
+  typesOfTemplateArgExps maps typeOfTemplateArgExp(*, list(*)) = list(*)
+  typeOfTemplateArgExp : scope * TemplateArgExp -> TYPE
+  typeOfTemplateArgExp(s, Exp(exp))                      = typeOfExp(s, exp).
+  typeOfTemplateArgExp(s, TemplateElementsArgument(exp)) = TEMPLATEELEMENTS().
+  typeOfTemplateArgExp(s, ExpEntityDerive(_, _))         = UNTYPED() :- false | error $[Derive expressions not implemented yet]. // TO-DO
+
+  nameCompatibleTemplateSigs : scope * string -> list((path * (occurrence * TEMPLATESIG)))
+  nameCompatibleTemplateSigs(s, t) = res :-
+    typeOfTemplateDecl of Ui{t} in s |-> res.
+
+  // function that gets all templates with matching name and compatible argument types
+  typeCompatibleTemplateSigs : list((path * (occurrence * TEMPLATESIG))) * list(TYPE) -> list((occurrence * TEMPLATESIG))
+  typeCompatibleTemplateSigs(nameCompatibleTemplates, args) = result :- {templateSigsZippedWithTypeCompatibility}
+    templateSigsZippedWithTypeCompatibility == zipTemplateSigsWithTypesCompatible(args, dropPathsTemplate(nameCompatibleTemplates)),
+    result == filterCompatibleArgTypesTemplate(templateSigsZippedWithTypeCompatibility).
+
+  // helper function for typeCompatibleTemplateSigs that prunes the list
+  // of templates based on the zipped BOOL with the template signature
+  filterCompatibleArgTypesTemplate : list((BOOL * (occurrence * TEMPLATESIG))) -> list((occurrence * TEMPLATESIG))
+  filterCompatibleArgTypesTemplate([]) = [].
+  filterCompatibleArgTypesTemplate([(TRUE() , t) | ts]) = [t | filterCompatibleArgTypesTemplate(ts)].
+  filterCompatibleArgTypesTemplate([(FALSE(), _) | ts]) = filterCompatibleArgTypesTemplate(ts).
+
+  // helper function for typeCompatibleTemplateSigs that zips the
+  // template signatures with whether the types are compatible with given argument types
+  zipTemplateSigsWithTypesCompatible maps zipTemplateSigWithTypesCompatible(*, list(*)) = list(*)
+  zipTemplateSigWithTypesCompatible : list(TYPE) * (occurrence * TEMPLATESIG) -> (BOOL * (occurrence * TEMPLATESIG))
+  zipTemplateSigWithTypesCompatible(args, t@(_, (templateArgs, _))) = (typesCompatible(args, templateArgs), t).
+
+  // function that prunes the list of compatible template signatures
+  // to a list of most specific template signatures
+  mostSpecificTemplateSigs : list(TYPE) * list((occurrence * TEMPLATESIG)) -> list((occurrence * TEMPLATESIG))
+  mostSpecificTemplateSigs(args, []) = [].     // In case no templates are compatible, return empty list
+  mostSpecificTemplateSigs(args, ts@[_]) = ts. // In case of only one compatible signature, return that
+  mostSpecificTemplateSigs(args, sigs) = mostSpecificTemplateSigs_helper(args, sigs, existsMatchingTemplateSig(args, sigs)).
+
+  // helper function for mostSpecificTemplateSigs that returns
+  // the exactly matching signature if it exists,
+  // else return the most specific (least inheritance) signatures
+  mostSpecificTemplateSigs_helper : list(TYPE) * list((occurrence * TEMPLATESIG)) * BOOL -> list((occurrence * TEMPLATESIG))
+  mostSpecificTemplateSigs_helper(args, sigs, TRUE())   = [matchingTemplateSig(args, sigs)].
+  mostSpecificTemplateSigs_helper(args, sigs, FALSE())  = filterLeastInheritanceAmountTemplate(minOfList(inheritanceAmounts), zipInheritanceAmountWithTemplateSig(inheritanceAmounts, sigs)) :-
+    inheritanceAmounts == inheritanceAmountsTemplate(args, sigs).
+
+  // helper function for mostSpecificTemplateSigs that returns
+  // whether an exactly matching template signature exists
+  existsMatchingTemplateSig : list(TYPE) * list((occurrence * TEMPLATESIG)) -> BOOL
+  existsMatchingTemplateSig(args, []) = FALSE().
+  existsMatchingTemplateSig(args, [(_, (args, _)) | _]) = TRUE().
+  existsMatchingTemplateSig(args, [_ | ts]) = existsMatchingTemplateSig(args, ts).
+
+  // helper function for mostSpecificTemplateSigs that returns the exactly matching signature
+  matchingTemplateSig : list(TYPE) * list((occurrence * TEMPLATESIG)) -> (occurrence * TEMPLATESIG)
+  matchingTemplateSig(args, [t@(_, (args, _)) | _]) = t.
+  matchingTemplateSig(args, [_ | ts]) = matchingTemplateSig(args, ts).
+
+  // function that computes the total amount of inheritance edges from caller arguments to defined arguments
+  inheritanceAmountsTemplate maps inheritanceAmountTemplate(*, list(*)) = list(*)
+  inheritanceAmountTemplate : list(TYPE) * (occurrence * TEMPLATESIG) -> int
+  inheritanceAmountTemplate(args, (_, (sigTypes, _))) = inheritanceAmount_helper(args, sigTypes).
+
+  // function that zips the inheritance amount with the template signature
+  zipInheritanceAmountWithTemplateSig : list(int) * list((occurrence * TEMPLATESIG)) -> list((int * (occurrence * TEMPLATESIG)))
+  zipInheritanceAmountWithTemplateSig([], []) = [].
+  zipInheritanceAmountWithTemplateSig([x|xs], [y|ys]) = [(x, y) | zipInheritanceAmountWithTemplateSig(xs, ys)].
+
+  // function that prunes the function signatures to only keep the lowest inheritance amount
+  filterLeastInheritanceAmountTemplate : int * list((int * (occurrence * TEMPLATESIG))) -> list((occurrence * TEMPLATESIG))
+  filterLeastInheritanceAmountTemplate(_, []) = [].
+  filterLeastInheritanceAmountTemplate(x, [(x, sig) | sigtl]) = [sig | filterLeastInheritanceAmountTemplate(x, sigtl)].
+  filterLeastInheritanceAmountTemplate(x, [_        | sigtl]) = filterLeastInheritanceAmountTemplate(x, sigtl).
+
+  dropPathsTemplate maps dropPathTemplate(list(*)) = list(*)
+  dropPathTemplate : (path * (occurrence * TEMPLATESIG)) -> (occurrence * TEMPLATESIG)
+  dropPathTemplate((_, x)) = x.
+
 rules // utils
 
   rootPageDefined : scope * QId
@@ -68,6 +158,6 @@ rules // utils
   typeOfTemplateArg : scope * TemplateArg -> (string * list(TYPE))
   typeOfTemplateArg(s, TemplateArg(x, argSorts)) = (x, typesOfSorts(s, argSorts)).
 
-  typesOfQueryResult : list((path * (occurrence * TYPE))) -> list(TYPE)
+  typesOfQueryResult : list((path * (occurrence * TEMPLATESIG))) -> list(TEMPLATESIG)
   typesOfQueryResult([]) = [].
   typesOfQueryResult([(_, (_, t)) | tail]) = [t | typesOfQueryResult(tail)].

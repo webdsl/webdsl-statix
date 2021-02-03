@@ -1,8 +1,6 @@
 module static-semantics/actions/binops
 
 imports
-  signatures/WebDSL-Action-sig
-
   static-semantics/webdsl-types
   static-semantics/webdsl
 

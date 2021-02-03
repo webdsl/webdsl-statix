@@ -1,8 +1,6 @@
 module statics
 
 imports
-  signatures/WebDSL-Core-sig
-
   static-semantics/webdsl
   static-semantics/actions/built-ins
 

@@ -1,8 +1,7 @@
 module static-semantics/webdsl
 
 imports
-  signatures/WebDSL-Core-sig
-  signatures/WebDSL-AccessControl-sig
+  signatures/webdsl-statix-sig
 
   static-semantics/actions/binops
   static-semantics/actions/functions
@@ -18,6 +17,7 @@ signature
     TYPE // semantic type
     BOOL // used as return values of functional constraints
     FUNSIG = (list(TYPE) * TYPE) // type alias for a function signature
+    TEMPLATESIG = (list(TYPE) * list((string * list(TYPE)))) // type alias for a template signature
 
   constructors
     TRUE : BOOL
@@ -58,9 +58,10 @@ signature
       min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
 
   relations
-    typeOfDecl    : occurrence -> TYPE
-    typeOfFunDecl : occurrence -> FUNSIG
-    entity        : occurrence -> scope
+    typeOfDecl         : occurrence -> TYPE
+    typeOfFunDecl      : occurrence -> FUNSIG
+    typeOfTemplateDecl : occurrence -> TEMPLATESIG
+    entity             : occurrence -> scope
 
 rules // application and module
 

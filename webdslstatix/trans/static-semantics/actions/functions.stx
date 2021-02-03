@@ -195,7 +195,7 @@ rules  // rules and functions for function overloading
   zipInheritanceAmountWithFunSig([], []) = [].
   zipInheritanceAmountWithFunSig([x|xs], [y|ys]) = [(x, y) | zipInheritanceAmountWithFunSig(xs, ys)].
 
-  // funciton that prunes the function signatures to only keep the lowest inheritance amount
+  // function that prunes the function signatures to only keep the lowest inheritance amount
   filterLeastInheritanceAmount : int * list((int * (occurrence * FUNSIG))) -> list((occurrence * FUNSIG))
   filterLeastInheritanceAmount(_, []) = [].
   filterLeastInheritanceAmount(x, [(x, sig) | sigtl]) = [sig | filterLeastInheritanceAmount(x, sigtl)].
