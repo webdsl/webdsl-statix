@@ -33,7 +33,7 @@ signature
   name-resolution
     labels
       P       // parent edge label for consecutive statements
-      F       // function edge label for embedding functions in a scope
+      F       // function edge label for embedding functions, templates and pages in a scope
       EXTEND  // extend edge label for extending entities
       INHERIT // inherit edge label for subclasses
       IMPORT  // import edge label for importing the global scope and other modules
