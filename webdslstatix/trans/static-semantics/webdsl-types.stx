@@ -77,8 +77,7 @@ rules // types of constant expressions
   stringPartsOk maps stringPartOk(*, list(*))
   stringPartOk : scope * StringPart
   stringPartOk(s, StringValue(_)).
-  stringPartOk(s, InterpExp(exp)) :-
-    inequalType(typeOfExp(s, exp), UNTYPED()).
+  stringPartOk(s, InterpExp(exp)) :- typed(s, exp).
   stringPartOk(s, InterpValue(InterpSimpleExp(simple_exp))) :-
     inequalType(typeOfSimpleExp(s, simple_exp), UNTYPED()).
 
@@ -225,6 +224,10 @@ rules // resolve reference types
     @p.ref := p'.
 
 rules // utils
+
+  allTyped maps typed(*, list(*))
+  typed : scope * Exp
+  typed(s, exp) :- inequalType(typeOfExp(s, exp), UNTYPED()).
 
   inequalType : TYPE * TYPE
   inequalType(T, T) :- false.

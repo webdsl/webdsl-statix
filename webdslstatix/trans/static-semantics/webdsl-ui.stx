@@ -69,6 +69,32 @@ rules // template elements
   templateElementOk(s, s_next, Text(parts)) :-
     stringPartsOk(s, parts).
 
+  templateElementOk(s, s_next, JSElement(attributes, parts)) :-
+    attributesOk(s, attributes),
+    jsStringPartsOk(s, parts).
+
+  templateElementOk(s, s_next, StyleElement(attributes, parts)) :-
+    attributesOk(s, attributes),
+    jsStringPartsOk(s, parts).
+
+  attributesOk maps attributeOk(*, list(*))
+  attributeOk : scope * Attribute
+  attributeOk(s, AttributeExpandLocal(_, _, _)) :- false | error $[Expand attributes not implemented yet]. // TO-DO
+  attributeOk(s, Attribute(_, exp)) :- typed(s, exp).
+  attributeOk(s, XMLAttributesIf(c, attributes)) :-
+    equalType(typeOfExp(s, c), BOOL()) | error $[Condition should be of type bool] @c,
+    attributesOk(s, attributes).
+
+  attributeOk(s, XMLAttributesIfElse(c, attributes_if, attributes_else)) :-
+    equalType(typeOfExp(s, c), BOOL()) | error $[Condition should be of type bool] @c,
+    attributesOk(s, attributes_if),
+    attributesOk(s, attributes_else).
+
+  jsStringPartsOk maps jsStringPartOk(*, list(*))
+  jsStringPartOk : scope * JSPart
+  jsStringPartOk(s, JSString(_)).
+  jsStringPartOk(s, JSExp(exp)) :- typed(s, exp).
+
 rules // template calls
 
   templateElementOk(s, _, TemplateCall2TemplateElement(tc)) :-
