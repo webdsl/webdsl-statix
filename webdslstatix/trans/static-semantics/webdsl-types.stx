@@ -83,7 +83,7 @@ rules // types of constant expressions
 
 rules // type compatibility of constants
 
-  // numeric types 
+  // numeric types
   typeCompatible(LONG(), INT()) = TRUE().
   typeCompatible(INT(), LONG()) = TRUE().
 
@@ -103,6 +103,8 @@ rules // type compatibility of constants
   typeCompatible(TIME(), T2)     = TRUE() :- isDateCompatibleType(T2).
 
   // misc
+  typeCompatible(LIST(T1), LIST(T2)) = typeCompatible(T1, T2).
+  typeCompatible(SET(T1), SET(T2))   = typeCompatible(T1, T2).
   typeCompatible(NULL(), _) = TRUE().
 
 rules // utils

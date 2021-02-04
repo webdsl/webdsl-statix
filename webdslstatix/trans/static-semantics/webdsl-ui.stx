@@ -66,14 +66,27 @@ rules // template elements
     templateElementOk(s, s_next, element),
     templateElementsOk(s_next, tail).
 
-  templateElementOk(s, s_next, Text(parts)) :-
+  templateElementOk(s, _, Text(parts)) :-
     stringPartsOk(s, parts).
 
-  templateElementOk(s, s_next, JSElement(attributes, parts)) :-
+  templateElementOk(s, _, XMLComment(_)).
+
+  templateElementOk(s, _, XMLEmptyElement(_, attributes)) :-
+    attributesOk(s, attributes).
+
+  templateElementOk(s, _, XMLEmptyElementUnclosed(_, attributes)) :-
+    attributesOk(s, attributes).
+
+  templateElementOk(s, _, XMLElement(openTagName, attributes, elements, closeTagName)) :-
+    openTagName == closeTagName | error $[Opening and closing tag do not match],
+    attributesOk(s, attributes),
+    templateElementsOk(s, elements).
+
+  templateElementOk(s, _, JSElement(attributes, parts)) :-
     attributesOk(s, attributes),
     jsStringPartsOk(s, parts).
 
-  templateElementOk(s, s_next, StyleElement(attributes, parts)) :-
+  templateElementOk(s, _, StyleElement(attributes, parts)) :-
     attributesOk(s, attributes),
     jsStringPartsOk(s, parts).
 
@@ -89,6 +102,27 @@ rules // template elements
     equalType(typeOfExp(s, c), BOOL()) | error $[Condition should be of type bool] @c,
     attributesOk(s, attributes_if),
     attributesOk(s, attributes_else).
+
+  attributeOk(s, CommonAttribute2Attribute(AllAttributes())).
+  attributeOk(s, CommonAttribute2Attribute(AllAttributesExceptExp(exp))) :- {t}
+    t == typeOfExp(s, exp),
+    equalB(TRUE(), orB(
+      typeCompatible(STRING(), t),
+      orB(
+        typeCompatible(LIST(STRING()), t),
+        typeCompatible(SET(STRING()), t)
+      )
+    )).
+
+  attributeOk(s, CommonAttribute2Attribute(AttributesExp(exp))) :- {t}
+    t == typeOfExp(s, exp),
+    equalB(TRUE(), orB(
+      typeCompatible(STRING(), t),
+      orB(
+        typeCompatible(LIST(STRING()), t),
+        typeCompatible(SET(STRING()), t)
+      )
+    )).
 
   jsStringPartsOk maps jsStringPartOk(*, list(*))
   jsStringPartOk : scope * JSPart

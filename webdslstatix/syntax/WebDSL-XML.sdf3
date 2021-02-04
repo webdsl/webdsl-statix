@@ -74,9 +74,8 @@ context-free syntax
   Attribute.Attribute = <<QualName> = <Exp>>
   Attribute = CommonAttribute
   CommonAttribute.AllAttributes = <all attributes>
-  CommonAttribute.AllAttributeExceptExp = <all attributes except <Exp>>
+  CommonAttribute.AllAttributesExceptExp = <all attributes except <Exp>>
   CommonAttribute.AttributesExp = <attributes <Exp>>
-  KEYWORD = <attributes>
 
 lexical syntax
 
