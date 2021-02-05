@@ -144,7 +144,7 @@ rules // entity resolving
 
 rules // subtyping
 
-  typeCompatible(ENTITY(s_sub), ENTITY(s_super)) = inherits(s_sub, s_super).
+  typeCompatibleB(ENTITY(s_sub), ENTITY(s_super)) = inherits(s_sub, s_super).
 
   inherits : scope * scope -> BOOL
   inherits(s_sub, s_super) = result :- {query_result}

@@ -107,22 +107,22 @@ rules // template elements
   attributeOk(s, CommonAttribute2Attribute(AllAttributesExceptExp(exp))) :- {t}
     t == typeOfExp(s, exp),
     equalB(TRUE(), orB(
-      typeCompatible(STRING(), t),
+      typeCompatibleB(STRING(), t),
       orB(
-        typeCompatible(LIST(STRING()), t),
-        typeCompatible(SET(STRING()), t)
+        typeCompatibleB(LIST(STRING()), t),
+        typeCompatibleB(SET(STRING()), t)
       )
-    )).
+    )) | error $[Attribute names should be of type String, List of String of Set of String, but type [t] given] @exp.
 
   attributeOk(s, CommonAttribute2Attribute(AttributesExp(exp))) :- {t}
     t == typeOfExp(s, exp),
     equalB(TRUE(), orB(
-      typeCompatible(STRING(), t),
+      typeCompatibleB(STRING(), t),
       orB(
-        typeCompatible(LIST(STRING()), t),
-        typeCompatible(SET(STRING()), t)
+        typeCompatibleB(LIST(STRING()), t),
+        typeCompatibleB(SET(STRING()), t)
       )
-    )).
+    )) | error $[Attribute names should be of type String, List of String of Set of String, but type [t] given] @exp.
 
   jsStringPartsOk maps jsStringPartOk(*, list(*))
   jsStringPartOk : scope * JSPart

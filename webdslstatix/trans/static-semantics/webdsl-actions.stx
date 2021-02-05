@@ -112,3 +112,27 @@ rules // variables
     query typeOfDecl filter EXTEND? (INHERIT EXTEND?)* and { Variable{x'} :- x' == x }
                      min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
                      in s_sub |-> [_].
+
+rules // list and set creation
+
+  typeOfExp(s, ListCreation([])) = UNTYPED() :- false | error $[Type cannot be determined for empty untyped list creation].
+  typeOfExp(s, lc@ListCreation([hd | tl])) = LIST(t) :-
+    t == typeOfExp(s, hd), // first element of the untyped list creation determines the type
+    typesCompatibleWith(t, typesOfExps(s, tl)) | error $[Not all elements are compatible with type [t]] @tl,
+    @lc.type := LIST(t).
+
+  typeOfExp(s, tlc@TypedListCreation(sort, exps)) = LIST(t) :-
+    typeOfSort(s, sort) == t,
+    typesCompatibleWith(t, typesOfExps(s, exps)) | error $[Not all elements are compatible with type [t]] @exps,
+    @tlc.type := LIST(t).
+
+  typeOfExp(s, SetCreation([])) = UNTYPED() :- false | error $[Type cannot be determined for empty untyped set creation].
+  typeOfExp(s, sc@SetCreation([hd | tl])) = SET(t) :-
+    t == typeOfExp(s, hd), // first element of the untyped set creation determines the type
+    typesCompatibleWith(t, typesOfExps(s, tl)) | error $[Not all elements are compatible with type [t]] @tl,
+    @sc.type := SET(t).
+
+  typeOfExp(s, tsc@TypedSetCreation(sort, exps)) = SET(t) :-
+    typeOfSort(s, sort) == t,
+    typesCompatibleWith(t, typesOfExps(s, exps)) | error $[Not all elements are compatible with type [t]] @exps,
+    @tsc.type := SET(t).

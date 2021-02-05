@@ -84,47 +84,53 @@ rules // types of constant expressions
 rules // type compatibility of constants
 
   // numeric types
-  typeCompatible(LONG(), INT()) = TRUE().
-  typeCompatible(INT(), LONG()) = TRUE().
+  typeCompatibleB(LONG(), INT()) = TRUE().
+  typeCompatibleB(INT(), LONG()) = TRUE().
 
   // string types
-  typeCompatible(STRING(), T2)      = TRUE() :- isStringCompatibleType(T2).
-  typeCompatible(SECRET(), T2)      = TRUE() :- isStringCompatibleType(T2).
-  typeCompatible(EMAIL(), T2)       = TRUE() :- isStringCompatibleType(T2).
-  typeCompatible(URL(), T2)         = TRUE() :- isStringCompatibleType(T2).
-  typeCompatible(WIKITEXT(), T2)    = TRUE() :- isStringCompatibleType(T2).
-  typeCompatible(TEXT(), T2)        = TRUE() :- isStringCompatibleType(T2).
-  typeCompatible(PATCH(), T2)       = TRUE() :- isStringCompatibleType(T2).
-  typeCompatible(PLACEHOLDER(), T2) = TRUE() :- isStringCompatibleType(T2).
+  typeCompatibleB(STRING(), T2)      = isStringCompatibleTypeB(T2).
+  typeCompatibleB(SECRET(), T2)      = isStringCompatibleTypeB(T2).
+  typeCompatibleB(EMAIL(), T2)       = isStringCompatibleTypeB(T2).
+  typeCompatibleB(URL(), T2)         = isStringCompatibleTypeB(T2).
+  typeCompatibleB(WIKITEXT(), T2)    = isStringCompatibleTypeB(T2).
+  typeCompatibleB(TEXT(), T2)        = isStringCompatibleTypeB(T2).
+  typeCompatibleB(PATCH(), T2)       = isStringCompatibleTypeB(T2).
+  typeCompatibleB(PLACEHOLDER(), T2) = isStringCompatibleTypeB(T2).
 
   // date types
-  typeCompatible(DATE(), T2)     = TRUE() :- isDateCompatibleType(T2).
-  typeCompatible(DATETIME(), T2) = TRUE() :- isDateCompatibleType(T2).
-  typeCompatible(TIME(), T2)     = TRUE() :- isDateCompatibleType(T2).
+  typeCompatibleB(DATE(), T2)     = isDateCompatibleTypeB(T2).
+  typeCompatibleB(DATETIME(), T2) = isDateCompatibleTypeB(T2).
+  typeCompatibleB(TIME(), T2)     = isDateCompatibleTypeB(T2).
 
   // misc
-  typeCompatible(LIST(T1), LIST(T2)) = typeCompatible(T1, T2).
-  typeCompatible(SET(T1), SET(T2))   = typeCompatible(T1, T2).
-  typeCompatible(NULL(), _) = TRUE().
+  typeCompatibleB(LIST(T1), LIST(T2)) = typeCompatibleB(T1, T2).
+  typeCompatibleB(SET(T1), SET(T2))   = typeCompatibleB(T1, T2).
+  typeCompatibleB(NULL(), _) = TRUE().
 
 rules // utils
 
   isDateCompatibleType : TYPE
-  isDateCompatibleType(_) :- false.
-  isDateCompatibleType(DATE()).
-  isDateCompatibleType(DATETIME()).
-  isDateCompatibleType(TIME()).
+  isDateCompatibleType(t) :- isDateCompatibleTypeB(t) == TRUE().
+
+  isDateCompatibleTypeB : TYPE -> BOOL
+  isDateCompatibleTypeB(_)          = FALSE().
+  isDateCompatibleTypeB(DATE())     = TRUE().
+  isDateCompatibleTypeB(DATETIME()) = TRUE().
+  isDateCompatibleTypeB(TIME())     = TRUE().
 
   isStringCompatibleType : TYPE
-  isStringCompatibleType(_) :- false.
-  isStringCompatibleType(STRING()).
-  isStringCompatibleType(SECRET()).
-  isStringCompatibleType(EMAIL()).
-  isStringCompatibleType(URL()).
-  isStringCompatibleType(WIKITEXT()).
-  isStringCompatibleType(TEXT()).
-  isStringCompatibleType(PATCH()).
-  isStringCompatibleType(PLACEHOLDER()).
+  isStringCompatibleType(t) :- isStringCompatibleTypeB(t) == TRUE().
+
+  isStringCompatibleTypeB : TYPE -> BOOL
+  isStringCompatibleTypeB(_)             = FALSE().
+  isStringCompatibleTypeB(STRING())      = TRUE().
+  isStringCompatibleTypeB(SECRET())      = TRUE().
+  isStringCompatibleTypeB(EMAIL())       = TRUE().
+  isStringCompatibleTypeB(URL())         = TRUE().
+  isStringCompatibleTypeB(WIKITEXT())    = TRUE().
+  isStringCompatibleTypeB(TEXT())        = TRUE().
+  isStringCompatibleTypeB(PATCH())       = TRUE().
+  isStringCompatibleTypeB(PLACEHOLDER()) = TRUE().
 
 rules // map sorts to semantic types
 

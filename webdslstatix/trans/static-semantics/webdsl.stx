@@ -114,11 +114,15 @@ rules // typing
   typesCompatible([], []) = TRUE().
   typesCompatible([], [_|_]) = FALSE().
   typesCompatible([_|_], []) = FALSE().
-  typesCompatible([t1|t1s], [t2|t2s]) = andB(typeCompatible(t1, t2), typesCompatible(t1s, t2s)).
+  typesCompatible([t1|t1s], [t2|t2s]) = andB(typeCompatibleB(t1, t2), typesCompatible(t1s, t2s)).
 
-  typeCompatible : TYPE * TYPE -> BOOL
-  typeCompatible(T1, T2) = FALSE(). //default
-  typeCompatible(T, T) = TRUE(). // same type is always type compatible
+  typesCompatibleWith maps typeCompatible(*, list(*))
+  typeCompatible : TYPE * TYPE
+  typeCompatible(T1, T2) :- typeCompatibleB(T1, T2) == TRUE().
+
+  typeCompatibleB : TYPE * TYPE -> BOOL
+  typeCompatibleB(T1, T2) = FALSE(). //default
+  typeCompatibleB(T, T) = TRUE(). // same type is always type compatible
 
 rules // utils
 
