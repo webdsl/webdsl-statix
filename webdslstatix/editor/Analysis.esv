@@ -8,7 +8,7 @@ language
 
   // see README.md for details on how to switch to multi-file analysis
 
-  observer : editor-analyze (constraint) //(multifile)
+  observer : editor-analyze (constraint) (multifile)
 
 references
 

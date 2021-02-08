@@ -1,0 +1,74 @@
+module static-semantics/webdsl-modules
+
+imports
+  signatures/webdsl-statix-sig
+
+  static-semantics/actions/built-ins
+  static-semantics/webdsl-ui
+  static-semantics/webdsl
+
+rules // unit rules
+
+  unitOk(s_global, Application(app, sections)) :- {s_app}
+    new s_app,
+    declareMod(s_global, app, s_app),
+    declareMod(s_global, "_APPLICATION_SCOPE", s_app), // declare this scope as the main application scope
+    declareBuiltIns(s_app),
+    importModules(s_global, s_app, app, sections),
+    sectionsOk(s_app, sections),
+    rootPageDefined(s_app, app).
+
+  unitOk(s_global, Module(m, sections)) :- {s_mod}
+    new s_mod,
+    declareMod(s_global, m, s_mod),
+    importModules(s_global, s_mod, m, sections),
+    sectionsOk(s_mod, sections),
+    importedByApplicationRoot(s_global, s_mod, m).
+
+  importModules : scope * scope * string * list(Section)
+  importModules(s_global, s, m, sections) :-
+    declareImports(s_global, m, sections),
+    extendModuleScope(s_global, m, s).
+
+rules // import definition rules
+
+  declareImports : scope * string * list(Section)
+  declareImports(_, _, []).
+  declareImports(s, x, [Section(_, defs) | ss]) :-
+    declareImportsInSection(s, x, defs),
+    declareImports(s, x, ss).
+
+  declareImportsInSection : scope * string * list(Definition)
+  declareImportsInSection(_, _, []).
+  declareImportsInSection(s, x, [_ | defs]) :- declareImportsInSection(s, x, defs).
+  declareImportsInSection(s, x, [Imports(y) | defs]) :-
+    declareImport(s, x, y),
+    declareImportsInSection(s, x, defs).
+
+  defOk(_, Imports(_)). // imports are handled in another rule, discard them here
+
+rules // extend module scopes
+
+  extendModuleScope : scope * string * scope
+  extendModuleScope(s_global, m, s) :- {modules}
+    resolveImport(s_global, m) == modules,
+    importModulesInScope(s_global, s, modules).
+
+  importModulesInScope : scope * scope * list((path * (string * string)))
+  importModulesInScope(_, _, []).
+  importModulesInScope(s_global, s, [(_, (_, mod)) | tl]) :-
+    importModuleInScope(s_global, s, mod),
+    importModulesInScope(s_global, s, tl).
+
+  importModuleInScope : scope * scope * string
+  importModuleInScope(s_global, s, mod) :- {s_mod}
+    resolveMod(s_global, mod) == [(_, (_, s_mod))] | error $[Cannot resolve module [mod]],
+    s -IMPORT-> s_mod.
+
+  importedByApplicationRoot : scope * scope * string
+  importedByApplicationRoot(s_global, s_mod, mod) :- {s_app ps}
+    resolveMod(s_global, "_APPLICATION_SCOPE") == [(_, (_, s_app))],
+    query () filter IMPORT* and { s_app' :- s_app' == s_app }
+             min $ < IMPORT
+             in s_mod |-> ps,
+    ps != [] | error $[Module [mod] is not (transitively) imported by the application root] @mod.

@@ -2,10 +2,12 @@ module WebDSL-Lexical
 
 lexical sorts
 
-  TemplateId VarId FAVarId FunId PropertyId Id PageId ExtendedId ModuleName SectionName
+  QId TemplateId VarId FAVarId FunId PropertyId Id PageId ExtendedId ModuleName SectionName
 
 lexical syntax
 
+  QId = Id
+  QId = QId "." Id
   TemplateId = Id %% hook for reject rules on templatecall names
   VarId = Id
   FAVarId = VarId

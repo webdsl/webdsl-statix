@@ -228,7 +228,7 @@ rules // template calls
 
 rules // utils
 
-  rootPageDefined : scope * QId
+  rootPageDefined : scope * string
   rootPageDefined(s, errorLoc) :-
     typeOfDecl of Ui{"root"} in s |-> [(_, (_, PAGE(_)))|_] | error $[No root page defined] @errorLoc.
 

@@ -7,12 +7,7 @@ imports
 
 context-free sorts
 
-  QId FormalArg OptFormalArgs FunctionSortParams FunctionSortParam FunctionSortReturn OptCallArgs Sort
-
-context-free syntax
-
-  QId = Id
-  QId.Qualified = <<QId> . <Id>>
+  FormalArg OptFormalArgs FunctionSortParams FunctionSortParam FunctionSortReturn OptCallArgs Sort
 
 context-free syntax %% Types
 

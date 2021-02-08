@@ -6,6 +6,9 @@ imports
 
 rules
 
+  normalize-core : ApplicationDefs(x, defs, sections) -> Application(x, [Section("", defs) | sections])
+  normalize-core : ModuleDefs(x, defs, sections)      -> Module(x, [Section("", defs) | sections])
+
   normalize-core : RefSortAlt(sort) -> RefSort(sort)
 
   normalize-core : OptFormalArgsNone() -> FormalArgs([])
