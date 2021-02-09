@@ -1,7 +1,10 @@
 module desugar/desugar-all
 
 imports
+  libspoofax/term/origin
+
   src-gen/signatures/-
+
   desugar/-
 
 rules

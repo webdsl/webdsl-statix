@@ -1,6 +1,7 @@
 module analysis
 
 imports
+  libspoofax/term/origin
 
   statixruntime
   statix/api
