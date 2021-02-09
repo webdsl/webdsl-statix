@@ -68,7 +68,6 @@ rules // extend module scopes
   importedByApplicationRoot : scope * scope * string
   importedByApplicationRoot(s_global, s_mod, mod) :- {s_app ps}
     resolveMod(s_global, "_APPLICATION_SCOPE") == [(_, (_, s_app))],
-    query () filter IMPORT* and { s_app' :- s_app' == s_app }
-             min $ < IMPORT
-             in s_mod |-> ps,
-    ps != [] | error $[Module [mod] is not (transitively) imported by the application root] @mod.
+    query () filter IMPORT*
+             and { s_app' :- s_app' == s_app }
+             in s_mod |-> [_|_] | error $[Module [mod] is not (transitively) imported by the application root]@mod.
