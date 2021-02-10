@@ -1,0 +1,65 @@
+module analysis/datamodel/entity-property-duplicate-definition
+
+language webdsl-statix
+
+fixture [[
+  application entity_property_duplicate_definition
+
+  page root { }
+
+  [[...]]
+]]
+
+// in same entity 
+test entity property no duplicate definition [[
+  entity Ent1 {
+    x : Int
+    y : Int
+  }
+]] analysis succeeds
+
+test entity property duplicate definition [[
+  entity Ent1 {
+    [[x]] : Int
+    [[x]] : Int
+  }
+]] > 0 errors at #1, #2
+
+test entity property duplicate definition with different sorts [[
+  entity Ent1 {
+    [[x]] : Int
+    [[x]] : String
+  }
+]] > 0 errors at #1, #2
+
+test entity property no duplicate definition in different entity [[
+  entity Ent1 {
+    x : Int
+  }
+
+  entity Ent2 {
+    x : Int
+  }
+]] analysis succeeds
+
+// with inheritance
+test entity property duplicate definition in sub entity [[
+  entity Ent1 {
+    x : Int
+  }
+
+  entity Ent2 : Ent1 {
+    [[x]] : Int
+  }
+]] > 0 errors at #1
+
+// with extension
+test entity property duplicate definition in extension [[
+  entity Ent1 {
+    [[x]] : Int
+  }
+
+  extend entity Ent1 {
+    [[x]] : Int
+  }
+]] > 0 errors at #1, #2

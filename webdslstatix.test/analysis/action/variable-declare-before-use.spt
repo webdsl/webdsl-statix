@@ -1,0 +1,33 @@
+module analysis/action/variable-declare-before-use
+
+language webdsl-statix
+
+fixture [[
+  application variable_declare_before_use
+
+  page root { }
+
+  [[...]]
+]]
+
+test declare before use in function [[
+  function f() { 
+    var int1 : Int := [[int2]]; // error: Variable 'int2' not defined
+    var int2 : Int := int1;
+  }
+]] > 0 errors at #1
+
+test no self references in function [[
+  function f() { 
+    var int1 : Int := [[int1]]; // error: Variable 'int1' not defined
+  }
+]] > 0 errors at #1
+
+test no order in global variables [[
+  entity Ent1 { }
+
+  var a : Ent1 := b
+  var b : Ent1 := a
+
+  var c : Ent1 := c
+]] analysis succeeds

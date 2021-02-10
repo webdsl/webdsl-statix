@@ -1,0 +1,37 @@
+module analysis/datamodel/entity-type-compatibility
+
+language webdsl-statix
+
+fixture [[
+application entity_type_compatibility
+
+  page root { }
+
+  entity Ent1{}
+  entity Ent2 : Ent1{}
+  entity Ent3 : Ent2{}
+
+  entity Ent4{}
+
+  entity Ent5 : Ent1{}
+
+  function myFunc(p1 : String) {
+    [[...]]
+  }
+]]
+
+test compare ent1 ent1 [[ Ent1{} == Ent1{}; ]] analysis succeeds
+test compare ent4 ent4 [[ Ent4{} == Ent4{}; ]] analysis succeeds
+test compare ent1 ent2 [[ Ent1{} == Ent2{}; ]] analysis succeeds
+test compare ent2 ent1 [[ Ent2{} == Ent1{}; ]] analysis succeeds
+test compare ent3 ent1 [[ Ent3{} == Ent1{}; ]] analysis succeeds
+test compare ent1 ent3 [[ Ent1{} == Ent3{}; ]] analysis succeeds
+
+test compare ent1 ent4 [[ Ent1{} == Ent4{}; ]] analysis fails
+test compare ent2 ent4 [[ Ent2{} == Ent4{}; ]] analysis fails
+test compare ent3 ent4 [[ Ent3{} == Ent4{}; ]] analysis fails
+test compare ent4 ent1 [[ Ent4{} == Ent1{}; ]] analysis fails
+test compare ent4 ent2 [[ Ent4{} == Ent2{}; ]] analysis fails
+test compare ent4 ent3 [[ Ent4{} == Ent3{}; ]] analysis fails
+test compare ent2 ent5 [[ Ent2{} == Ent5{}; ]] analysis fails
+test compare ent5 ent2 [[ Ent5{} == Ent2{}; ]] analysis fails

@@ -1,0 +1,72 @@
+module analysis/datamodel/entity-property-propkinds-and-sorts
+
+language webdsl-statix
+
+fixture [[
+application entity_property_propkinds_and_sorts
+
+  page root { }
+
+  entity Ent1 {
+    [[...]]
+  }
+]]
+
+test propkinds with entities 1 [[ pke1 : Ent1 ]] analysis succeeds
+test propkinds with entities 2 [[ pke2 :: Ent1 ]] analysis fails //error: Expected simple type
+test propkinds with entities 3 [[ pke3 -> Ent1 ]] analysis succeeds
+test propkinds with entities 4 [[ pke4 <> Ent1 ]] analysis succeeds
+
+test propkinds with collection of entities 1 [[ pkce1 : List<Ent1> ]] analysis succeeds
+test propkinds with collection of entities 2 [[ pkce2 :: List<Ent1> ]] analysis fails //error: Expected simple type
+test propkinds with collection of entities 3 [[ pkce3 -> List<Ent1> ]] analysis succeeds
+test propkinds with collection of entities 4 [[ pkce4 <> List<Ent1> ]] analysis succeeds
+test propkinds with collection of entities 5 [[ pkce5 : Set<Ent1> ]] analysis succeeds
+test propkinds with collection of entities 6 [[ pkce6 :: Set<Ent1> ]] analysis fails //error: Expected simple type
+test propkinds with collection of entities 7 [[ pkce7 -> Set<Ent1> ]] analysis succeeds
+test propkinds with collection of entities 8 [[ pkce8 <> Set<Ent1> ]] analysis succeeds
+
+test propkinds with simple sorts 1 [[ pkss1 : String ]] analysis succeeds
+test propkinds with simple sorts 2 [[ pkss2 :: String ]] analysis succeeds
+test propkinds with simple sorts 3 [[ pkss3 -> String ]] analysis fails //error: Expected reference or composite type
+test propkinds with simple sorts 4 [[ pkss4 <> String ]] analysis fails //error: Expected reference or composite type
+
+test propkinds with collections of simple sorts 1 [[ pkcss1 : List<String> ]] analysis fails //error: Expected collection of entity types
+test propkinds with collections of simple sorts 2 [[ pkcss2 :: List<String> ]] analysis fails //error: Expected collection of entity types
+test propkinds with collections of simple sorts 3 [[ pkcss3 -> List<String> ]] analysis fails //error: Expected collection of entity types
+test propkinds with collections of simple sorts 4 [[ pkcss4 <> List<String> ]] analysis fails //error: Expected collection of entity types
+test propkinds with collections of simple sorts 5 [[ pkcss5 : Set<String> ]] analysis fails //error: Expected collection of entity types
+test propkinds with collections of simple sorts 6 [[ pkcss6 :: Set<String> ]] analysis fails //error: Expected collection of entity types
+test propkinds with collections of simple sorts 7 [[ pkcss7 -> Set<String> ]] analysis fails //error: Expected collection of entity types
+test propkinds with collections of simple sorts 8 [[ pkcss8 <> Set<String> ]] analysis fails //error: Expected collection of entity types
+
+test propkinds with disallowed sorts 1 [[ pkds1 : Null ]] analysis fails //error: Attribute type Null not allowed
+test propkinds with disallowed sorts 2 [[ pkds2 :: Null ]] analysis fails //error: Attribute type Null not allowed
+test propkinds with disallowed sorts 3 [[ pkds3 -> Null ]] analysis fails //error: Attribute type Null not allowed
+test propkinds with disallowed sorts 4 [[ pkds4 <> Null ]] analysis fails //error: Attribute type Null not allowed
+test propkinds with disallowed sorts 5 [[ pkds5 : Void ]] analysis fails //error: Attribute type Null not allowed
+test propkinds with disallowed sorts 6 [[ pkds6 :: Void ]] analysis fails //error: Attribute type Null not allowed
+test propkinds with disallowed sorts 7 [[ pkds7 -> Void ]] analysis fails //error: Attribute type Null not allowed
+test propkinds with disallowed sorts 8 [[ pkds8 <> Void ]] analysis fails //error: Attribute type Null not allowed
+
+test propkinds with disallowed ref sorts 1 [[ pkdrs1 : ref Ent1 ]] analysis fails //error: Reference type is not allowed in attribute
+test propkinds with disallowed ref sorts 2 [[ pkdrs2 : Ref<Ent1> ]] analysis fails //error: Reference type is not allowed in attribute
+test propkinds with disallowed ref sorts 3 [[ pkdrs3 :: ref String ]] analysis fails //error: Reference type is not allowed in attribute
+test propkinds with disallowed ref sorts 4 [[ pkdrs4 -> ref Ent1 ]] analysis fails //error: Reference type is not allowed in attribute
+test propkinds with disallowed ref sorts 5 [[ pkdrs5 <> Ref<String> ]] analysis fails //error: Reference type is not allowed in attribute
+
+test disallowed names 1 [[ id : String ]] analysis fails //error: Cannot override the builtin property 'id'
+test disallowed names 2 [[ version : String ]] analysis fails //error: Cannot override the builtin property 'version'
+test disallowed names 3 [[ created : String ]] analysis fails //error: Cannot override the builtin property 'created'
+test disallowed names 4 [[ modified : String ]] analysis fails //error: Cannot override the builtin property 'modified'
+test disallowed names 5 [[ class : String ]] analysis fails //error: Cannot override the builtin property 'class'
+
+test prop kinds with collections of collections 1 [[ pkcc1 : List<List<Ent1>> ]] analysis fails //error: Expected collection of entity types
+test prop kinds with collections of collections 1 [[ pkcc2 :: List<List<Ent1>> ]] analysis fails //error: Expected collection of entity types
+test prop kinds with collections of collections 1 [[ pkcc3 -> List<List<Ent1>> ]] analysis fails //error: Expected collection of entity types
+test prop kinds with collections of collections 1 [[ pkcc4 <> List<List<Ent1>> ]] analysis fails //error: Expected collection of entity types
+
+test generic built-ins 1 [[ gb1 : List<Void> ]] analysis fails
+test generic built-ins 2 [[ gb3 : List<Entity> ]] analysis fails
+
+test built-ins 1 [[ b1 : TemplateElements ]] analysis fails

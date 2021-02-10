@@ -1,0 +1,111 @@
+module analysis/action/function-overloading-calls
+
+language webdsl-statix
+
+fixture [[
+application function_overloading
+
+  page root {}
+
+  entity Ent1 {}
+  entity Ent2 : Ent1 {}
+  entity Ent3 : Ent2 {}
+
+  [[...]]
+]]
+
+test function overloading 1 [[
+  function [[x]]() { }
+  function [[x]](i : Int) { }
+  function [[x]](e : Ent1) {}
+  function [[x]](e : Ent2) {}
+
+  function test1() {
+    [[x]]();
+  }
+]] resolve #5 to #1
+
+test function overloading 2 [[
+  function [[x]]() { }
+  function [[x]](i : Int) { }
+  function [[x]](e : Ent1) {}
+  function [[x]](e : Ent2) {}
+
+  function test() {
+    [[x]](1);
+  }
+]] resolve #5 to #2
+
+test function overloading 3 [[
+  function [[x]]() { }
+  function [[x]](i : Int) { }
+  function [[x]](e : Ent1) {}
+  function [[x]](e : Ent2) {}
+
+  function test() {
+    [[x]](null);
+  }
+]] > 0 errors at #5
+
+test function overloading 4 [[
+  function [[x]]() { }
+  function [[x]](i : Int) { }
+  function [[x]](e : Ent1) {}
+  function [[x]](e : Ent2) {}
+
+  function test() {
+    [[x]](Ent1{});
+  }
+]] resolve #5 to #3
+
+test function overloading 5 [[
+  function [[x]]() { }
+  function [[x]](i : Int) { }
+  function [[x]](e : Ent1) {}
+  function [[x]](e : Ent2) {}
+
+  function test() {
+    [[x]](Ent2{});
+  }
+]] resolve #5 to #4
+
+test function overloading 6 [[
+  function [[x]]() { }
+  function [[x]](i : Int) { }
+  function [[x]](e : Ent1) {}
+  function [[x]](e : Ent2) {}
+
+  function test() {
+    [[x]](Ent3{});
+  }
+]] resolve #5 to #4
+
+test function overloading multiple arguments 1 [[
+  function [[y]](e1 : Ent1, e2 : Ent1) {}
+  function [[y]](e1 : Ent1, e2 : Ent2) {}
+  function [[y]](e1 : Ent2, e2 : Ent1) {}
+
+  function test() {
+    [[y]](Ent1{}, Ent1{});
+  }
+]] resolve #4 to #1
+
+test function overloading multiple arguments 2 [[
+  function [[y]](e1 : Ent1, e2 : Ent1) {}
+  function [[y]](e1 : Ent1, e2 : Ent2) {}
+  function [[y]](e1 : Ent2, e2 : Ent1) {}
+
+  function test() {
+    [[y]](Ent1{}, Ent2{});
+  }
+]] resolve #4 to #2
+
+test function overloading multiple arguments 3 [[
+  function [[y]](e1 : Ent1, e2 : Ent1) {}
+  function [[y]](e1 : Ent1, e2 : Ent2) {}
+  function [[y]](e1 : Ent2, e2 : Ent1) {}
+
+  function test() {
+    [[y]](Ent2{}, Ent2{});
+  }
+]] > 0 errors at #4

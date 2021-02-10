@@ -1,0 +1,64 @@
+module analysis/action/variable-duplicates-and-shadowing
+
+language webdsl-statix
+
+fixture [[
+  application variable_duplicates_and_shadowing
+
+  page root { }
+
+  entity Ent1 { }
+
+  [[...]]
+]]
+
+test duplicate definition in global var [[
+  var [[e]] : Ent1 := Ent1{} // error: Duplicate definition of "e" in this context
+  var [[e]] : Ent1 := Ent1{} // error: Duplicate definition of "e" in this context
+]] > 0 errors at #1, #2
+
+test duplicate definition in global var with different sorts [[
+  entity Ent2 { }
+
+  var [[e]] : Ent1 := Ent1{} // error: Duplicate definition of "e" in this context
+  var [[e]] : Ent2 := Ent2{} // error: Duplicate definition of "e" in this context
+]] > 0 errors at #1, #2
+
+test duplicate definition in function parameter [[
+  function f(x : Int, [[x]] : Int) { }
+]] > 0 errors at #1
+
+test duplicate definition in local variable [[
+  function f() {
+    var x : Int;
+    var [[x]] : Int;
+  }
+]] > 0 errors at #1
+
+test shadowing global var and func parameter [[
+  var x : Ent1
+
+  function f(x : Ent1) {  }
+]] analysis succeeds
+
+test shadowing global var and entity property [[
+  var x : Ent1
+
+  entity Ent2 {
+    x : Ent1
+  }
+]] analysis succeeds
+
+test shadowing entity property and entity function parameter [[
+  entity Ent2 {
+    x : Int
+
+    function f(x : Int) {  }
+  }
+]] analysis succeeds
+
+test shadowing not allowed func parameter and local var [[
+  function f(x : Int) {
+    var [[x]] : Int;
+  }
+]] > 0 errors at #1

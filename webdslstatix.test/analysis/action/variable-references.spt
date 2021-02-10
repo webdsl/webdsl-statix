@@ -1,0 +1,123 @@
+module analysis/action/variable-references
+
+language webdsl-statix
+
+fixture [[
+  application variable_references
+
+  page root { }
+
+  entity Ent1 { }
+
+  [[...]]
+]]
+
+test global var ref in global var [[
+  var [[x]] : Ent1 := Ent1{}
+  var y : Ent1 := [[x]]
+]] resolve #2 to #1
+
+test global var forward ref [[
+  var x : Ent1 := [[y]]
+  var [[y]] : Ent1 := Ent1{}
+]] resolve #1 to #2
+
+test global var ref in function [[
+  var [[x]] : Ent1
+
+  function f() : Ent1 {
+    return [[x]];
+  }
+]] resolve #2 to #1
+
+test function param ref in function [[
+  function f([[x]] : Ent1) : Ent1 {
+    return [[x]];
+  }
+]] resolve #2 to #1
+
+test property ref in entity function [[
+  entity Ent2 {
+    [[x]] : Ent1
+
+    function f() : Ent1 {
+      return [[x]];
+    }
+  }
+]] resolve #2 to #1
+
+test property ref in sub entity function [[
+  entity Ent2 {
+    [[x]] : Ent1
+  }
+
+  entity Ent3 : Ent2 {
+    function f() : Ent1 {
+      return [[x]];
+    }
+  }
+]] resolve #2 to #1
+
+test property ref in extend entity function [[
+  entity Ent2 {
+    [[x]] : Ent1
+  }
+
+  extend entity Ent2 {
+    function f() : Ent1 {
+      return [[x]];
+    }
+  }
+]] resolve #2 to #1
+
+
+// shadowing
+test shadowing function param ref in function [[
+  var [[x]] : Ent1
+
+  function f([[x]] : Ent1) : Ent1 {
+    return [[x]];
+  }
+]] resolve #3 to #2
+
+test shadowing property ref in entity function [[
+  var [[x]] : Ent1
+
+  entity Ent2 {
+    [[x]] : Ent1
+
+    function f() : Ent1 {
+      return [[x]];
+    }
+  }
+]] resolve #3 to #2
+
+test shadowing function param ref in entity function [[
+  entity Ent2 {
+    [[x]] : Ent1
+
+    function f([[x]] : Ent1) : Ent1 {
+      return [[x]];
+    }
+  }
+]] resolve #3 to #2
+
+test shadowing local var ref in function [[
+  var [[x]] : Ent1
+
+  function f() : Ent1 {
+    var [[x]] : Ent1 := Ent1{};
+    return [[x]];
+  }
+]] resolve #3 to #2
+
+test shadowing local var ref in entity function [[
+  entity Ent2 {
+    [[x]] : Ent1
+
+    function f() : Ent1 {
+      var [[x]] : Ent1 := Ent1{};
+      return [[x]];
+    }
+  }
+]] resolve #3 to #2
