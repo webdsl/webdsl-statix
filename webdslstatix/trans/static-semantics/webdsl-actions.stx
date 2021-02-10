@@ -19,7 +19,7 @@ rules // statements
 
   stmtOk(s, s_decl, VarDeclInit(x, sort, exp), _) :- {t}
     t == typeOfSort(s, sort),
-    equalType(t, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [sort]] @exp,
+    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [sort]] @exp,
     declareVar(s_decl, x, t).
 
   stmtOk(s, s_decl, VarDeclInitInferred(x, exp), _) :- {t}
@@ -82,7 +82,7 @@ rules // variables
 
   defOk(s, GlobalVarDeclInit(x, sort, exp)) :- {t}
     t == typeOfSort(s, sort),
-    equalType(t, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [sort]],
+    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [sort]] @exp,
     declareVar(s, x, t).
 
   defOk(s, GlobalVarDeclInitInferred(x, exp)) :- {t}

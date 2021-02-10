@@ -26,7 +26,6 @@ signature
     FALSE : BOOL
 
   namespaces
-    Entity       : string
     ExtendEntity : string
 
     Function : string
@@ -39,10 +38,6 @@ signature
       EXTEND  // extend edge label for extending entities
       INHERIT // inherit edge label for subclasses
       IMPORT  // import edge label for importing the global scope and other modules
-    resolve
-      Entity
-      filter P* F* EXTEND? INHERIT* IMPORT*
-      min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
     resolve
       ExtendEntity
       filter P* F* EXTEND? INHERIT* IMPORT*
@@ -59,7 +54,10 @@ signature
     typeOfDecl         : occurrence -> TYPE
     typeOfFunDecl      : occurrence -> FUNSIG
     typeOfTemplateDecl : occurrence -> TEMPLATESIG
-    entity             : occurrence -> scope
+    extendentity       : occurrence -> scope
+
+    // entity name with corresponding scope
+    entity : string -> scope
 
     // variable name with corresponding type
     var : string -> TYPE
@@ -70,6 +68,21 @@ signature
     // module name to module name that it imports
     // example: module a import b, c results in a -> b, a -> c
     import  : string -> string
+
+rules // entity declaration and resolving
+
+  declareEntity : scope * string * scope
+  declareEntity(s, e, s_entity) :- {ps}
+    !entity[e, s_entity] in s,
+    resolveEntity(s, e) == ps@[(_, (_, s_entity))] | error $[Entity [e] is defined multiple times ([ps])] @e.
+
+  resolveEntity : scope * string -> list((path * (string * scope)))
+  resolveEntity(s, e) = ps :-
+    query entity filter P* F* EXTEND? INHERIT* IMPORT*
+                 and { e' :- e' == e }
+                 min
+                 and false
+                 in s |-> ps.
 
 rules // variable declaration and resolving
 
