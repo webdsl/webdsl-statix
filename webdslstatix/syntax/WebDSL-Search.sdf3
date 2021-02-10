@@ -175,6 +175,16 @@ context-free syntax
   SearchAttribute.Lucene = <lucene>
   SearchAttribute.DefaultAnd = <strict matching>
   SearchAttribute.DefaultOr = <loose matching>
+
+lexical syntax
+
+  VarId = "nolucene" {reject}
+  VarId = "lucene" {reject}
+  VarId = "strictmatching" {reject}
+  VarId = "loosematching" {reject}
+
+context-free syntax
+
   FacetExp.DiscreteFacetDef = <<SearchField> ( <Exp> )>
   FacetExp.RangeFacetDef = <<SearchField> ( <{Range ","}+> )>
   FilterConstraint.FieldFilterConstraint = <<SearchField> : <Exp>>
