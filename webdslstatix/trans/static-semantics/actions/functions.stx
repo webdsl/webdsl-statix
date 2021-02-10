@@ -54,7 +54,7 @@ rules // function definitions
     returnType == typeOfSort(s_outer, returnSort),
     new s_function, s_function -F-> s_outer,
     argTypes == typesOfArgs(s_outer, args),
-    declVars(s_function, zipArgTypes(args, argTypes)),
+    declareVars(s_function, zipArgTypes(args, argTypes)),
     new s_body, s_body -P-> s_function,
     stmtsOk(s_body, stmts, returnType),
     declFunctionGlobal(s_outer, name, argTypes, returnType).
@@ -64,7 +64,7 @@ rules // function definitions
     returnType == typeOfSort(s_outer, returnSort),
     new s_function, s_function -F-> s_outer,
     argTypes == typesOfArgs(s_outer, args),
-    declVars(s_function, zipArgTypes(args, argTypes)),
+    declareVars(s_function, zipArgTypes(args, argTypes)),
     new s_body, s_body -P-> s_function,
     stmtsOk(s_body, stmts, returnType),
     declFunctionEntity(s_outer, name, argTypes, returnType).

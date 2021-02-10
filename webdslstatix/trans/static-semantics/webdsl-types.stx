@@ -216,14 +216,13 @@ rules // resolve reference types
 
   variableType : scope * string -> TYPE
   variableType(s, x) = t :- {x'}
-    typeOfDecl of Variable{x} in s |-> [(_, (Variable{x'}, t))|_] | error $[Variable [x] is not defined],
+    resolveVar(s, x) == [(_, (x', t))|_] | error $[Variable [x] is not defined],
     @x.ref := x'.
 
   propertyTypes maps propertyType(*, list(*)) = list(*)
   propertyType : scope * string -> TYPE
   propertyType(s_entity, x) = t :- {x'}
-    query typeOfDecl filter EXTEND? (INHERIT EXTEND?)* and { Variable{v} :- v == x } min in s_entity |-> [(_, (Variable{x'}, t))] 
-        | error $[Property [x] is not defined] @x,
+    resolveProperty(s_entity, x) == [(_, (x', t))] | error $[Property [x] is not defined] @x,
     @x.ref := x'.
 
   pageType : scope * string -> TYPE
@@ -233,7 +232,6 @@ rules // resolve reference types
 
 rules // utils
 
-  allTyped maps typed(*, list(*))
   typed : scope * Exp
   typed(s, exp) :- inequalType(typeOfExp(s, exp), UNTYPED()).
 

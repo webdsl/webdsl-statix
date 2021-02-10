@@ -36,7 +36,7 @@ rules
     new s_security_context,
     declProperty(s_security_context, "principal", ENTITY(s_principal)),
     declProperty(s_security_context, "loggedIn", BOOL()),
-    declVar(s, "securityContext", ENTITY(s_security_context)).
+    declareVar(s, "securityContext", ENTITY(s_security_context)).
 
   acDefOk(s, Rule(AccessControlRule(_, _, _, exp, nested))) :-
     // TO-DO: check correct reference using type and match id

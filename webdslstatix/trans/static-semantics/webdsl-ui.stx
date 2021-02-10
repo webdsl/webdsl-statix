@@ -13,7 +13,7 @@ rules // page definitions
     targs == [] | error $[Template arguments are not allowed on page definitions] @targs,
     new s_page, s_page -F-> s_global,
     fargTypes == typesOfArgs(s_global, fargs),
-    declVars(s_page, zipArgTypes(fargs, fargTypes)),
+    declareVars(s_page, zipArgTypes(fargs, fargTypes)),
     new s_body, s_body -P-> s_page,
     declPage(s_global, x, fargTypes),
     templateElementsOk(s_body, elements).
@@ -30,7 +30,7 @@ rules // template definitions
     new s_template, s_template -F-> s_global,
     fargTypes == typesOfArgs(s_global, fargs),
     targTypes == typesOfTemplateArgs(s_global, targs),
-    declVars(s_template, zipArgTypes(fargs, fargTypes)),
+    declareVars(s_template, zipArgTypes(fargs, fargTypes)),
     declTArgs(s_template, targTypes),
     new s_body, s_body -P-> s_template,
     declTemplate(s_global, t, fargTypes, targTypes),

@@ -30,7 +30,6 @@ signature
     ExtendEntity : string
 
     Function : string
-    Variable : string
     Ui : string
 
   name-resolution
@@ -52,10 +51,6 @@ signature
       Function
       filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
     resolve
-      Variable
-      filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-      min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
-    resolve
       Ui
       filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
       min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
@@ -66,12 +61,43 @@ signature
     typeOfTemplateDecl : occurrence -> TEMPLATESIG
     entity             : occurrence -> scope
 
+    // variable name with corresponding type
+    var : string -> TYPE
+
     // module name with corresponding scope
     mod     : string -> scope
 
     // module name to module name that it imports
     // example: module a import b, c results in a -> b, a -> c
     import  : string -> string
+
+rules // variable declaration and resolving
+
+  declareVar : scope * string * TYPE
+  declareVar(s, x, t) :-
+    !var[x, t] in s,
+    noDuplicateVarDefs(s, x).
+
+  resolveVar : scope * string -> list((path * (string * TYPE)))
+  resolveVar(s, x) = ps :-
+    query var filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
+              and { x' :- x' == x }
+              min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
+              and false
+              in s |-> ps.
+
+  resolveProperty : scope * string -> list((path * (string * TYPE)))
+  resolveProperty(s_entity, x) = ps :-
+    query var filter EXTEND? (INHERIT EXTEND?)*
+              and { x' :- x' == x }
+              in s_entity |-> ps.
+
+  // map does not suffice here due to list of tuples
+  declareVars : scope * list((string * TYPE))
+  declareVars(s, []).
+  declareVars(s, [(x, t)|tail]) :-
+    declareVar(s, x, t),
+    declareVars(s, tail).
 
 rules // module and import declaration and resolving
 

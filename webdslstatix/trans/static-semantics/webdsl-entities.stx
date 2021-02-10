@@ -101,7 +101,7 @@ rules // entity body declaration
   declProperty : scope * string * TYPE
   declProperty(s, x, sortType) :-
     validPropertyName(x),
-    declVar(s, x, sortType),
+    declareVar(s, x, sortType),
     noDuplicateVarDefsInSuper(s, x) | error $[Cannot override existing entity property [x]] @x.
     // TO-DO: check property annotations
 

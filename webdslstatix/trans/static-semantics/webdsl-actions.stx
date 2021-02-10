@@ -15,17 +15,17 @@ rules // statements
   stmtOk(s, s_decl, VarDecl(x, sort), _) :- {t}
     t == typeOfSort(s, sort),
     inequalType(t, UNTYPED()) | error $[Unknown type [sort]] @sort,
-    declVar(s_decl, x, t).
+    declareVar(s_decl, x, t).
 
   stmtOk(s, s_decl, VarDeclInit(x, sort, exp), _) :- {t}
     t == typeOfSort(s, sort),
     equalType(t, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [sort]] @exp,
-    declVar(s_decl, x, t).
+    declareVar(s_decl, x, t).
 
   stmtOk(s, s_decl, VarDeclInitInferred(x, exp), _) :- {t}
     t == typeOfExp(s, exp),
     inequalType(t, UNTYPED()) | error $[Unable to infer type of [exp]] @exp,
-    declVar(s_decl, x, t).
+    declareVar(s_decl, x, t).
 
   stmtOk(s, _, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a variable].
   stmtOk(s, _, Assignment(Var(x), exp), _) :- {varType}
@@ -78,38 +78,27 @@ rules // variables
 
   defOk(s, GlobalVarDecl(x, sort)) :- {t}
     t == typeOfSort(s, sort),
-    declVar(s, x, t).
+    declareVar(s, x, t).
 
   defOk(s, GlobalVarDeclInit(x, sort, exp)) :- {t}
     t == typeOfSort(s, sort),
     equalType(t, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [sort]],
-    declVar(s, x, t).
+    declareVar(s, x, t).
 
   defOk(s, GlobalVarDeclInitInferred(x, exp)) :- {t}
     t == typeOfExp(s, exp),
     inequalType(t, UNTYPED()) | error $[Cannot resolve type of expression [exp]],
-    declVar(s, x, t).
-
-  declVars : scope * list((string * TYPE))
-  declVars(s, []).
-  declVars(s, [(x, t)|tail]) :-
-    declVar(s, x, t),
-    declVars(s, tail).
-
-  declVar : scope * string * TYPE
-  declVar(s, x, t) :-
-    s -> Variable{x} with typeOfDecl t,
-    noDuplicateVarDefs(s, x) | error $[Duplicate defition of [x] in this context].
+    declareVar(s, x, t).
 
   noDuplicateVarDefs : scope * string
   noDuplicateVarDefs(s, x) :-
-    query typeOfDecl filter P* and { Variable{x'} :- x' == x }
+    query var filter P* and { x' :- x' == x }
                      min $ < P
                      in s |-> [_].
 
   noDuplicateVarDefsInSuper : scope * string
   noDuplicateVarDefsInSuper(s_sub, x) :-
-    query typeOfDecl filter EXTEND? (INHERIT EXTEND?)* and { Variable{x'} :- x' == x }
+    query var filter EXTEND? (INHERIT EXTEND?)* and { x' :- x' == x }
                      min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
                      in s_sub |-> [_].
 
