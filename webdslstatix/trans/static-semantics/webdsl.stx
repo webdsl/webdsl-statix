@@ -84,8 +84,6 @@ rules // entity declaration and resolving
   resolveEntity(s, e) = ps :-
     query entity filter P* F* EXTEND? INHERIT* IMPORT*
                  and { e' :- e' == e }
-                 min
-                 and false
                  in s |-> ps.
 
   declareExtendEntity : scope * string * scope
@@ -96,8 +94,6 @@ rules // entity declaration and resolving
   resolveExtendEntity(s, e) = ps :-
     query extendentity filter P* F* EXTEND* INHERIT* IMPORT*
                        and { e' :- e' == e }
-                       min
-                       and false
                        in s |-> ps.
 
 rules // ui declaration and resolving
@@ -116,19 +112,17 @@ rules // ui declaration and resolving
   resolveUi(s, x) = addQueryResults(resolveTemplate(s, x), resolvePage(s, x)).
 
   resolveTemplate : scope * string -> list((path * (string * TYPE)))
-  resolveTemplate(s, t) = ps :-
+  resolveTemplate(s, t) = filterUniqueScopes(ps) :-
     query template filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
                    and { t' :- t' == t }
                    min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
-                   and false
                    in s |-> ps.
 
   resolvePage : scope * string -> list((path * (string * TYPE)))
-  resolvePage(s, p) = ps :-
+  resolvePage(s, p) = filterUniqueScopes(ps) :-
     query page filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
                and { p' :- p' == p }
                min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
-               and false
                in s |-> ps.
 
 rules // function declaration and resolving
@@ -162,7 +156,6 @@ rules // variable declaration and resolving
     query var filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
               and { x' :- x' == x }
               min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
-              and false
               in s |-> ps.
 
   resolveProperty : scope * string -> list((path * (string * TYPE)))
@@ -245,6 +238,10 @@ rules // utils
   equalB(b, b).
   equalB(_, _) :- false.
 
+  notB : BOOL -> BOOL
+  notB(TRUE()) = FALSE().
+  notB(FALSE()) = TRUE().
+
   minOfList : list(int) -> int
   minOfList([]) = 100000.
   minOfList([x|xs]) = z :- {y}
@@ -260,3 +257,33 @@ rules // utils
   addQueryResults : list((path * (string * TYPE))) * list((path * (string * TYPE))) -> list((path * (string * TYPE)))
   addQueryResults([], ls) = ls.
   addQueryResults([hd | tl], ls) = [hd | addQueryResults(tl, ls)].
+
+  filterUniqueScopes : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
+  filterUniqueScopes(ps) = ps' :- {zipped_results}
+    zipped_results == zipQueryResultsWithNewScopeBool(ps, []),
+    ps' == filterUniqueScopes_internal(zipped_results).
+
+  filterUniqueScopes_internal : list((BOOL * (path * (string * TYPE)))) -> list((path * (string * TYPE)))
+  filterUniqueScopes_internal([]) = [].
+  filterUniqueScopes_internal([(TRUE(), p) | ps]) = [p | filterUniqueScopes_internal(ps)].
+  filterUniqueScopes_internal([(FALSE(), _) | ps]) = filterUniqueScopes_internal(ps).
+
+  zipQueryResultsWithNewScopeBool : list((path * (string * TYPE))) * list(scope) -> list((BOOL * (path * (string * TYPE))))
+  zipQueryResultsWithNewScopeBool([], _) = [].
+  zipQueryResultsWithNewScopeBool([p@(_PathEmpty(s), _) | ps], ss) = r :- {new_scope ss'}
+    new_scope == notB(scopeInListB(s, ss)),
+    ss' == addScopeToSet(s, ss, new_scope),
+    r == [(new_scope, p) | zipQueryResultsWithNewScopeBool(ps, ss')].
+  zipQueryResultsWithNewScopeBool([p@(_PathStep(_, _, s), _) | ps], ss) = r :- {new_scope ss'}
+    new_scope == notB(scopeInListB(s, ss)),
+    ss' == addScopeToSet(s, ss, new_scope),
+    r == [(new_scope, p) | zipQueryResultsWithNewScopeBool(ps, ss')].
+
+  addScopeToSet : scope * list(scope) * BOOL -> list(scope)
+  addScopeToSet(s, ss, TRUE()) = [s | ss].
+  addScopeToSet(_, ss, FALSE()) = ss.
+
+  scopeInListB : scope * list(scope) -> BOOL
+  scopeInListB(_, [])       = FALSE().
+  scopeInListB(s, [s | _])  = TRUE().
+  scopeInListB(s, [_ | ss]) = scopeInListB(s, ss).
