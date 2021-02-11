@@ -19,14 +19,11 @@ signature
     TYPE // semantic type
     BOOL // used as return values of functional constraints
     FUNSIG = (list(TYPE) * TYPE) // type alias for a function signature
-    TEMPLATESIG = (list(TYPE) * list((string * list(TYPE)))) // type alias for a template signature
+//    TEMPLATESIG = (list(TYPE) * list((string * list(TYPE)))) // type alias for a template signature
 
   constructors
     TRUE : BOOL
     FALSE : BOOL
-
-  namespaces
-    Ui : string
 
   name-resolution
     labels
@@ -35,45 +32,20 @@ signature
       EXTEND  // extend edge label for extending entities
       INHERIT // inherit edge label for subclasses
       IMPORT  // import edge label for importing the global scope and other modules
-    resolve
-      Ui
-      filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-      min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
 
   relations
-    typeOfDecl         : occurrence -> TYPE
-    typeOfTemplateDecl : occurrence -> TEMPLATESIG
-
-    // module name with corresponding scope
     mod     : string -> scope
-
-    // module name to module name that it imports
-    /* example:
-      module a
-        imports b
-        imports c
-
-        results in a -> b, a -> c
-    */
     import  : string -> string
 
-    // entity name with corresponding scope
-    entity : string -> scope
-
-    // entity name with corresponding scope
-    /* example:
-        entity Ent1 { (scope s1) }
-        extend entity Ent1 { (scope s2) }
-
-        results in Ent1 -> s1, Ent1 -> s2
-    */
+    entity       : string -> scope
     extendentity : string -> scope
 
-    // function name with corresponding signature
+    page     : string -> TYPE
+    template : string -> TYPE
+
     function : string -> FUNSIG
 
-    // variable name with corresponding type
-    var : string -> TYPE
+    var      : string -> TYPE
 
 rules // module and import declaration and resolving
 
@@ -127,6 +99,37 @@ rules // entity declaration and resolving
                        min
                        and false
                        in s |-> ps.
+
+rules // ui declaration and resolving
+
+  declareTemplate : scope * string * list(TYPE)
+  declareTemplate(s, t, ts) :-
+    !template[t, TEMPLATE(ts)] in s,
+    resolvePage(s, t) == [] | error $[Page/template [t] is defined multiple times] @t.
+
+  declarePage : scope * string * list(TYPE)
+  declarePage(s, p, ts) :-
+    !page[p, PAGE(ts)] in s,
+    resolveUi(s, p) == [(_, (_, PAGE(ts)))] | error $[Page/template [p] is defined multiple times] @p.
+
+  resolveUi : scope * string -> list((path * (string * TYPE)))
+  resolveUi(s, x) = addQueryResults(resolveTemplate(s, x), resolvePage(s, x)).
+
+  resolveTemplate : scope * string -> list((path * (string * TYPE)))
+  resolveTemplate(s, t) = ps :-
+    query template filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
+                   and { t' :- t' == t }
+                   min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
+                   and false
+                   in s |-> ps.
+
+  resolvePage : scope * string -> list((path * (string * TYPE)))
+  resolvePage(s, p) = ps :-
+    query page filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
+               and { p' :- p' == p }
+               min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
+               and false
+               in s |-> ps.
 
 rules // function declaration and resolving
 
@@ -253,3 +256,7 @@ rules // utils
   pathLength(_PathStep(p, _, _)) = x :- {x'}
     x' == pathLength(p),
     x #= x' + 1.
+
+  addQueryResults : list((path * (string * TYPE))) * list((path * (string * TYPE))) -> list((path * (string * TYPE)))
+  addQueryResults([], ls) = ls.
+  addQueryResults([hd | tl], ls) = [hd | addQueryResults(tl, ls)].
