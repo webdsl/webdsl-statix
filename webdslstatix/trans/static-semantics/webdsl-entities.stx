@@ -27,11 +27,10 @@ rules // entity declaration
     declEntity(s_global, s_entity, x, bodydecs).
 
   declEntity : scope * scope * string * list(EntityBodyDeclaration)
-  declEntity(s_global, s_entity, entity_name, bodydecs) :- {entity_scopes}
+  declEntity(s_global, s_entity, entity_name, bodydecs) :-
     validEntityName(s_entity, entity_name),
-    s_global -> ExtendEntity{entity_name} with extendentity s_entity, // declare entity scope linked to entity name for entity extensions
-    extendentity of ExtendEntity{entity_name} in s_global |-> entity_scopes, // get all other linked scopes to this name
-    extendEntityScopes(entity_scopes, s_entity),
+    declareExtendEntity(s_global, entity_name, s_entity), // declare entity_scope to be linked to entity_name
+    extendEntityScopes(resolveExtendEntity(s_global, entity_name), s_entity),
     declareEntity(s_global, entity_name, s_entity),
     declEntityBody(s_entity, bodydecs).
 
@@ -41,7 +40,7 @@ rules // entity declaration
     x != "Entity" | error $[Entity name [x] is not allowed] @x.
 
   extendEntityScopes maps extendEntityScope(list(*), *)
-  extendEntityScope : (path * (occurrence * scope)) * scope
+  extendEntityScope : (path * (string * scope)) * scope
   extendEntityScope((_, (_, s)), s). // Do not inherit own scope
   extendEntityScope((_, (_, s')), s) :-
     s -EXTEND-> s'.
@@ -56,9 +55,8 @@ rules // entity declaration
   declExtendEntity(s_global, entity_name, bodydecs) :- {s_extend_entity entity_scopes}
     resolveEntity(s_global, entity_name) == [_] | error $[Entity [entity_name] is not defined],
     new s_extend_entity,
-    s_global -> ExtendEntity{entity_name} with extendentity s_extend_entity, // declare entity scope linked to entity name for entity extensions
-    extendentity of ExtendEntity{entity_name} in s_global |-> entity_scopes, // get all other linked scopes to this name
-    extendEntityScopes(entity_scopes, s_extend_entity),
+    declareExtendEntity(s_global, entity_name, s_extend_entity), // declare entity_scope to be linked to entity_name
+    extendEntityScopes(resolveExtendEntity(s_global, entity_name), s_extend_entity),
     declEntityBody(s_extend_entity, bodydecs).
 
   noCircularInheritance : scope

@@ -26,8 +26,6 @@ signature
     FALSE : BOOL
 
   namespaces
-    ExtendEntity : string
-
     Function : string
     Ui : string
 
@@ -38,10 +36,6 @@ signature
       EXTEND  // extend edge label for extending entities
       INHERIT // inherit edge label for subclasses
       IMPORT  // import edge label for importing the global scope and other modules
-    resolve
-      ExtendEntity
-      filter P* F* EXTEND? INHERIT* IMPORT*
-      min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
     resolve
       Function
       filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
@@ -54,10 +48,18 @@ signature
     typeOfDecl         : occurrence -> TYPE
     typeOfFunDecl      : occurrence -> FUNSIG
     typeOfTemplateDecl : occurrence -> TEMPLATESIG
-    extendentity       : occurrence -> scope
 
     // entity name with corresponding scope
     entity : string -> scope
+
+    // entity name with corresponding scope
+    /* example:
+        entity Ent1 { (scope s1) }
+        extend entity Ent1 { (scope s2) }
+
+        results in Ent1 -> s1, Ent1 -> s2
+    */
+    extendentity : string -> scope
 
     // variable name with corresponding type
     var : string -> TYPE
@@ -66,15 +68,21 @@ signature
     mod     : string -> scope
 
     // module name to module name that it imports
-    // example: module a import b, c results in a -> b, a -> c
+    /* example:
+      module a
+        imports b
+        imports c
+
+        results in a -> b, a -> c
+    */
     import  : string -> string
 
 rules // entity declaration and resolving
 
   declareEntity : scope * string * scope
-  declareEntity(s, e, s_entity) :- {ps}
+  declareEntity(s, e, s_entity) :-
     !entity[e, s_entity] in s,
-    resolveEntity(s, e) == ps@[(_, (_, s_entity))] | error $[Entity [e] is defined multiple times ([ps])] @e.
+    resolveEntity(s, e) == [(_, (_, s_entity))] | error $[Entity [e] is defined multiple times] @e.
 
   resolveEntity : scope * string -> list((path * (string * scope)))
   resolveEntity(s, e) = ps :-
@@ -83,6 +91,20 @@ rules // entity declaration and resolving
                  min
                  and false
                  in s |-> ps.
+
+rules // extend entity declaration and resolving
+
+  declareExtendEntity : scope * string * scope
+  declareExtendEntity(s, e, s_extend) :-
+    !extendentity[e, s_extend] in s.
+
+  resolveExtendEntity : scope * string -> list((path * (string * scope)))
+  resolveExtendEntity(s, e) = ps :-
+    query extendentity filter P* F* EXTEND* INHERIT* IMPORT*
+                       and { e' :- e' == e }
+                       min
+                       and false
+                       in s |-> ps.
 
 rules // variable declaration and resolving
 
