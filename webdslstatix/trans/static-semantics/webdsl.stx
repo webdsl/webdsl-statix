@@ -26,7 +26,6 @@ signature
     FALSE : BOOL
 
   namespaces
-    Function : string
     Ui : string
 
   name-resolution
@@ -37,32 +36,13 @@ signature
       INHERIT // inherit edge label for subclasses
       IMPORT  // import edge label for importing the global scope and other modules
     resolve
-      Function
-      filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-    resolve
       Ui
       filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
       min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
 
   relations
     typeOfDecl         : occurrence -> TYPE
-    typeOfFunDecl      : occurrence -> FUNSIG
     typeOfTemplateDecl : occurrence -> TEMPLATESIG
-
-    // entity name with corresponding scope
-    entity : string -> scope
-
-    // entity name with corresponding scope
-    /* example:
-        entity Ent1 { (scope s1) }
-        extend entity Ent1 { (scope s2) }
-
-        results in Ent1 -> s1, Ent1 -> s2
-    */
-    extendentity : string -> scope
-
-    // variable name with corresponding type
-    var : string -> TYPE
 
     // module name with corresponding scope
     mod     : string -> scope
@@ -76,6 +56,50 @@ signature
         results in a -> b, a -> c
     */
     import  : string -> string
+
+    // entity name with corresponding scope
+    entity : string -> scope
+
+    // entity name with corresponding scope
+    /* example:
+        entity Ent1 { (scope s1) }
+        extend entity Ent1 { (scope s2) }
+
+        results in Ent1 -> s1, Ent1 -> s2
+    */
+    extendentity : string -> scope
+
+    // function name with corresponding signature
+    function : string -> FUNSIG
+
+    // variable name with corresponding type
+    var : string -> TYPE
+
+rules // module and import declaration and resolving
+
+  declareMod : scope * string * scope
+  declareMod(s, m, s_mod) :-
+    !mod[m, s_mod] in s,
+    resolveMod(s, m) == [_] | error $[Module [m] is already declared].
+
+  resolveMod : scope * string -> list((path * (string * scope)))
+  resolveMod(s, m) = mods :-
+    query mod
+      filter e and { m' :- m' == m }
+      min and true
+      in s |-> mods.
+
+  declareImport : scope * string * string
+  declareImport(s, x, y) :-
+    !import[x, y] in s,
+    !import[y, x] in s.
+
+  resolveImport : scope * string -> list((path * (string * string)))
+  resolveImport(s, x) = imports :-
+    query import
+      filter e and { x' :- x' == x }
+      min and true
+      in s |-> imports.
 
 rules // entity declaration and resolving
 
@@ -92,8 +116,6 @@ rules // entity declaration and resolving
                  and false
                  in s |-> ps.
 
-rules // extend entity declaration and resolving
-
   declareExtendEntity : scope * string * scope
   declareExtendEntity(s, e, s_extend) :-
     !extendentity[e, s_extend] in s.
@@ -105,6 +127,25 @@ rules // extend entity declaration and resolving
                        min
                        and false
                        in s |-> ps.
+
+rules // function declaration and resolving
+
+  declareFunction : scope * string * FUNSIG
+  declareFunction(s, f, sig) :-
+    !function[f, sig] in s.
+
+  resolveFunction : scope * string -> list((path * (string * FUNSIG)))
+  resolveFunction(s, f) = ps :-
+    query function filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
+                   and { f' :- f' == f }
+                   min and false
+                   in s |-> ps.
+
+  resolveEntityFunction : scope * string -> list((path * (string * FUNSIG)))
+  resolveEntityFunction(s, f) = ps :-
+    query function filter EXTEND? (INHERIT EXTEND?)*
+                   and { f' :- f' == f }
+                   in s |-> ps.
 
 rules // variable declaration and resolving
 
@@ -133,32 +174,6 @@ rules // variable declaration and resolving
   declareVars(s, [(x, t)|tail]) :-
     declareVar(s, x, t),
     declareVars(s, tail).
-
-rules // module and import declaration and resolving
-
-  declareMod : scope * string * scope
-  declareMod(s, m, s_mod) :-
-    !mod[m, s_mod] in s,
-    resolveMod(s, m) == [_] | error $[Module [m] is already declared].
-
-  resolveMod : scope * string -> list((path * (string * scope)))
-  resolveMod(s, m) = mods :-
-    query mod
-      filter e and { m' :- m' == m }
-      min and true
-      in s |-> mods.
-
-  declareImport : scope * string * string
-  declareImport(s, x, y) :-
-    !import[x, y] in s,
-    !import[y, x] in s.
-
-  resolveImport : scope * string -> list((path * (string * string)))
-  resolveImport(s, x) = imports :-
-    query import
-      filter e and { x' :- x' == x }
-      min and true
-      in s |-> imports.
 
 rules // declare common rules and mappings
 
