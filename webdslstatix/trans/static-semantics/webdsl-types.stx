@@ -210,8 +210,8 @@ rules // WebDSL definition of being a simple type: built-in simple sort (no gene
 rules // resolve reference types
 
   entityType : scope * string -> TYPE
-  entityType(s, e) = ENTITY(s_entity) :- {e'}
-    resolveEntity(s, e) == [(_, (e', s_entity))|_] | error $[Entity [e] is not defined],
+  entityType(s, e) = t :- {e'}
+    resolveEntity(s, e) == [(_, (e', t@ENTITY(_)))|_] | error $[Entity [e] is not defined],
     @e.ref := e'.
 
   variableType : scope * string -> TYPE

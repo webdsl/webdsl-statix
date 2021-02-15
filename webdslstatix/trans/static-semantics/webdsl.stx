@@ -19,7 +19,6 @@ signature
     TYPE // semantic type
     BOOL // used as return values of functional constraints
     FUNSIG = (list(TYPE) * TYPE) // type alias for a function signature
-//    TEMPLATESIG = (list(TYPE) * list((string * list(TYPE)))) // type alias for a template signature
 
   constructors
     TRUE : BOOL
@@ -37,7 +36,7 @@ signature
     mod     : string -> scope
     import  : string -> string
 
-    entity       : string -> scope
+    entity       : string -> TYPE
     extendentity : string -> scope
 
     page     : string -> TYPE
@@ -77,13 +76,14 @@ rules // entity declaration and resolving
 
   declareEntity : scope * string * scope
   declareEntity(s, e, s_entity) :-
-    !entity[e, s_entity] in s,
-    resolveEntity(s, e) == [(_, (_, s_entity))] | error $[Entity [e] is defined multiple times] @e.
+    !entity[e, ENTITY(s_entity)] in s,
+    resolveEntity(s, e) == [(_, (_, ENTITY(s_entity)))] | error $[Entity [e] is defined multiple times] @e.
 
-  resolveEntity : scope * string -> list((path * (string * scope)))
-  resolveEntity(s, e) = ps :-
+  resolveEntity : scope * string -> list((path * (string * TYPE)))
+  resolveEntity(s, e) = filterUniqueScopes(ps) :-
     query entity filter P* F* EXTEND? INHERIT* IMPORT*
                  and { e' :- e' == e }
+                 min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
                  in s |-> ps.
 
   declareExtendEntity : scope * string * scope
@@ -109,7 +109,7 @@ rules // ui declaration and resolving
     resolveUi(s, p) == [(_, (_, PAGE(ts)))] | error $[Page/template [p] is defined multiple times] @p.
 
   resolveUi : scope * string -> list((path * (string * TYPE)))
-  resolveUi(s, x) = addQueryResults(resolveTemplate(s, x), resolvePage(s, x)).
+  resolveUi(s, x) = filterUniqueScopes(addQueryResults(resolveTemplate(s, x), resolvePage(s, x))).
 
   resolveTemplate : scope * string -> list((path * (string * TYPE)))
   resolveTemplate(s, t) = filterUniqueScopes(ps) :-
