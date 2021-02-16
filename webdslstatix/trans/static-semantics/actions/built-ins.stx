@@ -12,16 +12,16 @@ rules
 
   declareDateBuiltIns : scope
   declareDateBuiltIns(s) :-
-    declareFunction(s, "now"     , ([], DATETIME())),
-    declareFunction(s, "today"   , ([], DATE())),
-    declareFunction(s, "Date"    , ([STRING(), STRING()], DATE())),
-    declareFunction(s, "Date"    , ([STRING()], DATE())),
-    declareFunction(s, "Time"    , ([STRING(), STRING()], TIME())),
-    declareFunction(s, "Time"    , ([STRING()], TIME())),
-    declareFunction(s, "DateTime", ([STRING(), STRING()], DATETIME())),
-    declareFunction(s, "DateTime", ([STRING()], DATETIME())).
+    declareFunction(s, "now"     , [], DATETIME()),
+    declareFunction(s, "today"   , [], DATE()),
+    declareFunction(s, "Date"    , [STRING(), STRING()], DATE()),
+    declareFunction(s, "Date"    , [STRING()], DATE()),
+    declareFunction(s, "Time"    , [STRING(), STRING()], TIME()),
+    declareFunction(s, "Time"    , [STRING()], TIME()),
+    declareFunction(s, "DateTime", [STRING(), STRING()], DATETIME()),
+    declareFunction(s, "DateTime", [STRING()], DATETIME()).
 
   declareIntBuiltIns : scope
   declareIntBuiltIns(s) :-
-    declareFunction(s, "random", ([INT(), INT()], INT())),
-    declareFunction(s, "random", ([INT()], INT())).
+    declareFunction(s, "random", [INT(), INT()], INT()),
+    declareFunction(s, "random", [INT()], INT()).

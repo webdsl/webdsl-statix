@@ -30,7 +30,7 @@ rules // functions calls
     mostSpecificFunSigs == mostSpecificFunSigs(argTypes, typeCompatibleFunSigs(nameCompatibleFunSigs, argTypes)),
     mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @f,
     mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @f,
-    mostSpecificFunSigs == [(f', (_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @f,
+    mostSpecificFunSigs == [(f', FUNCTION(_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @f,
     @f.ref := f',
     @f.type := t.
 
@@ -78,12 +78,12 @@ rules // function definitions
   // and define the relation typeOfFunDecl with signature (argument types  * return type)
   declFunctionGlobal : scope * string * list(TYPE) * TYPE
   declFunctionGlobal(s, f, arg_types, return_type) :-
-    declareFunction(s, f, (arg_types, return_type)),
+    declareFunction(s, f, arg_types, return_type),
     noDuplicateFunDefsGlobal(s, f, arg_types).
 
   declFunctionEntity : scope * string * list(TYPE) * TYPE
   declFunctionEntity(s, f, arg_types, return_type) :-
-    declareFunction(s, f, (arg_types, return_type)),
+    declareFunction(s, f, arg_types, return_type),
     noDuplicateFunDefsEntity(s, f, arg_types).
 
   // map syntactic types to semantic types
@@ -108,33 +108,33 @@ rules // function definitions
   noDuplicateFunDefsEntity : scope * string * list(TYPE)
   noDuplicateFunDefsEntity(s, f, types) :- {ps}
     query function filter EXTEND?
-                   and { f' :- f' == f }
+                   and { f' :- f' == (f, _) }
                    in s |-> ps,
-    amountOfFunDeclsWithArgs(ps, types, 0) == 1
+    amountOfFunDeclsWithArgs(dropUniqueIds(ps), types, 0) == 1
         | error $[Duplicate definition of function [f] with argument types [types]] @f.
 
   // helper function for noDuplicateFunDefs that counts the amount of function with a given name and argument types
-  amountOfFunDeclsWithArgs : list((path * (string * FUNSIG))) * list(TYPE) * int -> int
+  amountOfFunDeclsWithArgs : list((path * (string * TYPE))) * list(TYPE) * int -> int
   amountOfFunDeclsWithArgs([], _, n) = n.
-  amountOfFunDeclsWithArgs([(_, (_, (types, _))) | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, i) :- i #= n + 1.
-  amountOfFunDeclsWithArgs([(_, (_, (_    , _))) | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, n).
+  amountOfFunDeclsWithArgs([(_, (_, FUNCTION(types, _))) | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, i) :- i #= n + 1.
+  amountOfFunDeclsWithArgs([_ | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, n).
 
 rules  // rules and functions for function overloading
 
   // The last boolean argument indicates whether the function definition needs to be found within the enclosing entity of scope s
-  nameCompatibleFunSigs : scope * string * BOOL -> list((path * (string * FUNSIG)))
+  nameCompatibleFunSigs : scope * string * BOOL -> list((path * (string * TYPE)))
   nameCompatibleFunSigs(s, f, FALSE()) = resolveFunction(s, f).
   nameCompatibleFunSigs(s, f, TRUE()) = resolveEntityFunction(s, f).
 
   // function that gets all functions with matching name and compatible argument types
-  typeCompatibleFunSigs : list((path * (string * FUNSIG))) * list(TYPE) -> list((string * FUNSIG))
+  typeCompatibleFunSigs : list((path * (string * TYPE))) * list(TYPE) -> list((string * TYPE))
   typeCompatibleFunSigs(nameCompatibleFuncs, args) = result :- {funSigsZippedWithTypeCompatibility}
     funSigsZippedWithTypeCompatibility == zipFunSigsWithTypesCompatible(args, dropPaths(nameCompatibleFuncs)),
     result == filterCompatibleArgTypes(funSigsZippedWithTypeCompatibility).
 
   // helper function for typeCompatibleFunSigs that prunes the list
   // of functions based on the zipped BOOL with the function signature
-  filterCompatibleArgTypes : list((BOOL * (string * FUNSIG))) -> list((string * FUNSIG))
+  filterCompatibleArgTypes : list((BOOL * (string * TYPE))) -> list((string * TYPE))
   filterCompatibleArgTypes([]) = [].
   filterCompatibleArgTypes([(TRUE() , f) | fs]) = [f | filterCompatibleArgTypes(fs)].
   filterCompatibleArgTypes([(FALSE(), _) | fs]) = filterCompatibleArgTypes(fs).
@@ -142,12 +142,12 @@ rules  // rules and functions for function overloading
   // helper function for typeCompatibleFunSigs that zips the
   // function signatures with whether the types are compatible with given argument types
   zipFunSigsWithTypesCompatible maps zipFunSigWithTypesCompatible(*, list(*)) = list(*)
-  zipFunSigWithTypesCompatible : list(TYPE) * (string * FUNSIG) -> (BOOL * (string * FUNSIG))
-  zipFunSigWithTypesCompatible(args, f@(_, (funArgs, _))) = (typesCompatible(args, funArgs), f).
+  zipFunSigWithTypesCompatible : list(TYPE) * (string * TYPE) -> (BOOL * (string * TYPE))
+  zipFunSigWithTypesCompatible(args, f@(_, FUNCTION(funArgs, _))) = (typesCompatible(args, funArgs), f).
 
   // function that prunes the list of compatible function signatures
   // to a list of most specific function signatures
-  mostSpecificFunSigs : list(TYPE) * list((string * FUNSIG)) -> list((string * FUNSIG))
+  mostSpecificFunSigs : list(TYPE) * list((string * TYPE)) -> list((string * TYPE))
   mostSpecificFunSigs(args, []) = [].     // In case no functions are compatible, return empty list
   mostSpecificFunSigs(args, fs@[_]) = fs. // In case of only one compatible signature, return that
   mostSpecificFunSigs(args, sigs) = mostSpecificFunSigs_helper(args, sigs, existsMatchingFunSig(args, sigs)).
@@ -155,27 +155,27 @@ rules  // rules and functions for function overloading
   // helper function for mostSpecificFunSigs that returns
   // the exactly matching signature if it exists,
   // else return the most specific (least inheritance) signatures
-  mostSpecificFunSigs_helper : list(TYPE) * list((string * FUNSIG)) * BOOL -> list((string * FUNSIG))
+  mostSpecificFunSigs_helper : list(TYPE) * list((string * TYPE)) * BOOL -> list((string * TYPE))
   mostSpecificFunSigs_helper(args, sigs, TRUE())   = [matchingFunSig(args, sigs)].
   mostSpecificFunSigs_helper(args, sigs, FALSE())  = filterLeastInheritanceAmount(minOfList(inheritanceAmounts), zipInheritanceAmountWithFunSig(inheritanceAmounts, sigs)) :-
     inheritanceAmounts == inheritanceAmounts(args, sigs).
 
   // helper function for mostSpecificFunSigs that returns
   // whether an exactly matching function signature exists
-  existsMatchingFunSig : list(TYPE) * list((string * FUNSIG)) -> BOOL
+  existsMatchingFunSig : list(TYPE) * list((string * TYPE)) -> BOOL
   existsMatchingFunSig(args, []) = FALSE().
-  existsMatchingFunSig(args, [(_, (args, _)) | _]) = TRUE().
+  existsMatchingFunSig(args, [(_, FUNCTION(args, _)) | _]) = TRUE().
   existsMatchingFunSig(args, [_ | fs]) = existsMatchingFunSig(args, fs).
 
   // helper function for mostSpecificFunSigs that returns the exactly matching signature
-  matchingFunSig : list(TYPE) * list((string * FUNSIG)) -> (string * FUNSIG)
-  matchingFunSig(args, [f@(_, (args, _)) | _]) = f.
+  matchingFunSig : list(TYPE) * list((string * TYPE)) -> (string * TYPE)
+  matchingFunSig(args, [f@(_, FUNCTION(args, _)) | _]) = f.
   matchingFunSig(args, [_ | fs]) = matchingFunSig(args, fs).
 
   // function that computes the total amount of inheritance edges from caller arguments to defined arguments
   inheritanceAmounts maps inheritanceAmount(*, list(*)) = list(*)
-  inheritanceAmount : list(TYPE) * (string * FUNSIG) -> int
-  inheritanceAmount(args, (_, (sigTypes, _))) = inheritanceAmount_helper(args, sigTypes).
+  inheritanceAmount : list(TYPE) * (string * TYPE) -> int
+  inheritanceAmount(args, (_, FUNCTION(sigTypes, _))) = inheritanceAmount_helper(args, sigTypes).
 
   // helper function for getInheritanceAmount that computers the total amount of inheritance edges
   inheritanceAmount_helper : list(TYPE) * list(TYPE) -> int
@@ -186,16 +186,16 @@ rules  // rules and functions for function overloading
     x #= y + z.
 
   // function that zips the inheritance amount with the function signature
-  zipInheritanceAmountWithFunSig : list(int) * list((string * FUNSIG)) -> list((int * (string * FUNSIG)))
+  zipInheritanceAmountWithFunSig : list(int) * list((string * TYPE)) -> list((int * (string * TYPE)))
   zipInheritanceAmountWithFunSig([], []) = [].
   zipInheritanceAmountWithFunSig([x|xs], [y|ys]) = [(x, y) | zipInheritanceAmountWithFunSig(xs, ys)].
 
   // function that prunes the function signatures to only keep the lowest inheritance amount
-  filterLeastInheritanceAmount : int * list((int * (string * FUNSIG))) -> list((string * FUNSIG))
+  filterLeastInheritanceAmount : int * list((int * (string * TYPE))) -> list((string * TYPE))
   filterLeastInheritanceAmount(_, []) = [].
   filterLeastInheritanceAmount(x, [(x, sig) | sigtl]) = [sig | filterLeastInheritanceAmount(x, sigtl)].
   filterLeastInheritanceAmount(x, [_        | sigtl]) = filterLeastInheritanceAmount(x, sigtl).
 
   dropPaths maps dropPath(list(*)) = list(*)
-  dropPath : (path * (string * FUNSIG)) -> (string * FUNSIG)
+  dropPath : (path * (string * TYPE)) -> (string * TYPE)
   dropPath((_, x)) = x.

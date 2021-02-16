@@ -18,7 +18,6 @@ signature
   sorts
     TYPE // semantic type
     BOOL // used as return values of functional constraints
-    FUNSIG = (list(TYPE) * TYPE) // type alias for a function signature
 
   constructors
     TRUE : BOOL
@@ -36,15 +35,15 @@ signature
     mod     : string -> scope
     import  : string -> string
 
-    entity       : string -> TYPE
+    entity       : (string * scope) -> TYPE
     extendentity : string -> scope
 
-    page     : string -> TYPE
-    template : string -> TYPE
+    page     : (string * scope) -> TYPE
+    template : (string * scope) -> TYPE
 
-    function : string -> FUNSIG
+    function : (string * scope) -> TYPE
 
-    var      : string -> TYPE
+    var      : (string * scope) -> TYPE
 
 rules // module and import declaration and resolving
 
@@ -76,14 +75,15 @@ rules // entity declaration and resolving
 
   declareEntity : scope * string * scope
   declareEntity(s, e, s_entity) :-
-    !entity[e, ENTITY(s_entity)] in s,
+    !entity[(e, new), ENTITY(s_entity)] in s,
     resolveEntity(s, e) == [(_, (_, ENTITY(s_entity)))] | error $[Entity [e] is defined multiple times] @e.
 
   resolveEntity : scope * string -> list((path * (string * TYPE)))
-  resolveEntity(s, e) = filterUniqueScopes(ps) :-
+  resolveEntity(s, e) = dropUniqueIds(ps) :-
     query entity filter P* F* EXTEND? INHERIT* IMPORT*
-                 and { e' :- e' == e }
+                 and { e' :- e' == (e, _) }
                  min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
+                 and { id, id' :- (_, id) == (_, id') }
                  in s |-> ps.
 
   declareExtendEntity : scope * string * scope
@@ -100,68 +100,74 @@ rules // ui declaration and resolving
 
   declareTemplate : scope * string * list(TYPE)
   declareTemplate(s, t, ts) :-
-    !template[t, TEMPLATE(ts)] in s,
+    !template[(t, new), TEMPLATE(ts)] in s,
     resolvePage(s, t) == [] | error $[Page/template [t] is defined multiple times] @t.
 
   declarePage : scope * string * list(TYPE)
   declarePage(s, p, ts) :-
-    !page[p, PAGE(ts)] in s,
+    !page[(p, new), PAGE(ts)] in s,
     resolveUi(s, p) == [(_, (_, PAGE(ts)))] | error $[Page/template [p] is defined multiple times] @p.
 
   resolveUi : scope * string -> list((path * (string * TYPE)))
-  resolveUi(s, x) = filterUniqueScopes(addQueryResults(resolveTemplate(s, x), resolvePage(s, x))).
+  resolveUi(s, x) = addQueryResults(resolveTemplate(s, x), resolvePage(s, x)).
 
   resolveTemplate : scope * string -> list((path * (string * TYPE)))
-  resolveTemplate(s, t) = filterUniqueScopes(ps) :-
+  resolveTemplate(s, t) = dropUniqueIds(ps) :-
     query template filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-                   and { t' :- t' == t }
+                   and { t' :- t' == (t, _) }
                    min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
+                   and { id, id' :- (_, id) == (_, id') }
                    in s |-> ps.
 
   resolvePage : scope * string -> list((path * (string * TYPE)))
-  resolvePage(s, p) = filterUniqueScopes(ps) :-
+  resolvePage(s, p) = dropUniqueIds(ps) :-
     query page filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-               and { p' :- p' == p }
+               and { p' :- p' == (p, _) }
                min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
+               and { id, id' :- (_, id) == (_, id') }
                in s |-> ps.
 
 rules // function declaration and resolving
 
-  declareFunction : scope * string * FUNSIG
-  declareFunction(s, f, sig) :-
-    !function[f, sig] in s.
+  declareFunction : scope * string * list(TYPE) * TYPE
+  declareFunction(s, f, args, return) :-
+    !function[(f, new), FUNCTION(args, return)] in s.
 
-  resolveFunction : scope * string -> list((path * (string * FUNSIG)))
-  resolveFunction(s, f) = ps :-
+  resolveFunction : scope * string -> list((path * (string * TYPE)))
+  resolveFunction(s, f) = dropUniqueIds(ps) :-
     query function filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-                   and { f' :- f' == f }
-                   min and false
+                   and { f' :- f' == (f, _) }
+                   min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
+                   and { id, id' :- (_, id) == (_, id') }
                    in s |-> ps.
 
-  resolveEntityFunction : scope * string -> list((path * (string * FUNSIG)))
-  resolveEntityFunction(s, f) = ps :-
+  resolveEntityFunction : scope * string -> list((path * (string * TYPE)))
+  resolveEntityFunction(s, f) = dropUniqueIds(ps) :-
     query function filter EXTEND? (INHERIT EXTEND?)*
-                   and { f' :- f' == f }
+                   and { f' :- f' == (f, _) }
+                   min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
+                   and { id, id' :- (_, id) == (_, id') }
                    in s |-> ps.
 
 rules // variable declaration and resolving
 
   declareVar : scope * string * TYPE
   declareVar(s, x, t) :-
-    !var[x, t] in s,
+    !var[(x, new), t] in s,
     noDuplicateVarDefs(s, x).
 
   resolveVar : scope * string -> list((path * (string * TYPE)))
-  resolveVar(s, x) = ps :-
+  resolveVar(s, x) = dropUniqueIds(ps) :-
     query var filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-              and { x' :- x' == x }
+              and { x' :- x' == (x, _) }
               min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
+              and { id, id' :- (_, id) == (_, id') }
               in s |-> ps.
 
   resolveProperty : scope * string -> list((path * (string * TYPE)))
-  resolveProperty(s_entity, x) = ps :-
+  resolveProperty(s_entity, x) = dropUniqueIds(ps) :-
     query var filter EXTEND? (INHERIT EXTEND?)*
-              and { x' :- x' == x }
+              and { x' :- x' == (x, _) }
               in s_entity |-> ps.
 
   // map does not suffice here due to list of tuples
@@ -258,32 +264,7 @@ rules // utils
   addQueryResults([], ls) = ls.
   addQueryResults([hd | tl], ls) = [hd | addQueryResults(tl, ls)].
 
-  filterUniqueScopes : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
-  filterUniqueScopes(ps) = ps' :- {zipped_results}
-    zipped_results == zipQueryResultsWithNewScopeBool(ps, []),
-    ps' == filterUniqueScopes_internal(zipped_results).
-
-  filterUniqueScopes_internal : list((BOOL * (path * (string * TYPE)))) -> list((path * (string * TYPE)))
-  filterUniqueScopes_internal([]) = [].
-  filterUniqueScopes_internal([(TRUE(), p) | ps]) = [p | filterUniqueScopes_internal(ps)].
-  filterUniqueScopes_internal([(FALSE(), _) | ps]) = filterUniqueScopes_internal(ps).
-
-  zipQueryResultsWithNewScopeBool : list((path * (string * TYPE))) * list(scope) -> list((BOOL * (path * (string * TYPE))))
-  zipQueryResultsWithNewScopeBool([], _) = [].
-  zipQueryResultsWithNewScopeBool([p@(_PathEmpty(s), _) | ps], ss) = r :- {new_scope ss'}
-    new_scope == notB(scopeInListB(s, ss)),
-    ss' == addScopeToSet(s, ss, new_scope),
-    r == [(new_scope, p) | zipQueryResultsWithNewScopeBool(ps, ss')].
-  zipQueryResultsWithNewScopeBool([p@(_PathStep(_, _, s), _) | ps], ss) = r :- {new_scope ss'}
-    new_scope == notB(scopeInListB(s, ss)),
-    ss' == addScopeToSet(s, ss, new_scope),
-    r == [(new_scope, p) | zipQueryResultsWithNewScopeBool(ps, ss')].
-
-  addScopeToSet : scope * list(scope) * BOOL -> list(scope)
-  addScopeToSet(s, ss, TRUE()) = [s | ss].
-  addScopeToSet(_, ss, FALSE()) = ss.
-
-  scopeInListB : scope * list(scope) -> BOOL
-  scopeInListB(_, [])       = FALSE().
-  scopeInListB(s, [s | _])  = TRUE().
-  scopeInListB(s, [_ | ss]) = scopeInListB(s, ss).
+  // functional rule to drop the unique id (implemented as scope) from query results
+  dropUniqueIds maps dropUniqueId(list(*)) = list(*)
+  dropUniqueId : (path * ((string * scope) * TYPE)) -> (path * (string * TYPE))
+  dropUniqueId((p, ((x, id), t))) = (p, (x, t)).

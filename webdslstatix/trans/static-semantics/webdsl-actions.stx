@@ -92,13 +92,13 @@ rules // variables
 
   noDuplicateVarDefs : scope * string
   noDuplicateVarDefs(s, x) :-
-    query var filter P* and { x' :- x' == x }
+    query var filter P* and { x' :- x' == (x, _) }
                      min $ < P
                      in s |-> [_].
 
   noDuplicateVarDefsInSuper : scope * string
   noDuplicateVarDefsInSuper(s_sub, x) :-
-    query var filter EXTEND? (INHERIT EXTEND?)* and { x' :- x' == x }
+    query var filter EXTEND? (INHERIT EXTEND?)* and { x' :- x' == (x, _) }
                      min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
                      in s_sub |-> [_].
 
