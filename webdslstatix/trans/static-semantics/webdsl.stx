@@ -144,12 +144,11 @@ rules // function declaration and resolving
                    in s |-> ps.
 
   resolveEntityFunction : scope * string -> list((path * (string * TYPE)))
-  // TO-DO: apply filterShortestPath for overwriting functions
   resolveEntityFunction(s, x) = dropUniqueIds(ps) :-
     query function filter EXTEND? (INHERIT EXTEND?)*
                    and { x' :- x' == ((x, _), _) }
                    min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
-                   and { ((_, id), _), ((_, id), _) }
+                   and { ((f, _), FUNCTION(args, _)), ((f, _), FUNCTION(args, _)) }
                    in s |-> ps.
 
 rules // variable declaration and resolving
