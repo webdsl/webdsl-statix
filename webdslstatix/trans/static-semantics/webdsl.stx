@@ -32,18 +32,18 @@ signature
       IMPORT  // import edge label for importing the global scope and other modules
 
   relations
-    mod     : string -> scope
-    import  : string -> string
+    mod     : string * scope
+    import  : string * string
 
-    entity       : (string * scope) -> TYPE
-    extendentity : string -> scope
+    entity       : (string * scope) * TYPE
+    extendentity : string * scope
 
-    page     : (string * scope) -> TYPE
-    template : (string * scope) -> TYPE
+    page     : (string * scope) * TYPE
+    template : (string * scope) * TYPE
 
-    function : (string * scope) -> TYPE
+    function : (string * scope) * TYPE
 
-    var      : (string * scope) -> TYPE
+    var      : (string * scope) * TYPE
 
 rules // module and import declaration and resolving
 
@@ -54,10 +54,11 @@ rules // module and import declaration and resolving
 
   resolveMod : scope * string -> list((path * (string * scope)))
   resolveMod(s, m) = mods :-
-    query mod
-      filter e and { m' :- m' == m }
-      min and true
-      in s |-> mods.
+    query mod filter e 
+              and { m' :- m' == (m, _) }
+              min
+              and true
+              in s |-> mods.
 
   declareImport : scope * string * string
   declareImport(s, x, y) :-
@@ -66,10 +67,11 @@ rules // module and import declaration and resolving
 
   resolveImport : scope * string -> list((path * (string * string)))
   resolveImport(s, x) = imports :-
-    query import
-      filter e and { x' :- x' == x }
-      min and true
-      in s |-> imports.
+    query import filter e
+                 and { x' :- x' == (x, _) }
+                 min
+                 and true
+                 in s |-> imports.
 
 rules // entity declaration and resolving
 
@@ -81,9 +83,9 @@ rules // entity declaration and resolving
   resolveEntity : scope * string -> list((path * (string * TYPE)))
   resolveEntity(s, e) = dropUniqueIds(ps) :-
     query entity filter P* F* EXTEND? INHERIT* IMPORT*
-                 and { e' :- e' == (e, _) }
-                 min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
-                 and { id, id' :- (_, id) == (_, id') }
+                 and { e' :- e' == ((e, _), _) }
+                 min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
+                 and { ((_, id), _), ((_, id), _) }
                  in s |-> ps.
 
   declareExtendEntity : scope * string * scope
@@ -93,7 +95,7 @@ rules // entity declaration and resolving
   resolveExtendEntity : scope * string -> list((path * (string * scope)))
   resolveExtendEntity(s, e) = ps :-
     query extendentity filter P* F* EXTEND* INHERIT* IMPORT*
-                       and { e' :- e' == e }
+                       and { e' :- e' == (e, _) }
                        in s |-> ps.
 
 rules // ui declaration and resolving
@@ -114,17 +116,17 @@ rules // ui declaration and resolving
   resolveTemplate : scope * string -> list((path * (string * TYPE)))
   resolveTemplate(s, t) = dropUniqueIds(ps) :-
     query template filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-                   and { t' :- t' == (t, _) }
-                   min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
-                   and { id, id' :- (_, id) == (_, id') }
+                   and { t' :- t' == ((t, _), _) }
+                   min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
+                   and { ((_, id), _), ((_, id'), _) }
                    in s |-> ps.
 
   resolvePage : scope * string -> list((path * (string * TYPE)))
   resolvePage(s, p) = dropUniqueIds(ps) :-
     query page filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-               and { p' :- p' == (p, _) }
-               min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
-               and { id, id' :- (_, id) == (_, id') }
+               and { p' :- p' == ((p, _), _) }
+               min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
+               and { ((_, id), _), ((_, id'), _) }
                in s |-> ps.
 
 rules // function declaration and resolving
@@ -136,17 +138,18 @@ rules // function declaration and resolving
   resolveFunction : scope * string -> list((path * (string * TYPE)))
   resolveFunction(s, f) = dropUniqueIds(ps) :-
     query function filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-                   and { f' :- f' == (f, _) }
-                   min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
-                   and { id, id' :- (_, id) == (_, id') }
+                   and { f' :- f' == ((f, _), _) }
+                   min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
+                   and { ((_, id), _), ((_, id), _) }
                    in s |-> ps.
 
   resolveEntityFunction : scope * string -> list((path * (string * TYPE)))
-  resolveEntityFunction(s, f) = dropUniqueIds(ps) :-
+  // TO-DO: apply filterShortestPath for overwriting functions
+  resolveEntityFunction(s, x) = dropUniqueIds(ps) :-
     query function filter EXTEND? (INHERIT EXTEND?)*
-                   and { f' :- f' == (f, _) }
-                   min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
-                   and { id, id' :- (_, id) == (_, id') }
+                   and { x' :- x' == ((x, _), _) }
+                   min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
+                   and { ((_, id), _), ((_, id), _) }
                    in s |-> ps.
 
 rules // variable declaration and resolving
@@ -159,15 +162,15 @@ rules // variable declaration and resolving
   resolveVar : scope * string -> list((path * (string * TYPE)))
   resolveVar(s, x) = dropUniqueIds(ps) :-
     query var filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-              and { x' :- x' == (x, _) }
-              min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < IMPORT, P < F, P < EXTEND, P < INHERIT, P < IMPORT, F < EXTEND, F < INHERIT, F < IMPORT, EXTEND < INHERIT, EXTEND < IMPORT, INHERIT < IMPORT
-              and { id, id' :- (_, id) == (_, id') }
+              and { x' :- x' == ((x, _), _) }
+              min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
+              and true
               in s |-> ps.
 
   resolveProperty : scope * string -> list((path * (string * TYPE)))
   resolveProperty(s_entity, x) = dropUniqueIds(ps) :-
     query var filter EXTEND? (INHERIT EXTEND?)*
-              and { x' :- x' == (x, _) }
+              and { x' :- x' == ((x, _), _) }
               in s_entity |-> ps.
 
   // map does not suffice here due to list of tuples
@@ -268,3 +271,23 @@ rules // utils
   dropUniqueIds maps dropUniqueId(list(*)) = list(*)
   dropUniqueId : (path * ((string * scope) * TYPE)) -> (path * (string * TYPE))
   dropUniqueId((p, ((x, id), t))) = (p, (x, t)).
+
+  // functional rule to drop all results with longer paths than the minimal
+  filterShortestPath : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
+  filterShortestPath(ps) = filterShortestPath_internal(zipQueryResultsWithPathLength(ps), shortestPathLength(ps)).
+
+  filterShortestPath_internal : list((int * (path * (string * TYPE)))) * int -> list((path * (string * TYPE)))
+  filterShortestPath_internal([], _) = [].
+  filterShortestPath_internal([(x, r) | ps], x) = [r | filterShortestPath_internal(ps, x)].
+  filterShortestPath_internal([_      | ps], x) = filterShortestPath_internal(ps, x).
+
+  shortestPathLength : list((path * (string * TYPE))) -> int
+  shortestPathLength([]) = 10000.
+  shortestPathLength([(p, _) | ps]) = z :- {x y}
+    x == pathLength(p),
+    y == shortestPathLength(ps),
+    z #= min(x, y).
+
+  zipQueryResultsWithPathLength maps zipQueryResultWithPathLength(list(*)) = list(*)
+  zipQueryResultWithPathLength : (path * (string * TYPE)) -> (int * (path * (string * TYPE)))
+  zipQueryResultWithPathLength(r@(p, _)) = (pathLength(p), r).

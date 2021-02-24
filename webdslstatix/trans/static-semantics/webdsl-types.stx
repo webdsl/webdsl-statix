@@ -227,7 +227,7 @@ rules // resolve reference types
 
   pageType : scope * string -> TYPE
   pageType(s, p) = t :- {p'}
-    resolveUi(s, p) == [(_, (p', t@PAGE(_)))|_] | error $[Page [p] not defined],
+    resolvePage(s, p) == [(_, (p', t@PAGE(_)))|_] | error $[Page [p] not defined],
     @p.ref := p'.
 
 rules // utils

@@ -145,15 +145,15 @@ rules // subtyping
   typeCompatibleB(ENTITY(s_sub), ENTITY(s_super)) = inherits(s_sub, s_super).
 
   inherits : scope * scope -> BOOL
-  inherits(s_sub, s_super) = result :- {query_result}
-    query () filter INHERIT* and { s :- s == s_super }
+  inherits(s_sub, s_super) = nonEmptyPathScopeList(ps) :-
+    query () filter INHERIT*
+             and { s :- s == s_super }
              min $ < INHERIT
-             in s_sub |-> query_result,
-    result == inheritsHelper(query_result).
+             in s_sub |-> ps.
 
-  inheritsHelper : list((path * scope)) -> BOOL
-  inheritsHelper(_) = FALSE().
-  inheritsHelper([(_,_)]) = TRUE().
+  nonEmptyPathScopeList : list((path * scope)) -> BOOL
+  nonEmptyPathScopeList(_)       = FALSE().
+  nonEmptyPathScopeList([(_,_)]) = TRUE().
 
   inheritEdgesAmount : scope * scope -> int
   inheritEdgesAmount(s_sub, s_super) = pathLength(p) :-

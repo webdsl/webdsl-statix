@@ -14,11 +14,11 @@ rules // functions calls
   typeOfSimpleExp(s, SimpleThisCall(ThisCall(f, argExps))) = t :-
     t == typeOfFunctionCall(s, s, f, argExps, FALSE()).
 
-  typeOfExp(s, Call(exp, f, argExps)) = t :- {s_entity/* argTypes nameCompatibleFunSigs mostSpecificFunSigs f'*/}
+  typeOfExp(s, Call(exp, f, argExps)) = t :- {s_entity}
     typeOfExp(s, exp) == ENTITY(s_entity),
     t == typeOfFunctionCall(s, s_entity, f, argExps, TRUE()).
 
-  typeOfSimpleExp(s, SimpleCall(exp, f, argExps)) = t :- {s_entity/* argTypes nameCompatibleFunSigs mostSpecificFunSigs f'*/}
+  typeOfSimpleExp(s, SimpleCall(exp, f, argExps)) = t :- {s_entity}
     typeOfSimpleExp(s, exp) == ENTITY(s_entity),
     t == typeOfFunctionCall(s, s_entity, f, argExps, TRUE()).
 
@@ -28,8 +28,6 @@ rules // functions calls
     argTypes == typesOfExps(arg_scope, argExps),
     nameCompatibleFunSigs == nameCompatibleFunSigs(fundef_scope, f, restrictToEnclosingEntity),
     mostSpecificFunSigs == mostSpecificFunSigs(argTypes, typeCompatibleFunSigs(nameCompatibleFunSigs, argTypes)),
-    mostSpecificFunSigs != [] | error $[No function definition with compatible argument types for function [f]] @f,
-    mostSpecificFunSigs != [_|[_|_]] | error $[Multiple function definition with equally specific argument types for function [f]] @f,
     mostSpecificFunSigs == [(f', FUNCTION(_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @f,
     @f.ref := f',
     @f.type := t.
@@ -108,7 +106,7 @@ rules // function definitions
   noDuplicateFunDefsEntity : scope * string * list(TYPE)
   noDuplicateFunDefsEntity(s, f, types) :- {ps}
     query function filter EXTEND?
-                   and { f' :- f' == (f, _) }
+                   and { f' :- f' == ((f, _), _) }
                    in s |-> ps,
     amountOfFunDeclsWithArgs(dropUniqueIds(ps), types, 0) == 1
         | error $[Duplicate definition of function [f] with argument types [types]] @f.
@@ -150,27 +148,21 @@ rules  // rules and functions for function overloading
   mostSpecificFunSigs : list(TYPE) * list((string * TYPE)) -> list((string * TYPE))
   mostSpecificFunSigs(args, []) = [].     // In case no functions are compatible, return empty list
   mostSpecificFunSigs(args, fs@[_]) = fs. // In case of only one compatible signature, return that
-  mostSpecificFunSigs(args, sigs) = mostSpecificFunSigs_helper(args, sigs, existsMatchingFunSig(args, sigs)).
+  mostSpecificFunSigs(args, sigs) = mostSpecificFunSigs_helper(args, sigs, matchingFunSigs(args, sigs)).
 
   // helper function for mostSpecificFunSigs that returns
-  // the exactly matching signature if it exists,
+  // the exactly matching signatures if they exists,
   // else return the most specific (least inheritance) signatures
-  mostSpecificFunSigs_helper : list(TYPE) * list((string * TYPE)) * BOOL -> list((string * TYPE))
-  mostSpecificFunSigs_helper(args, sigs, TRUE())   = [matchingFunSig(args, sigs)].
-  mostSpecificFunSigs_helper(args, sigs, FALSE())  = filterLeastInheritanceAmount(minOfList(inheritanceAmounts), zipInheritanceAmountWithFunSig(inheritanceAmounts, sigs)) :-
+  mostSpecificFunSigs_helper : list(TYPE) * list((string * TYPE)) * list((string * TYPE)) -> list((string * TYPE))
+  mostSpecificFunSigs_helper(args, sigs, matching) = matching.
+  mostSpecificFunSigs_helper(args, sigs, [])       = filterLeastInheritanceAmount(minOfList(inheritanceAmounts), zipInheritanceAmountWithFunSig(inheritanceAmounts, sigs)) :-
     inheritanceAmounts == inheritanceAmounts(args, sigs).
 
-  // helper function for mostSpecificFunSigs that returns
-  // whether an exactly matching function signature exists
-  existsMatchingFunSig : list(TYPE) * list((string * TYPE)) -> BOOL
-  existsMatchingFunSig(args, []) = FALSE().
-  existsMatchingFunSig(args, [(_, FUNCTION(args, _)) | _]) = TRUE().
-  existsMatchingFunSig(args, [_ | fs]) = existsMatchingFunSig(args, fs).
-
   // helper function for mostSpecificFunSigs that returns the exactly matching signature
-  matchingFunSig : list(TYPE) * list((string * TYPE)) -> (string * TYPE)
-  matchingFunSig(args, [f@(_, FUNCTION(args, _)) | _]) = f.
-  matchingFunSig(args, [_ | fs]) = matchingFunSig(args, fs).
+  matchingFunSigs : list(TYPE) * list((string * TYPE)) -> list((string * TYPE))
+  matchingFunSigs(_, []) = [].
+  matchingFunSigs(args, [f@(_, FUNCTION(args, _)) | fs]) = [f | matchingFunSigs(args, fs)].
+  matchingFunSigs(args, [_ | fs]) = matchingFunSigs(args, fs).
 
   // function that computes the total amount of inheritance edges from caller arguments to defined arguments
   inheritanceAmounts maps inheritanceAmount(*, list(*)) = list(*)
