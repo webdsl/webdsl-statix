@@ -4,6 +4,7 @@ imports
   static-semantics/actions/functions
 
   static-semantics/ui/attributes
+  static-semantics/ui/template-calls
 
   static-semantics/webdsl-actions
   static-semantics/webdsl-types

@@ -13,15 +13,15 @@ rules // template calls
     templateCallOk(s, tc).
 
   templateCallOk : scope * TemplateCall
-  templateCallOk(s, TemplateCall(TemplateCallId(t), TCallArgs(targs), TCallPropAssigns(propAssigns), TemplateBody(body))) :- {argTypes nameCompatibleTemplateSigs mostSpecificTemplateSigs t'}
+  templateCallOk(s, TemplateCall(TemplateCallId(t), TCallArgs(targs), TCallPropAssigns(propAssigns), TemplateBody(body))) :- {argTypes nameCompatibleSigs mostSpecificSigs t'}
     templatePropAssignmentsOk(s, propAssigns),
     templateElementsOk(s, body),
     argTypes == typesOfTemplateArgExps(s, targs),
-    nameCompatibleTemplateSigs == resolveTemplate(s, t),
-    mostSpecificTemplateSigs == mostSpecificTemplateSigs(argTypes, typeCompatibleTemplateSigs(nameCompatibleTemplateSigs, argTypes)),
-    mostSpecificTemplateSigs != [] | error $[No template definition with compatible argument types for function [t]] @t,
-    mostSpecificTemplateSigs != [_|[_|_]] | error $[Multiple template definitions with equally specific argument types for function [t]] @t,
-    mostSpecificTemplateSigs == [(t', TEMPLATE(_))] | error $[Zero or multiple template definitions with equally specific argument types for function [t]] @t,
+    nameCompatibleSigs == resolveTemplate(s, t),
+    mostSpecificSigs == mostSpecificSigs(argTypes, typeCompatibleSigs(nameCompatibleSigs, argTypes)),
+    mostSpecificSigs != [] | error $[No template definition with compatible argument types for function [t]] @t,
+    mostSpecificSigs != [_|[_|_]] | error $[Multiple template definitions with equally specific argument types for function [t]] @t,
+    mostSpecificSigs == [(t', TEMPLATE(_))] | error $[Zero or multiple template definitions with equally specific argument types for function [t]] @t,
     @t.ref := t'.
 
   templatePropAssignmentsOk maps templatePropAssignmentOk(*, list(*))
@@ -33,69 +33,3 @@ rules // template calls
   typeOfTemplateArgExp(s, Exp(exp))                      = typeOfExp(s, exp).
   typeOfTemplateArgExp(s, TemplateElementsArgument(exp)) = TEMPLATEELEMENTS().
   typeOfTemplateArgExp(s, ExpEntityDerive(_, _))         = UNTYPED() :- false | error $[Derive expressions not implemented yet]. // TO-DO
-
-  // function that gets all templates with matching name and compatible argument types
-  typeCompatibleTemplateSigs : list((path * (string * TYPE))) * list(TYPE) -> list((string * TYPE))
-  typeCompatibleTemplateSigs(nameCompatibleTemplates, args) = result :- {templateSigsZippedWithTypeCompatibility}
-    templateSigsZippedWithTypeCompatibility == zipTemplateSigsWithTypesCompatible(args, dropPathsTemplate(nameCompatibleTemplates)),
-    result == filterCompatibleArgTypesTemplate(templateSigsZippedWithTypeCompatibility).
-
-  // helper function for typeCompatibleTemplateSigs that prunes the list
-  // of templates based on the zipped BOOL with the template signature
-  filterCompatibleArgTypesTemplate : list((BOOL * (string * TYPE))) -> list((string * TYPE))
-  filterCompatibleArgTypesTemplate([]) = [].
-  filterCompatibleArgTypesTemplate([(TRUE() , t) | ts]) = [t | filterCompatibleArgTypesTemplate(ts)].
-  filterCompatibleArgTypesTemplate([(FALSE(), _) | ts]) = filterCompatibleArgTypesTemplate(ts).
-
-  // helper function for typeCompatibleTemplateSigs that zips the
-  // template signatures with whether the types are compatible with given argument types
-  zipTemplateSigsWithTypesCompatible maps zipTemplateSigWithTypesCompatible(*, list(*)) = list(*)
-  zipTemplateSigWithTypesCompatible : list(TYPE) * (string * TYPE) -> (BOOL * (string * TYPE))
-  zipTemplateSigWithTypesCompatible(args, t@(_, TEMPLATE(templateArgs))) = (typesCompatible(args, templateArgs), t).
-
-  // function that prunes the list of compatible template signatures
-  // to a list of most specific template signatures
-  mostSpecificTemplateSigs : list(TYPE) * list((string * TYPE)) -> list((string * TYPE))
-  mostSpecificTemplateSigs(args, []) = [].     // In case no templates are compatible, return empty list
-  mostSpecificTemplateSigs(args, ts@[_]) = ts. // In case of only one compatible signature, return that
-  mostSpecificTemplateSigs(args, sigs) = mostSpecificTemplateSigs_helper(args, sigs, existsMatchingTemplateSig(args, sigs)).
-
-  // helper function for mostSpecificTemplateSigs that returns
-  // the exactly matching signature if it exists,
-  // else return the most specific (least inheritance) signatures
-  mostSpecificTemplateSigs_helper : list(TYPE) * list((string * TYPE)) * BOOL -> list((string * TYPE))
-  mostSpecificTemplateSigs_helper(args, sigs, TRUE())   = [matchingTemplateSig(args, sigs)].
-  mostSpecificTemplateSigs_helper(args, sigs, FALSE())  = filterLeastInheritanceAmountTemplate(minOfList(inheritanceAmounts), zipInheritanceAmountWithTemplateSig(inheritanceAmounts, sigs)) :-
-    inheritanceAmounts == inheritanceAmountsTemplate(args, sigs).
-
-  // helper function for mostSpecificTemplateSigs that returns
-  // whether an exactly matching template signature exists
-  existsMatchingTemplateSig : list(TYPE) * list((string * TYPE)) -> BOOL
-  existsMatchingTemplateSig(args, []) = FALSE().
-  existsMatchingTemplateSig(args, [(_, TEMPLATE(args)) | _]) = TRUE().
-  existsMatchingTemplateSig(args, [_ | ts]) = existsMatchingTemplateSig(args, ts).
-
-  // helper function for mostSpecificTemplateSigs that returns the exactly matching signature
-  matchingTemplateSig : list(TYPE) * list((string * TYPE)) -> (string * TYPE)
-  matchingTemplateSig(args, [t@(_, TEMPLATE(args)) | _]) = t.
-  matchingTemplateSig(args, [_ | ts]) = matchingTemplateSig(args, ts).
-
-  // function that computes the total amount of inheritance edges from caller arguments to defined arguments
-  inheritanceAmountsTemplate maps inheritanceAmountTemplate(*, list(*)) = list(*)
-  inheritanceAmountTemplate : list(TYPE) * (string * TYPE) -> int
-  inheritanceAmountTemplate(args, (_, TEMPLATE(sigTypes))) = inheritanceAmount_helper(args, sigTypes).
-
-  // function that zips the inheritance amount with the template signature
-  zipInheritanceAmountWithTemplateSig : list(int) * list((string * TYPE)) -> list((int * (string * TYPE)))
-  zipInheritanceAmountWithTemplateSig([], []) = [].
-  zipInheritanceAmountWithTemplateSig([x|xs], [y|ys]) = [(x, y) | zipInheritanceAmountWithTemplateSig(xs, ys)].
-
-  // function that prunes the function signatures to only keep the lowest inheritance amount
-  filterLeastInheritanceAmountTemplate : int * list((int * (string * TYPE))) -> list((string * TYPE))
-  filterLeastInheritanceAmountTemplate(_, []) = [].
-  filterLeastInheritanceAmountTemplate(x, [(x, sig) | sigtl]) = [sig | filterLeastInheritanceAmountTemplate(x, sigtl)].
-  filterLeastInheritanceAmountTemplate(x, [_        | sigtl]) = filterLeastInheritanceAmountTemplate(x, sigtl).
-
-  dropPathsTemplate maps dropPathTemplate(list(*)) = list(*)
-  dropPathTemplate : (path * (string * TYPE)) -> (string * TYPE)
-  dropPathTemplate((_, x)) = x.
