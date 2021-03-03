@@ -214,6 +214,11 @@ rules // typing
   typeOfExp : scope * Exp -> TYPE
   typeOfExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
 
+  typeOfExpTyped : scope * Exp -> TYPE
+  typeOfExpTyped(s, exp) = t :-
+    t == typeOfExp(s, exp),
+    t != UNTYPED() | error $[Cannot resolve type [t]] @exp.
+
   typeOfSimpleExp : scope * SimpleExp -> TYPE
   typeOfSimpleExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
 
@@ -233,6 +238,8 @@ rules // typing
 
 rules // utils
 
+  or : BOOL * BOOL
+  or(b1, b2) :- orB(b1, b2) == TRUE().
   orB : BOOL * BOOL -> BOOL
   orB(_, _) = FALSE().
   orB(TRUE(), _) = TRUE().

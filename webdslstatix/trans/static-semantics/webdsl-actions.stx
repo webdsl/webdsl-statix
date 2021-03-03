@@ -33,7 +33,7 @@ rules // statements
     equalType(varType, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [varType]].
 
   stmtOk(s, _, If(c, Block(then), Block(else)), rt) :- {s_then s_else}
-    equalType(typeOfExp(s, c), BOOL()) | error $[Condition should be of type bool],
+    equalType(typeOfExp(s, c), BOOL()) | error $[Condition should be of type bool] @c,
     new s_then, s_then -P-> s,
     stmtsOk(s_then, then, rt),
     new s_else, s_else -P-> s,

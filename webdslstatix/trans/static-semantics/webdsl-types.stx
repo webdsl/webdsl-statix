@@ -134,6 +134,11 @@ rules // utils
 
 rules // map sorts to semantic types
 
+  typeOfSortTyped : scope * Sort -> TYPE
+  typeOfSortTyped(s, sort) = t :-
+    t == typeOfSort(s, sort),
+    t != UNTYPED() | error $[Cannot resolve type [t]].
+
   typesOfSorts maps typeOfSort(*, list(*)) = list(*)
   typeOfSort : scope * Sort -> TYPE
   typeOfSort(_, _) = UNTYPED(). // untyped by default
@@ -206,6 +211,17 @@ rules // WebDSL definition of being a simple type: built-in simple sort (no gene
   isSimpleType(OBJECT()) = TRUE().
 
   isSimpleType(NULL()) = TRUE().
+
+rules // type related expressions
+
+  typeOfExp(s, Cast(exp, sort)) = t' :- {t}
+    t  == typeOfExpTyped(s, exp),
+    t' == typeOfSortTyped(s, sort),
+    or(typeCompatibleB(t, t'), typeCompatibleB(t', t)) | error $[Type [t] cannot be cast to [t']].
+
+  typeOfExp(s, IsA(exp, sort)) = BOOL() :- {t t'}
+    t  == typeOfExpTyped(s, exp),
+    t' == typeOfSortTyped(s, sort).
 
 rules // resolve reference types
 
