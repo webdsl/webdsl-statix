@@ -1,0 +1,74 @@
+module static-semantics/ui/attributes
+
+imports
+  static-semantics/webdsl-types
+  static-semantics/webdsl
+
+signature
+  relations
+    attributeCollection : string * scope
+
+rules // attribute collection declaration and resolving
+
+  declareAttributeCollection : scope * string
+  declareAttributeCollection(s, c) :-
+    !attributeCollection[c, new] in s,
+    resolveAttributeCollection(s, c) == [_] | error $[Attribute collection [c] is defined multiple times].
+
+  resolveAttributeCollection : scope * string -> list((path * string))
+  resolveAttributeCollection(s, c) = dropUniqueIdsStringOnly(ps) :-
+    query attributeCollection
+      filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
+      and { c' :- c' == (c, _) }
+      min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
+      and { (_, id), (_, id) }
+      in s |-> ps.
+
+  dropUniqueIdsStringOnly maps dropUniqueIdStringOnly(list(*)) = list(*)
+  dropUniqueIdStringOnly : (path * (string * scope)) -> (path * string)
+  dropUniqueIdStringOnly((p, (x, id))) = (p, x).
+
+rules // attributes
+
+  attributesOk maps attributeOk(*, list(*))
+  attributeOk : scope * Attribute
+  attributeOk(s, AttributeExpandLocal(_, _, _)) :- false | error $[Expand attributes not implemented yet]. // TO-DO
+  attributeOk(s, Attribute(_, exp)) :- typed(s, exp).
+  attributeOk(s, XMLAttributesIf(c, attributes)) :-
+    equalType(typeOfExp(s, c), BOOL()) | error $[Condition should be of type bool] @c,
+    attributesOk(s, attributes).
+
+  attributeOk(s, XMLAttributesIfElse(c, attributes_if, attributes_else)) :-
+    equalType(typeOfExp(s, c), BOOL()) | error $[Condition should be of type bool] @c,
+    attributesOk(s, attributes_if),
+    attributesOk(s, attributes_else).
+
+  attributeOk(s, CommonAttribute2Attribute(AllAttributes())).
+  attributeOk(s, CommonAttribute2Attribute(AllAttributesExceptExp(exp))) :- {t}
+    t == typeOfExp(s, exp),
+    equalB(TRUE(), orB(
+      typeCompatibleB(STRING(), t),
+      orB(
+        typeCompatibleB(LIST(STRING()), t),
+        typeCompatibleB(SET(STRING()), t)
+      )
+    )) | error $[Attribute names should be of type String, List of String of Set of String, but type [t] given] @exp.
+
+  attributeOk(s, CommonAttribute2Attribute(AttributesExp(exp))) :- {t}
+    t == typeOfExp(s, exp),
+    equalB(TRUE(), orB(
+      typeCompatibleB(STRING(), t),
+      orB(
+        typeCompatibleB(LIST(STRING()), t),
+        typeCompatibleB(SET(STRING()), t)
+      )
+    )) | error $[Attribute names should be of type String, List of String of Set of String, but type [t] given] @exp.
+
+rules // attribute collections
+
+  defOk(s, AttributeCollection(AttributeCollectionOverrideNone(), c, attrs)) :-
+    declareAttributeCollection(s, c).
+
+  defOk(s, AttributeCollection(AttributeCollectionOverride(), c, attrs)) :- {c'}
+    resolveAttributeCollection(s, c) == [(_, c')] | error $[Attribute collection [c] is not defined] @c,
+    @c.ref := c'.
