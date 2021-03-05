@@ -22,7 +22,7 @@ rules // entity declaration
     declEntity(s_global, s_entity, x, bodydecs).
 
   // session x { ... }
-  defOk(s_global, SessionEntity(x, bodydecs)) :- {s_entity entity_scopes}
+  defOk(s_global, SessionEntity(x, bodydecs)) :- {s_entity}
     new s_entity, s_entity -IMPORT-> s_global,
     declEntity(s_global, s_entity, x, bodydecs).
 
@@ -32,6 +32,7 @@ rules // entity declaration
     declareExtendEntity(s_global, entity_name, s_entity), // declare entity_scope to be linked to entity_name
     extendEntityScopes(resolveExtendEntity(s_global, entity_name), s_entity),
     declareEntity(s_global, entity_name, s_entity),
+    declareVar(s_global, entity_name, STATICENTITY(s_entity)), // declare entity_name as global variable that refers to the static scope
     declEntityBody(s_entity, bodydecs).
 
   validEntityName : scope * string
@@ -73,11 +74,11 @@ rules // entity body declaration
   declEntityBody maps declEntityBodyDeclaration(*, list(*))
 
   // entity function
-  declEntityBodyDeclaration(s, EntityFunction(f)) :- entityFunctionOk(s, f).
-  declEntityBodyDeclaration(s, StaticEntityFunction(f)) :- entityFunctionOk(s, f).
+  declEntityBodyDeclaration(s, EntityFunction(f)) :- entityFunctionOk(s, f, FALSE()).
+  declEntityBodyDeclaration(s, StaticEntityFunction(f)) :- entityFunctionOk(s, f, TRUE()).
   declEntityBodyDeclaration(s, CachedFunction(f)) :-
     canBeCached(s, f),
-    entityFunctionOk(s, f).
+    entityFunctionOk(s, f, FALSE()).
 
   // entity property
   declEntityBodyDeclaration(s, Property(x, propkind, sort, annos)) :- {sortType}

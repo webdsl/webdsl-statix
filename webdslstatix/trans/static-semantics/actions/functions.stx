@@ -9,26 +9,35 @@ imports
 rules // functions calls
 
   typeOfExp(s, ThisCall2Exp(ThisCall(f, argExps))) = t :-
-    t == typeOfFunctionCall(s, s, f, argExps, FALSE()).
+    t == typeOfFunctionCall(s, f, argExps).
 
   typeOfSimpleExp(s, SimpleThisCall(ThisCall(f, argExps))) = t :-
-    t == typeOfFunctionCall(s, s, f, argExps, FALSE()).
+    t == typeOfFunctionCall(s, f, argExps).
 
-  typeOfExp(s, Call(exp, f, argExps)) = t :- {s_entity}
-    typeOfExp(s, exp) == ENTITY(s_entity),
-    t == typeOfFunctionCall(s, s_entity, f, argExps, TRUE()).
+  typeOfExp(s, Call(exp, f, argExps)) = t :-
+    t == typeOfEntityFunctionCall(s, typeOfExp(s, exp), f, argExps).
 
-  typeOfSimpleExp(s, SimpleCall(exp, f, argExps)) = t :- {s_entity}
-    typeOfSimpleExp(s, exp) == ENTITY(s_entity),
-    t == typeOfFunctionCall(s, s_entity, f, argExps, TRUE()).
+  typeOfSimpleExp(s, SimpleCall(exp, f, argExps)) = t :-
+    t == typeOfEntityFunctionCall(s, typeOfSimpleExp(s, exp), f, argExps).
 
   // The last boolean argument indicates whether the function definition needs to be found within the enclosing entity of scope fundef_scope
-  typeOfFunctionCall : scope * scope * string * list(Exp) * BOOL -> TYPE
-  typeOfFunctionCall(arg_scope, fundef_scope, f, argExps, restrictToEnclosingEntity) = t :- {argTypes nameCompatibleSigs mostSpecificSigs f'}
-    argTypes == typesOfExps(arg_scope, argExps),
-    nameCompatibleSigs == nameCompatibleFunSigs(fundef_scope, f, restrictToEnclosingEntity),
-    mostSpecificSigs == mostSpecificSigs(argTypes, typeCompatibleSigs(nameCompatibleSigs, argTypes)),
-    mostSpecificSigs == [(f', FUNCTION(_, t))] | error $[Zero or multiple function definition with equally specific argument types for function [f]] @f,
+  typeOfFunctionCall : scope * string * list(Exp)-> TYPE
+  typeOfFunctionCall(s, f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+    funSigs == resolveFunction(s, f).
+
+  // The last boolean argument indicates whether the function definition needs to be found within the enclosing entity of scope fundef_scope
+  typeOfEntityFunctionCall : scope * TYPE * string * list(Exp)-> TYPE
+  typeOfEntityFunctionCall(s, ENTITY(s_ent), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+    funSigs == resolveEntityFunction(s_ent, f).
+
+  typeOfEntityFunctionCall(s, STATICENTITY(s_ent), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+    funSigs == resolveStaticEntityFunction(s_ent, f).
+  typeOfEntityFunctionCall(s, t, f, args) = UNTYPED() :- false | error $[First subexpression of a function call must be of type entity, [t] found].
+
+  typeOfFunctionCall_internal : scope * string * list(Exp) * list((path * (string * TYPE))) -> TYPE
+  typeOfFunctionCall_internal(s, f, args, funSigs) = t :- {argTypes f'}
+    argTypes                  == typesOfExps(s, args),
+    [(f', FUNCTION(_, t, _))] == mostSpecificSigs(argTypes, typeCompatibleSigs(funSigs, argTypes)) | error $[Zero or multiple function definition with equally specific argument types for function [f]] @f,
     @f.ref := f',
     @f.type := t.
 
@@ -57,15 +66,16 @@ rules // function definitions
     stmtsOk(s_body, stmts, returnType),
     declFunctionGlobal(s_outer, name, argTypes, returnType).
 
-  entityFunctionOk : scope * Function
-  entityFunctionOk(s_outer, Function(name, FormalArgs(args), OptSortSome(returnSort), Block(stmts))) :- {argTypes returnType s_function s_body}
-    returnType == typeOfSort(s_outer, returnSort),
-    new s_function, s_function -F-> s_outer,
-    argTypes == typesOfArgs(s_outer, args),
+  entityFunctionOk : scope * Function * BOOL
+  entityFunctionOk(s_ent, Function(name, FormalArgs(args), OptSortSome(returnSort), Block(stmts)), static) :- {argTypes returnType s_function s_body}
+    returnType == typeOfSort(s_ent, returnSort),
+    new s_function, s_function -F-> s_ent,
+    argTypes == typesOfArgs(s_ent, args),
     declareVars(s_function, zipArgTypes(args, argTypes)),
     new s_body, s_body -P-> s_function,
     stmtsOk(s_body, stmts, returnType),
-    declFunctionEntity(s_outer, name, argTypes, returnType).
+    declFunctionEntity(s_ent, name, argTypes, returnType, static),
+    noDuplicateFunDefsEntity(s_ent, name, argTypes).
 
   // predicate that defines when a function can be cached
   canBeCached : scope * Function
@@ -75,14 +85,13 @@ rules // function definitions
   // declare a function in a given scope
   // and define the relation typeOfFunDecl with signature (argument types  * return type)
   declFunctionGlobal : scope * string * list(TYPE) * TYPE
-  declFunctionGlobal(s, f, arg_types, return_type) :-
-    declareFunction(s, f, arg_types, return_type),
-    noDuplicateFunDefsGlobal(s, f, arg_types).
+  declFunctionGlobal(s, f, args, return) :-
+    declareFunction(s, f, args, return),
+    noDuplicateFunDefsGlobal(s, f, args).
 
-  declFunctionEntity : scope * string * list(TYPE) * TYPE
-  declFunctionEntity(s, f, arg_types, return_type) :-
-    declareFunction(s, f, arg_types, return_type),
-    noDuplicateFunDefsEntity(s, f, arg_types).
+  declFunctionEntity : scope * string * list(TYPE) * TYPE * BOOL
+  declFunctionEntity(s, f, args, return, TRUE()) :- declareStaticFunction(s, f, args, return).
+  declFunctionEntity(s, f, args, return, FALSE()) :- declareFunction(s, f, args, return).
 
   // map syntactic types to semantic types
   typesOfArgs maps typeOfArg(*, list(*)) = list(*)
@@ -114,15 +123,10 @@ rules // function definitions
   // helper function for noDuplicateFunDefs that counts the amount of function with a given name and argument types
   amountOfFunDeclsWithArgs : list((path * (string * TYPE))) * list(TYPE) * int -> int
   amountOfFunDeclsWithArgs([], _, n) = n.
-  amountOfFunDeclsWithArgs([(_, (_, FUNCTION(types, _))) | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, i) :- i #= n + 1.
+  amountOfFunDeclsWithArgs([(_, (_, FUNCTION(types, _, _))) | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, i) :- i #= n + 1.
   amountOfFunDeclsWithArgs([_ | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, n).
 
 rules  // rules and functions for function overloading
-
-  // The last boolean argument indicates whether the function definition needs to be found within the enclosing entity of scope s
-  nameCompatibleFunSigs : scope * string * BOOL -> list((path * (string * TYPE)))
-  nameCompatibleFunSigs(s, f, FALSE()) = resolveFunction(s, f).
-  nameCompatibleFunSigs(s, f, TRUE()) = resolveEntityFunction(s, f).
 
   // function that gets all functions/templates with matching name and compatible argument types
   typeCompatibleSigs : list((path * (string * TYPE))) * list(TYPE) -> list((string * TYPE))
@@ -141,7 +145,7 @@ rules  // rules and functions for function overloading
   // signatures with whether the types are compatible with given argument types
   zipSigsWithTypesCompatible maps zipSigWithTypesCompatible(*, list(*)) = list(*)
   zipSigWithTypesCompatible : list(TYPE) * (string * TYPE) -> (BOOL * (string * TYPE))
-  zipSigWithTypesCompatible(args, f@(_, FUNCTION(funArgs, _))) = (typesCompatible(args, funArgs), f).
+  zipSigWithTypesCompatible(args, f@(_, FUNCTION(funArgs, _, _))) = (typesCompatible(args, funArgs), f).
   zipSigWithTypesCompatible(args, f@(_, TEMPLATE(templArgs))) = (typesCompatible(args, templArgs), f).
 
   // function that prunes the list of compatible signatures
@@ -162,14 +166,14 @@ rules  // rules and functions for function overloading
   // helper function for mostSpecificFunSigs that returns the exactly matching signature
   matchingSigs : list(TYPE) * list((string * TYPE)) -> list((string * TYPE))
   matchingSigs(_, []) = [].
-  matchingSigs(args, [f@(_, FUNCTION(args, _)) | fs]) = [f | matchingSigs(args, fs)].
+  matchingSigs(args, [f@(_, FUNCTION(args, _, _)) | fs]) = [f | matchingSigs(args, fs)].
   matchingSigs(args, [f@(_, TEMPLATE(args))    | fs]) = [f | matchingSigs(args, fs)].
   matchingSigs(args, [_ | fs]) = matchingSigs(args, fs).
 
   // function that computes the total amount of inheritance edges from caller arguments to defined arguments
   inheritanceAmounts maps inheritanceAmount(*, list(*)) = list(*)
   inheritanceAmount : list(TYPE) * (string * TYPE) -> int
-  inheritanceAmount(args, (_, FUNCTION(sigTypes, _))) = inheritanceAmount_helper(args, sigTypes).
+  inheritanceAmount(args, (_, FUNCTION(sigTypes, _, _))) = inheritanceAmount_helper(args, sigTypes).
 
   // helper function for getInheritanceAmount that computers the total amount of inheritance edges
   inheritanceAmount_helper : list(TYPE) * list(TYPE) -> int

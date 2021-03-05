@@ -6,10 +6,16 @@ imports
 signature
 
   constructors // semantic types
-    FUNCTION : list(TYPE) * TYPE -> TYPE // list of arguments and return type
-    ENTITY   : scope             -> TYPE
-    PAGE     : list(TYPE)        -> TYPE
-    TEMPLATE : list(TYPE)        -> TYPE
+
+    // list of argument types, return type
+    // and BOOL that indicates if function is static or not
+    FUNCTION     : list(TYPE) * TYPE * BOOL -> TYPE
+
+    ENTITY       : scope                    -> TYPE
+    STATICENTITY : scope                    -> TYPE
+
+    PAGE         : list(TYPE)               -> TYPE
+    TEMPLATE     : list(TYPE)               -> TYPE
 
     LIST : TYPE -> TYPE
     SET  : TYPE -> TYPE

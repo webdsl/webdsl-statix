@@ -54,7 +54,7 @@ rules // module and import declaration and resolving
 
   resolveMod : scope * string -> list((path * (string * scope)))
   resolveMod(s, m) = mods :-
-    query mod filter e 
+    query mod filter e
               and { m' :- m' == (m, _) }
               min
               and true
@@ -132,8 +132,14 @@ rules // ui declaration and resolving
 rules // function declaration and resolving
 
   declareFunction : scope * string * list(TYPE) * TYPE
-  declareFunction(s, f, args, return) :-
-    !function[(f, new), FUNCTION(args, return)] in s.
+  declareFunction(s, f, args, return) :- declareFunction_internal(s, f, args, return, FALSE()).
+
+  declareStaticFunction : scope * string * list(TYPE) * TYPE
+  declareStaticFunction(s, f, args, return) :- declareFunction_internal(s, f, args, return, TRUE()).
+
+  declareFunction_internal : scope * string * list(TYPE) * TYPE * BOOL
+  declareFunction_internal(s, f, args, return, static) :-
+    !function[(f, new), FUNCTION(args, return, static)] in s.
 
   resolveFunction : scope * string -> list((path * (string * TYPE)))
   resolveFunction(s, f) = dropUniqueIds(ps) :-
@@ -148,7 +154,15 @@ rules // function declaration and resolving
     query function filter EXTEND? (INHERIT EXTEND?)*
                    and { x' :- x' == ((x, _), _) }
                    min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
-                   and { ((f, _), FUNCTION(args, _)), ((f, _), FUNCTION(args, _)) }
+                   and { ((f, _), FUNCTION(args, _, _)), ((f, _), FUNCTION(args, _, _)) }
+                   in s |-> ps.
+
+  resolveStaticEntityFunction : scope * string -> list((path * (string * TYPE)))
+  resolveStaticEntityFunction(s, x) = dropUniqueIds(ps) :-
+    query function filter EXTEND? (INHERIT EXTEND?)*
+                   and { x' :- x' == ((x, _), FUNCTION(_, _, TRUE())) }
+                   min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
+                   and { ((f, _), FUNCTION(args, _, _)), ((f, _), FUNCTION(args, _, _)) }
                    in s |-> ps.
 
 rules // variable declaration and resolving
