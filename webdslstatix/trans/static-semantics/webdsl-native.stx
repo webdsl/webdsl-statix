@@ -56,4 +56,6 @@ rules // typing of native types
   typesOfNativeTypes maps typeOfNativeType(*, list(*)) = list(*)
   typeOfNativeType : scope * NativeType -> TYPE
   typeOfNativeType(s, NativeSimpleType(t)) = typeOfSort(s, SimpleSort(t)).
-  typeOfNativeType(s, NativeGenericType(t, ts)) = typeOfSort(s, GenericSort(t, ts)).
+  typeOfNativeType(s, NativeGenericType("List", [t])) =  LIST(typeOfNativeType(s, t)).
+  typeOfNativeType(s, NativeGenericType("Set", [t])) = SET(typeOfNativeType(s, t)).
+  typeOfNativeType(s, t@NativeGenericType(_, _)) = UNTYPED() :- false | error $[Only lists and sets with one type parameter are supported] @t.
