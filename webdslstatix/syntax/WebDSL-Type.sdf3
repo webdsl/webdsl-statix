@@ -17,6 +17,6 @@ context-free syntax
     }
   >
   TypeProperty.TypeDefAnno = Annotation
-  TypeProperty = NativeClassFunction
+  TypeProperty = NCFunction
   TypeProperty = <static> {reject}
-  TypeProperty = NativeClassFunctionFromStatic
+  TypeProperty = NCFunctionFromStatic

@@ -1,0 +1,59 @@
+module static-semantics/webdsl-native
+
+imports
+  static-semantics/actions/functions
+  static-semantics/webdsl-entities
+  static-semantics/webdsl-types
+  static-semantics/webdsl
+
+rules // native class declaration and resolving
+
+  declareNativeClass : scope * string * scope
+  declareNativeClass(s, c, s_class) :-
+    !entity[(c, new), NATIVECLASS(s_class)] in s,
+    resolveEntity(s, c) == [(_, (_, NATIVECLASS(s_class)))] | error $[Entity or native class [c] is defined multiple times] @c.
+
+rules
+
+  declareNativeClassBuiltIns : scope
+  declareNativeClassBuiltIns(s) :- {s_class}
+    new s_class, s_class -IMPORT-> s,
+    declareNativeClass(s, "Object", s_class).
+
+rules
+
+  defOk(s, NativeClass(c, NCAlias(alias), NCSuper(super), elems)) :- {super' s_super s_class}
+    resolveEntity(s, super) == [(_, (super', NATIVECLASS(s_super)))] | error $[Native class [super] is not defined] @c,
+    new s_class, s_class -INHERIT-> s,
+    noCircularInheritance(s_class) | error $[Circular inhertitance detected] @c,
+    declareNativeClass(s, alias, s_class),
+    declareVar(s, alias, STATICNATIVECLASS(s_class)), // declare class name as global variable that refers to the static scope
+    nativeClassElementsOk(s, s_class, elems),
+    @super.ref := super'.
+
+  nativeClassElementsOk maps nativeClassElementOk(*, *, list(*))
+  nativeClassElementOk : scope * scope * NCElement
+  nativeClassElementOk(s, s_class, NCFunctionElement(NCFunction(NCFunctionStatic(), f, args, NCFunctionReturn(return)))) :- {argTypes returnType}
+    argTypes   == typesOfNativeTypes(s, args),
+    returnType == typeOfNativeType(s, return),
+    declareStaticFunction(s_class, f, argTypes, returnType).
+
+  nativeClassElementOk(s, s_class, NCFunctionElement(NCFunction(NCFunctionStaticNone(), f, args, NCFunctionReturn(return)))) :- {argTypes returnType}
+    argTypes   == typesOfNativeTypes(s, args),
+    returnType == typeOfNativeType(s, return),
+    declareFunction(s_class, f, argTypes, returnType).
+
+rules // typing of expressions
+
+  typeOfEntityFunctionCall(s, NATIVECLASS(s_class), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+    funSigs == resolveStaticEntityFunction(s_class, f).
+
+  typeOfEntityFunctionCall(s, STATICNATIVECLASS(s_class), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+    funSigs == resolveStaticEntityFunction(s_class, f).
+
+rules // typing of native types
+
+  typesOfNativeTypes maps typeOfNativeType(*, list(*)) = list(*)
+  typeOfNativeType : scope * NativeType -> TYPE
+  typeOfNativeType(s, NativeSimpleType(t)) = typeOfSort(s, SimpleSort(t)).
+  typeOfNativeType(s, NativeGenericType(t, ts)) = typeOfSort(s, GenericSort(t, ts)).

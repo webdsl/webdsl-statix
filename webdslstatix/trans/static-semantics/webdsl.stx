@@ -10,6 +10,7 @@ imports
   static-semantics/webdsl-actions
   static-semantics/webdsl-entities
   static-semantics/webdsl-modules
+  static-semantics/webdsl-native
   static-semantics/webdsl-types
   static-semantics/webdsl-ui
 
@@ -221,6 +222,12 @@ rules // declare common rules and mappings
   expOk : scope * Exp
   expOk(s, exp) :- {T}
     typeOfExp(s, exp) == T.
+
+  declareBuiltIns : scope
+  declareBuiltIns(s) :-
+    declareDateBuiltIns(s),
+    declareIntBuiltIns(s),
+    declareNativeClassBuiltIns(s).
 
 rules // typing
 

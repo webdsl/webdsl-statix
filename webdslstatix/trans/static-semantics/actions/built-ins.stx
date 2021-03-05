@@ -5,11 +5,6 @@ imports
 
 rules
 
-  declareBuiltIns : scope
-  declareBuiltIns(s) :-
-    declareDateBuiltIns(s),
-    declareIntBuiltIns(s).
-
   declareDateBuiltIns : scope
   declareDateBuiltIns(s) :-
     declareFunction(s, "now"     , [], DATETIME()),

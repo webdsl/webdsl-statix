@@ -6,46 +6,46 @@ imports
 
 context-free sorts
 
-  NativeClassAlias NativeClassSuper
+  NCAlias NCSuper
 
 context-free syntax
 
   Definition.NativeClass = <
-    native class <QId> <NativeClassAlias> <NativeClassSuper> {
-      <NativeClassElement*>
+    native class <QId> <NCAlias> <NCSuper> {
+      <NCElement*>
     }
   >
-  NativeClassAlias.NativeClassAlias = <as <Id>>
-  NativeClassAlias.NativeClassAliasNone = <>
-  NativeClassSuper.NativeClassSuper = <: <Id>>
-  NativeClassSuper.NativeClassSuperNone = <>
+  NCAlias.NCAlias = <as <Id>>
+  NCAlias.NCAliasNone = <>
+  NCSuper.NCSuper = <: <Id>>
+  NCSuper.NCSuperNone = <>
 
 context-free sorts
 
-  NativeClassElement NativeType NativeClassFunction NativeClassFunctionReturn
-  NativeClassFunctionStatic NativeClassFunctionFromStatic
+  NCElement NativeType NCFunction NCFunctionReturn
+  NCFunctionStatic NCFunctionFromStatic
 
 context-free syntax
 
-  NativeClassElement.NativeClassProperty = <
+  NCElement.NCProperty = <
     <Id> : <NativeType>
   >
-  NativeClassElement = NativeClassFunction
-  NativeClassFunction.NativeClassFunction = <
-    <NativeClassFunctionStatic> <NativeFunId> ( <{NativeType ","}*> ) <NativeClassFunctionReturn>
+  NCElement.NCFunctionElement = NCFunction
+  NCFunction.NCFunction = <
+    <NCFunctionStatic> <NativeFunId> ( <{NativeType ","}*> ) <NCFunctionReturn>
   >
-  NativeClassFunctionReturn.NativeClassFunctionReturn = <: <NativeType>>
-  NativeClassFunctionReturn.NativeClassFunctionReturnNone = <>
-  NativeClassFunctionStatic.NativeClassFunctionStatic = <static>
-  NativeClassFunctionStatic.NativeClassFunctionStaticNone = <>
-  NativeClassFunctionFromStatic.NativeClassFunctionFromStatic = <
-    <QId> as <NativeClassFunction>
+  NCFunctionReturn.NCFunctionReturn = <: <NativeType>>
+  NCFunctionReturn.NCFunctionReturnNone = <>
+  NCFunctionStatic.NCFunctionStatic = <static>
+  NCFunctionStatic.NCFunctionStaticNone = <>
+  NCFunctionFromStatic.NCFunctionFromStatic = <
+    <QId> as <NCFunction>
   >
-  NativeClassElement = NativeClassFunctionFromStatic
-  NativeClassElement.NativeClassConstructor = <
+  NCElement.NCFunctionFromStaticElement = NCFunctionFromStatic
+  NCElement.NCConstructor = <
     constructor ( <{NativeType ","}*> )
   >
-  NativeClassElement.NativeClassConstructorFromStatic = <
+  NCElement.NCConstructorFromStatic = <
     <QId> as constructor ( <{NativeType ","}*> )
   >
   NativeType.NativeGenericType = <<Id> \< <{NativeType ","}*> \>>
@@ -53,7 +53,7 @@ context-free syntax
   NativeType.NativeGenericTypeSet = <{ <{NativeType ","}*> }>
   NativeType.NativeSimpleType = Id
 
-  NativeClassElement = <constructor ( <{NativeType ","}*> ) <NativeClassFunctionReturn>> {reject}
+  NCElement = <constructor ( <{NativeType ","}*> ) <NCFunctionReturn>> {reject}
 
 lexical sorts
 

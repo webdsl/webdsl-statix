@@ -7,3 +7,8 @@ rules
 
   normalize-native : NativeGenericTypeList(x) -> NativeGenericType("List", x)
   normalize-native : NativeGenericTypeSet(x)  -> NativeGenericType("Set", x)
+
+  normalize-native : NCFunctionReturnNone() -> NCFunctionReturn(NativeSimpleType("Void"))
+
+  normalize-native : NativeClass(c, NCAliasNone(), s, elems) -> NativeClass(c, NCAlias(c), s, elems)
+  normalize-native : NativeClass(c, a, NCSuperNone(), elems) -> NativeClass(c, a, NCSuper("Object"), elems)
