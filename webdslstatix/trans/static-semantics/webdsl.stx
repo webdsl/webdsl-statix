@@ -36,7 +36,8 @@ signature
     mod     : string * scope
     import  : string * string
 
-    entity       : (string * scope) * TYPE
+    type         : (string * scope) * TYPE
+
     extendentity : string * scope
 
     page     : (string * scope) * TYPE
@@ -74,20 +75,22 @@ rules // module and import declaration and resolving
                  and true
                  in s |-> imports.
 
-rules // entity declaration and resolving
+rules // type declaration and resolving
 
-  declareEntity : scope * string * scope
-  declareEntity(s, e, s_entity) :-
-    !entity[(e, new), ENTITY(s_entity)] in s,
-    resolveEntity(s, e) == [(_, (_, ENTITY(s_entity)))] | error $[Entity [e] is defined multiple times] @e.
+  declareType : scope * string * TYPE
+  declareType(s, name, t) :-
+    !type[(name, new), t] in s,
+    resolveType(s, name) == [(_, (_, t))] | error $[Type [name] is defined multiple times] @name.
 
-  resolveEntity : scope * string -> list((path * (string * TYPE)))
-  resolveEntity(s, e) = dropUniqueIds(ps) :-
-    query entity filter P* F* EXTEND? INHERIT* IMPORT*
-                 and { e' :- e' == ((e, _), _) }
-                 min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
-                 and { ((_, id), _), ((_, id), _) }
-                 in s |-> ps.
+  resolveType : scope * string -> list((path * (string * TYPE)))
+  resolveType(s, name) = dropUniqueIds(ps) :-
+    query type filter P* F* EXTEND? INHERIT* IMPORT*
+               and { e' :- e' == ((name, _), _) }
+               min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
+               and { ((_, id), _), ((_, id), _) }
+               in s |-> ps.
+
+rules // extend entity declaration
 
   declareExtendEntity : scope * string * scope
   declareExtendEntity(s, e, s_extend) :-

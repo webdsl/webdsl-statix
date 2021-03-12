@@ -10,7 +10,7 @@ rules // entity declaration
 
   // entity x : super { ... }
   defOk(s_global, e@Entity(x, super, bodydecs)) :- {s_entity super' s_super}
-    resolveEntity(s_global, super) == [(_, (super', ENTITY(s_super)))] | error $[Entity [super] is not defined] @super,
+    resolveType(s_global, super) == [(_, (super', ENTITY(s_super)))] | error $[Entity [super] is not defined] @super,
     new s_entity, s_entity -INHERIT-> s_super,
     noCircularInheritance(s_entity) | error $[Circular inhertitance detected] @e,
     declEntity(s_global, s_entity, x, bodydecs),
@@ -31,7 +31,7 @@ rules // entity declaration
     validEntityName(s_entity, entity_name),
     declareExtendEntity(s_global, entity_name, s_entity), // declare entity_scope to be linked to entity_name
     extendEntityScopes(resolveExtendEntity(s_global, entity_name), s_entity),
-    declareEntity(s_global, entity_name, s_entity),
+    declareType(s_global, entity_name, ENTITY(s_entity)),
     declareVar(s_global, entity_name, STATICENTITY(s_entity)), // declare entity_name as global variable that refers to the static scope
     declEntityBody(s_entity, bodydecs).
 
@@ -54,7 +54,7 @@ rules // entity declaration
 
   declExtendEntity : scope * string * list(EntityBodyDeclaration)
   declExtendEntity(s_global, entity_name, bodydecs) :- {s_extend_entity entity_scopes}
-    resolveEntity(s_global, entity_name) == [_] | error $[Entity [entity_name] is not defined],
+    resolveType(s_global, entity_name) == [_] | error $[Entity [entity_name] is not defined],
     new s_extend_entity,
     declareExtendEntity(s_global, entity_name, s_extend_entity), // declare entity_scope to be linked to entity_name
     extendEntityScopes(resolveExtendEntity(s_global, entity_name), s_extend_entity),
@@ -137,7 +137,7 @@ rules // entity body declaration
 rules // entity resolving
 
   typeOfExp(s, exp@ObjectCreation(x, prop_assignments)) = ENTITY(s_entity) :-
-    entityType(s, x) == ENTITY(s_entity),
+    definedType(s, x) == ENTITY(s_entity),
     @exp.type := ENTITY(s_entity).
     // TO-DO: check prop assignments
 

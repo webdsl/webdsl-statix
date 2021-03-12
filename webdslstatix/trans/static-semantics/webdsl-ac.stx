@@ -19,7 +19,7 @@ rules
 
   principalDefOk : scope * string * list(string)
   principalDefOk(s, ent, properties) :- {s_ent credential_types}
-    entityType(s, ent) == ENTITY(s_ent),
+    definedType(s, ent) == ENTITY(s_ent),
     propertyTypes(s_ent, properties) == credential_types,
     compatibleCredentialTypes(properties, credential_types),
     declSecurityContext(s, properties, credential_types).

@@ -179,7 +179,7 @@ rules // map sorts to semantic types
   typeOfSort(_, SimpleSort("Entity")) = ABSTRACTENTITY().
 
   // in case it's not a built in simple sort, it must be an entity
-  typeOfSort(s, SimpleSort(x)) = entityType(s, x).
+  typeOfSort(s, SimpleSort(x)) = definedType(s, x).
 
   typeOfSort(s, GenericSort("List", [innerSort])) = LIST(typeOfSort(s, innerSort)).
   typeOfSort(s, GenericSort(_, _)) = UNTYPED() :- false | error $[Only lists and sets with one type parameter are supported].
@@ -232,10 +232,10 @@ rules // type related expressions
 
 rules // resolve reference types
 
-  entityType : scope * string -> TYPE
-  entityType(s, e) = t :- {e'}
-    resolveEntity(s, e) == [(_, (e', t))|_] | error $[Entity [e] is not defined],
-    @e.ref := e'.
+  definedType : scope * string -> TYPE
+  definedType(s, name) = t :- {name'}
+    resolveType(s, name) == [(_, (name', t))|_] | error $[Type [name] is not defined],
+    @name.ref := name'.
 
   variableType : scope * string -> TYPE
   variableType(s, x) = t :- {x'}
