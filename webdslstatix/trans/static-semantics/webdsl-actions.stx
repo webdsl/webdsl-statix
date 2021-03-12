@@ -15,17 +15,20 @@ rules // statements
   stmtOk(s, s_decl, VarDecl(x, sort), _) :- {t}
     t == typeOfSort(s, sort),
     inequalType(t, UNTYPED()) | error $[Unknown type [sort]] @sort,
-    declareVar(s_decl, x, t).
+    declareVar(s_decl, x, t),
+    @x.type := t.
 
   stmtOk(s, s_decl, VarDeclInit(x, sort, exp), _) :- {t}
     t == typeOfSort(s, sort),
     typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [sort]] @exp,
-    declareVar(s_decl, x, t).
+    declareVar(s_decl, x, t),
+    @x.type := t.
 
   stmtOk(s, s_decl, VarDeclInitInferred(x, exp), _) :- {t}
     t == typeOfExp(s, exp),
     inequalType(t, UNTYPED()) | error $[Unable to infer type of [exp]] @exp,
-    declareVar(s_decl, x, t).
+    declareVar(s_decl, x, t),
+    @x.type := t.
 
   stmtOk(s, _, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a variable].
   stmtOk(s, _, Assignment(Var(x), exp), _) :- {varType}

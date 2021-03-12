@@ -28,7 +28,6 @@ signature
     INT           : TYPE
     FLOAT         : TYPE
     LONG          : TYPE
-    TIMEINTERVAL  : TYPE
 
     // string types
     STRING      : TYPE
@@ -154,7 +153,6 @@ rules // map sorts to semantic types
   typeOfSort(_, SimpleSort("Int")) = INT().
   typeOfSort(_, SimpleSort("Float")) = FLOAT().
   typeOfSort(_, SimpleSort("Long")) = LONG().
-  typeOfSort(_, SimpleSort("TimeInterval")) = TIMEINTERVAL().
 
   typeOfSort(_, SimpleSort("String")) = STRING().
   typeOfSort(_, SimpleSort("Secret")) = SECRET().

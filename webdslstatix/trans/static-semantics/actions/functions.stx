@@ -41,6 +41,21 @@ rules // functions calls
     @f.ref := f',
     @f.type := t.
 
+rules // invoke time interval
+
+  defOk(s, InvokeEvery(exp, TimeInterval(parts))) :-
+    typed(s, exp),
+    timeIntervalPartsOk(s, parts).
+
+  timeIntervalPartsOk maps timeIntervalPartOk(*, list(*))
+  timeIntervalPartOk : scope * TimeIntervalPart
+  timeIntervalPartOk(s, Weeks(exp))        :- typeOfExp(s, exp) == INT().
+  timeIntervalPartOk(s, Days(exp))         :- typeOfExp(s, exp) == INT().
+  timeIntervalPartOk(s, Hours(exp))        :- typeOfExp(s, exp) == INT().
+  timeIntervalPartOk(s, Minutes(exp))      :- typeOfExp(s, exp) == INT().
+  timeIntervalPartOk(s, Seconds(exp))      :- typeOfExp(s, exp) == INT().
+  timeIntervalPartOk(s, Milliseconds(exp)) :- typeOfExp(s, exp) == INT().
+
 rules // function definitions
 
   // global functions
