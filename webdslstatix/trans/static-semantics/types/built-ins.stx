@@ -11,9 +11,10 @@ rules
   declareBuiltInType : scope * string
   declareBuiltInType(s, name) :- {s_type}
     new s_type, s_type -IMPORT-> s,
-    declareExtendEntity(s, name, s_type), // declare entity_scope to be linked to entity_name
+    declareExtendEntity(s, name, s_type), // declare s_type to be linked to type name
     extendEntityScopes(resolveExtendEntity(s, name), s_type),
-    declareType(s, name, BUILTINTYPE(name, s_type)).
+    declareType(s, name, BUILTINTYPE(name, s_type)),
+    declareVar(s, name, STATICBUILTINTYPE(name, s_type)). // declare class name as global variable that refers to the static scope
 
   builtInType : scope * string -> TYPE
   builtInType(s, name) = t :-

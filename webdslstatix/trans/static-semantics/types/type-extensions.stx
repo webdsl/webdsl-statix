@@ -21,12 +21,16 @@ rules
 
   typePropertiesOk maps typePropertyOk(*, *, list(*))
   typePropertyOk : scope * scope * TypeProperty
-  typePropertyOk(s, s_type, TypeFunction(NCFunction(NCFunctionStaticNone(), f, args, NCFunctionReturn(return)))) :- {argTypes returnType}
-    argTypes   == typesOfNativeTypes(s, args),
-    returnType == typeOfNativeType(s, return),
-    declareFunction(s_type, f, argTypes, returnType).
+  typePropertyOk(s, s_type, TypeFunction(function)) :-
+    nativeClassFunctionOk(s, s_type, function).
+
+  typePropertyOk(s, s_type, TypeFunctionFromStatic(NCFunctionFromStatic(_, function))) :-
+    nativeClassFunctionOk(s, s_type, function).
 
 rules // typing of expressions
 
   typeOfEntityFunctionCall(s, BUILTINTYPE(_, s_type), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
     funSigs == resolveEntityFunction(s_type, f).
+
+  typeOfEntityFunctionCall(s, STATICBUILTINTYPE(_, s_type), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+    funSigs == resolveStaticEntityFunction(s_type, f).

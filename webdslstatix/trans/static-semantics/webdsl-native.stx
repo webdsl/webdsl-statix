@@ -31,14 +31,25 @@ rules
     nativeClassElementsOk(s, s_class, elems),
     @super.ref := super'.
 
+rules // native class elements
+
   nativeClassElementsOk maps nativeClassElementOk(*, *, list(*))
   nativeClassElementOk : scope * scope * NCElement
-  nativeClassElementOk(s, s_class, NCFunctionElement(NCFunction(NCFunctionStatic(), f, args, NCFunctionReturn(return)))) :- {argTypes returnType}
+  nativeClassElementOk(s, s_class, NCFunctionElement(function)) :-
+    nativeClassFunctionOk(s, s_class, function).
+
+  nativeClassElementOk(s, s_class, NCFunctionFromStaticElement(NCFunctionFromStatic(_, function))) :-
+    nativeClassFunctionOk(s, s_class, function).
+
+rules // native class functions
+
+  nativeClassFunctionOk : scope * scope * NCFunction
+  nativeClassFunctionOk(s, s_class, NCFunction(NCFunctionStatic(), f, args, NCFunctionReturn(return))) :- {argTypes returnType}
     argTypes   == typesOfNativeTypes(s, args),
     returnType == typeOfNativeType(s, return),
     declareStaticFunction(s_class, f, argTypes, returnType).
 
-  nativeClassElementOk(s, s_class, NCFunctionElement(NCFunction(NCFunctionStaticNone(), f, args, NCFunctionReturn(return)))) :- {argTypes returnType}
+  nativeClassFunctionOk(s, s_class, NCFunction(NCFunctionStaticNone(), f, args, NCFunctionReturn(return))) :- {argTypes returnType}
     argTypes   == typesOfNativeTypes(s, args),
     returnType == typeOfNativeType(s, return),
     declareFunction(s_class, f, argTypes, returnType).

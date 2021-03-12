@@ -29,6 +29,7 @@ signature
 
     // built-in types such as Int, String, DateTime, etc.
     BUILTINTYPE : string * scope -> TYPE
+    STATICBUILTINTYPE : string * scope -> TYPE
 
     PLACEHOLDER : TYPE
     REGEX            : TYPE
