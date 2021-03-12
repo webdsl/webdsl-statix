@@ -1,6 +1,8 @@
 module static-semantics/actions/functions
 
 imports
+  static-semantics/types/built-ins
+
   static-semantics/webdsl-actions
   static-semantics/webdsl-entities
   static-semantics/webdsl-types
@@ -49,12 +51,12 @@ rules // invoke time interval
 
   timeIntervalPartsOk maps timeIntervalPartOk(*, list(*))
   timeIntervalPartOk : scope * TimeIntervalPart
-  timeIntervalPartOk(s, Weeks(exp))        :- typeOfExp(s, exp) == INT().
-  timeIntervalPartOk(s, Days(exp))         :- typeOfExp(s, exp) == INT().
-  timeIntervalPartOk(s, Hours(exp))        :- typeOfExp(s, exp) == INT().
-  timeIntervalPartOk(s, Minutes(exp))      :- typeOfExp(s, exp) == INT().
-  timeIntervalPartOk(s, Seconds(exp))      :- typeOfExp(s, exp) == INT().
-  timeIntervalPartOk(s, Milliseconds(exp)) :- typeOfExp(s, exp) == INT().
+  timeIntervalPartOk(s, Weeks(exp))        :- typeOfExp(s, exp) == int(s).
+  timeIntervalPartOk(s, Days(exp))         :- typeOfExp(s, exp) == int(s).
+  timeIntervalPartOk(s, Hours(exp))        :- typeOfExp(s, exp) == int(s).
+  timeIntervalPartOk(s, Minutes(exp))      :- typeOfExp(s, exp) == int(s).
+  timeIntervalPartOk(s, Seconds(exp))      :- typeOfExp(s, exp) == int(s).
+  timeIntervalPartOk(s, Milliseconds(exp)) :- typeOfExp(s, exp) == int(s).
 
 rules // function definitions
 

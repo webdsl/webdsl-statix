@@ -1,6 +1,8 @@
 module static-semantics/ui/attributes
 
 imports
+  static-semantics/types/built-ins
+
   static-semantics/webdsl-types
   static-semantics/webdsl
 
@@ -35,11 +37,11 @@ rules // attributes
   attributeOk(s, AttributeExpandLocal(_, _, _)) :- false | error $[Expand attributes not implemented yet]. // TO-DO
   attributeOk(s, Attribute(_, exp)) :- typed(s, exp).
   attributeOk(s, XMLAttributesIf(c, attributes)) :-
-    equalType(typeOfExp(s, c), BOOL()) | error $[Condition should be of type bool] @c,
+    equalType(typeOfExp(s, c), bool(s)) | error $[Condition should be of type bool] @c,
     attributesOk(s, attributes).
 
   attributeOk(s, XMLAttributesIfElse(c, attributes_if, attributes_else)) :-
-    equalType(typeOfExp(s, c), BOOL()) | error $[Condition should be of type bool] @c,
+    equalType(typeOfExp(s, c), bool(s)) | error $[Condition should be of type bool] @c,
     attributesOk(s, attributes_if),
     attributesOk(s, attributes_else).
 
@@ -47,20 +49,20 @@ rules // attributes
   attributeOk(s, CommonAttribute2Attribute(AllAttributesExceptExp(exp))) :- {t}
     t == typeOfExp(s, exp),
     equalB(TRUE(), orB(
-      typeCompatibleB(STRING(), t),
+      typeCompatibleB(string(s), t),
       orB(
-        typeCompatibleB(LIST(STRING()), t),
-        typeCompatibleB(SET(STRING()), t)
+        typeCompatibleB(LIST(string(s)), t),
+        typeCompatibleB(SET(string(s)), t)
       )
     )) | error $[Attribute names should be of type String, List of String of Set of String, but type [t] given] @exp.
 
   attributeOk(s, CommonAttribute2Attribute(AttributesExp(exp))) :- {t}
     t == typeOfExp(s, exp),
     equalB(TRUE(), orB(
-      typeCompatibleB(STRING(), t),
+      typeCompatibleB(string(s), t),
       orB(
-        typeCompatibleB(LIST(STRING()), t),
-        typeCompatibleB(SET(STRING()), t)
+        typeCompatibleB(LIST(string(s)), t),
+        typeCompatibleB(SET(string(s)), t)
       )
     )) | error $[Attribute names should be of type String, List of String of Set of String, but type [t] given] @exp.
 

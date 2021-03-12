@@ -1,6 +1,8 @@
 module static-semantics/webdsl-types
 
 imports
+  static-semantics/types/built-ins
+
   static-semantics/webdsl
 
 signature
@@ -24,36 +26,13 @@ signature
     SET  : TYPE -> TYPE
     REF  : TYPE -> TYPE
 
-    // numeric types
-    INT           : TYPE
-    FLOAT         : TYPE
-    LONG          : TYPE
+    // built-in types such as Int, String, DateTime, etc.
+    BUILTINTYPE : string * scope -> TYPE
 
-    // string types
-    STRING      : TYPE
-    SECRET      : TYPE
-    EMAIL       : TYPE
-    URL         : TYPE
-    WIKITEXT    : TYPE
-    TEXT        : TYPE
-    PATCH       : TYPE
     PLACEHOLDER : TYPE
-
-    // time types
-    DATE      : TYPE
-    DATETIME  : TYPE
-    TIME      : TYPE
-
-    // other
     REGEX            : TYPE
-    BOOL             : TYPE
     VOID             : TYPE
-    UUID             : TYPE
     TEMPLATEELEMENTS : TYPE
-    FILE             : TYPE
-    IMAGE            : TYPE
-    OBJECT           : TYPE
-
     NULL            : TYPE
     ABSTRACTENTITY  : TYPE
     UNTYPED         : TYPE
@@ -63,24 +42,30 @@ rules // types of constant expressions
   typeOfExp(_, exp@Null()) = NULL() :-
     @exp.type := NULL().
 
-  typeOfExp(_, Const(exp@Int(_))) = INT() :-
-    @exp.type := INT().
+  typeOfExp(s, Const(exp@Int(_))) = t :-
+    t == int(s),
+    @exp.type := t.
 
-  typeOfExp(_, Const(exp@Long(_))) = LONG() :-
-    @exp.type := LONG().
+  typeOfExp(s, Const(exp@Long(_))) = t :-
+    t == long(s),
+    @exp.type := t.
 
-  typeOfExp(_, Const(exp@Float(_))) = FLOAT() :-
-    @exp.type := FLOAT().
+  typeOfExp(s, Const(exp@Float(_))) = t :-
+    t == float(s),
+    @exp.type := t.
 
-  typeOfExp(_, exp@True()) = BOOL() :-
-    @exp.type := BOOL().
+  typeOfExp(s, exp@True()) = t :-
+    t == bool(s),
+    @exp.type := t.
 
-  typeOfExp(_, exp@False()) = BOOL() :-
-    @exp.type := BOOL().
+  typeOfExp(s, exp@False()) = t :-
+    t == bool(s),
+    @exp.type := t.
 
-  typeOfExp(s, Const(exp@StringConst(String(parts)))) = STRING() :-
+  typeOfExp(s, Const(exp@StringConst(String(parts)))) = t :-
+    t == string(s),
     stringPartsOk(s, parts),
-    @exp.type := STRING().
+    @exp.type := t.
 
   stringPartsOk maps stringPartOk(*, list(*))
   stringPartOk : scope * StringPart
@@ -92,23 +77,23 @@ rules // types of constant expressions
 rules // type compatibility of constants
 
   // numeric types
-  typeCompatibleB(LONG(), INT()) = TRUE().
-  typeCompatibleB(INT(), LONG()) = TRUE().
+  typeCompatibleB(BUILTINTYPE("Long", _), BUILTINTYPE("Int", _)) = TRUE().
+  typeCompatibleB(BUILTINTYPE("Int", _), BUILTINTYPE("Long", _)) = TRUE().
 
   // string types
-  typeCompatibleB(STRING(), T2)      = isStringCompatibleTypeB(T2).
-  typeCompatibleB(SECRET(), T2)      = isStringCompatibleTypeB(T2).
-  typeCompatibleB(EMAIL(), T2)       = isStringCompatibleTypeB(T2).
-  typeCompatibleB(URL(), T2)         = isStringCompatibleTypeB(T2).
-  typeCompatibleB(WIKITEXT(), T2)    = isStringCompatibleTypeB(T2).
-  typeCompatibleB(TEXT(), T2)        = isStringCompatibleTypeB(T2).
-  typeCompatibleB(PATCH(), T2)       = isStringCompatibleTypeB(T2).
-  typeCompatibleB(PLACEHOLDER(), T2) = isStringCompatibleTypeB(T2).
+  typeCompatibleB(BUILTINTYPE("String", _), T2)      = isStringCompatibleTypeB(T2).
+  typeCompatibleB(BUILTINTYPE("Secret", _), T2)      = isStringCompatibleTypeB(T2).
+  typeCompatibleB(BUILTINTYPE("Email", _), T2)       = isStringCompatibleTypeB(T2).
+  typeCompatibleB(BUILTINTYPE("URL", _), T2)         = isStringCompatibleTypeB(T2).
+  typeCompatibleB(BUILTINTYPE("WikiText", _), T2)    = isStringCompatibleTypeB(T2).
+  typeCompatibleB(BUILTINTYPE("Text", _), T2)        = isStringCompatibleTypeB(T2).
+  typeCompatibleB(BUILTINTYPE("Patch", _), T2)       = isStringCompatibleTypeB(T2).
+  typeCompatibleB(BUILTINTYPE("Placeholder", _), T2) = isStringCompatibleTypeB(T2).
 
   // date types
-  typeCompatibleB(DATE(), T2)     = isDateCompatibleTypeB(T2).
-  typeCompatibleB(DATETIME(), T2) = isDateCompatibleTypeB(T2).
-  typeCompatibleB(TIME(), T2)     = isDateCompatibleTypeB(T2).
+  typeCompatibleB(BUILTINTYPE("Date", _), T2)     = isDateCompatibleTypeB(T2).
+  typeCompatibleB(BUILTINTYPE("DateTime", _), T2) = isDateCompatibleTypeB(T2).
+  typeCompatibleB(BUILTINTYPE("Time", _), T2)     = isDateCompatibleTypeB(T2).
 
   // misc
   typeCompatibleB(LIST(T1), LIST(T2)) = typeCompatibleB(T1, T2).
@@ -121,23 +106,23 @@ rules // utils
   isDateCompatibleType(t) :- isDateCompatibleTypeB(t) == TRUE().
 
   isDateCompatibleTypeB : TYPE -> BOOL
-  isDateCompatibleTypeB(_)          = FALSE().
-  isDateCompatibleTypeB(DATE())     = TRUE().
-  isDateCompatibleTypeB(DATETIME()) = TRUE().
-  isDateCompatibleTypeB(TIME())     = TRUE().
+  isDateCompatibleTypeB(_)                          = FALSE().
+  isDateCompatibleTypeB(BUILTINTYPE("Date", _))     = TRUE().
+  isDateCompatibleTypeB(BUILTINTYPE("DateTime", _)) = TRUE().
+  isDateCompatibleTypeB(BUILTINTYPE("Time", _))     = TRUE().
 
   isStringCompatibleType : TYPE
   isStringCompatibleType(t) :- isStringCompatibleTypeB(t) == TRUE().
 
   isStringCompatibleTypeB : TYPE -> BOOL
   isStringCompatibleTypeB(_)             = FALSE().
-  isStringCompatibleTypeB(STRING())      = TRUE().
-  isStringCompatibleTypeB(SECRET())      = TRUE().
-  isStringCompatibleTypeB(EMAIL())       = TRUE().
-  isStringCompatibleTypeB(URL())         = TRUE().
-  isStringCompatibleTypeB(WIKITEXT())    = TRUE().
-  isStringCompatibleTypeB(TEXT())        = TRUE().
-  isStringCompatibleTypeB(PATCH())       = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("String", _))      = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("Secret", _))      = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("Email", _))       = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("URL", _))         = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("WikiText", _))    = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("Text", _))        = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("Patch", _))       = TRUE().
   isStringCompatibleTypeB(PLACEHOLDER()) = TRUE().
 
 rules // map sorts to semantic types
@@ -150,31 +135,30 @@ rules // map sorts to semantic types
   typesOfSorts maps typeOfSort(*, list(*)) = list(*)
   typeOfSort : scope * Sort -> TYPE
   typeOfSort(_, _) = UNTYPED(). // untyped by default
-  typeOfSort(_, SimpleSort("Int")) = INT().
-  typeOfSort(_, SimpleSort("Float")) = FLOAT().
-  typeOfSort(_, SimpleSort("Long")) = LONG().
+  typeOfSort(s, SimpleSort("Int")) = int(s).
+  typeOfSort(s, SimpleSort("Float")) = float(s).
+  typeOfSort(s, SimpleSort("Long")) = long(s).
 
-  typeOfSort(_, SimpleSort("String")) = STRING().
-  typeOfSort(_, SimpleSort("Secret")) = SECRET().
-  typeOfSort(_, SimpleSort("Email")) = EMAIL().
-  typeOfSort(_, SimpleSort("URL")) = URL().
-  typeOfSort(_, SimpleSort("WikiText")) = WIKITEXT().
-  typeOfSort(_, SimpleSort("Text")) = TEXT().
-  typeOfSort(_, SimpleSort("Patch")) = PATCH().
+  typeOfSort(s, SimpleSort("String")) = string(s).
+  typeOfSort(s, SimpleSort("Secret")) = secret(s).
+  typeOfSort(s, SimpleSort("Email")) = email(s).
+  typeOfSort(s, SimpleSort("URL")) = url(s).
+  typeOfSort(s, SimpleSort("WikiText")) = wikitext(s).
+  typeOfSort(s, SimpleSort("Text")) = text(s).
+  typeOfSort(s, SimpleSort("Patch")) = patch(s).
   typeOfSort(_, SimpleSort("Placeholder")) = PLACEHOLDER().
 
-  typeOfSort(_, SimpleSort("Date")) = DATE().
-  typeOfSort(_, SimpleSort("DateTime")) = DATETIME().
-  typeOfSort(_, SimpleSort("Time")) = TIME().
+  typeOfSort(s, SimpleSort("Date")) = date(s).
+  typeOfSort(s, SimpleSort("DateTime")) = datetime(s).
+  typeOfSort(s, SimpleSort("Time")) = time(s).
 
   typeOfSort(_, SimpleSort("Regex")) = REGEX().
-  typeOfSort(_, SimpleSort("Bool")) = BOOL().
+  typeOfSort(s, SimpleSort("Bool")) = bool(s).
   typeOfSort(_, SimpleSort("Void")) = VOID().
-  typeOfSort(_, SimpleSort("UUID")) = UUID().
+  typeOfSort(s, SimpleSort("UUID")) = uuid(s).
   typeOfSort(_, SimpleSort("TemplateElements")) = TEMPLATEELEMENTS().
-  typeOfSort(_, SimpleSort("File")) = FILE().
-  typeOfSort(_, SimpleSort("Image")) = IMAGE().
-  typeOfSort(_, SimpleSort("Object")) = OBJECT().
+  typeOfSort(s, SimpleSort("File")) = file(s).
+  typeOfSort(s, SimpleSort("Image")) = image(s).
 
   typeOfSort(_, SimpleSort("Entity")) = ABSTRACTENTITY().
 
@@ -192,30 +176,29 @@ rules // WebDSL definition of being a simple type: built-in simple sort (no gene
   isSimpleType: TYPE -> BOOL
   isSimpleType(_) = FALSE(). // not a simple type by default
 
-  isSimpleType(INT()) = TRUE().
-  isSimpleType(FLOAT()) = TRUE().
-  isSimpleType(LONG()) = TRUE().
+  isSimpleType(BUILTINTYPE("Int", _)) = TRUE().
+  isSimpleType(BUILTINTYPE("Float", _)) = TRUE().
+  isSimpleType(BUILTINTYPE("Long", _)) = TRUE().
 
-  isSimpleType(STRING()) = TRUE().
-  isSimpleType(SECRET()) = TRUE().
-  isSimpleType(EMAIL()) = TRUE().
-  isSimpleType(URL()) = TRUE().
-  isSimpleType(WIKITEXT()) = TRUE().
-  isSimpleType(TEXT()) = TRUE().
-  isSimpleType(PATCH()) = TRUE().
+  isSimpleType(BUILTINTYPE("String", _)) = TRUE().
+  isSimpleType(BUILTINTYPE("Secret", _)) = TRUE().
+  isSimpleType(BUILTINTYPE("Email", _)) = TRUE().
+  isSimpleType(BUILTINTYPE("URL", _)) = TRUE().
+  isSimpleType(BUILTINTYPE("WikiText", _)) = TRUE().
+  isSimpleType(BUILTINTYPE("Text", _)) = TRUE().
+  isSimpleType(BUILTINTYPE("Patch", _)) = TRUE().
   isSimpleType(PLACEHOLDER()) = TRUE().
 
-  isSimpleType(DATE()) = TRUE().
-  isSimpleType(DATETIME()) = TRUE().
-  isSimpleType(TIME()) = TRUE().
+  isSimpleType(BUILTINTYPE("Date", _)) = TRUE().
+  isSimpleType(BUILTINTYPE("DateTime", _)) = TRUE().
+  isSimpleType(BUILTINTYPE("Time", _)) = TRUE().
 
   isSimpleType(REGEX()) = TRUE().
-  isSimpleType(BOOL()) = TRUE().
+  isSimpleType(BUILTINTYPE("Bool", _)) = TRUE().
   isSimpleType(VOID()) = TRUE().
-  isSimpleType(UUID()) = TRUE().
-  isSimpleType(FILE()) = TRUE().
-  isSimpleType(IMAGE()) = TRUE().
-  isSimpleType(OBJECT()) = TRUE().
+  isSimpleType(BUILTINTYPE("UUID", _)) = TRUE().
+  isSimpleType(BUILTINTYPE("File", _)) = TRUE().
+  isSimpleType(BUILTINTYPE("Image", _)) = TRUE().
 
   isSimpleType(NULL()) = TRUE().
 
@@ -226,7 +209,7 @@ rules // type related expressions
     t' == typeOfSortTyped(s, sort),
     or(typeCompatibleB(t, t'), typeCompatibleB(t', t)) | error $[Type [t] cannot be cast to [t']].
 
-  typeOfExp(s, IsA(exp, sort)) = BOOL() :- {t t'}
+  typeOfExp(s, IsA(exp, sort)) = bool(s) :- {t t'}
     t  == typeOfExpTyped(s, exp),
     t' == typeOfSortTyped(s, sort).
 

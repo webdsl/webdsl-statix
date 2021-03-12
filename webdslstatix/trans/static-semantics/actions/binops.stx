@@ -1,6 +1,8 @@
 module static-semantics/actions/binops
 
 imports
+  static-semantics/types/built-ins
+
   static-semantics/webdsl-types
   static-semantics/webdsl
 
@@ -46,84 +48,93 @@ rules // binary operators
     @exp.type := T.
 
   // (e1 > e2)
-  typeOfExp(s, exp@LargerThan(e1, e2)) = BOOL() :- {T1 T2}
+  typeOfExp(s, exp@LargerThan(e1, e2)) = t :- {T1 T2}
+    t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]],
-    @exp.type := BOOL().
+    @exp.type := t.
 
   // (e1 >= e2)
-  typeOfExp(s, exp@LargerThanOrEqual(e1, e2)) = BOOL() :- {T1 T2}
+  typeOfExp(s, exp@LargerThanOrEqual(e1, e2)) = t :- {T1 T2}
+    t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]],
-    @exp.type := BOOL().
+    @exp.type := t.
 
   // (e1 < e2)
-  typeOfExp(s, exp@SmallerThan(e1, e2)) = BOOL() :- {T1 T2}
+  typeOfExp(s, exp@SmallerThan(e1, e2)) = t :- {T1 T2}
+    t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]],
-    @exp.type := BOOL().
+    @exp.type := t.
 
   // (e1 <= e2)
-  typeOfExp(s, exp@SmallerThanOrEqual(e1, e2)) = BOOL() :- {T1 T2}
+  typeOfExp(s, exp@SmallerThanOrEqual(e1, e2)) = t :- {T1 T2}
+    t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1],[e2] has type [T2]],
-    @exp.type := BOOL().
+    @exp.type := t.
 
   // (e1 && e2)
-  typeOfExp(s, exp@And(e1, e2)) = BOOL() :- {T1 T2}
-    typeOfExp(s, e1) == T1, T1 == BOOL() | error $[Wrong operand types for operator And: [e1] has type [T1]],
-    typeOfExp(s, e2) == T2, T2 == BOOL() | error $[Wrong operand types for operator And: [e2] has type [T2]],
-    @exp.type := BOOL().
+  typeOfExp(s, exp@And(e1, e2)) = t :- {T1 T2}
+    t == bool(s),
+    typeOfExp(s, e1) == T1, T1 == t | error $[Wrong operand types for operator And: [e1] has type [T1]],
+    typeOfExp(s, e2) == T2, T2 == t | error $[Wrong operand types for operator And: [e2] has type [T2]],
+    @exp.type := t.
 
   // (e1 || e2)
-  typeOfExp(s, exp@Or(e1, e2)) = BOOL() :- {T1 T2}
-    typeOfExp(s, e1) == T1, T1 == BOOL() | error $[Wrong operand types for operator And: [e1] has type [T1]],
-    typeOfExp(s, e2) == T2, T2 == BOOL() | error $[Wrong operand types for operator And: [e2] has type [T2]],
-    @exp.type := BOOL().
+  typeOfExp(s, exp@Or(e1, e2)) = t :- {T1 T2}
+    t == bool(s),
+    typeOfExp(s, e1) == T1, T1 == t | error $[Wrong operand types for operator And: [e1] has type [T1]],
+    typeOfExp(s, e2) == T2, T2 == t | error $[Wrong operand types for operator And: [e2] has type [T2]],
+    @exp.type := t.
 
   // (e1 == e2)
-  typeOfExp(s, exp@Eq(e1, e2)) = BOOL() :- {T1 T2}
+  typeOfExp(s, exp@Eq(e1, e2)) = t :- {T1 T2}
+    t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     orB(
       typeCompatibleB(T1, T2),
       typeCompatibleB(T2, T1)
     ) == TRUE() | error $[Wrong operand types for operator Eq: [e1] has type [T1],[e2] has type [T2]],
-    @exp.type := BOOL().
+    @exp.type := t.
 
   // (e1 != e2)
-  typeOfExp(s, exp@NotEq(e1, e2)) = BOOL() :- {T1 T2}
+  typeOfExp(s, exp@NotEq(e1, e2)) = t :- {T1 T2}
+    t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     orB(
       typeCompatibleB(T1, T2),
       typeCompatibleB(T2, T1)
     ) == TRUE() | error $[Wrong operand types for operator NotEq: [e1] has type [T1],[e2] has type [T2]],
-    @exp.type := BOOL().
+    @exp.type :=t.
 
 rules // unary operators
 
   // (!e)
-  typeOfExp(s, exp@Not(e)) = BOOL() :- {T}
+  typeOfExp(s, exp@Not(e)) = t :- {T}
+    t == bool(s),
     typeOfExp(s, e) == T,
-    T == BOOL() | error $[Wrong operand type for operator Not: [e] has type [T]],
-    @exp.type := BOOL().
+    T == t | error $[Wrong operand type for operator Not: [e] has type [T]],
+    @exp.type := t.
 
 rules // utils
 
   lubForAdd : TYPE * TYPE -> TYPE
   lubForAdd(T1, T2) = equalNumericType(T1, T2).
-  lubForAdd(STRING(), _) = STRING().
-  lubForAdd(_, STRING()) = STRING().
+  lubForAdd(t@BUILTINTYPE("String", _), _) = t.
+  lubForAdd(_, t@BUILTINTYPE("String", _)) = t.
 
   equalNumericType : TYPE * TYPE -> TYPE
   equalNumericType(_, _) = UNTYPED().
-  equalNumericType(INT(), INT()) = INT().
-  equalNumericType(INT(), LONG()) = LONG().
-  equalNumericType(LONG(), INT()) = LONG().
-  equalNumericType(LONG(), LONG()) = LONG().
-  equalNumericType(FLOAT(), FLOAT()) = FLOAT().
+  equalNumericType(t@BUILTINTYPE("Int", _), BUILTINTYPE("Int", _)) = int.
+  equalNumericType(BUILTINTYPE("Int", _), t@BUILTINTYPE("Long", _)) = t.
+  equalNumericType(t@BUILTINTYPE("Long", _), BUILTINTYPE("Int", _)) = t.
+  equalNumericType(t@BUILTINTYPE("Long", _), BUILTINTYPE("Long", _)) = t.
+  equalNumericType(t@BUILTINTYPE("Float", _), BUILTINTYPE("Float", _)) = t.

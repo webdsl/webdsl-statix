@@ -6,6 +6,9 @@ imports
   static-semantics/actions/binops
   static-semantics/actions/built-ins
   static-semantics/actions/functions
+
+  static-semantics/types/built-ins
+
   static-semantics/webdsl-ac
   static-semantics/webdsl-actions
   static-semantics/webdsl-entities
@@ -230,7 +233,8 @@ rules // declare common rules and mappings
   declareBuiltIns(s) :-
     declareDateBuiltIns(s),
     declareIntBuiltIns(s),
-    declareNativeClassBuiltIns(s).
+    declareNativeClassBuiltIns(s),
+    declareTypeBuiltIns(s).
 
 rules // typing
 

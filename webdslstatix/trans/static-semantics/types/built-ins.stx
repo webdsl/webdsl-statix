@@ -1,0 +1,83 @@
+module static-semantics/types/built-ins
+
+imports
+  static-semantics/webdsl-native
+  static-semantics/webdsl-types
+  static-semantics/webdsl
+
+rules
+
+  declareBuiltInType : scope * string
+  declareBuiltInType(s, name) :-
+    declareType(s, name, BUILTINTYPE(name, new)).
+
+  builtInType : scope * string -> TYPE
+  builtInType(s, name) = t :-
+    resolveType(s, name) == [(_, (_, t@BUILTINTYPE(name, _)))] | error $[Built-in type [name] does not exist].
+
+rules
+
+  int   : scope -> TYPE
+  int(s)   = builtInType(s, "Int").
+  float : scope -> TYPE
+  float(s) = builtInType(s, "Float").
+  long  : scope -> TYPE
+  long(s)  = builtInType(s, "Long").
+
+  string   : scope -> TYPE
+  string(s)   = builtInType(s, "String").
+  secret   : scope -> TYPE
+  secret(s)   = builtInType(s, "Secret").
+  email    : scope -> TYPE
+  email(s)    = builtInType(s, "Email").
+  url      : scope -> TYPE
+  url(s)      = builtInType(s, "URL").
+  wikitext : scope -> TYPE
+  wikitext(s) = builtInType(s, "WikiText").
+  text     : scope -> TYPE
+  text(s)     = builtInType(s, "Text").
+  patch    : scope -> TYPE
+  patch(s)    = builtInType(s, "Patch").
+
+  date     : scope -> TYPE
+  date(s)     = builtInType(s, "Date").
+  datetime : scope -> TYPE
+  datetime(s) = builtInType(s, "DateTime").
+  time     : scope -> TYPE
+  time(s)     = builtInType(s, "Time").
+
+  bool  : scope -> TYPE
+  bool(s)  = builtInType(s, "Bool").
+  uuid  : scope -> TYPE
+  uuid(s)  = builtInType(s, "UUID").
+  file  : scope -> TYPE
+  file(s)  = builtInType(s, "File").
+  image : scope -> TYPE
+  image(s) = builtInType(s, "Image").
+
+  declareTypeBuiltIns : scope
+  declareTypeBuiltIns(s) :-
+    // numeric types
+    declareBuiltInType(s, "Int"),
+    declareBuiltInType(s, "Float"),
+    declareBuiltInType(s, "Long"),
+
+    // string types
+    declareBuiltInType(s, "String"),
+    declareBuiltInType(s, "Secret"),
+    declareBuiltInType(s, "Email"),
+    declareBuiltInType(s, "URL"),
+    declareBuiltInType(s, "WikiText"),
+    declareBuiltInType(s, "Text"),
+    declareBuiltInType(s, "Patch"),
+
+    // date types
+    declareBuiltInType(s, "Date"),
+    declareBuiltInType(s, "DateTime"),
+    declareBuiltInType(s, "Time"),
+
+    // misc
+    declareBuiltInType(s, "Bool"),
+    declareBuiltInType(s, "UUID"),
+    declareBuiltInType(s, "File"),
+    declareBuiltInType(s, "Image").

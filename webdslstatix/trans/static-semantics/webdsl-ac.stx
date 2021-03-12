@@ -1,6 +1,8 @@
 module static-semantics/webdsl-ac
 
 imports
+  static-semantics/types/built-ins
+
   static-semantics/webdsl-actions
   static-semantics/webdsl-entities
   static-semantics/webdsl-types
@@ -35,16 +37,16 @@ rules
     declProperties(s_principal, properties, types),
     new s_security_context,
     declProperty(s_security_context, "principal", ENTITY(s_principal)),
-    declProperty(s_security_context, "loggedIn", BOOL()),
+    declProperty(s_security_context, "loggedIn", bool(s)),
     declareVar(s, "securityContext", ENTITY(s_security_context)).
 
   acDefOk(s, Rule(AccessControlRule(_, _, _, exp, nested))) :-
     // TO-DO: check correct reference using type and match id
     nestedAcRulesOk(s, nested),
-    equalType(typeOfExp(s, exp), BOOL()) | error $[Rule should result in a boolean expression] @exp.
+    equalType(typeOfExp(s, exp), bool(s)) | error $[Rule should result in a boolean expression] @exp.
 
   acDefOk(s, Rule(SpecialAccessControlRule(exp))) :-
-    equalType(typeOfExp(s, exp), BOOL()) | error $[Rule should result in a boolean expression] @exp.
+    equalType(typeOfExp(s, exp), bool(s)) | error $[Rule should result in a boolean expression] @exp.
 
   nestedAcRulesOk maps nestedAcRuleOk(*, list(*))
   nestedAcRuleOk : scope * AccessControlRule

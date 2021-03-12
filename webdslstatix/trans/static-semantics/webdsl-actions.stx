@@ -3,6 +3,9 @@ module static-semantics/webdsl-actions
 imports
   static-semantics/actions/binops
   static-semantics/actions/functions
+
+  static-semantics/types/built-ins
+
   static-semantics/webdsl-entities
   static-semantics/webdsl-types
   static-semantics/webdsl
@@ -36,7 +39,7 @@ rules // statements
     equalType(varType, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [varType]].
 
   stmtOk(s, _, If(c, Block(then), Block(else)), rt) :- {s_then s_else}
-    equalType(typeOfExp(s, c), BOOL()) | error $[Condition should be of type bool] @c,
+    equalType(typeOfExp(s, c), bool(s)) | error $[Condition should be of type bool] @c,
     new s_then, s_then -P-> s,
     stmtsOk(s_then, then, rt),
     new s_else, s_else -P-> s,
