@@ -1,0 +1,32 @@
+module static-semantics/types/type-extensions
+
+imports
+  static-semantics/actions/functions
+
+  static-semantics/types/built-ins
+
+  static-semantics/webdsl-entities
+  static-semantics/webdsl-native
+  static-semantics/webdsl-types
+  static-semantics/webdsl
+
+rules
+
+  defOk(s, TypeDef(name, defs)) :- {s_type}
+    builtInType(s, name) == BUILTINTYPE(name, _) | error $[Type [name] is not a built-in type],
+    new s_type,
+    declareExtendEntity(s, name, s_type), // declare s_type to be linked to other scopes from type name
+    extendEntityScopes(resolveExtendEntity(s, name), s_type),
+    typePropertiesOk(s, s_type, defs).
+
+  typePropertiesOk maps typePropertyOk(*, *, list(*))
+  typePropertyOk : scope * scope * TypeProperty
+  typePropertyOk(s, s_type, TypeFunction(NCFunction(NCFunctionStaticNone(), f, args, NCFunctionReturn(return)))) :- {argTypes returnType}
+    argTypes   == typesOfNativeTypes(s, args),
+    returnType == typeOfNativeType(s, return),
+    declareFunction(s_type, f, argTypes, returnType).
+
+rules // typing of expressions
+
+  typeOfEntityFunctionCall(s, BUILTINTYPE(_, s_type), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+    funSigs == resolveEntityFunction(s_type, f).

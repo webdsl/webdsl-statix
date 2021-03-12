@@ -1,6 +1,7 @@
 module static-semantics/types/built-ins
 
 imports
+  static-semantics/webdsl-entities
   static-semantics/webdsl-native
   static-semantics/webdsl-types
   static-semantics/webdsl
@@ -8,8 +9,11 @@ imports
 rules
 
   declareBuiltInType : scope * string
-  declareBuiltInType(s, name) :-
-    declareType(s, name, BUILTINTYPE(name, new)).
+  declareBuiltInType(s, name) :- {s_type}
+    new s_type, s_type -IMPORT-> s,
+    declareExtendEntity(s, name, s_type), // declare entity_scope to be linked to entity_name
+    extendEntityScopes(resolveExtendEntity(s, name), s_type),
+    declareType(s, name, BUILTINTYPE(name, s_type)).
 
   builtInType : scope * string -> TYPE
   builtInType(s, name) = t :-

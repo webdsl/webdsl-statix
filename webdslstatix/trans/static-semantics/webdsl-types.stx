@@ -2,6 +2,7 @@ module static-semantics/webdsl-types
 
 imports
   static-semantics/types/built-ins
+  static-semantics/types/type-extensions
 
   static-semantics/webdsl
 
@@ -173,34 +174,12 @@ rules // map sorts to semantic types
 
 rules // WebDSL definition of being a simple type: built-in simple sort (no generics, no ref, no entity etc)
 
-  isSimpleType: TYPE -> BOOL
-  isSimpleType(_) = FALSE(). // not a simple type by default
+  isBuiltInType : TYPE
+  isBuiltInType(t) :- isBuiltInTypeB(t) == TRUE().
 
-  isSimpleType(BUILTINTYPE("Int", _)) = TRUE().
-  isSimpleType(BUILTINTYPE("Float", _)) = TRUE().
-  isSimpleType(BUILTINTYPE("Long", _)) = TRUE().
-
-  isSimpleType(BUILTINTYPE("String", _)) = TRUE().
-  isSimpleType(BUILTINTYPE("Secret", _)) = TRUE().
-  isSimpleType(BUILTINTYPE("Email", _)) = TRUE().
-  isSimpleType(BUILTINTYPE("URL", _)) = TRUE().
-  isSimpleType(BUILTINTYPE("WikiText", _)) = TRUE().
-  isSimpleType(BUILTINTYPE("Text", _)) = TRUE().
-  isSimpleType(BUILTINTYPE("Patch", _)) = TRUE().
-  isSimpleType(PLACEHOLDER()) = TRUE().
-
-  isSimpleType(BUILTINTYPE("Date", _)) = TRUE().
-  isSimpleType(BUILTINTYPE("DateTime", _)) = TRUE().
-  isSimpleType(BUILTINTYPE("Time", _)) = TRUE().
-
-  isSimpleType(REGEX()) = TRUE().
-  isSimpleType(BUILTINTYPE("Bool", _)) = TRUE().
-  isSimpleType(VOID()) = TRUE().
-  isSimpleType(BUILTINTYPE("UUID", _)) = TRUE().
-  isSimpleType(BUILTINTYPE("File", _)) = TRUE().
-  isSimpleType(BUILTINTYPE("Image", _)) = TRUE().
-
-  isSimpleType(NULL()) = TRUE().
+  isBuiltInTypeB: TYPE -> BOOL
+  isBuiltInTypeB(_) = FALSE(). // not a simple type by default
+  isBuiltInTypeB(BUILTINTYPE(_, _)) = TRUE().
 
 rules // type related expressions
 

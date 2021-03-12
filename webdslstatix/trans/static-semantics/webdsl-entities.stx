@@ -37,7 +37,6 @@ rules // entity declaration
 
   validEntityName : scope * string
   validEntityName(s, x) :-
-    equalB(isSimpleType(typeOfSort(s, SimpleSort(x))), FALSE()) | error $[Entity name [x] is not allowed] @x,
     x != "Entity" | error $[Entity name [x] is not allowed] @x.
 
   extendEntityScopes maps extendEntityScope(list(*), *)
@@ -114,7 +113,7 @@ rules // entity body declaration
 
   isValidTypeForPropKind : PropKind * Sort * TYPE
   isValidTypeForPropKind(Simple(), sort, sortType) :-
-    equalB(isSimpleType(sortType), TRUE()) | error $[Expected simple type] @sort.
+    isBuiltInType(sortType) | error $[Expected simple type] @sort.
 
   isValidTypeForPropKind(Ref(), _, ENTITY(_)).
   isValidTypeForPropKind(Ref(), _, LIST(ENTITY(_))).
@@ -132,7 +131,7 @@ rules // entity body declaration
   isValidTypeForPropKind(AnyProp(), _, LIST(ENTITY(_))).
   isValidTypeForPropKind(AnyProp(), _, SET(ENTITY(_))).
   isValidTypeForPropKind(AnyProp(), sort, sortType) :-
-    equalB(isSimpleType(sortType), TRUE()) | error $[Expected simple type or entity type or a collection of an entity type] @sort.
+    isBuiltInType(sortType) | error $[Expected simple type or entity type or a collection of an entity type] @sort.
 
 rules // entity resolving
 
