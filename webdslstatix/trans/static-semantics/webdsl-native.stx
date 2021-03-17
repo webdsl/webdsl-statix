@@ -28,6 +28,7 @@ rules
     noCircularInheritance(s_class) | error $[Circular inhertitance detected] @c,
     declareNativeClass(s, alias, s_class),
     declareVar(s, alias, STATICNATIVECLASS(s_class)), // declare class name as global variable that refers to the static scope
+    declareNativeClassConstructors(s, s_class, alias, elems),
     nativeClassElementsOk(s, s_class, elems),
     @super.ref := super'.
 
@@ -35,6 +36,8 @@ rules // native class elements
 
   nativeClassElementsOk maps nativeClassElementOk(*, *, list(*))
   nativeClassElementOk : scope * scope * NCElement
+  nativeClassElementOk(_, _, NCConstructor(_)).
+  nativeClassElementOk(_, _, NCConstructorFromStatic(_, _)).
   nativeClassElementOk(s, s_class, NCFunctionElement(function)) :-
     nativeClassFunctionOk(s, s_class, function).
 
@@ -53,6 +56,19 @@ rules // native class functions
     argTypes   == typesOfNativeTypes(s, args),
     returnType == typeOfNativeType(s, return),
     declareFunction(s_class, f, argTypes, returnType).
+
+rules // constructors
+
+  declareNativeClassConstructors maps declareNativeClassConstructor(*, *, *, list(*))
+  declareNativeClassConstructor : scope * scope * string * NCElement
+  declareNativeClassConstructor(_, _, _, _).
+  declareNativeClassConstructor(s, s_class, name, NCConstructor(args)) :- {argTypes}
+    argTypes == typesOfNativeTypes(s, args),
+    declFunctionGlobal(s, name, argTypes, NATIVECLASS(s_class)).
+
+  declareNativeClassConstructor(s, s_class, name, NCConstructorFromStatic(_, args)) :- {argTypes}
+    argTypes == typesOfNativeTypes(s, args),
+    declFunctionGlobal(s, name, argTypes, NATIVECLASS(s_class)).
 
 rules // typing of expressions
 
