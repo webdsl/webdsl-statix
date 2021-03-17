@@ -207,8 +207,8 @@ rules // resolve reference types
 
   propertyTypes maps propertyType(*, list(*)) = list(*)
   propertyType : scope * string -> TYPE
-  propertyType(s_entity, x) = t :- {x'}
-    resolveProperty(s_entity, x) == [(_, (x', t))] | error $[Property [x] is not defined] @x,
+  propertyType(s, x) = t :- {x'}
+    resolveProperty(s, x) == [(_, (x', t))] | error $[Property [x] is not defined] @x,
     @x.ref := x'.
 
   pageType : scope * string -> TYPE

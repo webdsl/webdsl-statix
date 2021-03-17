@@ -3,6 +3,7 @@ module static-semantics/webdsl-native
 imports
   static-semantics/actions/functions
 
+  static-semantics/webdsl-actions
   static-semantics/webdsl-entities
   static-semantics/webdsl-types
   static-semantics/webdsl
@@ -36,8 +37,16 @@ rules // native class elements
 
   nativeClassElementsOk maps nativeClassElementOk(*, *, list(*))
   nativeClassElementOk : scope * scope * NCElement
+
+  // constructors are declared in their own rule declareNativeClassConstructors
   nativeClassElementOk(_, _, NCConstructor(_)).
   nativeClassElementOk(_, _, NCConstructorFromStatic(_, _)).
+
+  nativeClassElementOk(s, s_class, NCProperty(x, nt)) :- {t}
+    t == typeOfNativeType(s, nt),
+    declareVar(s_class, x, t),
+    noDuplicateVarDefsInSuper(s_class, x) | error $[Cannot override existing property [x]] @x.
+
   nativeClassElementOk(s, s_class, NCFunctionElement(function)) :-
     nativeClassFunctionOk(s, s_class, function).
 

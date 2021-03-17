@@ -65,22 +65,28 @@ rules // variables
     variableType(s, x) == t,
     @exp.type := t.
 
-  typeOfExp(s, FieldAccess(exp@FAVar(var), x)) = propertyType :- {s_entity varType}
+  typeOfExp(s, FieldAccess(exp@FAVar(var), x)) = propertyType :- {varType}
     variableType(s, var) == varType,
     @exp.type := varType,
-    varType == ENTITY(s_entity) | error $[Cannot resolve [exp] to an entity] @exp,
-    propertyType(s_entity, x) == propertyType,
+    fieldAccessType(varType, x) == propertyType,
     @x.type := propertyType.
 
-  typeOfExp(s, FieldAccess(FAExp(exp), x)) = propertyType :- {s_entity}
-    typeOfExp(s, exp) == ENTITY(s_entity) | error $[Cannot resolve [exp] to an entity] @exp,
-    propertyType(s_entity, x) == propertyType,
+  typeOfExp(s, FieldAccess(FAExp(exp), x)) = propertyType :- {t}
+    typeOfExp(s, exp) == t,
+    fieldAccessType(t, x) == propertyType,
     @x.type := propertyType.
 
-  typeOfSimpleExp(s, SimpleFieldAccess(exp, x)) = propertyType :- {s_entity}
-    typeOfSimpleExp(s, exp) == ENTITY(s_entity) | error $[Cannot resolve [exp] to an entity] @exp,
-    propertyType(s_entity, x) == propertyType,
+  typeOfSimpleExp(s, SimpleFieldAccess(exp, x)) = propertyType :- {t}
+    typeOfSimpleExp(s, exp) == t,
+    fieldAccessType(t, x) == propertyType,
     @x.type := propertyType.
+
+  fieldAccessType : TYPE * string -> TYPE
+  fieldAccessType(t, _) = UNTYPED() :- false | error $[Field access is only allowed on native classes and entities, [t] given].
+  fieldAccessType(ENTITY(s), x) = t :-
+    propertyType(s, x) == t.
+  fieldAccessType(NATIVECLASS(s), x) = t :-
+    propertyType(s, x) == t.
 
   defOk(s, GlobalVarDecl(x, sort)) :- {t}
     t == typeOfSort(s, sort),
