@@ -133,7 +133,7 @@ rules // utils
 
   equalNumericType : TYPE * TYPE -> TYPE
   equalNumericType(_, _) = UNTYPED().
-  equalNumericType(t@BUILTINTYPE("Int", _), BUILTINTYPE("Int", _)) = int.
+  equalNumericType(t@BUILTINTYPE("Int", _), BUILTINTYPE("Int", _)) = t.
   equalNumericType(BUILTINTYPE("Int", _), t@BUILTINTYPE("Long", _)) = t.
   equalNumericType(t@BUILTINTYPE("Long", _), BUILTINTYPE("Int", _)) = t.
   equalNumericType(t@BUILTINTYPE("Long", _), BUILTINTYPE("Long", _)) = t.

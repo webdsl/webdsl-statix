@@ -160,3 +160,12 @@ rules // subtyping
     query () filter INHERIT* and { s :- s == s_super }
              min $ < INHERIT
              in s_sub |-> [(p, _)].
+
+rules // extension
+
+  extends : scope * scope -> BOOL
+  extends(s_extending, s) = nonEmptyPathScopeList(ps) :-
+    query () filter EXTEND? (INHERIT EXTEND?)*
+             and { s' :- s' == s }
+             min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
+             in s_extending |-> ps.
