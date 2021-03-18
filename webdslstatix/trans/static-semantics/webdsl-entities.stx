@@ -28,16 +28,11 @@ rules // entity declaration
 
   declEntity : scope * scope * string * list(EntityBodyDeclaration)
   declEntity(s_global, s_entity, entity_name, bodydecs) :-
-    validEntityName(s_entity, entity_name),
     declareExtendEntity(s_global, entity_name, s_entity), // declare entity_scope to be linked to entity_name
     extendEntityScopes(resolveExtendEntity(s_global, entity_name), s_entity),
     declareType(s_global, entity_name, ENTITY(s_entity)),
     declareVar(s_global, entity_name, STATICENTITY(s_entity)), // declare entity_name as global variable that refers to the static scope
     declEntityBody(s_entity, bodydecs).
-
-  validEntityName : scope * string
-  validEntityName(s, x) :-
-    x != "Entity" | error $[Entity name [x] is not allowed] @x.
 
   extendEntityScopes maps extendEntityScope(list(*), *)
   extendEntityScope : (path * (string * scope)) * scope
@@ -105,10 +100,6 @@ rules // entity body declaration
 
   validPropertyName : string
   validPropertyName(x) :-
-    x != "id"       | error $[Cannot override the builtin property [x]] @x,
-    x != "version"  | error $[Cannot override the builtin property [x]] @x,
-    x != "created"  | error $[Cannot override the builtin property [x]] @x,
-    x != "modified" | error $[Cannot override the builtin property [x]] @x,
     x != "class"    | error $[Cannot use the reserved property name [x]] @x.
 
   isValidTypeForPropKind : PropKind * Sort * TYPE

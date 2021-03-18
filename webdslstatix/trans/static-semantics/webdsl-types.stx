@@ -36,7 +36,6 @@ signature
     VOID             : TYPE
     TEMPLATEELEMENTS : TYPE
     NULL            : TYPE
-    ABSTRACTENTITY  : TYPE
     UNTYPED         : TYPE
 
 rules // types of constant expressions
@@ -162,8 +161,6 @@ rules // map sorts to semantic types
   typeOfSort(s, SimpleSort("File")) = file(s).
   typeOfSort(s, SimpleSort("Image")) = image(s).
 
-  typeOfSort(_, SimpleSort("Entity")) = ABSTRACTENTITY().
-
   // in case it's not a built in simple sort, it must be an entity
   typeOfSort(s, SimpleSort(x)) = definedType(s, x).
 
@@ -199,6 +196,10 @@ rules // resolve reference types
   definedType(s, name) = t :- {name'}
     resolveType(s, name) == [(_, (name', t))|_] | error $[Type [name] is not defined],
     @name.ref := name'.
+
+  definedTypeNoRef : scope * string -> TYPE
+  definedTypeNoRef(s, name) = t :- {name'}
+    resolveType(s, name) == [(_, (name', t))|_] | error $[Type [name] is not defined].
 
   variableType : scope * string -> TYPE
   variableType(s, x) = t :- {x'}

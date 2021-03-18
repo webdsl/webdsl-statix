@@ -7,6 +7,8 @@ imports
   static-semantics/actions/built-ins
   static-semantics/actions/functions
 
+  static-semantics/entities/built-ins
+
   static-semantics/types/built-ins
 
   static-semantics/webdsl-ac
@@ -231,10 +233,10 @@ rules // declare common rules and mappings
 
   declareBuiltIns : scope
   declareBuiltIns(s) :-
-    declareDateBuiltIns(s),
-    declareIntBuiltIns(s),
-    declareNativeClassBuiltIns(s),
-    declareTypeBuiltIns(s).
+    declareFunctionIns(s),
+    declareEntityBuiltIns(s),
+    declareTypeBuiltIns(s),
+    declareNativeClassBuiltIns(s).
 
 rules // typing
 

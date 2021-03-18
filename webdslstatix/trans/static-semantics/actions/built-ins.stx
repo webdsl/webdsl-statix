@@ -2,12 +2,13 @@ module static-semantics/actions/built-ins
 
 imports
   static-semantics/types/built-ins
+  static-semantics/webdsl-types
   static-semantics/webdsl
 
 rules
 
-  declareDateBuiltIns : scope
-  declareDateBuiltIns(s) :-
+  declareFunctionIns : scope
+  declareFunctionIns(s) :-
     declareFunction(s, "now"     , [], datetime(s)),
     declareFunction(s, "today"   , [], date(s)),
     declareFunction(s, "Date"    , [string(s), string(s)], date(s)),
@@ -15,9 +16,8 @@ rules
     declareFunction(s, "Time"    , [string(s), string(s)], time(s)),
     declareFunction(s, "Time"    , [string(s)], time(s)),
     declareFunction(s, "DateTime", [string(s), datetime(s)], datetime(s)),
-    declareFunction(s, "DateTime", [string(s)], datetime(s)).
+    declareFunction(s, "DateTime", [string(s)], datetime(s)),
+    declareFunction(s, "random"  , [int(s), int(s)], int(s)),
+    declareFunction(s, "random"  , [int(s)], int(s)),
 
-  declareIntBuiltIns : scope
-  declareIntBuiltIns(s) :-
-    declareFunction(s, "random", [int(s), int(s)], int(s)),
-    declareFunction(s, "random", [int(s)], int(s)).
+    declareFunction(s, "getSessionManager", [], definedTypeNoRef(s, "SessionManager")).
