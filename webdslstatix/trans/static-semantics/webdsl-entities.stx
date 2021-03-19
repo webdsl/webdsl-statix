@@ -88,13 +88,20 @@ rules // entity body declaration
   declEntityBodyDeclaration(s, DerivedProperty(x, propkind, sort, annos, exp)) :- {sortType}
     sortType == typeOfSort(s, sort),
     equalType(sortType, typeOfExp(s, exp)) | error $[Expression [exp] must be of type [sort]] @exp,
-    declProperty(s, x, sortType).
+    declDerivedProperty(s, x, sortType).
 
   declProperties maps declProperty(*, list(*), list(*))
   declProperty : scope * string * TYPE
   declProperty(s, x, sortType) :-
     validPropertyName(x),
     declareVar(s, x, sortType),
+    noDuplicateVarDefsInSuper(s, x) | error $[Cannot override existing entity property [x]] @x.
+    // TO-DO: check property annotations
+
+  declDerivedProperty : scope * string * TYPE
+  declDerivedProperty(s, x, sortType) :-
+    validPropertyName(x),
+    declareImmutableVar(s, x, sortType),
     noDuplicateVarDefsInSuper(s, x) | error $[Cannot override existing entity property [x]] @x.
     // TO-DO: check property annotations
 

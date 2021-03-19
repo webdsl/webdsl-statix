@@ -212,6 +212,11 @@ rules // resolve reference types
     resolveProperty(s, x) == [(_, (x', t))] | error $[Property [x] is not defined] @x,
     @x.ref := x'.
 
+  mutablePropertyType : scope * string -> TYPE
+  mutablePropertyType(s, x) = t :- {x'}
+    resolveMutableProperty(s, x) == [(_, (x', t))] | error $[Property [x] is not defined or not mutable] @x,
+    @x.ref := x'.
+
   pageType : scope * string -> TYPE
   pageType(s, p) = t :- {p'}
     resolvePage(s, p) == [(_, (p', t@PAGE(_)))|_] | error $[Page [p] not defined],

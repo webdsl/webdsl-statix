@@ -33,10 +33,30 @@ rules // statements
     declareVar(s_decl, x, t),
     @x.type := t.
 
-  stmtOk(s, _, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a variable].
-  stmtOk(s, _, Assignment(Var(x), exp), _) :- {varType}
-    varType == variableType(s, x),
-    equalType(varType, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [varType]].
+  stmtOk(s, _, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a mutable variable].
+  stmtOk(s, _, Assignment(v@Var(x), exp), _) :- {t}
+    variableType(s, x) == t,
+    equalType(t, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [t]],
+    @v.type := t.
+
+  stmtOk(s, _, Assignment(FieldAccess(v@FAVar(var), x), exp), _) :- {varType t}
+    varType == variableType(s, var),
+    @v.type := varType,
+    t == mutableFieldAccessType(varType, x),
+    @x.type := t,
+    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [t]].
+
+  stmtOk(s, _, Assignment(FieldAccess(FAExp(lhexp), x), rhexp), _) :- {expType t}
+    expType == typeOfExp(s, lhexp),
+    t == mutableFieldAccessType(expType, x),
+    @x.type := t,
+    typeCompatible(typeOfExp(s, rhexp), t).
+
+  stmtOk(s, _, Assignment(ci@CollectionIndex(_, _), exp), _) :-
+    typeCompatible(typeOfExp(s, exp), typeOfExp(s, ci)).
+
+  stmtOk(s, _, Assignment(c@Cast(_, _), exp), _) :-
+    typeCompatible(typeOfExp(s, exp), typeOfExp(s, c)).
 
   stmtOk(s, _, If(c, Block(then), Block(else)), rt) :- {s_then s_else}
     equalType(typeOfExp(s, c), bool(s)) | error $[Condition should be of type bool] @c,
@@ -88,6 +108,13 @@ rules // variables
   fieldAccessType(NATIVECLASS(s), x) = t :-
     propertyType(s, x) == t.
 
+  mutableFieldAccessType : TYPE * string -> TYPE
+  mutableFieldAccessType(t, _) = UNTYPED() :- false | error $[Field access is only allowed on native classes and entities, [t] given].
+  mutableFieldAccessType(ENTITY(s), x) = t :-
+    mutablePropertyType(s, x) == t.
+  mutableFieldAccessType(NATIVECLASS(s), x) = t :-
+    mutablePropertyType(s, x) == t.
+
   defOk(s, GlobalVarDecl(x, sort)) :- {t}
     t == typeOfSort(s, sort),
     declareVar(s, x, t).
@@ -105,18 +132,15 @@ rules // variables
   noDuplicateVarDefs : scope * string
   noDuplicateVarDefs(s, x) :-
     query var filter P*
-              and { x' :- x' == ((x, _), _) }
+              and { x' :- x' == ((x, _), _, _) }
               min $ < P
               in s |-> [_].
 
   noDuplicateVarDefsInSuper : scope * string
   noDuplicateVarDefsInSuper(s_sub, x) :-
-    query var filter EXTEND? (INHERIT EXTEND?)*
-              and { x' :- x' == ((x, _), _) }
-              min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
-              in s_sub |-> [_].
+    resolveProperty(s_sub, x) == [_].
 
-rules // list and set creation
+rules // lists and sets
 
   typeOfExp(s, ListCreation([])) = UNTYPED() :- false | error $[Type cannot be determined for empty untyped list creation].
   typeOfExp(s, lc@ListCreation([hd | tl])) = LIST(t) :-
@@ -139,3 +163,15 @@ rules // list and set creation
     typeOfSort(s, sort) == t,
     typesCompatibleWith(t, typesOfExps(s, exps)) | error $[Not all elements are compatible with type [t]] @exps,
     @tsc.type := SET(t).
+
+  typeOfExp(s, ci@CollectionIndex(col, idx)) = t :- {colType idxType}
+    colType == typeOfExp(s, col),
+    idxType == typeOfExp(s, idx),
+    typeCompatible(idxType, int(s)) | error $[Index expression must be of type Int, [idxType] given],
+    t == collectionItemType(colType),
+    @ci.type := t.
+
+  collectionItemType : TYPE -> TYPE
+  collectionItemType(c) = UNTYPED() :- false | error $[First argument must be a list or set, [c] given].
+  collectionItemType(LIST(t)) = t.
+  collectionItemType(SET(t)) = t.
