@@ -16,6 +16,16 @@ rules
     declareType(s, name, BUILTINTYPE(name, s_type)),
     declareVar(s, name, STATICBUILTINTYPE(name, s_type)). // declare class name as global variable that refers to the static scope
 
+  declareBuiltInSubType : scope * string * string
+  declareBuiltInSubType(s, sub, super) :- {s_sub s_super}
+    builtInType(s, super) == BUILTINTYPE(super, s_super),
+    new s_sub, s_sub -INHERIT-> s_super,
+    noCircularInheritance(s_sub) | error $[Circular inheritance detected in built-in type [sub]],
+    declareExtendEntity(s, sub, s_sub), // declare s_type to be linked to type name
+    extendEntityScopes(resolveExtendEntity(s, sub), s_sub),
+    declareType(s, sub, BUILTINTYPE(sub, s_sub)),
+    declareVar(s, sub, STATICBUILTINTYPE(sub, s_sub)).
+
   builtInType : scope * string -> TYPE
   builtInType(s, name) = t :-
     resolveType(s, name) == [(_, (_, t@BUILTINTYPE(name, _)))] | error $[Built-in type [name] does not exist].
@@ -77,9 +87,9 @@ rules
     declareBuiltInType(s, "Patch"),
 
     // date types
-    declareBuiltInType(s, "Date"),
     declareBuiltInType(s, "DateTime"),
-    declareBuiltInType(s, "Time"),
+    declareBuiltInSubType(s, "Date", "DateTime"),
+    declareBuiltInSubType(s, "Time", "DateTime"),
 
     // misc
     declareBuiltInType(s, "Bool"),
