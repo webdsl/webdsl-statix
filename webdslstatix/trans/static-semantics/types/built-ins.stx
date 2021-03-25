@@ -1,6 +1,9 @@
 module static-semantics/types/built-ins
 
 imports
+  static-semantics/actions/functions
+
+  static-semantics/webdsl-actions
   static-semantics/webdsl-entities
   static-semantics/webdsl-native
   static-semantics/webdsl-types
@@ -96,3 +99,66 @@ rules
     declareBuiltInType(s, "UUID"),
     declareBuiltInType(s, "File"),
     declareBuiltInType(s, "Image").
+
+rules // built-in functions and properties for built-in generic type List
+
+  typeOfFieldAccess(s, LIST(t), "length") = int(s).
+
+  typeOfCall(s, LIST(t), "add", [arg]) = VOID() :-
+    typeCompatible(typeOfExp(s, arg), t).
+
+  typeOfCall(s, LIST(t), "remove", [arg]) = VOID() :-
+    typeCompatible(typeOfExp(s, arg), t).
+
+  typeOfCall(s, LIST(_), "clear", []) = VOID().
+
+  typeOfCall(s, LIST(t), "addAll", [arg]) = VOID() :- {argType}
+    argType == typeOfExp(s, arg),
+    or(
+      typeCompatibleB(argType, LIST(t)),
+      typeCompatibleB(argType, SET(t))
+    ).
+
+  typeOfCall(s, LIST(t), "set", []) = SET(t).
+
+  typeOfCall(s, LIST(t), "indexOf", [arg]) = int(s) :-
+    typeCompatible(typeOfExp(s, arg), t).
+
+  typeOfCall(s, LIST(t), "get", [arg]) = t :-
+    typeCompatible(typeOfExp(s, arg), int(s)).
+
+  typeOfCall(s, LIST(t), "set", [arg1, arg2]) = VOID() :-
+    typeCompatible(typeOfExp(s, arg1), int(s)),
+    typeCompatible(typeOfExp(s, arg2), t).
+
+  typeOfCall(s, LIST(t), "insert", [arg1, arg2]) = VOID() :-
+    typeCompatible(typeOfExp(s, arg1), int(s)),
+    typeCompatible(typeOfExp(s, arg2), t).
+
+  typeOfCall(s, LIST(t), "removeAt", [arg]) = VOID() :-
+    typeCompatible(typeOfExp(s, arg), int(s)).
+
+  typeOfCall(s, lt@LIST(_), "subList", [arg1, arg2]) = lt :-
+    typeCompatible(typeOfExp(s, arg1), int(s)),
+    typeCompatible(typeOfExp(s, arg2), int(s)).
+
+rules // built-in functions and properties for built-in generic type Set
+
+  typeOfFieldAccess(s, SET(t), "length") = int(s).
+
+  typeOfCall(s, SET(t), "add", [arg]) = VOID() :-
+    typeCompatible(typeOfExp(s, arg), t).
+
+  typeOfCall(s, SET(t), "remove", [arg]) = VOID() :-
+    typeCompatible(typeOfExp(s, arg), t).
+
+  typeOfCall(s, SET(_), "clear", []) = VOID().
+
+  typeOfCall(s, SET(t), "addAll", [arg]) = VOID() :- {argType}
+    argType == typeOfExp(s, arg),
+    or(
+      typeCompatibleB(argType, LIST(t)),
+      typeCompatibleB(argType, SET(t))
+    ).
+
+  typeOfCall(s, SET(t), "list", []) = LIST(t).

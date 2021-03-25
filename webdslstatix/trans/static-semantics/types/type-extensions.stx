@@ -40,8 +40,8 @@ rules
 
 rules // typing of expressions
 
-  typeOfEntityFunctionCall(s, BUILTINTYPE(_, s_type), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+  typeOfCall(s, BUILTINTYPE(_, s_type), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
     funSigs == resolveEntityFunction(s_type, f).
 
-  typeOfEntityFunctionCall(s, STATICBUILTINTYPE(_, s_type), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+  typeOfCall(s, STATICBUILTINTYPE(_, s_type), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
     funSigs == resolveStaticEntityFunction(s_type, f).

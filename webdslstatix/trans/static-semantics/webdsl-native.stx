@@ -81,10 +81,10 @@ rules // constructors
 
 rules // typing of expressions
 
-  typeOfEntityFunctionCall(s, NATIVECLASS(s_class), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+  typeOfCall(s, NATIVECLASS(s_class), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
     funSigs == resolveEntityFunction(s_class, f).
 
-  typeOfEntityFunctionCall(s, STATICNATIVECLASS(s_class), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+  typeOfCall(s, STATICNATIVECLASS(s_class), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
     funSigs == resolveStaticEntityFunction(s_class, f).
 
 rules // typing of native types

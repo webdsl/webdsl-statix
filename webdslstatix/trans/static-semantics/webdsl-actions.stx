@@ -42,13 +42,13 @@ rules // statements
   stmtOk(s, _, Assignment(FieldAccess(v@FAVar(var), x), exp), _) :- {varType t}
     varType == variableType(s, var),
     @v.type := varType,
-    t == mutableFieldAccessType(varType, x),
+    t == typeOfMutableFieldAccess(varType, x),
     @x.type := t,
     typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [t]].
 
   stmtOk(s, _, Assignment(FieldAccess(FAExp(lhexp), x), rhexp), _) :- {expType t}
     expType == typeOfExp(s, lhexp),
-    t == mutableFieldAccessType(expType, x),
+    t == typeOfMutableFieldAccess(expType, x),
     @x.type := t,
     typeCompatible(typeOfExp(s, rhexp), t).
 
@@ -69,7 +69,7 @@ rules // statements
     inequalType(returnType, UNTYPED()) | error $[Return statement not allowed here] @r,
     inequalType(returnType, VOID()) | error $[No return type specified in this context] @exp,
     returnExpType == typeOfExp(s, exp),
-    equalType(returnExpType, returnType) | error $[Must return an expression of type [returnType], [returnExpType] given] @exp.
+    typeCompatible(returnExpType, returnType) | error $[Must return an expression of type [returnType], [returnExpType] given] @exp.
 
   stmtOk(s, _, r@ReturnEmpty(), returnType) :-
     inequalType(returnType, UNTYPED()) | error $[Return statement not allowed here] @r,
@@ -88,31 +88,31 @@ rules // variables
   typeOfExp(s, FieldAccess(exp@FAVar(var), x)) = propertyType :- {varType}
     variableType(s, var) == varType,
     @exp.type := varType,
-    fieldAccessType(varType, x) == propertyType,
+    typeOfFieldAccess(s, varType, x) == propertyType,
     @x.type := propertyType.
 
   typeOfExp(s, FieldAccess(FAExp(exp), x)) = propertyType :- {t}
     typeOfExp(s, exp) == t,
-    fieldAccessType(t, x) == propertyType,
+    typeOfFieldAccess(s, t, x) == propertyType,
     @x.type := propertyType.
 
   typeOfSimpleExp(s, SimpleFieldAccess(exp, x)) = propertyType :- {t}
     typeOfSimpleExp(s, exp) == t,
-    fieldAccessType(t, x) == propertyType,
+    typeOfFieldAccess(s, t, x) == propertyType,
     @x.type := propertyType.
 
-  fieldAccessType : TYPE * string -> TYPE
-  fieldAccessType(t, _) = UNTYPED() :- false | error $[Field access is only allowed on native classes and entities, [t] given].
-  fieldAccessType(ENTITY(s), x) = t :-
+  typeOfFieldAccess : scope * TYPE * string -> TYPE
+  typeOfFieldAccess(_, t, _) = UNTYPED() :- false | error $[Field access is only allowed on native classes and entities, [t] given].
+  typeOfFieldAccess(_, ENTITY(s), x) = t :-
     propertyType(s, x) == t.
-  fieldAccessType(NATIVECLASS(s), x) = t :-
+  typeOfFieldAccess(_, NATIVECLASS(s), x) = t :-
     propertyType(s, x) == t.
 
-  mutableFieldAccessType : TYPE * string -> TYPE
-  mutableFieldAccessType(t, _) = UNTYPED() :- false | error $[Field access is only allowed on native classes and entities, [t] given].
-  mutableFieldAccessType(ENTITY(s), x) = t :-
+  typeOfMutableFieldAccess : TYPE * string -> TYPE
+  typeOfMutableFieldAccess(t, _) = UNTYPED() :- false | error $[Field access is only allowed on native classes and entities, [t] given].
+  typeOfMutableFieldAccess(ENTITY(s), x) = t :-
     mutablePropertyType(s, x) == t.
-  mutableFieldAccessType(NATIVECLASS(s), x) = t :-
+  typeOfMutableFieldAccess(NATIVECLASS(s), x) = t :-
     mutablePropertyType(s, x) == t.
 
   defOk(s, GlobalVarDecl(x, sort)) :- {t}
