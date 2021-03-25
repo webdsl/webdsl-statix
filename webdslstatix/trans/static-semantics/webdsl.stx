@@ -10,6 +10,7 @@ imports
   static-semantics/entities/built-ins
 
   static-semantics/types/built-ins
+  static-semantics/types/type-extensions
 
   static-semantics/webdsl-ac
   static-semantics/webdsl-actions

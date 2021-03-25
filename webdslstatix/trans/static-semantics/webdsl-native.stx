@@ -21,11 +21,15 @@ rules
     new s_class, s_class -IMPORT-> s,
     declareNativeClass(s, "Object", s_class).
 
-rules
+rules // subtype compatiblity
+
+  typeCompatibleB(NATIVECLASS(s_sub), NATIVECLASS(s_super)) = inherits(s_sub, s_super).
+
+rules // declarations
 
   defOk(s, NativeClass(c, NCAlias(alias), NCSuper(super), elems)) :- {super' s_super s_class}
     resolveType(s, super) == [(_, (super', NATIVECLASS(s_super)))] | error $[Native class [super] is not defined] @c,
-    new s_class, s_class -INHERIT-> s,
+    new s_class, s_class -INHERIT-> s_super,
     noCircularInheritance(s_class) | error $[Circular inhertitance detected] @c,
     declareNativeClass(s, alias, s_class),
     declareVar(s, alias, STATICNATIVECLASS(s_class)), // declare class name as global variable that refers to the static scope

@@ -20,4 +20,7 @@ rules
     declareFunction(s, "random"  , [int(s), int(s)], int(s)),
     declareFunction(s, "random"  , [int(s)], int(s)),
 
-    declareFunction(s, "getSessionManager", [], definedTypeNoRef(s, "SessionManager")).
+    declareFunction(s, "getSessionManager", [], definedTypeNoRef(s, "SessionManager")),
+
+    declareFunction(s, "cancel"  , [], VOID()),
+    declareFunction(s, "rollback", [], VOID()).
