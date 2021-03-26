@@ -91,7 +91,7 @@ context-free syntax
 
   PHExp.PHThisCall = ThisCall
   PHExp.PHCall = <<Exp> . <Id> ( <{Exp ","}*> )>
-  PHExp.PHFieldAccess = <<Exp> . <Id>>
+  PHExp.PHFieldAccess = <<Exp> . <PropertyId>>
   PHExp.PHCollectionIndex = <<Exp> [ <Exp> ]>
   PHExp.PHAdd = <<Exp> + <Exp>>
   PHExp.PHConst = ConstValue

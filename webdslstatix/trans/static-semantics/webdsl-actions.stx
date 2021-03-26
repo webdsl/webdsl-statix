@@ -135,6 +135,7 @@ rules // variables
               in s |-> [_].
 
   noDuplicateVarDefsInSuper : scope * string
+  noDuplicateVarDefsInSuper(_, "this"). // allow "this" var to be redefined in sub
   noDuplicateVarDefsInSuper(s_sub, x) :-
     resolveProperty(s_sub, x) == [_].
 

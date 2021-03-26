@@ -176,7 +176,7 @@ context-free syntax
   ConstValue.StringConst = String
 
   Exp.Var = VarId
-  Exp.FieldAccess = <<FAExp> . <Id>>
+  Exp.FieldAccess = <<FAExp> . <PropertyId>>
   Exp.CollectionIndex = <<Exp> [ <Exp> ]>
   Exp.This = <this>
 
@@ -192,6 +192,7 @@ context-free priorities
 lexical syntax
 
   VarId = "this" {reject}
+  PropertyId = "this" {reject}
 
   FAVarId = "global" {reject}
   FAVarId = "session" {reject}

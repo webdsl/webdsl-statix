@@ -2,6 +2,7 @@ module static-semantics/entities/annotations
 
 imports
   static-semantics/webdsl-actions
+  static-semantics/webdsl-entities
   static-semantics/webdsl-types
   static-semantics/webdsl
 
@@ -11,7 +12,9 @@ signature
     ANNOTATION
 
   constructors
-    DERIVED : ANNOTATION
+    TRANSIENT : ANNOTATION
+    DERIVED   : ANNOTATION
+    INVERSE   : ANNOTATION
 
   relations
     annotation : (string * scope) * ANNOTATION
@@ -32,26 +35,75 @@ rules // annotation declaration and resolving
 
 rules
 
-  annotationsOk maps annotationOk(*, *, list(*))
-  annotationOk : scope * TYPE * Annotation
-  annotationOk(_, _, _) :- false | error $[Static analysis not implemented for this annotation].
-  annotationOk(_, _, NotNullAnno()).
-  annotationOk(_, _, NotEmptyAnno()).
-  annotationOk(s, t, AllowedAnno(exp)) :- {t'}
+  annotationsOk maps annotationOk(*, *, *, list(*))
+  annotationOk : scope * string * TYPE * Annotation
+  annotationOk(_, _, _, _) :- false | error $[Static analysis not implemented for this annotation].
+
+  annotationOk(s, p, _, TransientAnno()) :-
+    declareAnnotation(s, p, TRANSIENT()).
+
+  // inverse property on List<t>
+  annotationOk(s, p, LIST(t), InverseAnno(sort, prop)) :- {sortType s_sort}
+    sortType == typeOfInverseSort(s, sort, t),
+    declareAnnotation(s, p, INVERSE()),
+    noDoubleInverse(sortType, prop),
+    typeOfProperty(s, sortType, prop) == typeOfThis(s)
+      | error $[Inverse property must be the same type as this entity] @prop.
+
+  // inverse property on Set<t>
+  annotationOk(s, p, SET(t), InverseAnno(sort, prop)) :- {sortType}
+    sortType == typeOfInverseSort(s, sort, t),
+    declareAnnotation(s, p, INVERSE()),
+    noDoubleInverse(sortType, prop),
+    typeOfProperty(s, sortType, prop) == typeOfThis(s)
+      | error $[Inverse property must be the same type as this entity] @prop.
+
+  // inverse property non-collection
+  annotationOk(s, p, t, InverseAnno(sort, prop)) :- {sortType propType thisType}
+    sortType == typeOfInverseSort(s, sort, t),
+    declareAnnotation(s, p, INVERSE()),
+    noDoubleInverse(sortType, prop),
+    propType == typeOfProperty(s, sortType, prop),
+    thisType == typeOfThis(s),
+    or(orB(
+      equalTypeB(propType, thisType),
+      equalTypeB(propType, LIST(thisType))),
+      equalTypeB(propType, SET(thisType))
+    ) | error $[Inverse property must have (a collection of) the same type as this entity] @prop.
+
+  annotationOk(s, p, _, a@InverseReferenceOnlyAnno()) :-
+    hasAnnotation(resolveAnnotation(s, p), INVERSE())
+      | error $[inverse-reference-only annotation is only allowed on properties that have an inverse specified] @a.
+
+  annotationOk(_, _, _, NotNullAnno()).
+  annotationOk(_, _, _, NotEmptyAnno()).
+  annotationOk(s, _, t, AllowedAnno(exp)) :- {t'}
     t' == typeOfExp(s, exp),
     or(
       typeCompatibleB(t', LIST(t)),
       typeCompatibleB(t', SET(t))
     ) | error $[Allowed expression must be a list of set of type [t], [t'] given].
 
-  annotationOk(s, t, DefaultAnno(exp)) :- {t'}
+  annotationOk(s, _, t, DefaultAnno(exp)) :- {t'}
     t' == typeOfExp(s, exp),
     typeCompatible(t', t) | error $[Default value must be of type [t], [t'] given].
 
-  annotationOk(_, _, LengthAnno(_)).
-  annotationOk(s, _, FormatAnno(str)) :- stringOk(s, str).
+  annotationOk(_, _, _, LengthAnno(_)).
+  annotationOk(s, _, _, FormatAnno(str)) :- stringOk(s, str).
+
+  typeOfInverseSort : scope * string * TYPE -> TYPE
+  typeOfInverseSort(s, sort, t) = sortType :-
+    t == ENTITY(_) | error $[Inverse annotation only allowed on (collections of) entity types],
+    resolveType(s, sort) == [(_, (_, sortType))] | error $[Cannot resolve sort [sort] to an entity],
+    sortType == ENTITY(_) | error $[Cannot resolve sort [sort] to an entity],
+    sortType == t | error $[Inverse entity must be the same as property type [t]].
 
 rules // predicates
+
+  noDoubleInverse : TYPE * string
+  noDoubleInverse(ENTITY(s_ent), x) :-
+    doesNotHaveAnnotation(resolveAnnotation(s_ent, x), INVERSE())
+      | error $[Inverse annotations cannot be declared on both sides].
 
   isMutable : scope * string
   isMutable(s, x) :-
@@ -66,10 +118,16 @@ rules // predicates
 
 rules // utils
 
+  hasAnnotationB : list((path * (string * ANNOTATION))) * ANNOTATION -> BOOL
+  hasAnnotationB([], _) = FALSE().
+  hasAnnotationB([(_, (_, a)) | tl], a) = TRUE().
+  hasAnnotationB([(_, (_, _)) | tl], a) = hasAnnotationB(tl, a).
+
+  hasAnnotation : list((path * (string * ANNOTATION))) * ANNOTATION
+  hasAnnotation(ps, a) :- hasAnnotationB(ps, a) == TRUE().
+
   doesNotHaveAnnotation : list((path * (string * ANNOTATION))) * ANNOTATION
-  doesNotHaveAnnotation([], _).
-  doesNotHaveAnnotation([(_, (_, a)) | tl], a) :- false.
-  doesNotHaveAnnotation([(_, (_, _)) | tl], a) :- doesNotHaveAnnotation(tl, a).
+  doesNotHaveAnnotation(ps, a) :- hasAnnotationB(ps, a) == FALSE().
 
   dropUniqueIdsAnno maps dropUniqueIdAnno(list(*)) = list(*)
   dropUniqueIdAnno : (path * ((string * scope) * ANNOTATION)) -> (path * (string * ANNOTATION))

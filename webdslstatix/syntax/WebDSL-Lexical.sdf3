@@ -91,7 +91,7 @@ context-free syntax
 %% in these cases, use '()' if a '.' is needed as part of the string,       e.g.     allowed: "~(a)."
 
   SimpleExp.SimpleVar = Id
-  SimpleExp.SimpleFieldAccess = <<SimpleExp> . <Id>>
+  SimpleExp.SimpleFieldAccess = <<SimpleExp> . <PropertyId>>
 
 lexical sorts
 

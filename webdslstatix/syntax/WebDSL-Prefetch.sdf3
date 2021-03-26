@@ -62,7 +62,7 @@ context-free syntax
   PrefetchCondVal.PrefetchNull = <null>
   PrefetchCondVal.PrefetchConst = ConstValue
   PrefetchCondVal.PrefetchCondVar = VarId
-  PrefetchCondVal.RelativeFieldAccess = <<OptSimpleSort> . <Id>> {left}
+  PrefetchCondVal.RelativeFieldAccess = <<OptSimpleSort> . <PropertyId>> {left}
   PrefetchCondVal.PrefetchMul = <<PrefetchCondVal> * <PrefetchCondVal>> {left}
   PrefetchCondVal.PrefetchDiv = <<PrefetchCondVal> / <PrefetchCondVal>> {left}
   PrefetchCondVal.PrefetchMod = <<PrefetchCondVal> % <PrefetchCondVal>> {left}
