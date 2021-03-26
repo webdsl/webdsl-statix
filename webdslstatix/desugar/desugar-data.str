@@ -26,3 +26,10 @@ rules
   // Some concrete syntax transformations have been rewritten as abstract syntax transformations
 
   normalize-data : ExtendSessionEntity(ident, entbodydecs){anno*} -> ExtendEntity(ident, entbodydecs){anno*}
+
+  normalize-data: Property(x, k, srt, annos){anno*} -> Property(x, k, srt, annos'){anno*} 
+    where <fetch(?IncompleteInverseAnno(prop))> annos
+    with  ent := <try-strip-generic-sort; ?SimpleSort(<id>)> srt
+        ; annos' := <map(try(\IncompleteInverseAnno(prop){anno1*} -> InverseAnno(ent, prop){anno1*}\))> annos
+
+  try-strip-generic-sort = try(?GenericSort(_,[<id>]))

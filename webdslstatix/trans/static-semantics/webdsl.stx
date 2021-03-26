@@ -10,7 +10,6 @@ imports
   static-semantics/entities/built-ins
 
   static-semantics/types/built-ins
-  static-semantics/types/type-extensions
 
   static-semantics/webdsl-ac
   static-semantics/webdsl-actions
@@ -51,8 +50,7 @@ signature
 
     function : (string * scope) * TYPE
 
-    // last boolean indicates mutability of the variable
-    var      : (string * scope) * TYPE * BOOL
+    var      : (string * scope) * TYPE
 
 rules // module and import declaration and resolving
 
@@ -180,32 +178,27 @@ rules // variable declaration and resolving
 
   declareVar : scope * string * TYPE
   declareVar(s, x, t) :-
-    !var[(x, new), t, TRUE()] in s,
-    noDuplicateVarDefs(s, x).
-
-  declareImmutableVar : scope * string * TYPE
-  declareImmutableVar(s, x, t) :-
-    !var[(x, new), t, FALSE()] in s,
+    !var[(x, new), t] in s,
     noDuplicateVarDefs(s, x).
 
   resolveVar : scope * string -> list((path * (string * TYPE)))
-  resolveVar(s, x) = dropUniqueIdsAndMutableBools(ps) :-
+  resolveVar(s, x) = dropUniqueIds(ps) :-
     query var filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-              and { x' :- x' == ((x, _), _, _) }
+              and { x' :- x' == ((x, _), _) }
               min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
               and true
               in s |-> ps.
 
   resolveProperty : scope * string -> list((path * (string * TYPE)))
-  resolveProperty(s_entity, x) = dropUniqueIdsAndMutableBools(ps) :-
+  resolveProperty(s_entity, x) = dropUniqueIds(ps) :-
     query var filter EXTEND? (INHERIT EXTEND?)*
-              and { x' :- x' == ((x, _), _, _) }
+              and { x' :- x' == ((x, _), _) }
               in s_entity |-> ps.
 
   resolveMutableProperty : scope * string -> list((path * (string * TYPE)))
-  resolveMutableProperty(s_entity, x) = dropUniqueIdsAndMutableBools(ps) :-
+  resolveMutableProperty(s_entity, x) = dropUniqueIds(ps) :-
     query var filter EXTEND? (INHERIT EXTEND?)*
-              and { x' :- x' == ((x, _), _, TRUE()) }
+              and { x' :- x' == ((x, _), _) }
               in s_entity |-> ps.
 
   // map does not suffice here due to list of tuples
@@ -320,11 +313,6 @@ rules // utils
   dropUniqueIds maps dropUniqueId(list(*)) = list(*)
   dropUniqueId : (path * ((string * scope) * TYPE)) -> (path * (string * TYPE))
   dropUniqueId((p, ((x, id), t))) = (p, (x, t)).
-
-  // functional rule to drop the unique id (implemented as scope) and mutability boolean from query results
-  dropUniqueIdsAndMutableBools maps dropUniqueIdAndMutableBool(list(*)) = list(*)
-  dropUniqueIdAndMutableBool : (path * ((string * scope) * TYPE * BOOL)) -> (path * (string * TYPE))
-  dropUniqueIdAndMutableBool((p, ((x, _), t, _))) = (p, (x, t)).
 
   // functional rule to drop all results with longer paths than the minimal
   filterShortestPath : list((path * (string * TYPE))) -> list((path * (string * TYPE)))

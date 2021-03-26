@@ -4,6 +4,8 @@ imports
   static-semantics/actions/binops
   static-semantics/actions/functions
 
+  static-semantics/entities/annotations
+
   static-semantics/types/built-ins
 
   static-semantics/webdsl-entities
@@ -36,21 +38,24 @@ rules // statements
   stmtOk(s, _, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a mutable variable].
   stmtOk(s, _, Assignment(v@Var(x), exp), _) :- {t}
     variableType(s, x) == t,
-    equalType(t, typeOfExp(s, exp)) | error $[Expression [exp] is not of type [t]],
+    isMutable(s, x),
+    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [t]],
     @v.type := t.
 
   stmtOk(s, _, Assignment(FieldAccess(v@FAVar(var), x), exp), _) :- {varType t}
     varType == variableType(s, var),
     @v.type := varType,
-    t == typeOfMutableFieldAccess(varType, x),
+    t == typeOfProperty(s, varType, x),
     @x.type := t,
+    isMutableProperty(varType, x),
     typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [t]].
 
   stmtOk(s, _, Assignment(FieldAccess(FAExp(lhexp), x), rhexp), _) :- {expType t}
     expType == typeOfExp(s, lhexp),
-    t == typeOfMutableFieldAccess(expType, x),
+    t == typeOfProperty(s, expType, x),
     @x.type := t,
-    typeCompatible(typeOfExp(s, rhexp), t).
+    isMutableProperty(expType, x),
+    typeCompatible(typeOfExp(s, rhexp), t) | error $[Expression [rhexp] is not of type [t]].
 
   stmtOk(s, _, Assignment(ci@CollectionIndex(_, _), exp), _) :-
     typeCompatible(typeOfExp(s, exp), typeOfExp(s, ci)).
@@ -88,32 +93,25 @@ rules // variables
   typeOfExp(s, FieldAccess(exp@FAVar(var), x)) = propertyType :- {varType}
     variableType(s, var) == varType,
     @exp.type := varType,
-    typeOfFieldAccess(s, varType, x) == propertyType,
+    typeOfProperty(s, varType, x) == propertyType,
     @x.type := propertyType.
 
   typeOfExp(s, FieldAccess(FAExp(exp), x)) = propertyType :- {t}
     typeOfExp(s, exp) == t,
-    typeOfFieldAccess(s, t, x) == propertyType,
+    typeOfProperty(s, t, x) == propertyType,
     @x.type := propertyType.
 
   typeOfSimpleExp(s, SimpleFieldAccess(exp, x)) = propertyType :- {t}
     typeOfSimpleExp(s, exp) == t,
-    typeOfFieldAccess(s, t, x) == propertyType,
+    typeOfProperty(s, t, x) == propertyType,
     @x.type := propertyType.
 
-  typeOfFieldAccess : scope * TYPE * string -> TYPE
-  typeOfFieldAccess(_, t, _) = UNTYPED() :- false | error $[Field access is only allowed on native classes and entities, [t] given].
-  typeOfFieldAccess(_, ENTITY(s), x) = t :-
+  typeOfProperty : scope * TYPE * string -> TYPE
+  typeOfProperty(_, t, _) = UNTYPED() :- false | error $[Field access is only allowed on native classes and entities, [t] given].
+  typeOfProperty(_, ENTITY(s), x) = t :-
     propertyType(s, x) == t.
-  typeOfFieldAccess(_, NATIVECLASS(s), x) = t :-
+  typeOfProperty(_, NATIVECLASS(s), x) = t :-
     propertyType(s, x) == t.
-
-  typeOfMutableFieldAccess : TYPE * string -> TYPE
-  typeOfMutableFieldAccess(t, _) = UNTYPED() :- false | error $[Field access is only allowed on native classes and entities, [t] given].
-  typeOfMutableFieldAccess(ENTITY(s), x) = t :-
-    mutablePropertyType(s, x) == t.
-  typeOfMutableFieldAccess(NATIVECLASS(s), x) = t :-
-    mutablePropertyType(s, x) == t.
 
   defOk(s, GlobalVarDecl(x, sort)) :- {t}
     t == typeOfSort(s, sort),
@@ -132,7 +130,7 @@ rules // variables
   noDuplicateVarDefs : scope * string
   noDuplicateVarDefs(s, x) :-
     query var filter P*
-              and { x' :- x' == ((x, _), _, _) }
+              and { x' :- x' == ((x, _), _) }
               min $ < P
               in s |-> [_].
 

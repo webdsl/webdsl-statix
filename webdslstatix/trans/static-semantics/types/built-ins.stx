@@ -102,7 +102,7 @@ rules
 
 rules // built-in functions and properties for built-in generic type List
 
-  typeOfFieldAccess(s, LIST(t), "length") = int(s).
+  typeOfProperty(s, LIST(t), "length") = int(s).
 
   typeOfCall(s, LIST(t), "add", [arg]) = VOID() :-
     typeCompatible(typeOfExp(s, arg), t).
@@ -144,7 +144,7 @@ rules // built-in functions and properties for built-in generic type List
 
 rules // built-in functions and properties for built-in generic type Set
 
-  typeOfFieldAccess(s, SET(t), "length") = int(s).
+  typeOfProperty(s, SET(t), "length") = int(s).
 
   typeOfCall(s, SET(t), "add", [arg]) = VOID() :-
     typeCompatible(typeOfExp(s, arg), t).

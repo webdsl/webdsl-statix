@@ -110,6 +110,10 @@ context-free sorts
 context-free syntax
 
   Annotation.SimpleAnno = AnnotationId
+  Annotation.TransientAnno = <transient>
+  Annotation.IdAnno = <id>
+  Annotation.NameAnno = <name>
+  Annotation.CacheAnno = <cache>
   Annotation.InverseAnno = <inverse = <Id> . <Id>>
   Annotation.IncompleteInverseAnno = <inverse = <Id>>
   Annotation.InverseSlaveAnno = <inverseSlave = <Id> . <Id>>
@@ -136,3 +140,7 @@ lexical syntax
 
   AnnotationId = Id
   AnnotationId = "searchable" {reject}
+  AnnotationId = "transient" {reject}
+  AnnotationId = "id" {reject}
+  AnnotationId = "name" {reject}
+  AnnotationId = "cache" {reject}

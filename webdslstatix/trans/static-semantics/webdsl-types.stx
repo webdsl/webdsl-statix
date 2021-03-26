@@ -63,10 +63,13 @@ rules // types of constant expressions
     t == bool(s),
     @exp.type := t.
 
-  typeOfExp(s, Const(exp@StringConst(String(parts)))) = t :-
+  typeOfExp(s, Const(exp@StringConst(str))) = t :-
     t == string(s),
-    stringPartsOk(s, parts),
+    stringOk(s, str),
     @exp.type := t.
+
+  stringOk : scope * String
+  stringOk(s, String(parts)) :- stringPartsOk(s, parts).
 
   stringPartsOk maps stringPartOk(*, list(*))
   stringPartOk : scope * StringPart
@@ -212,11 +215,6 @@ rules // resolve reference types
     resolveProperty(s, x) == [(_, (x', t))] | error $[Property [x] is not defined] @x,
     @x.ref := x'.
 
-  mutablePropertyType : scope * string -> TYPE
-  mutablePropertyType(s, x) = t :- {x'}
-    resolveMutableProperty(s, x) == [(_, (x', t))] | error $[Property [x] is not defined or not mutable] @x,
-    @x.ref := x'.
-
   pageType : scope * string -> TYPE
   pageType(s, p) = t :- {p'}
     resolvePage(s, p) == [(_, (p', t@PAGE(_)))|_] | error $[Page [p] not defined],
@@ -228,9 +226,11 @@ rules // utils
   typed(s, exp) :- inequalType(typeOfExp(s, exp), UNTYPED()).
 
   inequalType : TYPE * TYPE
-  inequalType(T, T) :- false.
-  inequalType(_, _).
+  inequalType(T1, T2) :- equalTypeB(T1, T2) == FALSE().
 
   equalType : TYPE * TYPE
-  equalType(T, T).
-  equalType(_, _) :- false.
+  equalType(T1, T2) :- equalTypeB(T1, T2) == TRUE().
+
+  equalTypeB : TYPE * TYPE -> BOOL
+  equalTypeB(T, T) = TRUE().
+  equalTypeB(_, _) = FALSE().

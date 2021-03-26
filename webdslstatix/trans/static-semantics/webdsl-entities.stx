@@ -2,6 +2,9 @@ module static-semantics/webdsl-entities
 
 imports
   static-semantics/actions/functions
+
+  static-semantics/entities/annotations
+
   static-semantics/webdsl-actions
   static-semantics/webdsl-types
   static-semantics/webdsl
@@ -75,20 +78,22 @@ rules // entity body declaration
     entityFunctionOk(s, f, FALSE()).
 
   // entity property
-  declEntityBodyDeclaration(s, Property(x, propkind, sort, annos)) :- {sortType}
+  declEntityBodyDeclaration(s, Property(x, propkind, sort, PropAnnos(annos))) :- {sortType}
     sortType == typeOfSort(s, sort),
     inequalType(sortType, UNTYPED()) | error $[Cannot resolve type [sort]] @sort,
     inequalType(sortType, VOID()) | error $[Property type 'Void' not allowed] @sort,
     inequalType(sortType, REF(_)) | error $[Reference type is not allowed in property] @sort,
     isValidTypeForPropKind(propkind, sort, sortType),
-    declProperty(s, x, sortType).
-    // TO-DO: check property annotations
+    declProperty(s, x, sortType),
+    annotationsOk(s, sortType, annos).
 
   // derived entity property
-  declEntityBodyDeclaration(s, DerivedProperty(x, propkind, sort, annos, exp)) :- {sortType}
+  declEntityBodyDeclaration(s, DerivedProperty(x, propkind, sort, PropAnnos(annos), exp)) :- {sortType}
     sortType == typeOfSort(s, sort),
     equalType(sortType, typeOfExp(s, exp)) | error $[Expression [exp] must be of type [sort]] @exp,
-    declDerivedProperty(s, x, sortType).
+    declProperty(s, x, sortType),
+    declareAnnotation(s, x, DERIVED()),
+    annotationsOk(s, sortType, annos).
 
   declProperties maps declProperty(*, list(*), list(*))
   declProperty : scope * string * TYPE
@@ -96,14 +101,6 @@ rules // entity body declaration
     validPropertyName(x),
     declareVar(s, x, sortType),
     noDuplicateVarDefsInSuper(s, x) | error $[Cannot override existing entity property [x]] @x.
-    // TO-DO: check property annotations
-
-  declDerivedProperty : scope * string * TYPE
-  declDerivedProperty(s, x, sortType) :-
-    validPropertyName(x),
-    declareImmutableVar(s, x, sortType),
-    noDuplicateVarDefsInSuper(s, x) | error $[Cannot override existing entity property [x]] @x.
-    // TO-DO: check property annotations
 
   validPropertyName : string
   validPropertyName(x) :-
