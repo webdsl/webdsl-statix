@@ -299,6 +299,10 @@ rules // utils
     y == minOfList(xs),
     z #= min(x,y).
 
+  scopeFromPath : path -> scope
+  scopeFromPath(_PathEmpty(s)) = s.
+  scopeFromPath(_PathStep(_, _, s)) = s.
+
   pathLength : path -> int
   pathLength(_PathEmpty(_)) = 0.
   pathLength(_PathStep(p, _, _)) = x :- {x'}

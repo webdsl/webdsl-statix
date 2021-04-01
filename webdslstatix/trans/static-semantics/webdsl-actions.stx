@@ -136,8 +136,9 @@ rules // variables
 
   noDuplicateVarDefsInSuper : scope * string
   noDuplicateVarDefsInSuper(_, "this"). // allow "this" var to be redefined in sub
-  noDuplicateVarDefsInSuper(s_sub, x) :-
-    resolveProperty(s_sub, x) == [_].
+  noDuplicateVarDefsInSuper(s_sub, x) :- {xs}
+    resolveProperty(s_sub, x) == xs,
+    withoutAnnotation(xs, OVERRIDABLE()) == [_].
 
 rules // lists and sets
 

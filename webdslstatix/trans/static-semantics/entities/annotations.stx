@@ -12,25 +12,26 @@ signature
     ANNOTATION
 
   constructors
-    TRANSIENT : ANNOTATION
-    DERIVED   : ANNOTATION
-    INVERSE   : ANNOTATION
+    OVERRIDABLE : ANNOTATION
+    NAME        : ANNOTATION
+    TRANSIENT   : ANNOTATION
+    DERIVED     : ANNOTATION
+    INVERSE     : ANNOTATION
 
   relations
     annotation : (string * scope) * ANNOTATION
 
 rules // annotation declaration and resolving
 
+  declareAnnotations maps declareAnnotation(*, *, list(*))
   declareAnnotation : scope * string * ANNOTATION
   declareAnnotation(s, p, a) :-
     !annotation[(p, new), a] in s.
 
   resolveAnnotation : scope * string -> list((path * (string * ANNOTATION)))
   resolveAnnotation(s, x) = dropUniqueIdsAnno(ps) :-
-    query annotation filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
+    query annotation filter EXTEND?
                      and { x' :- x' == ((x, _), _) }
-                     min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
-                     and true
                      in s |-> ps.
 
 rules
@@ -41,6 +42,13 @@ rules
 
   annotationOk(s, p, _, TransientAnno()) :-
     declareAnnotation(s, p, TRANSIENT()).
+
+  annotationOk(s, p, _, NameAnno()) :-
+    declareAnnotation(s, p, NAME()),
+    noMultipleNameAnnotations(s).
+
+  annotationOk(s, p, _, CacheAnno()) :-
+    hasAnnotation(resolveAnnotation(s, p), DERIVED()) | error $[cached annotation can only be set on derived properties].
 
   // inverse property on List<t>
   annotationOk(s, p, LIST(t), InverseAnno(sort, prop)) :- {sortType s_sort}
@@ -100,6 +108,12 @@ rules
 
 rules // predicates
 
+  noMultipleNameAnnotations : scope
+  noMultipleNameAnnotations(s) :-
+    query annotation filter EXTEND?
+                     and { x' :- x' == ((_, _), NAME()) }
+                     in s |-> [_] | error $[Found multiple properties called "name" or with (name) annotation].
+
   noDoubleInverse : TYPE * string
   noDoubleInverse(ENTITY(s_ent), x) :-
     doesNotHaveAnnotation(resolveAnnotation(s_ent, x), INVERSE())
@@ -128,6 +142,25 @@ rules // utils
 
   doesNotHaveAnnotation : list((path * (string * ANNOTATION))) * ANNOTATION
   doesNotHaveAnnotation(ps, a) :- hasAnnotationB(ps, a) == FALSE().
+
+  withAnnotation : list((path * (string * TYPE))) * ANNOTATION -> list((path * (string * TYPE)))
+  withAnnotation(xs, a) = filterResultsWithBool(zipResultsWithHasAnnoBool(xs, a)).
+
+  withoutAnnotation : list((path * (string * TYPE))) * ANNOTATION -> list((path * (string * TYPE)))
+  withoutAnnotation(xs, a) = filterResultsWithBool(zipResultsWithNotHasAnnoBool(xs, a)).
+
+  zipResultsWithHasAnnoBool maps zipResultWithHasAnnoBool(list(*), *) = list(*)
+  zipResultWithHasAnnoBool : (path * (string * TYPE)) * ANNOTATION -> ((path * (string * TYPE)) * BOOL)
+  zipResultWithHasAnnoBool(r@(p, (x, _)), a) = (r, hasAnnotationB(resolveAnnotation(scopeFromPath(p), x), a)).
+
+  zipResultsWithNotHasAnnoBool maps zipResultWithNotHasAnnoBool(list(*), *) = list(*)
+  zipResultWithNotHasAnnoBool : (path * (string * TYPE)) * ANNOTATION -> ((path * (string * TYPE)) * BOOL)
+  zipResultWithNotHasAnnoBool(r@(p, (x, _)), a) = (r, notB(hasAnnotationB(resolveAnnotation(scopeFromPath(p), x), a))).
+
+  filterResultsWithBool : list(((path * (string * TYPE)) * BOOL)) -> list((path * (string * TYPE)))
+  filterResultsWithBool([]) = [].
+  filterResultsWithBool([(x, TRUE()) | xs]) = [x | filterResultsWithBool(xs)].
+  filterResultsWithBool([(_, FALSE()) | xs]) = filterResultsWithBool(xs).
 
   dropUniqueIdsAnno maps dropUniqueIdAnno(list(*)) = list(*)
   dropUniqueIdAnno : (path * ((string * scope) * ANNOTATION)) -> (path * (string * ANNOTATION))

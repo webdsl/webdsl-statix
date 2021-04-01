@@ -22,6 +22,11 @@ rules
   // All user-defined entities inherit from the built-in entity "Entity"
   normalize-data : EntityNoSuper(e, elems) -> Entity(e, "Entity", elems)
 
+  normalize-data: Property(x, k, srt, PropAnnos(annos)) -> Property(x, k, srt, PropAnnos(annos'))
+    where   <not(fetch-elem(?NameAnno()))> annos
+          ; <?"name"> x
+    with  annos' := [NameAnno() | annos]
+
   // All rules and signatures below are copied directly from the WebDSL compiler.
   // Some concrete syntax transformations have been rewritten as abstract syntax transformations
 

@@ -3,8 +3,9 @@ module static-semantics/entities/built-ins
 imports
   static-semantics/types/built-ins
 
-  static-semantics/webdsl-entities
+  static-semantics/entities/annotations
 
+  static-semantics/webdsl-entities
   static-semantics/webdsl
 
 rules
@@ -16,7 +17,7 @@ rules
     declareVar(s_ent, "id"       , uuid(s)),
     declareVar(s_ent, "naturalId", string(s)),
     declareVar(s_ent, "version"  , int(s)),
-    declareVar(s_ent, "name"     , string(s)),
+    declareVar(s_ent, "name"     , string(s)), declareAnnotations(s_ent, "name", [OVERRIDABLE(), NAME()]),
     declareVar(s_ent, "created"  , datetime(s)),
     declareVar(s_ent, "modified" , datetime(s)),
 
