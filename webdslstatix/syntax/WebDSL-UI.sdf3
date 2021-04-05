@@ -69,7 +69,9 @@ context-free syntax
   Modifier.ExpireCache = <expire-cache>
   Modifier.ReadOnlyPage = <read-only>
   Modifier.WebService = <service>
-  TemplateElement = InitAction
+  TemplateElement.Init = <
+    init <Block>
+  >
   TemplateElement = Action
 
   TemplateCall = <<Modifier>> {reject}
@@ -427,13 +429,14 @@ lexical syntax
 
 context-free sorts
 
-  InitAction ActionModifier TemplateCallId
+  ActionModifier TemplateCallId
 
 context-free syntax
 
   TemplateCall = <separated-by { <TemplateElement*> }> {reject}
-  Definition = InitAction
-  InitAction.InitAction = <init <Block>>
+  Definition.GlobalInit = <
+    init <Block>
+  >
   TemplateElement.DataBindAction = <databind <Block>>
   TemplateElement.RenderAction = <render <Block>>
   TemplateElement.AllPhasesAction = <allphases <Block>>

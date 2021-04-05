@@ -3,6 +3,7 @@ module static-semantics/webdsl-ui
 imports
   static-semantics/actions/functions
 
+  static-semantics/ui/actions
   static-semantics/ui/attributes
   static-semantics/ui/template-calls
 
@@ -17,7 +18,7 @@ rules // page definitions
     targs == [] | error $[Template arguments are not allowed on page definitions] @targs,
     new s_page, s_page -F-> s_global,
     fargTypes == typesOfArgs(s_global, fargs),
-    declareVars(s_page, zipArgTypes(fargs, fargTypes)),
+    declareParameters(s_page, zipArgTypes(fargs, fargTypes)),
     new s_body, s_body -P-> s_page,
     declarePage(s_global, x, fargTypes),
     templateElementsOk(s_body, elements).
@@ -29,7 +30,7 @@ rules // template definitions
     new s_template, s_template -F-> s_global,
     fargTypes == typesOfArgs(s_global, fargs),
     targTypes == typesOfTemplateArgs(s_global, targs),
-    declareVars(s_template, zipArgTypes(fargs, fargTypes)),
+    declareParameters(s_template, zipArgTypes(fargs, fargTypes)),
     declTArgs(s_template, targTypes),
     new s_body, s_body -P-> s_template,
     declTemplate(s_global, t, fargTypes, targTypes),
@@ -93,26 +94,6 @@ rules // template elements
   jsStringPartOk : scope * JSPart
   jsStringPartOk(s, JSString(_)).
   jsStringPartOk(s, JSExp(exp)) :- typed(s, exp).
-
-rules // var decls in templates
-
-  templateElementOk(s, s_decl, TEVarDecl(TemplateVarDecl(x, sort))) :- {t}
-    t == typeOfSort(s, sort),
-    inequalType(t, UNTYPED()) | error $[Unknown type [sort]] @sort,
-    declareVar(s_decl, x, t),
-    @x.type := t.
-
-  templateElementOk(s, s_decl, TEVarDecl(TemplateVarDeclInit(x, sort, exp))) :- {t}
-    t == typeOfSort(s, sort),
-    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [sort]] @exp,
-    declareVar(s_decl, x, t),
-    @x.type := t.
-
-  templateElementOk(s, s_decl, TEVarDecl(TemplateVarDeclInitInferred(x, exp))) :- {t}
-    t == typeOfExp(s, exp),
-    inequalType(t, UNTYPED()) | error $[Unable to infer type of [exp]] @exp,
-    declareVar(s_decl, x, t),
-    @x.type := t.
 
 rules // utils
 

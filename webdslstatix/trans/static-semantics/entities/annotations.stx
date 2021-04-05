@@ -39,8 +39,9 @@ rules // annotation declaration and resolving
 
   resolveAnnotation : scope * string -> list((path * (string * ANNOTATION)))
   resolveAnnotation(s, x) = dropUniqueIdsAnno(ps) :-
-    query annotation filter EXTEND?
+    query annotation filter P* F* EXTEND?
                      and { x' :- x' == ((x, _), _) }
+                     min $ < P, $ < F, $ < EXTEND, P < F, P < EXTEND, F < EXTEND
                      in s |-> ps.
 
   // entity level
@@ -157,7 +158,7 @@ rules // predicates
 
   isMutable : scope * string
   isMutable(s, x) :-
-    doesNotHaveAnnotation(resolveAnnotation(s, x), DERIVED()).
+    doesNotHaveAnnotation(resolveAnnotation(s, x), DERIVED()) | error $[[x] is not mutable].
 
   isMutableProperty : TYPE * string
   isMutableProperty(_, _) :- false | error $[Can only check mutability of native class and entity properties].

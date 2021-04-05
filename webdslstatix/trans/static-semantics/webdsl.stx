@@ -7,6 +7,7 @@ imports
   static-semantics/actions/built-ins
   static-semantics/actions/functions
 
+  static-semantics/entities/annotations
   static-semantics/entities/built-ins
 
   static-semantics/types/built-ins
@@ -201,12 +202,12 @@ rules // variable declaration and resolving
               and { x' :- x' == ((x, _), _) }
               in s_entity |-> ps.
 
-  // map does not suffice here due to list of tuples
-  declareVars : scope * list((string * TYPE))
-  declareVars(s, []).
-  declareVars(s, [(x, t)|tail]) :-
+  declareParameters : scope * list((string * TYPE))
+  declareParameters(s, []).
+  declareParameters(s, [(x, t)|tail]) :-
     declareVar(s, x, t),
-    declareVars(s, tail).
+    declareAnnotation(s, x, DERIVED()), // abuse derived annotation to declare immutability of parameters
+    declareParameters(s, tail).
 
 rules // declare common rules and mappings
 
