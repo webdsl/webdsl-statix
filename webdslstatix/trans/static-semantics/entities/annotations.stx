@@ -1,6 +1,8 @@
 module static-semantics/entities/annotations
 
 imports
+  static-semantics/types/built-ins
+
   static-semantics/webdsl-actions
   static-semantics/webdsl-entities
   static-semantics/webdsl-types
@@ -12,17 +14,24 @@ signature
     ANNOTATION
 
   constructors
+    // annotations on a property level
+    ID          : ANNOTATION
     OVERRIDABLE : ANNOTATION
     NAME        : ANNOTATION
     TRANSIENT   : ANNOTATION
     DERIVED     : ANNOTATION
     INVERSE     : ANNOTATION
 
+    // annotations on entity level
+    SESSIONENTITY : ANNOTATION
+    SUBENTITY     : ANNOTATION
+
   relations
     annotation : (string * scope) * ANNOTATION
 
 rules // annotation declaration and resolving
 
+  // property level
   declareAnnotations maps declareAnnotation(*, *, list(*))
   declareAnnotation : scope * string * ANNOTATION
   declareAnnotation(s, p, a) :-
@@ -34,21 +43,36 @@ rules // annotation declaration and resolving
                      and { x' :- x' == ((x, _), _) }
                      in s |-> ps.
 
+  // entity level
+  declareEntityAnnotation : scope * ANNOTATION
+  declareEntityAnnotation(s, a) :-
+    declareAnnotation(s, "_ENTITY", a).
+
+  resolveEntityAnnotation : scope -> list((path * (string * ANNOTATION)))
+  resolveEntityAnnotation(s) = resolveAnnotation(s, "_ENTITY").
+
 rules
 
   annotationsOk maps annotationOk(*, *, *, list(*))
   annotationOk : scope * string * TYPE * Annotation
-  annotationOk(_, _, _, _) :- false | error $[Static analysis not implemented for this annotation].
+  annotationOk(_, _, _, a) :- false | error $[Static analysis not implemented for this annotation] @a.
 
   annotationOk(s, p, _, TransientAnno()) :-
     declareAnnotation(s, p, TRANSIENT()).
+
+  annotationOk(s, p, t, a@IdAnno()) :-
+    declareAnnotation(s, p, ID()),
+    noDuplicateIdAnnotations(s) | error $[Only one id annotatation allowed in an entity] @a,
+    equalType(t, string(s))     | error $[Id property must be of type String] @a,
+    isTopLevelEntity(s)         | error $[Id annotation not allowed in sub-entities] @a,
+    isNoSessionEntity(s)        | error $[Id annotation not allowed in session entities] @a.
 
   annotationOk(s, p, _, NameAnno()) :-
     declareAnnotation(s, p, NAME()),
     noMultipleNameAnnotations(s).
 
-  annotationOk(s, p, _, CacheAnno()) :-
-    hasAnnotation(resolveAnnotation(s, p), DERIVED()) | error $[cached annotation can only be set on derived properties].
+  annotationOk(s, p, _, a@CacheAnno()) :-
+    hasAnnotation(resolveAnnotation(s, p), DERIVED()) | error $[cached annotation can only be set on derived properties] @a.
 
   // inverse property on List<t>
   annotationOk(s, p, LIST(t), InverseAnno(sort, prop)) :- {sortType s_sort}
@@ -85,16 +109,16 @@ rules
 
   annotationOk(_, _, _, NotNullAnno()).
   annotationOk(_, _, _, NotEmptyAnno()).
-  annotationOk(s, _, t, AllowedAnno(exp)) :- {t'}
+  annotationOk(s, _, t, a@AllowedAnno(exp)) :- {t'}
     t' == typeOfExp(s, exp),
     or(
       typeCompatibleB(t', LIST(t)),
       typeCompatibleB(t', SET(t))
-    ) | error $[Allowed expression must be a list of set of type [t], [t'] given].
+    ) | error $[Allowed expression must be a list of set of type [t], [t'] given] @a.
 
-  annotationOk(s, _, t, DefaultAnno(exp)) :- {t'}
+  annotationOk(s, _, t, a@DefaultAnno(exp)) :- {t'}
     t' == typeOfExp(s, exp),
-    typeCompatible(t', t) | error $[Default value must be of type [t], [t'] given].
+    typeCompatible(t', t) | error $[Default value must be of type [t], [t'] given] @a.
 
   annotationOk(_, _, _, LengthAnno(_)).
   annotationOk(s, _, _, FormatAnno(str)) :- stringOk(s, str).
@@ -108,11 +132,23 @@ rules
 
 rules // predicates
 
+  isTopLevelEntity : scope
+  isTopLevelEntity(s) :- doesNotHaveAnnotation(resolveEntityAnnotation(s), SUBENTITY()).
+
+  isNoSessionEntity : scope
+  isNoSessionEntity(s) :- doesNotHaveAnnotation(resolveEntityAnnotation(s), SESSIONENTITY()).
+
+  noDuplicateIdAnnotations : scope
+  noDuplicateIdAnnotations(s) :-
+    query annotation filter EXTEND?
+                     and { x' :- x' == ((_, _), ID()) }
+                     in s |-> [_].
+
   noMultipleNameAnnotations : scope
   noMultipleNameAnnotations(s) :-
     query annotation filter EXTEND?
                      and { x' :- x' == ((_, _), NAME()) }
-                     in s |-> [_] | error $[Found multiple properties called "name" or with (name) annotation].
+                     in s |-> [_] | error $[Found multiple properties called "name" or with a name annotation].
 
   noDoubleInverse : TYPE * string
   noDoubleInverse(ENTITY(s_ent), x) :-

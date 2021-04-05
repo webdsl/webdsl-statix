@@ -19,9 +19,6 @@ rules
   normalize-data : RequestVarDeclInitDepr(x, sort, exp) -> RequestVarDeclInit(x, sort, exp)
   normalize-data : RequestVarDeclInitInferredDepr(x, exp) -> RequestVarDeclInitInferred(x, exp)
 
-  // All user-defined entities inherit from the built-in entity "Entity"
-  normalize-data : EntityNoSuper(e, elems) -> Entity(e, "Entity", elems)
-
   normalize-data: Property(x, k, srt, PropAnnos(annos)) -> Property(x, k, srt, PropAnnos(annos'))
     where   <not(fetch-elem(?NameAnno()))> annos
           ; <?"name"> x

@@ -17,17 +17,20 @@ rules // entity declaration
     new s_entity, s_entity -INHERIT-> s_super,
     noCircularInheritance(s_entity) | error $[Circular inhertitance detected] @e,
     declEntity(s_global, s_entity, x, bodydecs),
+    declareEntityAnnotation(s_entity, SUBENTITY()),
     @super.ref := super'.
 
   // entity x { ... }
-  defOk(s_global, EntityNoSuper(x, bodydecs)) :- {s_entity}
-    new s_entity, s_entity -IMPORT-> s_global,
+  defOk(s_global, EntityNoSuper(x, bodydecs)) :- {s_entity s_super}
+    resolveType(s_global, "Entity") == [(_, (_, ENTITY(s_super)))],
+    new s_entity, s_entity -INHERIT-> s_super,
     declEntity(s_global, s_entity, x, bodydecs).
 
   // session x { ... }
   defOk(s_global, SessionEntity(x, bodydecs)) :- {s_entity}
     new s_entity, s_entity -IMPORT-> s_global,
-    declEntity(s_global, s_entity, x, bodydecs).
+    declEntity(s_global, s_entity, x, bodydecs),
+    declareEntityAnnotation(s_entity, SESSIONENTITY()).
 
   declEntity : scope * scope * string * list(EntityBodyDeclaration)
   declEntity(s_global, s_entity, entity_name, bodydecs) :-
