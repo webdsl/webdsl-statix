@@ -65,6 +65,10 @@ rules
     IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)|elseif*@[_|_]], elem){anno*} ->
     IfTempl(e1, elem1*, [IfElseIfTempl(e2, elem2*, elseif*, elem)]){anno*}
 
+  normalize-ui: OptFilterNone() -> OptFilterSome(FilterNoOrderByNoLimit(True()))
+
+  normalize-ui: ForSeparatorNone() -> ForSeparator([])
+
   normalize-ui : TemplateVarDeclDepr(x, sort) -> TemplateVarDecl(x, sort)
   normalize-ui : TemplateVarDeclInitDepr(x, sort, exp) -> TemplateVarDeclInit(x, sort, exp)
   normalize-ui : TemplateVarDeclInitInferredDepr(x, exp) -> TemplateVarDeclInitInferred(x, exp)

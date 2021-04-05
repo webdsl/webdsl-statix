@@ -222,6 +222,11 @@ rules // resolve reference types
 
 rules // utils
 
+  stripGenericType : TYPE -> TYPE
+  stripGenericType(t) = UNTYPED() :- false | error $[Must be a list or set, [t] given].
+  stripGenericType(LIST(t)) = t.
+  stripGenericType(SET(t)) = t.
+
   typed : scope * Exp
   typed(s, exp) :- inequalType(typeOfExp(s, exp), UNTYPED()).
 

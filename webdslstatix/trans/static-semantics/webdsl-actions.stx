@@ -70,6 +70,59 @@ rules // statements
     new s_else, s_else -P-> s,
     stmtsOk(s_else, else, rt).
 
+rules // loops
+
+  stmtOk(s, _, ForStmt(x, srt, exp, OptFilterSome(f), Block(stmts)), rt) :- {s_for typeOfSort typeOfExp}
+    typeOfSort == typeOfSort(s, srt),
+    typeOfExp == typeOfExp(s, exp),
+    or(
+      equalTypeB(LIST(typeOfSort), typeOfExp),
+      equalTypeB(SET(typeOfSort), typeOfExp)
+    ) | error $[Must be a list or set of type [typeOfSort], [typeOfExp] given] @exp,
+    new s_for, s_for -P-> s,
+    forLoopFilterOk(s_for, f),
+    forLoopStmtsOk(s_for, x, typeOfSort, stmts, rt),
+    @x.type := typeOfSort.
+
+  stmtOk(s, _, ForStmtInferred(x, exp, OptFilterSome(f), Block(stmts)), rt) :- {s_for typeOfExp t}
+    typeOfExp == typeOfExp(s, exp),
+    t == stripGenericType(typeOfExp),
+    new s_for, s_for -P-> s,
+    forLoopFilterOk(s_for, f),
+    forLoopStmtsOk(s_for, x, t, stmts, rt),
+    @x.type := t.
+
+  stmtOk(s, _, ForAllStmt(x, srt, OptFilterSome(f), Block(stmts)), rt) :- {s_for typeOfSort}
+    typeOfSort == typeOfSort(s, srt),
+    new s_for, s_for -P-> s,
+    forLoopFilterOk(s_for, f),
+    forLoopStmtsOk(s_for, x, typeOfSort, stmts, rt),
+    @x.type := typeOfSort.
+
+  stmtOk(s, _, ForCountStmt(x, fromExp, toExp, Block(stmts)), rt) :- {s_for intType}
+    intType == int(s),
+    equalType(typeOfExp(s, fromExp), intType) | error $[From expression should have type Int],
+    equalType(typeOfExp(s, toExp)  , intType) | error $[To expression should have type Int],
+    new s_for, s_for -P-> s,
+    forLoopStmtsOk(s_for, x, intType, stmts, rt),
+    @x.type := intType.
+
+  forLoopStmtsOk : scope * string * TYPE * list(Statement) * TYPE
+  forLoopStmtsOk(s_for, x, t, stmts, rt) :-
+    declareVar(s_for, x, t),
+    declareAnnotation(s_for, x, DERIVED()), // abuse derived annotation to declare immutability of x
+    stmtsOk(s_for, stmts, rt).
+
+  forLoopFilterOk : scope * Filter
+  forLoopFilterOk(s, f). // TO-DO
+
+  stmtOk(s, _, WhileStmt(exp, Block(stmts)), rt) :- {s_while}
+    equalType(typeOfExp(s, exp), bool(s)) | error $[Condition should be of type bool] @exp,
+    new s_while, s_while -P-> s,
+    stmtsOk(s_while, stmts, rt).
+
+rules // return statements
+
   stmtOk(s, _, r@Return(exp), returnType) :- {returnExpType}
     inequalType(returnType, UNTYPED()) | error $[Return statement not allowed here] @r,
     inequalType(returnType, VOID()) | error $[No return type specified in this context] @exp,

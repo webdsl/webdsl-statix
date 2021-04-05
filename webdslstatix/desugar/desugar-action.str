@@ -15,9 +15,9 @@ rules
   normalize-action : PropAssignmentComma(assignment) -> PropAssignment(assignment)
   normalize-action : EmailFunctionCallAlt(emailcall) -> EmailFunctionCall(emailcall)
 
-  normalize-action : FilterNoOrderByNoLimit(we) -> Filter(we, [], Limit(Int("-1"), Int("0")))
-  normalize-action : FilterNoWhereNoLimit(obe)  -> Filter(True(), obe, Limit(Int("-1"), Int("0")))
-  normalize-action : FilterNoLimit(we, obe)     -> Filter(we, obe, Limit(Int("-1"), Int("0")))
+  normalize-action : FilterNoOrderByNoLimit(we) -> Filter(we, [], Limit(Const(Int("-1")), Const(Int("0"))))
+  normalize-action : FilterNoWhereNoLimit(obe)  -> Filter(True(), obe, Limit(Const(Int("-1")), Const(Int("0"))))
+  normalize-action : FilterNoLimit(we, obe)     -> Filter(we, obe, Limit(Const(Int("-1")), Const(Int("0"))))
   normalize-action : FilterNoOrderBy(we, l)     -> Filter(we, [], l)
   normalize-action : FilterNoWhere(obe, l)      -> Filter(True(), obe, l)
   normalize-action : FilterNoWhereNoOrderBy(l)  -> Filter(True(), [], l)
@@ -25,8 +25,8 @@ rules
 // All rules and signatures below are copied directly from the WebDSL compiler.
 // Some concrete syntax transformations have been rewritten as abstract syntax transformations
 
-  normalize-action : LimitNoLimit(e) -> Limit(Int("-1"), e)
-  normalize-action : LimitNoOffset(e) -> Limit(e, Int("0"))
+  normalize-action : LimitNoLimit(e) -> Limit(Const(Int("-1")), e)
+  normalize-action : LimitNoOffset(e) -> Limit(e, Const(Int("0")))
   
   normalize-action : OrderNonSpecific(x) -> OrderAscending(x)
   

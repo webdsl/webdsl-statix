@@ -3,6 +3,10 @@ module static-semantics/webdsl-ui
 imports
   static-semantics/actions/functions
 
+  static-semantics/entities/annotations
+
+  static-semantics/types/built-ins
+
   static-semantics/ui/actions
   static-semantics/ui/attributes
   static-semantics/ui/template-calls
@@ -96,6 +100,58 @@ rules // template elements
   jsStringPartOk : scope * JSPart
   jsStringPartOk(s, JSString(_)).
   jsStringPartOk(s, JSExp(exp)) :- typed(s, exp).
+
+rules // loops
+
+  templateElementOk(s, _, For(x, srt, exp, OptFilterSome(f), elems, ForSeparator(separatorElems))) :- {s_for typeOfSort typeOfExp}
+    typeOfSort == typeOfSort(s, srt),
+    typeOfExp == typeOfExp(s, exp),
+    or(
+      equalTypeB(LIST(typeOfSort), typeOfExp),
+      equalTypeB(SET(typeOfSort), typeOfExp)
+    ) | error $[Must be a list or set of type [typeOfSort], [typeOfExp] given] @exp,
+    new s_for, s_for -P-> s,
+    forLoopFilterOk(s_for, f),
+    forLoopOk(s_for, x, typeOfSort, elems),
+    separatorOk(s, separatorElems),
+    @x.type := typeOfSort.
+
+  templateElementOk(s, _, ForInferred(x, exp, OptFilterSome(f), elems, ForSeparator(separatorElems))) :- {s_for typeOfExp t}
+    typeOfExp == typeOfExp(s, exp),
+    t == stripGenericType(typeOfExp),
+    new s_for, s_for -P-> s,
+    forLoopFilterOk(s_for, f),
+    forLoopOk(s_for, x, t, elems),
+    separatorOk(s, separatorElems),
+    @x.type := t.
+
+  templateElementOk(s, _, ForAll(x, srt, OptFilterSome(f), elems, ForSeparator(separatorElems))) :- {s_for typeOfSort}
+    typeOfSort == typeOfSort(s, srt),
+    new s_for, s_for -P-> s,
+    forLoopFilterOk(s_for, f),
+    forLoopOk(s_for, x, typeOfSort, elems),
+    separatorOk(s, separatorElems),
+    @x.type := typeOfSort.
+
+  templateElementOk(s, _, ForCount(x, fromExp, toExp, elems, ForSeparator(separatorElems))) :- {s_for intType}
+    intType == int(s),
+    equalType(typeOfExp(s, fromExp), intType) | error $[From expression should have type Int],
+    equalType(typeOfExp(s, toExp)  , intType) | error $[To expression should have type Int],
+    new s_for, s_for -P-> s,
+    forLoopOk(s_for, x, intType, elems),
+    separatorOk(s, separatorElems),
+    @x.type := intType.
+
+  forLoopOk : scope * string * TYPE * list(TemplateElement)
+  forLoopOk(s_for, x, t, stmts) :-
+    declareVar(s_for, x, t),
+    declareAnnotation(s_for, x, DERIVED()), // abuse derived annotation to declare immutability of x
+    templateElementsOk(s_for, stmts).
+
+  separatorOk : scope * list(TemplateElement)
+  separatorOk(s, elems) :- {s_separator}
+    new s_separator, s_separator -P-> s,
+    templateElementsOk(s_separator, elems).
 
 rules // enforce correct order of template elements
 
