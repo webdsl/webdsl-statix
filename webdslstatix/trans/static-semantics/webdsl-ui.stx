@@ -94,7 +94,25 @@ rules // template elements
   jsStringPartOk(s, JSString(_)).
   jsStringPartOk(s, JSExp(exp)) :- typed(s, exp).
 
+rules // var decls in templates
 
+  templateElementOk(s, s_decl, TEVarDecl(TemplateVarDecl(x, sort))) :- {t}
+    t == typeOfSort(s, sort),
+    inequalType(t, UNTYPED()) | error $[Unknown type [sort]] @sort,
+    declareVar(s_decl, x, t),
+    @x.type := t.
+
+  templateElementOk(s, s_decl, TEVarDecl(TemplateVarDeclInit(x, sort, exp))) :- {t}
+    t == typeOfSort(s, sort),
+    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [sort]] @exp,
+    declareVar(s_decl, x, t),
+    @x.type := t.
+
+  templateElementOk(s, s_decl, TEVarDecl(TemplateVarDeclInitInferred(x, exp))) :- {t}
+    t == typeOfExp(s, exp),
+    inequalType(t, UNTYPED()) | error $[Unable to infer type of [exp]] @exp,
+    declareVar(s_decl, x, t),
+    @x.type := t.
 
 rules // utils
 

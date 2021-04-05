@@ -103,7 +103,7 @@ context-free syntax
   VarDecl.TemplateVarDeclInitInferredDepr = <
     var <VarId> := <Exp> ;
   > {deprecated("remove ;")}
-  TemplateElement = VarDecl
+  TemplateElement.TEVarDecl = VarDecl
   TemplateElement.RequestScopeTemplate = <
     request <VarDecl>
   >
