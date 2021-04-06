@@ -15,6 +15,7 @@ imports
   static-semantics/webdsl-ac
   static-semantics/webdsl-actions
   static-semantics/webdsl-entities
+  static-semantics/webdsl-hql
   static-semantics/webdsl-modules
   static-semantics/webdsl-native
   static-semantics/webdsl-types

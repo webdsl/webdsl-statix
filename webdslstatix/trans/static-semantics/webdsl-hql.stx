@@ -1,0 +1,31 @@
+module static-semantics/webdsl-hql
+
+imports
+  static-semantics/webdsl-types
+  static-semantics/webdsl
+
+rules
+
+  typeOfExp(s, HqlExp(hqlExp)) = typeOfHqlExp(s, hqlExp).
+
+  typeOfHqlExp : scope * HqlExp -> TYPE
+  typeOfHqlExp(s, HqlQuery(queryRule)) = typeOfHqlQueryRule(s, queryRule).
+  typeOfHqlExp(s, HqlQueryLimit(queryRule, _)) = typeOfHqlQueryRule(s, queryRule).
+  typeOfHqlExp(s, HqlQueryLimitOffset(queryRule, _, _)) = typeOfHqlQueryRule(s, queryRule).
+
+  typeOfHqlQueryRule : scope * HQLQueryRule -> TYPE
+  typeOfHqlQueryRule(s, QueryRule(SelectFrom(select, from), where, groupBy, orderBy)) = typeOfHqlSelectFrom(s, select, from).
+
+  typeOfHqlSelectFrom : scope * HQLSelectClauseOpt * HQLFromClause -> TYPE
+  typeOfHqlSelectFrom(s, Select(_, selection), _)    = typeOfHqlSelect(s, selection).
+  typeOfHqlSelectFrom(s, SelectNone()        , from) = typeOfHqlFrom(s, from).
+
+  typeOfHqlSelect : scope * HQLSelection -> TYPE
+
+  typeOfHqlFrom : scope * HQLFromClause -> TYPE
+  typeOfHqlFrom(s, FromClause([FromRangeJoin(fromRange, _) | _])) = typeOfHqlFromRange(s, fromRange).
+
+  typeOfHqlFromRange : scope * HQLFromRange -> TYPE
+  typeOfHqlFromRange(s, FromClassOrOuterQueryPath(Path([ent]), _, _)) = LIST(t) :-
+    t == definedType(s, ent),
+    t == ENTITY(_) | error $[[ent] is not an entity].

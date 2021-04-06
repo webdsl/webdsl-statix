@@ -34,8 +34,6 @@ context-free sorts
 
 context-free syntax
 
-  HqlExp.HqlTest = <hqltest <HQLQueryRule>>
-
   HQLStatement.DeleteStatement = HQLDeleteStatement
   HQLStatement.SelectStatement = HQLQueryRule
 
