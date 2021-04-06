@@ -20,12 +20,14 @@ rules
     declareVar(s_ent, "name"     , string(s)), declareAnnotations(s_ent, "name", [OVERRIDABLE(), NAME()]),
     declareVar(s_ent, "created"  , datetime(s)),
     declareVar(s_ent, "modified" , datetime(s)),
+    declareFunction(s_ent, "save"  , [], VOID()),
+    declareFunction(s_ent, "delete", [], VOID()), // TO-DO: not allowed on session entities and global vars
 
-    new s_sessionmessage, s_sessionmessage -IMPORT-> s,
+    new s_sessionmessage, s_sessionmessage -INHERIT-> s_ent,
     declareType(s, "SessionMessage", ENTITY(s_sessionmessage)),
     declareVar(s_sessionmessage, "text", text(s)),
 
-    new s_sessionmanager, s_sessionmanager -IMPORT-> s_sessionmanager,
+    new s_sessionmanager, s_sessionmanager -INHERIT-> s_ent,
     declareType(s, "SessionManager", ENTITY(s_sessionmanager)),
     declareVar(s_sessionmanager, "messages"         , ENTITY(s_sessionmessage)),
     declareVar(s_sessionmanager, "lastUse"          , datetime(s)),

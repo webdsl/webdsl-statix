@@ -23,7 +23,13 @@ rules
 
 rules // subtype compatiblity
 
-  typeCompatibleB(NATIVECLASS(s_sub), NATIVECLASS(s_super)) = inherits(s_sub, s_super).
+  typeCompatibleB(NATIVECLASS(s_sub), NATIVECLASS(s_super)) =
+    orB(
+      inherits(s_sub, s_super),
+      equalTypeB(definedTypeNoRef(s_sub, "Object"), NATIVECLASS(s_sub))
+    ).
+
+  typeCompatibleB(NATIVECLASS(s_object), _) = equalTypeB(definedTypeNoRef(s_object, "Object"), NATIVECLASS(s_object)).
 
 rules // declarations
 
