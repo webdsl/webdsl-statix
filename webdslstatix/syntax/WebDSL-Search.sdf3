@@ -7,12 +7,12 @@ imports
 
 lexical sorts
 
-  SA-Value SearcherKW SearchFieldId SEARCHERREF INDEXORQUERY
+  SA-Value SearcherKW SearchFieldId SEARCHERREF
 
 context-free sorts
 
   FullTextAnalyzerBody FullTextAnalyzerBodyDef CharFilter Tokenizer
-  TokenFilter Argument OptDefaultAnalyzer OptArguments SA-Key
+  TokenFilter AnalyzerArgument OptDefaultAnalyzer OptAnalyzerArguments
 
 context-free syntax
 
@@ -22,26 +22,45 @@ context-free syntax
     }
   >
 
-  OptDefaultAnalyzer.OptDefaultAnalyzerNone = <>
-  OptDefaultAnalyzer.DefaultAnalyzer = <default>
+  OptDefaultAnalyzer.NonDefaultAnalyzer     = <>
+  OptDefaultAnalyzer.DefaultAnalyzer        = <default>
   OptDefaultAnalyzer.DefaultBuiltInAnalyzer = <default_builtin_analyzer>
 
-  FullTextAnalyzerBody = FullTextAnalyzerBodyDef
-  FullTextAnalyzerBody.DualFullTextAnalyzerBodyDef = <<INDEXORQUERY> { <FullTextAnalyzerBodyDef> } <INDEXORQUERY> { <FullTextAnalyzerBodyDef> }>
-  FullTextAnalyzerBodyDef.FullTextAnalyzerBodyDef = <<CharFilter*> <Tokenizer> <TokenFilter*>>
+  FullTextAnalyzerBody.FullTextAnalyzerBody = <
+    <FullTextAnalyzerBodyDef>
+  >
+  FullTextAnalyzerBody.DualFullTextAnalyzerBody = <
+    index {
+      <FullTextAnalyzerBodyDef>
+    }
+    query {
+      <FullTextAnalyzerBodyDef>
+    }>
 
-  CharFilter.CharFilter   = <char filter = <Id> <OptArguments>>
-  Tokenizer.Tokenizer     = <tokenizer = <Id> <OptArguments>>
-  TokenFilter.TokenFilter = <token filter = <Id> <OptArguments>>
+  FullTextAnalyzerBodyDef.FullTextAnalyzerBodyDef = <
+    <CharFilter*>
+    <Tokenizer>
+    <TokenFilter*>
+  >
 
-  OptArguments.OptArgumentsNone = <>
-  OptArguments.Arguments = <( <{Argument ","}*> )>
+  CharFilter.CharFilter = <
+    char filter = <Id> <OptAnalyzerArguments>
+  >
+  Tokenizer.Tokenizer = <
+    tokenizer = <Id> <OptAnalyzerArguments>
+  >
+  TokenFilter.TokenFilter = <
+    token filter = <Id> <OptAnalyzerArguments>
+  >
 
-  Argument.Argument = <<Id> = <String>>
+  OptAnalyzerArguments.OptAnalyzerArgumentsNone = <>
+  OptAnalyzerArguments.AnalyzerArguments = <( <{AnalyzerArgument ","}*> )>
+
+  AnalyzerArgument.AnalyzerArgument = <<Id> = <String>>
 
 context-free sorts
 
-  SearchableAnno SearchNamespaceAnno SA-Argument OptSAArguments
+  SearchableAnno SearchNamespaceAnno SA-Argument OptSAArguments SA-Key
 
 context-free syntax
 
@@ -137,8 +156,6 @@ lexical syntax
   SA-Value = Id
   SA-Value = Float
   SA-Value = Int
-  INDEXORQUERY = "index"
-  INDEXORQUERY = "query"
 
 context-free sorts
 
@@ -329,8 +346,8 @@ context-free syntax
       <SearchMappingContent*>
     }
   > {deprecated("keyword `searchmapping` is replaced with `search mapping`")}
-  CharFilter.CharFilterDepr = <charfilter = <Id> <OptArguments>> {deprecated("keyword `charfilter` is replaced with `char filter`")}
-  TokenFilter.TokenFilterDepr = <tokenfilter = <Id> <OptArguments>> {deprecated("keyword `tokenfilter` is replaced with `token filter`")}
+  CharFilter.CharFilterDepr = <charfilter = <Id> <OptAnalyzerArguments>> {deprecated("keyword `charfilter` is replaced with `char filter`")}
+  TokenFilter.TokenFilterDepr = <tokenfilter = <Id> <OptAnalyzerArguments>> {deprecated("keyword `tokenfilter` is replaced with `token filter`")}
   RetrievalExp.AllFacetResults = <all <SearchField> facets from <Exp>> {deprecated("the `all` keyword has been deprecated and has no effect on facet retrieval anymore")}
   FacetExp.DiscreteFacetDefDepr = <( <SearchField> , <Exp> )> {deprecated("the notation: (field,topN) has been replaced with field(topN) ")}
   FacetExp.RangeFacetDefDepr = <( <SearchField> : <{Range ","}+> )> {deprecated("the notation: (field:[min to max], ...) has been replaced with field([min to max], ...) ")}

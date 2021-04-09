@@ -1,0 +1,147 @@
+module syntax/search/analyzers
+
+language webdsl-statix
+
+fixture [[
+  application search_analyzers
+
+  [[...]]
+]]
+
+// analyzer definition
+test analyzer tokenizer [[
+  analyzer a {
+    tokenizer = t
+  }
+]] parse succeeds parse to FullTextAnalyzer(NonDefaultAnalyzer(), "a", FullTextAnalyzerBody(FullTextAnalyzerBodyDef([], Tokenizer("t", OptAnalyzerArgumentsNone()), [])))
+
+test default analyzer [[
+  default analyzer a {
+    tokenizer = t
+  }
+]] parse succeeds parse to FullTextAnalyzer(DefaultAnalyzer(), "a", FullTextAnalyzerBody(FullTextAnalyzerBodyDef([], Tokenizer("t", OptAnalyzerArgumentsNone()), [])))
+
+test default builtin tokenizer [[
+  default_builtin_analyzer analyzer a {
+    tokenizer = t
+  }
+]] parse succeeds parse to FullTextAnalyzer(DefaultBuiltInAnalyzer(), "a", FullTextAnalyzerBody(FullTextAnalyzerBodyDef([], Tokenizer("t", OptAnalyzerArgumentsNone()), [])))
+
+test non-existing tokenizer [[
+  randomAnnotation analyzer a {
+    tokenizer = t
+  }
+]] parse fails
+
+
+// analyzer body
+test analyzer without elements [[
+  analyzer a {  }
+]] parse fails
+
+test analyzer only char filter [[
+  analyzer a {
+    char filter = cf
+  }
+]] parse fails
+
+test analyzer only token filter [[
+  analyzer a {
+    token filter = t
+  }
+]] parse fails
+
+test analyzer char filter, tokenizer and token filter [[
+  analyzer a {
+    char filter = cf
+    tokenizer = t
+    token filter = tf
+  }
+]] parse succeeds parse to FullTextAnalyzer(NonDefaultAnalyzer(), "a", FullTextAnalyzerBody(FullTextAnalyzerBodyDef([CharFilter("cf", OptAnalyzerArgumentsNone())], Tokenizer("t", OptAnalyzerArgumentsNone()), [TokenFilter("tf", OptAnalyzerArgumentsNone())])))
+
+test analyzer multiple char filters [[
+  analyzer a {
+    char filter = cf1
+    char filter = cf2
+    tokenizer = t
+  }
+]] parse succeeds parse to FullTextAnalyzer(NonDefaultAnalyzer(), "a", FullTextAnalyzerBody(FullTextAnalyzerBodyDef([CharFilter("cf1", OptAnalyzerArgumentsNone()), CharFilter("cf2", OptAnalyzerArgumentsNone())], Tokenizer("t", OptAnalyzerArgumentsNone()), [])))
+
+test analyzer multiple tokenizers [[
+  analyzer a {
+    tokenizer = t1
+    tokenizer = t2
+  }
+]] parse fails
+
+test analyzer multiple token filters [[
+  analyzer a {
+    tokenizer = t
+    token filter = tf1
+    token filter = tf2
+  }
+]] parse succeeds parse to FullTextAnalyzer(NonDefaultAnalyzer(), "a", FullTextAnalyzerBody(FullTextAnalyzerBodyDef([], Tokenizer("t", OptAnalyzerArgumentsNone()), [TokenFilter("tf1", OptAnalyzerArgumentsNone()), TokenFilter("tf2", OptAnalyzerArgumentsNone())])))
+
+test analyzer index query [[
+  analyzer a {
+    index {
+      char filter = cf
+      tokenizer = t
+      token filter = tf
+    }
+    query {
+      char filter = cf
+      tokenizer = t
+      token filter = tf
+    }
+  }
+]] parse succeeds parse to FullTextAnalyzer(NonDefaultAnalyzer(), "a", DualFullTextAnalyzerBody(FullTextAnalyzerBodyDef([CharFilter("cf", OptAnalyzerArgumentsNone())], Tokenizer("t", OptAnalyzerArgumentsNone()), [TokenFilter("tf", OptAnalyzerArgumentsNone())]), FullTextAnalyzerBodyDef([CharFilter("cf", OptAnalyzerArgumentsNone())], Tokenizer("t", OptAnalyzerArgumentsNone()), [TokenFilter("tf", OptAnalyzerArgumentsNone())])))
+
+test analyzer index query no body [[
+  analyzer a {
+    index { }
+    query { }
+  }
+]] parse fails
+
+test analyzer query index [[
+  analyzer a {
+    query {
+      char filter = cf
+      tokenizer = t
+      token filter = tf
+    }
+    index {
+      char filter = cf
+      tokenizer = t
+      token filter = tf
+    }
+  }
+]] parse fails
+
+
+// optional analyzer arguments
+
+test analyzer tokenizer optional arguments [[
+  analyzer a {
+    tokenizer = t
+  }
+]] parse succeeds parse to FullTextAnalyzer(NonDefaultAnalyzer(), "a", FullTextAnalyzerBody(FullTextAnalyzerBodyDef([], Tokenizer("t", OptAnalyzerArgumentsNone()), [])))
+
+test analyzer tokenizer optional arguments empty [[
+  analyzer a {
+    tokenizer = t()
+  }
+]] parse succeeds parse to FullTextAnalyzer(NonDefaultAnalyzer(), "a", FullTextAnalyzerBody(FullTextAnalyzerBodyDef([], Tokenizer("t", AnalyzerArguments([])), [])))
+
+test analyzer tokenizer optional arguments one [[
+  analyzer a {
+    tokenizer = t ( x = "first" )
+  }
+]] parse succeeds parse to FullTextAnalyzer(NonDefaultAnalyzer(), "a", FullTextAnalyzerBody(FullTextAnalyzerBodyDef([], Tokenizer("t", AnalyzerArguments([AnalyzerArgument("x", String([StringValue("first")]))])), [])))
+
+test analyzer tokenizer optional arguments multiple [[
+  analyzer a {
+    tokenizer = t ( x = "first", y = "second")
+  }
+]] parse succeeds parse to FullTextAnalyzer(NonDefaultAnalyzer(), "a", FullTextAnalyzerBody(FullTextAnalyzerBodyDef([], Tokenizer("t", AnalyzerArguments([AnalyzerArgument("x", String([StringValue("first")])), AnalyzerArgument("y", String([StringValue("second")]))])), [])))

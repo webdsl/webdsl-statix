@@ -26,3 +26,5 @@ rules
   normalize-search : RangeAlt(open, exp1, exp2, close) -> Range(open, exp1, exp2, close)
   normalize-search : AscendingAbbr() -> Ascending()
   normalize-search : DescendingAbbr() -> Descending()
+
+  normalize-search : OptAnalyzerArgumentsNone() -> AnalyzerArguments([])
