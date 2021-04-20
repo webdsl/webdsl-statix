@@ -22,7 +22,7 @@ rules // Analysis
 //  editor-analyze  = stx-editor-analyze(pre-analyze, post-analyze|"statics", "applicationOk")
 
   // multi-file analysis
-  editor-analyze = stx-editor-analyze(pre-analyze, post-analyze|"statics", "projectOk", "fileOk")
+  editor-analyze-webdsl = stx-editor-analyze(pre-analyze, post-analyze|"statics", "projectOk", "fileOk")
 
 rules // Editor Services
 

@@ -1,0 +1,2 @@
+application app
+page root { }
