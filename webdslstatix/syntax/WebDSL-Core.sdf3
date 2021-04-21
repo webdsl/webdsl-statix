@@ -70,6 +70,16 @@ context-free syntax
     <Section*>
   >
 
+  Unit.BuiltInDefs = <built-in
+    <Definition+>
+
+    <Section*>
+  >
+
+  Unit.BuiltIn = <built-in
+    <Section*>
+  >
+
   Definition.Imports = <
     imports <ModuleName>
   >

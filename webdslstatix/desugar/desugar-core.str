@@ -8,6 +8,7 @@ rules
 
   normalize-core : ApplicationDefs(x, defs, sections) -> Application(x, [Section("", defs) | sections])
   normalize-core : ModuleDefs(x, defs, sections)      -> Module(x, [Section("", defs) | sections])
+  normalize-core : BuiltInDefs(defs, sections)      -> BuiltIn([Section("", defs) | sections])
 
   normalize-core : RefSortAlt(sort) -> RefSort(sort)
 

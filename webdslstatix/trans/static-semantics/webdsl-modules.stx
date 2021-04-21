@@ -13,8 +13,8 @@ rules // unit rules
     new s_app,
     declareMod(s_global, app, s_app),
     declareMod(s_global, "_APPLICATION_SCOPE", s_app), // declare this scope as the main application scope
-    declareBuiltIns(s_app),
     importModules(s_global, s_app, app, sections),
+    declareImport(s_global, app, "_BUILTIN"),
     sectionsOk(s_app, sections),
     rootPageDefined(s_app, app).
 
@@ -24,6 +24,12 @@ rules // unit rules
     importModules(s_global, s_mod, m, sections),
     sectionsOk(s_mod, sections),
     importedByApplicationRoot(s_global, s_mod, m).
+
+  unitOk(s_global, BuiltIn(sections)) :- {s_builtin}
+    new s_builtin,
+    declareMod(s_global, "_BUILTIN", s_builtin),
+    declareBuiltIns(s_builtin),
+    sectionsOk(s_builtin, sections).
 
   importModules : scope * scope * string * list(Section)
   importModules(s_global, s, m, sections) :-
