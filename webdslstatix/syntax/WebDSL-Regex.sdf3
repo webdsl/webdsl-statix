@@ -225,12 +225,17 @@ context-free syntax
   AtomCharacter = Quoted
   BracketCharacter = Quoted
 
+lexical sorts
+
+  QuotablePatternSymbolLex
+
 lexical syntax
 
-  QuotablePatternSymbol = [\|\$\*\+\?\.\{\}\(\)\&\]\[\-\^\\\!\#\%\'\,\:\;\<\=\>\@\_\`\~\/]
+  QuotablePatternSymbolLex = [\|\$\*\+\?\.\{\}\(\)\&\]\[\-\^\\\!\#\%\'\,\:\;\<\=\>\@\_\`\~\/]
 
 context-free syntax
 
+  QuotablePatternSymbol.QuotablePatternSymbol = QuotablePatternSymbolLex
   QuotablePatternSymbol = DoubleQuote
 
 lexical sorts
