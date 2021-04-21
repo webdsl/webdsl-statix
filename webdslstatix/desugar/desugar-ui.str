@@ -73,8 +73,16 @@ rules
   normalize-ui : TemplateVarDeclInitDepr(x, sort, exp) -> TemplateVarDeclInit(x, sort, exp)
   normalize-ui : TemplateVarDeclInitInferredDepr(x, exp) -> TemplateVarDeclInitInferred(x, exp)
 
-  // transform html wrappers to templates without content, no need to analyze the content
-  normalize-ui : HTMLWrapper(HTMLWrapperBody(x, y, HTMLWrapperAssigns([]))) -> DefineTemplate([], x, OptFormalArgsNone(), OptTemplateArgsNone(), [])
+  normalize-ui : HTMLWrapper(HTMLWrapperBody(x, y, HTMLWrapperAssigns(assigns))) -> DefineTemplate([], x, OptFormalArgsNone(), OptTemplateArgsNone(), [
+    XMLElement(
+        y
+      , attrs //TO-DO attributes here
+      , [] // no template elements, no need to analyze "elements" call
+      , y
+    )
+  ])
+    with attrs := <map(\HTMLWrapperAssign(attr) -> attr\)> assigns
+
   normalize-ui: Section(s, defs) -> Section(s, defs')
     where <fetch(?TemplateDefinition(HTMLWrapperMultiple(_)))> defs
     with  (body*,rest*) := <partition(?TemplateDefinition(HTMLWrapperMultiple(<id>)))> defs
