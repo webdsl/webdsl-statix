@@ -63,12 +63,21 @@ rules // statements
   stmtOk(s, _, Assignment(c@Cast(_, _), exp), _) :-
     typeCompatible(typeOfExp(s, exp), typeOfExp(s, c)).
 
+rules // if statements and expressions
+
   stmtOk(s, _, If(c, Block(then), Block(else)), rt) :- {s_then s_else}
     equalType(typeOfExp(s, c), bool(s)) | error $[Condition should be of type bool] @c,
     new s_then, s_then -P-> s,
     stmtsOk(s_then, then, rt),
     new s_else, s_else -P-> s,
     stmtsOk(s_else, else, rt).
+
+  typeOfExp(s, IfExp(ce, ie, ee)) = it :- {et ct}
+    ct == typeOfExp(s, ce),
+    equalType(ct, bool(s)) | error $[Condition should be of type bool, [ct] given],
+    it == typeOfExp(s, ie),
+    et == typeOfExp(s, ee),
+    typeCompatible(et, it) | error $[Type of else-expression ([et]) should be compatible with type of if-expression ([it])].
 
 rules // loops
 

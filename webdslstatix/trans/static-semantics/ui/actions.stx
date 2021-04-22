@@ -1,6 +1,9 @@
 module static-semantics/ui/actions
 
 imports
+  static-semantics/types/built-ins
+
+  static-semantics/ui/template-calls
 
   static-semantics/webdsl-types
   static-semantics/webdsl-ui
@@ -30,3 +33,8 @@ rules // init code
 
   templateElementOk(s, _, Init(Block(stmts))) :-
     stmtsOk(s, stmts, UNTYPED()).
+
+rules // expressions
+
+  typeOfExp(s, RenderTemplateFunctionCall(tc)) = string(s) :-
+    templateCallOk(s, tc).

@@ -101,6 +101,11 @@ rules // template elements
   jsStringPartOk(s, JSString(_)).
   jsStringPartOk(s, JSExp(exp)) :- typed(s, exp).
 
+  templateElementOk(s, _, IfTempl(c, then, else)) :-
+    equalType(typeOfExp(s, c), bool(s)) | error $[Condition should be of type bool] @c,
+    templateElementsOk(s, then),
+    templateElementsOk(s, else).
+
 rules // loops
 
   templateElementOk(s, _, For(x, srt, exp, OptFilterSome(f), elems, ForSeparator(separatorElems))) :- {s_for typeOfSort typeOfExp}
