@@ -16,7 +16,7 @@ rules // Debugging
       filename := <guarantee-extension(|"aterm")> path
     ; result   := node
     
-  rename-menu-action : menu-terms -> <rename-action-2(construct-textual-change, editor-analyze-webdsl, id)> menu-terms  
+  rename-menu-action : menu-terms -> <rename-action-2(pp-webdsl-statix-string, editor-analyze-webdsl, id)> menu-terms  
   
   rename-test(|selected-term, new-name) = rename-2(editor-analyze-webdsl, id|selected-term, new-name);get-ast  
 

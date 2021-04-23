@@ -202,10 +202,10 @@ rules // Step 6: Reconstruct Program
     where
       changed-asts := <filter(has-changed)> asts
       ; renamed-program := <map(construct-renamed-file(construct-textual-change));unzip> changed-asts
-      
-  construct-renamed-file(construct-textual-change): (path, ast, renamed-ast) -> (path, text)
+            
+  construct-renamed-file(pp): (path, ast, renamed-ast) -> (path, text)
     where
-      (_, _, text) := <construct-textual-change> (ast, renamed-ast)
+      text := <pp> renamed-ast      
       
   has-changed: (_, _, renamed-ast) -> <id>
     where
