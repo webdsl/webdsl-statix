@@ -1,15 +1,20 @@
 application test
+
+imports built-in
+
+section test
+
 page root { } // always need a root page in a webdsl app
+
 entity Ent1 {
-  x : Int
-  e2 : Ent2
+  e1 : Ent2
 }
+
 entity Ent2 {
-  y : String
-  e1 : Ent1
+  x : String
 }
+
 function f(x : String) : String {
-  var x : String := "hello";
-  var y := Ent1{};
+  var y := Ent2{};
   return x + y.x;
 }
