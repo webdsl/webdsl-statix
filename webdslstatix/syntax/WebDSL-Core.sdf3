@@ -83,6 +83,16 @@ context-free syntax
   Definition.Imports = <
     imports <ModuleName>
   >
+  Definition.ImportsBuiltIn = <
+    imports built-in
+  >
+
+lexical syntax
+
+  ModuleName = "built-in" {reject}
+
+context-free syntax
+
   Definition.Description = <
     description { <Word*> }
   >

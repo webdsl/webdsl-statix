@@ -14,7 +14,6 @@ rules // unit rules
     declareMod(s_global, app, s_app),
     declareMod(s_global, "_APPLICATION_SCOPE", s_app), // declare this scope as the main application scope
     importModules(s_global, s_app, app, sections),
-    declareImport(s_global, app, "_BUILTIN"),
     sectionsOk(s_app, sections),
     rootPageDefined(s_app, app).
 
@@ -27,7 +26,7 @@ rules // unit rules
 
   unitOk(s_global, BuiltIn(sections)) :- {s_builtin}
     new s_builtin,
-    declareMod(s_global, "_BUILTIN", s_builtin),
+    declareMod(s_global, "built-in", s_builtin),
     declareBuiltIns(s_builtin),
     sectionsOk(s_builtin, sections).
 
@@ -47,11 +46,15 @@ rules // import definition rules
   declareImportsInSection : scope * string * list(Definition)
   declareImportsInSection(_, _, []).
   declareImportsInSection(s, x, [_ | defs]) :- declareImportsInSection(s, x, defs).
+  declareImportsInSection(s, x, [ImportsBuiltIn() | defs]) :-
+    declareImport(s, x, "built-in"),
+    declareImportsInSection(s, x, defs).
   declareImportsInSection(s, x, [Imports(y) | defs]) :-
     declareImport(s, x, y),
     declareImportsInSection(s, x, defs).
 
   defOk(_, Imports(_)). // imports are handled in another rule, discard them here
+  defOk(_, ImportsBuiltIn()).
 
 rules // extend module scopes
 
