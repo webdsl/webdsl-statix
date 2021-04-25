@@ -1,0 +1,32 @@
+module rename/entity
+
+language webdsl-statix
+
+
+test rename entity from dec [[  
+built-in 
+  page root {}
+  entity [[Ent1]] {}
+  entity Ent2 : Ent1 {}
+  entity Ent3 : Ent2 {}
+]] run rename-test(|#1, "Ent4") to [[
+built-in
+  page root {}
+  entity Ent4 {}
+  entity Ent2 : Ent4 {}
+  entity Ent3 : Ent2 {}
+]]
+
+test rename entity from ref [[  
+built-in //function_overloading
+  page root {}
+  entity Ent1 {}
+  entity Ent2 : [[Ent1]] {}
+  entity Ent3 : Ent2 {}
+]] run rename-test(|#1, "Ent4") to [[
+built-in
+  page root {}
+  entity Ent4 {}
+  entity Ent2 : Ent4 {}
+  entity Ent3 : Ent2 {}
+]]
