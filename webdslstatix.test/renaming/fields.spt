@@ -1,0 +1,52 @@
+module renaming/fields
+
+language webdsl-statix
+
+
+test rename field from decl [[
+built-in
+  	page root {}
+	entity Ent {
+	  [[x]] : String
+	}
+
+	function f(x : String) : String {
+	  var y := Ent{};
+	  return x + y.x;
+	}
+]] run rename-test(|#1, "z") to [[
+built-in
+  	page root {}
+	entity Ent {
+	  z : String
+	}
+
+	function f(x : String) : String {
+	  var y := Ent{};
+	  return x + y.z;
+	}
+]]
+
+test rename field from ref [[
+built-in
+  	page root {}
+	entity Ent {
+	  x : String
+	}
+
+	function f(x : String) : String {
+	  var y := Ent{};
+	  return x + y.[[x]];
+	}
+]] run rename-test(|#1, "z") to [[
+built-in
+  	page root {}
+	entity Ent {
+	  z : String
+	}
+
+	function f(x : String) : String {
+	  var y := Ent{};
+	  return x + y.z;
+	}
+]]

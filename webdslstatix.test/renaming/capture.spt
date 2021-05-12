@@ -1,0 +1,24 @@
+module renaming/capture
+
+language webdsl-statix
+
+
+test var captures var [[
+built-in
+  var x : Int
+
+  function f() : Int {
+    var [[z]] : Int := 0;
+    return x;
+  }
+]] run rename-test(|#1, "x") fails
+
+test param captures field [[
+built-in
+  var x : Int
+
+  function f([[z]]: Int) : Int {
+    return x;
+  }
+]] run rename-test(|#1, "x") fails
+

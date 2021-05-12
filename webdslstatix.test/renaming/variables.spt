@@ -1,0 +1,28 @@
+module renaming/variables
+
+language webdsl-statix
+
+
+test rename var from decl [[
+built-in
+  	page root {}
+  	var [[x]] : Int := 0
+  	var y : Int := x
+]] run rename-test(|#1, "z") to [[
+built-in
+  	page root {}
+  	var z : Int := 0
+  	var y : Int := z
+]]
+
+test rename var from ref [[
+built-in
+  	page root {}
+  	var x : Int := 0
+  	var y : Int := [[x]]
+]] run rename-test(|#1, "z") to [[
+built-in
+  	page root {}
+  	var z : Int := 0
+  	var y : Int := z
+]]

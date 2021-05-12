@@ -1,0 +1,39 @@
+module renaming/shadowing
+
+language webdsl-statix
+
+
+test variable shadowing [[
+built-in
+  var x : Int
+
+  function f() : Int {
+    var [[x]] : Int := 0;
+    return x;
+  }
+]] run rename-test(|#1, "z") to [[
+built-in
+  var x : Int
+
+  function f() : Int {
+    var z : Int := 0;
+    return z;
+  }
+]]
+
+test param shadowing variable [[
+built-in
+  var x : Int
+
+  function f([[x]]: Int) : Int {
+    return x;
+  }
+]] run rename-test(|#1, "z") to [[
+built-in
+  var x : Int
+
+  function f(z: Int) : Int {
+    return z;
+  }
+]]
+

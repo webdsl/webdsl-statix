@@ -1,0 +1,113 @@
+module renaming/functions
+
+language webdsl-statix
+
+
+test rename function from decl [[
+built-in
+  page root {}
+  function [[x]](i : Int) { }
+
+  function test1() {
+    x(1);
+  }
+]] run rename-test(|#1, "y") to [[
+built-in
+  page root {}
+  function y(i : Int) { }
+
+  function test1() {
+    y(1);
+  }
+]]
+
+test rename function from ref [[
+built-in
+  page root {}
+  function x(i : Int) { }
+
+  function test1() {
+    [[x]](1);
+  }
+]] run rename-test(|#1, "y") to [[
+built-in
+  page root {}
+  function y(i : Int) { }
+
+  function test1() {
+    y(1);
+  }
+]]
+
+
+test rename overloaded function from decl [[
+built-in
+  page root {}
+  function [[x]]() { }
+  function x(i : Int) { }
+
+  function test1() {
+    x();
+  }
+]] run rename-test(|#1, "y") to [[
+built-in
+  page root {}
+  function y() { }
+  function x(i : Int) { }
+
+  function test1() {
+    y();
+  }
+]]
+
+test rename overloaded function from ref [[
+built-in
+  page root {}
+  function x() { }
+  function x(i : Int) { }
+
+  function test1() {
+    [[x]]();
+  }
+]] run rename-test(|#1, "y") to [[
+built-in
+  page root {}
+  function y() { }
+  function x(i : Int) { }
+
+  function test1() {
+    y();
+  }
+]]
+
+test rename function argument from decl [[
+built-in
+  page root {}
+
+  function f([[x]] : Int) : Int {
+    return x;
+  }
+]] run rename-test(|#1, "y") to [[
+built-in
+  page root {}
+
+  function f(y : Int) : Int {
+    return y;
+  }
+]]
+
+test rename function argument from ref [[
+built-in
+  page root {}
+
+  function f(x : Int) : Int {
+    return [[x]];
+  }
+]] run rename-test(|#1, "y") to [[
+built-in
+  page root {}
+
+  function f(y : Int) : Int {
+    return y;
+  }
+]]
