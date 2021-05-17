@@ -44,45 +44,52 @@ context-free sorts
 
   Unit Section Definition EnumValue
 
-syntax
+context-free syntax
 
-  Section-CF.Section = "section" SectionName-CF LAYOUT?-CF Definition*-CF
+  Section.Section = <
+    section <SectionName>
+      <Definition*>
+  >
 
 context-free syntax
 
-  Unit.ApplicationDefs = <application <QId>
-    <Definition+>
-
+  Unit.ApplicationDefs = <
+    application <QId>
+      <Definition+>
     <Section*>
   >
 
-  Unit.Application = <application <QId>
+  Unit.Application = <
+    application <QId>
     <Section*>
   >
 
-  Unit.ModuleDefs = <module <ModuleName>
-    <Definition+>
-
+  Unit.ModuleDefs = <
+    module <ModuleName>
+      <Definition+>
     <Section*>
   >
 
-  Unit.Module = <module <ModuleName>
+  Unit.Module = <
+    module <ModuleName>
     <Section*>
   >
 
-  Unit.BuiltInDefs = <built-in
-    <Definition+>
-
+  Unit.BuiltInDefs = <
+    built-in
+      <Definition+>
     <Section*>
   >
 
-  Unit.BuiltIn = <built-in
+  Unit.BuiltIn = <
+    built-in
     <Section*>
   >
 
   Definition.Imports = <
     imports <ModuleName>
   >
+
   Definition.ImportsBuiltIn = <
     imports built-in
   >
