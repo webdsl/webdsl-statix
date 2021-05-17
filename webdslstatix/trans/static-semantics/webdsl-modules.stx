@@ -27,6 +27,7 @@ rules // unit rules
   unitOk(s_global, BuiltIn(sections)) :- {s_builtin}
     new s_builtin,
     declareMod(s_global, "built-in", s_builtin),
+    importModules(s_global, s_builtin, "built-in", sections),
     declareBuiltIns(s_builtin),
     sectionsOk(s_builtin, sections).
 
