@@ -21,6 +21,7 @@ imports
   static-semantics/webdsl-hql
   static-semantics/webdsl-modules
   static-semantics/webdsl-native
+  static-semantics/webdsl-search
   static-semantics/webdsl-types
   static-semantics/webdsl-ui
 
