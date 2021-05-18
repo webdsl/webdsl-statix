@@ -5,6 +5,8 @@ imports
 
   static-semantics/entities/annotations
 
+  static-semantics/types/built-ins
+
   static-semantics/webdsl-actions
   static-semantics/webdsl-types
   static-semantics/webdsl
@@ -22,7 +24,7 @@ rules // entity declaration
 
   // entity x { ... }
   defOk(s_global, EntityNoSuper(x, bodydecs)) :- {s_entity s_super}
-    resolveType(s_global, "Entity") == [(_, (_, ENTITY(s_super)))],
+    entity(s_global) == ENTITY(s_super),
     new s_entity, s_entity -INHERIT-> s_super,
     declEntity(s_global, s_entity, x, bodydecs).
 

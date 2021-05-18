@@ -102,7 +102,9 @@ rules // type compatibility of constants
   // misc
   typeCompatibleB(LIST(T1), LIST(T2)) = typeCompatibleB(T1, T2).
   typeCompatibleB(SET(T1), SET(T2))   = typeCompatibleB(T1, T2).
+  typeCompatibleB(REF(T1), REF(T2))   = typeCompatibleB(T1, T2).
   typeCompatibleB(NULL(), _) = TRUE().
+  typeCompatibleB(_, BUILTINTYPE("Object", _)) = TRUE().
 
 rules // utils
 
@@ -114,6 +116,7 @@ rules // utils
   isDateCompatibleTypeB(BUILTINTYPE("Date", _))     = TRUE().
   isDateCompatibleTypeB(BUILTINTYPE("DateTime", _)) = TRUE().
   isDateCompatibleTypeB(BUILTINTYPE("Time", _))     = TRUE().
+  isDateCompatibleTypeB(BUILTINTYPE("Object", _))   = TRUE().
 
   isStringCompatibleType : TYPE
   isStringCompatibleType(t) :- isStringCompatibleTypeB(t) == TRUE().
@@ -127,7 +130,8 @@ rules // utils
   isStringCompatibleTypeB(BUILTINTYPE("WikiText", _))    = TRUE().
   isStringCompatibleTypeB(BUILTINTYPE("Text", _))        = TRUE().
   isStringCompatibleTypeB(BUILTINTYPE("Patch", _))       = TRUE().
-  isStringCompatibleTypeB(PLACEHOLDER()) = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("Object", _))      = TRUE().
+  isStringCompatibleTypeB(PLACEHOLDER())                 = TRUE().
 
 rules // map sorts to semantic types
 

@@ -11,8 +11,10 @@ imports
 rules
 
   declareEntityBuiltIns : scope
-  declareEntityBuiltIns(s) :- {s_ent s_sessionmessage s_sessionmanager}
-    new s_ent, s_ent -IMPORT-> s,
+  declareEntityBuiltIns(s) :- {s_object s_ent s_sessionmessage s_sessionmanager}
+    new s_object, s_object -IMPORT-> s,
+    new s_ent, s_ent -INHERIT-> s_object,
+    declareType(s, "Object", BUILTINTYPE("Object", s_object)),
     declareType(s, "Entity", ENTITY(s_ent)),
     declareVar(s_ent, "id"       , uuid(s)),
     declareVar(s_ent, "naturalId", string(s)),

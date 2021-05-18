@@ -1,6 +1,8 @@
 module static-semantics/ui/actions
 
 imports
+  static-semantics/actions/functions
+
   static-semantics/types/built-ins
 
   static-semantics/ui/template-calls
@@ -11,27 +13,57 @@ imports
 
 rules // var decls in templates and pages
 
-  templateElementOk(s, s_decl, TEVarDecl(TemplateVarDecl(x, sort))) :- {t}
+  templateElementOk(s, s_decl, TEVarDecl(varDecl))            :- templateVarDeclOk(s, s_decl, varDecl).
+  templateElementOk(s, s_decl, RequestScopeTemplate(varDecl)) :- templateVarDeclOk(s, s_decl, varDecl).
+  templateElementOk(s, s_decl, LocalScopeTemplate(varDecl))   :- templateVarDeclOk(s, s_decl, varDecl).
+
+  templateVarDeclOk: scope * scope * VarDecl
+  templateVarDeclOk(s, s_decl, TemplateVarDecl(x, sort)) :- {t}
     t == typeOfSort(s, sort),
     inequalType(t, UNTYPED()) | error $[Unknown type [sort]] @sort,
     declareVar(s_decl, x, t),
     @x.type := t.
 
-  templateElementOk(s, s_decl, TEVarDecl(TemplateVarDeclInit(x, sort, exp))) :- {t}
+  templateVarDeclOk(s, s_decl, TemplateVarDeclInit(x, sort, exp)) :- {t}
     t == typeOfSort(s, sort),
     typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [sort]] @exp,
     declareVar(s_decl, x, t),
     @x.type := t.
 
-  templateElementOk(s, s_decl, TEVarDecl(TemplateVarDeclInitInferred(x, exp))) :- {t}
+  templateVarDeclOk(s, s_decl, TemplateVarDeclInitInferred(x, exp)) :- {t}
     t == typeOfExp(s, exp),
     inequalType(t, UNTYPED()) | error $[Unable to infer type of [exp]] @exp,
     declareVar(s_decl, x, t),
     @x.type := t.
 
-rules // init code
+rules // actions
+
+  templateActionOk : scope * list(FormalArg) * list(Statement)
+  templateActionOk(s, args, stmts) :- {s_fun s_fun_body argTypes}
+    new s_fun, s_fun -P-> s, // TO-DO: possibly create different label for edges out of actions, abusing P label here
+    argTypes == typesOfArgs(s, args),
+    declareParameters(s_fun, zipArgTypes(args, argTypes)),
+    new s_fun_body, s_fun_body -P-> s_fun,
+    stmtsOk(s_fun_body, stmts, PAGE(_)).
+
+  templateElementOk(s, _, Action2TemplateElement(Action(_, a, FormalArgs(args), Block(stmts)))) :-
+    templateActionOk(s, args, stmts).
+
+rules // special action blocks in templates
 
   templateElementOk(s, _, Init(Block(stmts))) :-
+    stmtsOk(s, stmts, UNTYPED()).
+
+  templateElementOk(s, _, DataBindAction(Block(stmts))) :-
+    stmtsOk(s, stmts, UNTYPED()).
+
+  templateElementOk(s, _, RenderAction(Block(stmts))) :-
+    stmtsOk(s, stmts, UNTYPED()).
+
+  templateElementOk(s, _, AllPhasesAction(Block(stmts))) :-
+    stmtsOk(s, stmts, UNTYPED()).
+
+  templateElementOk(s, _, ValidateAction(Block(stmts))) :-
     stmtsOk(s, stmts, UNTYPED()).
 
 rules // expressions

@@ -3,6 +3,8 @@ module static-semantics/webdsl-native
 imports
   static-semantics/actions/functions
 
+  static-semantics/types/built-ins
+
   static-semantics/webdsl-actions
   static-semantics/webdsl-entities
   static-semantics/webdsl-types
@@ -14,34 +16,29 @@ rules // native class declaration and resolving
   declareNativeClass(s, c, s_class) :-
     declareType(s, c, NATIVECLASS(s_class)).
 
-rules
-
-  declareNativeClassBuiltIns : scope
-  declareNativeClassBuiltIns(s) :- {s_class}
-    new s_class, s_class -IMPORT-> s,
-    declareNativeClass(s, "Object", s_class).
-
 rules // subtype compatiblity
 
-  typeCompatibleB(NATIVECLASS(s_sub), NATIVECLASS(s_super)) =
-    orB(
-      inherits(s_sub, s_super),
-      equalTypeB(definedTypeNoRef(s_sub, "Object"), NATIVECLASS(s_sub))
-    ).
-
-  typeCompatibleB(NATIVECLASS(s_object), _) = equalTypeB(definedTypeNoRef(s_object, "Object"), NATIVECLASS(s_object)).
+  typeCompatibleB(NATIVECLASS(s_sub), NATIVECLASS(s_super)) = inherits(s_sub, s_super).
 
 rules // declarations
 
-  defOk(s, NativeClass(c, NCAlias(alias), NCSuper(super), elems)) :- {super' s_super s_class}
+  defOk(s, NativeClass(c, NCAlias(alias), NCSuperNone(), elems)) :- {s_super}
+    object(s) == BUILTINTYPE(_, s_super),
+    nativeClassOk(s, c, alias, s_super, elems).
+
+  defOk(s, NativeClass(c, NCAlias(alias), NCSuper(super), elems)) :- {super' s_super}
     resolveType(s, super) == [(_, (super', NATIVECLASS(s_super)))] | error $[Native class [super] is not defined] @c,
+    nativeClassOk(s, c, alias, s_super, elems),
+    @super.ref := super'.
+
+  nativeClassOk : scope * string * string * scope * list(NCElement)
+  nativeClassOk(s, c, alias, s_super, elems) :- {s_class}
     new s_class, s_class -INHERIT-> s_super,
     noCircularInheritance(s_class) | error $[Circular inhertitance detected] @c,
     declareNativeClass(s, alias, s_class),
     declareVar(s, alias, STATICNATIVECLASS(s_class)), // declare class name as global variable that refers to the static scope
     declareNativeClassConstructors(s, s_class, alias, elems),
-    nativeClassElementsOk(s, s_class, elems),
-    @super.ref := super'.
+    nativeClassElementsOk(s, s_class, elems).
 
 rules // native class elements
 

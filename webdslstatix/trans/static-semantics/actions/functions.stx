@@ -22,12 +22,10 @@ rules // functions calls
   typeOfSimpleExp(s, SimpleCall(exp, f, argExps)) = t :-
     t == typeOfCall(s, typeOfSimpleExp(s, exp), f, argExps).
 
-  // The last boolean argument indicates whether the function definition needs to be found within the enclosing entity of scope fundef_scope
   typeOfFunctionCall : scope * string * list(Exp)-> TYPE
   typeOfFunctionCall(s, f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
     funSigs == resolveFunction(s, f).
 
-  // The last boolean argument indicates whether the function definition needs to be found within the enclosing entity of scope fundef_scope
   typeOfCall : scope * TYPE * string * list(Exp)-> TYPE
   typeOfCall(s, ENTITY(s_ent), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
     funSigs == resolveEntityFunction(s_ent, f).
@@ -199,6 +197,8 @@ rules  // rules and functions for function overloading
     y == inheritEdgesAmount(s_arg, s_sig),
     z == inheritanceAmount_helper(argtl, sigtl),
     x #= y + z.
+
+  //TO-DO: make this broader than only entities, make `scopeFromType` functional rule
 
   // function that zips the inheritance amount with the signature
   zipInheritanceAmountWithSig : list(int) * list((string * TYPE)) -> list((int * (string * TYPE)))

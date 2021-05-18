@@ -23,4 +23,11 @@ rules
     declareFunction(s, "getSessionManager", [], definedTypeNoRef(s, "SessionManager")),
 
     declareFunction(s, "cancel"  , [], VOID()),
-    declareFunction(s, "rollback", [], VOID()).
+    declareFunction(s, "rollback", [], VOID()),
+
+    declareFunction(s, "getValidationErrorsByName", [string(s)], LIST(string(s))),
+
+    declareFunction(s, "getHttpMethod"          , []          , string(s)),
+    declareFunction(s, "getRequestParameter"    , [string(s)] , string(s)),
+    declareFunction(s, "getRequestParameterList", [string(s)] , LIST(string(s))),
+    declareFunction(s, "readRequestBody"        , []          , string(s)).

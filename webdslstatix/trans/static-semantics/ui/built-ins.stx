@@ -1,0 +1,40 @@
+module static-semantics/ui/built-ins
+
+imports
+  static-semantics/types/built-ins
+
+  static-semantics/webdsl
+  static-semantics/webdsl-ui
+
+rules
+
+  declareUIBuiltIns : scope
+  declareUIBuiltIns(s) :-
+    declTemplate(s, "title", [], []),
+    declTemplate(s, "rawoutput", [string(s)], []),
+    declTemplate(s, "text", [object(s)], []),
+    declTemplate(s, "image", [url(s)], []),
+    declTemplate(s, "header", [], []),
+    declTemplate(s, "section", [], []),
+    declTemplate(s, "url", [url(s)], []),
+    declTemplate(s, "form", [], []),
+    declTemplate(s, "dynamicform", [], []),
+    declTemplate(s, "captcha", [], []),
+    declTemplate(s, "input", [object(s)], []),
+    declTemplate(s, "output", [object(s)], []),
+
+    declTemplate(s, "navigate", [], []),
+    declTemplate(s, "navigate", [url(s)], []),
+    declTemplate(s, "navigate", [PAGE(_)], []),
+    declTemplate(s, "navigate", [string(s), url(s)], []),
+    declTemplate(s, "navigate", [string(s), PAGE(_)], []),
+    declTemplate(s, "navigatebutton", [url(s), string(s)], []),
+    declTemplate(s, "navigatebutton", [PAGE(_), string(s)], []),
+
+    declTemplate(s, "includeCSS", [string(s)], []),
+    declTemplate(s, "includeCSS", [string(s), string(s)], []),
+    declTemplate(s, "includeJS", [string(s)], []),
+    declTemplate(s, "includeJSLast", [string(s)], []),
+    declTemplate(s, "includeHead", [string(s)], []),
+
+    declTemplate(s, "templateContext", [string(s)], []).

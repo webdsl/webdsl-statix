@@ -5,12 +5,15 @@ imports
 
   static-semantics/actions/binops
   static-semantics/actions/built-ins
+  static-semantics/actions/emails
   static-semantics/actions/functions
 
   static-semantics/entities/annotations
   static-semantics/entities/built-ins
 
   static-semantics/types/built-ins
+
+  static-semantics/ui/built-ins
 
   static-semantics/webdsl-ac
   static-semantics/webdsl-actions
@@ -222,7 +225,7 @@ rules // declare common rules and mappings
   sectionOk(s, Section(_, defs)) :- defsOk(s, defs).
 
   defOk : scope * Definition
-  defOk(_,_) :- false | error $[This definition is not yet implemented].
+  defOk(_,_). // TO-DO:  :- false | error $[This definition is not yet implemented].
   defsOk maps defOk(*, list(*))
 
   stmtOk : scope * scope * Statement * TYPE // TYPE argument is the return type in a function
@@ -244,7 +247,7 @@ rules // declare common rules and mappings
     declareFunctionIns(s),
     declareEntityBuiltIns(s),
     declareTypeBuiltIns(s),
-    declareNativeClassBuiltIns(s).
+    declareUIBuiltIns(s).
 
 rules // typing
 

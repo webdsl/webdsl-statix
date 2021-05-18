@@ -12,8 +12,9 @@ imports
 rules
 
   declareBuiltInType : scope * string
-  declareBuiltInType(s, name) :- {s_type}
-    new s_type, s_type -IMPORT-> s,
+  declareBuiltInType(s, name) :- {s_type s_object}
+    object(s) == BUILTINTYPE(_, s_object),
+    new s_type, s_type -INHERIT-> s_object,
     declareExtendEntity(s, name, s_type), // declare s_type to be linked to type name
     extendEntityScopes(resolveExtendEntity(s, name), s_type),
     declareType(s, name, BUILTINTYPE(name, s_type)),
@@ -72,6 +73,12 @@ rules
   file(s)  = builtInType(s, "File").
   image : scope -> TYPE
   image(s) = builtInType(s, "Image").
+
+  entity : scope -> TYPE
+  entity(s) = definedTypeNoRef(s, "Entity").
+
+  object : scope -> TYPE
+  object(s) = definedTypeNoRef(s, "Object").
 
   declareTypeBuiltIns : scope
   declareTypeBuiltIns(s) :-
@@ -162,3 +169,11 @@ rules // built-in functions and properties for built-in generic type Set
     ).
 
   typeOfCall(s, SET(t), "list", []) = LIST(t).
+
+rules // built-in properties for built-in generic type Ref
+
+  typeOfCall(s, REF(t), "getEntity", []) = entity(s).
+
+  typeOfCall(s, REF(t), "getValidationErrors", []) = LIST(string(s)).
+
+  typeOfCall(s, REF(t), "getAllowed", []) = LIST(t).

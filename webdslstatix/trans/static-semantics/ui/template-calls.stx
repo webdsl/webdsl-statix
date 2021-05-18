@@ -3,6 +3,8 @@ module static-semantics/ui/template-calls
 imports
   static-semantics/actions/functions
 
+  static-semantics/types/built-ins
+
   static-semantics/webdsl-types
   static-semantics/webdsl-ui
   static-semantics/webdsl
@@ -12,15 +14,13 @@ rules // template calls
   templateElementOk(s, _, TemplateCall2TemplateElement(tc)) :-
     templateCallOk(s, tc).
 
-  templateCallOk : scope * TemplateCall
-  templateCallOk(_, TemplateCall(TemplateCallId("elements"), TCallArgs(targs), TCallPropAssigns(propAssigns), TemplateBody(body))) :-
-    targs == []       | error $[Cannot pass arguments to passed template elements],
-    propAssigns == [] | error $[Cannot assign properties to passed template elements],
-    body == []        | error $[Cannot pass template elements to passed template elements].
-
   templateCallOk(s, TemplateCall(TemplateCallId(t), TCallArgs(targs), TCallPropAssigns(propAssigns), TemplateBody(body))) :- {argTypes nameCompatibleSigs mostSpecificSigs t'}
     templatePropAssignmentsOk(s, propAssigns),
     templateElementsOk(s, body),
+    templateCallMatchesSig(s, t, targs).
+
+  templateCallMatchesSig : scope * string * list(TemplateArgExp)
+  templateCallMatchesSig(s, t, targs) :- {argTypes nameCompatibleSigs mostSpecificSigs t'}
     argTypes == typesOfTemplateArgExps(s, targs),
     nameCompatibleSigs == resolveTemplate(s, t),
     mostSpecificSigs == mostSpecificSigs(argTypes, typeCompatibleSigs(nameCompatibleSigs, argTypes)),
@@ -29,10 +29,19 @@ rules // template calls
 
   templatePropAssignmentsOk maps templatePropAssignmentOk(*, list(*))
   templatePropAssignmentOk : scope * PropertyAssignment
-  templatePropAssignmentOk(s, _) :- false | error $[Template property assignments are not implemented yet]. // TO-DO
+  templatePropAssignmentOk(s, _). // TO-DO:  :- false | error $[Template property assignments are not implemented yet]. // TO-DO
 
   typesOfTemplateArgExps maps typeOfTemplateArgExp(*, list(*)) = list(*)
   typeOfTemplateArgExp : scope * TemplateArgExp -> TYPE
   typeOfTemplateArgExp(s, Exp(exp))                      = typeOfExp(s, exp).
   typeOfTemplateArgExp(s, TemplateElementsArgument(exp)) = TEMPLATEELEMENTS().
   typeOfTemplateArgExp(s, ExpEntityDerive(_, _))         = UNTYPED() :- false | error $[Derive expressions not implemented yet]. // TO-DO
+
+rules // elements template call
+
+  // elements
+  templateCallOk : scope * TemplateCall
+  templateCallOk(_, TemplateCall(TemplateCallId("elements"), TCallArgs(targs), TCallPropAssigns(propAssigns), TemplateBody(body))) :-
+    targs == []       | error $[Cannot pass arguments to passed template elements],
+    propAssigns == [] | error $[Cannot assign properties to passed template elements],
+    body == []        | error $[Cannot pass template elements to passed template elements].

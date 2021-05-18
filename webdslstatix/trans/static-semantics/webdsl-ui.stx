@@ -106,6 +106,10 @@ rules // template elements
     templateElementsOk(s, then),
     templateElementsOk(s, else).
 
+rules // expressions
+
+  typeOfExp(s, TemplateName2Exp(TemplateName())) = string(s). // TO-DO: only allow this if inside a template
+
 rules // loops
 
   templateElementOk(s, _, For(x, srt, exp, OptFilterSome(f), elems, ForSeparator(separatorElems))) :- {s_for typeOfSort typeOfExp}
