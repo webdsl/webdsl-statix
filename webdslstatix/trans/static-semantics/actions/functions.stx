@@ -32,6 +32,8 @@ rules // functions calls
 
   typeOfCall(s, STATICENTITY(s_ent), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
     funSigs == resolveStaticEntityFunction(s_ent, f).
+
+  typeOfCall(s, REF(t), f, args) = typeOfCall(s, t, f, args).
   typeOfCall(s, t, f, args) = UNTYPED() :- false | error $[First subexpression of a function call must be of type entity, [t] found].
 
   typeOfFunctionCall_internal : scope * string * list(Exp) * list((path * (string * TYPE))) -> TYPE

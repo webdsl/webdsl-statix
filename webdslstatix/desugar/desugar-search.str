@@ -28,3 +28,5 @@ rules
   normalize-search : DescendingAbbr() -> Descending()
 
   normalize-search : OptAnalyzerArgumentsNone() -> AnalyzerArguments([])
+
+  normalize-search: AllFacetResults(field, e_searcher) -> FacetResults(field, e_searcher)

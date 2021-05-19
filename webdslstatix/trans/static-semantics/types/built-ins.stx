@@ -177,3 +177,5 @@ rules // built-in properties for built-in generic type Ref
   typeOfCall(s, REF(t), "getValidationErrors", []) = LIST(string(s)).
 
   typeOfCall(s, REF(t), "getAllowed", []) = LIST(t).
+
+  typeOfCall(s, REF(t), "getReflectionProperty", []) = entity(s). // TO-DO: return ReflectionProperty

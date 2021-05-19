@@ -40,10 +40,10 @@ context-free syntax
 
 context-free syntax
 
-  TemplateElement = <
+  TemplateElement.TEPlaceholder = <
     <Placeholder>
   >
-  TemplateElement = <
+  TemplateElement.TEPlaceholderWithAjaxCall = <
     <PlaceholderWithAjaxCall>
   >
 

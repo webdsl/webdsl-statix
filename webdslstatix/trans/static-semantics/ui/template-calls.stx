@@ -45,3 +45,16 @@ rules // elements template call
     targs == []       | error $[Cannot pass arguments to passed template elements],
     propAssigns == [] | error $[Cannot assign properties to passed template elements],
     body == []        | error $[Cannot pass template elements to passed template elements].
+
+rules // navigate calls
+
+  templateElementOk(s, _, NavigateCall(PageCall(p, args), props, elems)) :-
+    pageCallOk(s, p, args),
+    templatePropAssignmentsOk(s, props),
+    templateElementsOk(s, elems).
+
+  pageCallOk : scope * string * list(Exp)
+  pageCallOk(s, p, args) :- {argTypes ts}
+    pageType(s, p) == PAGE(ts),
+    argTypes == typesOfExps(s, args),
+    typesCompatible(argTypes, ts) == TRUE() | error $[Given argument types not compatible with page definition. Got [argTypes] but expected [ts]].

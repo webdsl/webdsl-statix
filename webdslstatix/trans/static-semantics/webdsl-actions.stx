@@ -230,10 +230,23 @@ rules // lists and sets
     colType == typeOfExp(s, col),
     idxType == typeOfExp(s, idx),
     typeCompatible(idxType, int(s)) | error $[Index expression must be of type Int, [idxType] given],
-    t == collectionItemType(colType),
+    t == stripGenericType(colType),
     @ci.type := t.
 
-  collectionItemType : TYPE -> TYPE
-  collectionItemType(c) = UNTYPED() :- false | error $[First argument must be a list or set, [c] given].
-  collectionItemType(LIST(t)) = t.
-  collectionItemType(SET(t)) = t.
+  typeOfExp(s, ForExp2Exp(ForExp(e1, x, OptSortNone(), e2, _, _))) = LIST(t) :- {s_e1 collectionType varType}
+    new s_e1, s_e1 -P-> s,
+    collectionType == typeOfExp(s, e2),
+    varType == stripGenericType(collectionType),
+    declareVar(s_e1, x, varType),
+    t == typeOfExp(s_e1, e1),
+    @x.type := varType, false | error $[Collection type: [collectionType], varType: [varType], final type: list of [t]].
+    // TO-DO: implement filter and group by typechecking
+
+  typeOfExp(s, ForExp2Exp(ForExp(e1, x, OptSortSome(sort), e2, _, _))) = LIST(t) :- {s_e1 collectionType varType}
+    new s_e1, s_e1 -P-> s,
+    collectionType == typeOfExp(s, e2),
+    varType == stripGenericType(collectionType),
+    stripGenericType(collectionType) == typeOfSort(s, sort) | error $["type of [e2] is not a collection of type [sort]"],
+    declareVar(s_e1, x, varType),
+    t == typeOfExp(s_e1, e1).
+    // TO-DO: implement filter and group by typechecking

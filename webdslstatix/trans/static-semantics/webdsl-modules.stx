@@ -40,6 +40,9 @@ rules // import definition rules
 
   declareImports : scope * string * list(Section)
   declareImports(_, _, []).
+  declareImports(s, x, [_ | ss]) :-
+    declareImports(s, x, ss).
+
   declareImports(s, x, [Section(_, defs) | ss]) :-
     declareImportsInSection(s, x, defs),
     declareImports(s, x, ss).

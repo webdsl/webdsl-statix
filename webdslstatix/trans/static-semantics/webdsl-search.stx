@@ -12,5 +12,9 @@ rules
   typeOfRetrievalExp : scope * RetrievalExp -> TYPE
   typeOfRetrievalExp(s, Highlight(_, _, _, _)) = string(s).
   typeOfRetrievalExp(s, HighlightTags(_, _, _, _, _, _)) = string(s).
+  typeOfRetrievalExp(s, SearchResults(_)) = LIST(entity(s)).
+  typeOfRetrievalExp(s, FacetResults(_, _)) = LIST(entity(s)). // TO-DO: return native class Facet
+  typeOfRetrievalExp(s, SearchResultsSize(_)) = int(s).
+  typeOfRetrievalExp(s, SearchTimeString(_)) = string(s).
   typeOfRetrievalExp(s, Suggest(_, _, _)) = LIST(string(s)).
   typeOfRetrievalExp(_, _) = UNTYPED(). // TO-DO: :- false | error $[This expression is not implemented yet].

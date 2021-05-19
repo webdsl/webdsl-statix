@@ -106,6 +106,43 @@ rules // template elements
     templateElementsOk(s, then),
     templateElementsOk(s, else).
 
+rules // placeholders and ajax
+
+  templateElementOk(s, _, TEPlaceholder(PlaceholderHtml(_, ph, elems))) :-
+    declarePlaceholderVar(s, ph),
+    templateElementsOk(s, elems).
+
+  templateElementOk(s, _, TEPlaceholder(PlaceholderHtmlExp(_, e, elems))) :-
+    typeCompatible(typeOfExp(s, e), string(s)) | error $[Expression should be compatible with String],
+    templateElementsOk(s, elems).
+
+  templateElementOk(s, _, TEPlaceholder(Placeholder(ph, elems))) :-
+    declarePlaceholderVar(s, ph),
+    templateElementsOk(s, elems).
+
+  templateElementOk(s, _, TEPlaceholder(PlaceholderExp(e, elems))) :-
+    typeCompatible(typeOfExp(s, e), string(s)) | error $[Expression should be compatible with String],
+    templateElementsOk(s, elems).
+
+  templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjaxHtml(_, ph, tc))) :-
+    declarePlaceholderVar(s, ph),
+    templateCallOk(s, tc).
+
+  templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjaxHtmlExp(_, e, tc))) :-
+    typeCompatible(typeOfExp(s, e), string(s)) | error $[Expression should be compatible with String],
+    templateCallOk(s, tc).
+
+  templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjax(ph, tc))) :-
+    declarePlaceholderVar(s, ph),
+    templateCallOk(s, tc).
+
+  templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjaxExp(e, tc))) :-
+    typeCompatible(typeOfExp(s, e), string(s)) | error $[Expression should be compatible with String],
+    templateCallOk(s, tc).
+
+  declarePlaceholderVar : scope * string
+  declarePlaceholderVar(_, _). // TO-DO: declare in whole template
+
 rules // expressions
 
   typeOfExp(s, TemplateName2Exp(TemplateName())) = string(s). // TO-DO: only allow this if inside a template
