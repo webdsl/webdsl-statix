@@ -1,11 +1,18 @@
 module static-semantics/webdsl-modules
 
 imports
-  signatures/webdsl-statix-sig
-
   static-semantics/actions/built-ins
+  static-semantics/entities/built-ins
+  static-semantics/types/built-ins
+  static-semantics/ui/built-ins
+
   static-semantics/webdsl-ui
   static-semantics/webdsl
+
+signature
+
+  relations
+    builtInsDeclared : scope
 
 rules // unit rules
 
@@ -14,6 +21,7 @@ rules // unit rules
     declareMod(s_global, app, s_app),
     declareMod(s_global, "_APPLICATION_SCOPE", s_app), // declare this scope as the main application scope
     importModules(s_global, s_app, app, sections),
+    declareBuiltInsIfNotDeclared(s_app),
     sectionsOk(s_app, sections),
     rootPageDefined(s_app, app).
 
@@ -27,14 +35,34 @@ rules // unit rules
   unitOk(s_global, BuiltIn(sections)) :- {s_builtin}
     new s_builtin,
     declareMod(s_global, "built-in", s_builtin),
-    importModules(s_global, s_builtin, "built-in", sections),
     declareBuiltIns(s_builtin),
+    importModules(s_global, s_builtin, "built-in", sections),
     sectionsOk(s_builtin, sections).
 
   importModules : scope * scope * string * list(Section)
   importModules(s_global, s, m, sections) :-
     declareImports(s_global, m, sections),
     extendModuleScope(s_global, m, s).
+
+  declareBuiltInsIfNotDeclared : scope
+  declareBuiltInsIfNotDeclared(s) :- {result}
+    query builtInsDeclared filter IMPORT* in s |-> result,
+    declareBuiltInsIfNotDeclared_internal(s, result).
+
+  declareBuiltInsIfNotDeclared_internal : scope * list((path * scope))
+  declareBuiltInsIfNotDeclared_internal(s, []) :- declareBuiltIns(s). // built-ins are not declared yet
+  declareBuiltInsIfNotDeclared_internal(s, _). // built-ins are already declared
+
+  saveBuiltInsDeclared : scope
+  saveBuiltInsDeclared(s) :-
+    !builtInsDeclared[s] in s.
+
+  declareBuiltIns : scope
+  declareBuiltIns(s) :-
+    declareFunctionIns(s),
+    declareEntityBuiltIns(s),
+    declareTypeBuiltIns(s),
+    declareUIBuiltIns(s).
 
 rules // import definition rules
 

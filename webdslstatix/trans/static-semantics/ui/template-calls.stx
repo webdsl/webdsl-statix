@@ -43,7 +43,6 @@ rules // elements template call
   templateCallOk : scope * TemplateCall
   templateCallOk(_, TemplateCall(TemplateCallId("elements"), TCallArgs(targs), TCallPropAssigns(propAssigns), TemplateBody(body))) :-
     targs == []       | error $[Cannot pass arguments to passed template elements],
-    propAssigns == [] | error $[Cannot assign properties to passed template elements],
     body == []        | error $[Cannot pass template elements to passed template elements].
 
 rules // navigate calls

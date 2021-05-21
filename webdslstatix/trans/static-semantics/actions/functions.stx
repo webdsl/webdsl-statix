@@ -16,11 +16,17 @@ rules // functions calls
   typeOfSimpleExp(s, SimpleThisCall(ThisCall(f, argExps))) = t :-
     t == typeOfFunctionCall(s, f, argExps).
 
+  typeOfPlaceholderExp(s, PHThisCall(ThisCall(f, argExps))) = t :-
+    t == typeOfFunctionCall(s, f, argExps).
+
   typeOfExp(s, Call(exp, f, argExps)) = t :-
     t == typeOfCall(s, typeOfExp(s, exp), f, argExps).
 
   typeOfSimpleExp(s, SimpleCall(exp, f, argExps)) = t :-
     t == typeOfCall(s, typeOfSimpleExp(s, exp), f, argExps).
+
+  typeOfPlaceholderExp(s, PHCall(exp, f, argExps)) = t :-
+    t == typeOfCall(s, typeOfExp(s, exp), f, argExps).
 
   typeOfFunctionCall : scope * string * list(Exp)-> TYPE
   typeOfFunctionCall(s, f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-

@@ -8,7 +8,9 @@ imports
   static-semantics/types/built-ins
 
   static-semantics/ui/actions
+  static-semantics/ui/ajax
   static-semantics/ui/attributes
+  static-semantics/ui/built-ins
   static-semantics/ui/template-calls
 
   static-semantics/webdsl-actions
@@ -30,17 +32,24 @@ rules // page definitions
 
 rules // template definitions
 
-  defOk(s_global, TemplateDefinition(DefineTemplate(mods, t, FormalArgs(fargs), TemplateArgs(targs), elements))) :- {fargTypes targTypes s_template s_body}
+  defOk(s, TemplateDefinition(td@DefineTemplate(_, _, _, _, _))) :- defineTemplateOk(s, td, TRUE()).
+
+  defineTemplateOk : scope * TemplateDefinition * BOOL
+  defineTemplateOk(s, DefineTemplate(mods, t, FormalArgs(fargs), TemplateArgs(targs), elements), declare) :- {fargTypes targTypes s_template s_body}
     // TO-DO: analyse mods
-    new s_template, s_template -F-> s_global,
-    fargTypes == typesOfArgs(s_global, fargs),
-    targTypes == typesOfTemplateArgs(s_global, targs),
+    new s_template, s_template -F-> s,
+    fargTypes == typesOfArgs(s, fargs),
+    targTypes == typesOfTemplateArgs(s, targs),
     declareParameters(s_template, zipArgTypes(fargs, fargTypes)),
     declTArgs(s_template, targTypes),
     new s_body, s_body -P-> s_template,
-    declTemplate(s_global, t, fargTypes, targTypes),
+    optionallyDeclareTemplate(s, t, fargTypes, targTypes, declare),
     templateElementOrderOk(elements, FALSE(), FALSE()),
     templateElementsOk(s_body, elements).
+
+  optionallyDeclareTemplate : scope * string * list(TYPE) * list((string * list(TYPE))) * BOOL
+  optionallyDeclareTemplate(_, _, _, _, FALSE()).
+  optionallyDeclareTemplate(s, t, fargTypes, targTypes, TRUE()) :- declTemplate(s, t, fargTypes, targTypes).
 
   declTemplate : scope * string * list(TYPE) * list((string * list(TYPE)))
   declTemplate(s, t, fargTypes, targTypes) :- {result}
@@ -106,42 +115,7 @@ rules // template elements
     templateElementsOk(s, then),
     templateElementsOk(s, else).
 
-rules // placeholders and ajax
-
-  templateElementOk(s, _, TEPlaceholder(PlaceholderHtml(_, ph, elems))) :-
-    declarePlaceholderVar(s, ph),
-    templateElementsOk(s, elems).
-
-  templateElementOk(s, _, TEPlaceholder(PlaceholderHtmlExp(_, e, elems))) :-
-    typeCompatible(typeOfExp(s, e), string(s)) | error $[Expression should be compatible with String],
-    templateElementsOk(s, elems).
-
-  templateElementOk(s, _, TEPlaceholder(Placeholder(ph, elems))) :-
-    declarePlaceholderVar(s, ph),
-    templateElementsOk(s, elems).
-
-  templateElementOk(s, _, TEPlaceholder(PlaceholderExp(e, elems))) :-
-    typeCompatible(typeOfExp(s, e), string(s)) | error $[Expression should be compatible with String],
-    templateElementsOk(s, elems).
-
-  templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjaxHtml(_, ph, tc))) :-
-    declarePlaceholderVar(s, ph),
-    templateCallOk(s, tc).
-
-  templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjaxHtmlExp(_, e, tc))) :-
-    typeCompatible(typeOfExp(s, e), string(s)) | error $[Expression should be compatible with String],
-    templateCallOk(s, tc).
-
-  templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjax(ph, tc))) :-
-    declarePlaceholderVar(s, ph),
-    templateCallOk(s, tc).
-
-  templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjaxExp(e, tc))) :-
-    typeCompatible(typeOfExp(s, e), string(s)) | error $[Expression should be compatible with String],
-    templateCallOk(s, tc).
-
-  declarePlaceholderVar : scope * string
-  declarePlaceholderVar(_, _). // TO-DO: declare in whole template
+  templateElementOk(s, _, TemplateDefinition2TemplateElement(td)) :- defineTemplateOk(s, td, FALSE()).
 
 rules // expressions
 
@@ -207,8 +181,7 @@ rules // enforce correct order of template elements
   // 3. other template elements
   templateElementOrderOk : list(TemplateElement) * BOOL * BOOL
   templateElementOrderOk([], _, _).
-  templateElementOrderOk([x | xs], _, _) :-
-    templateElementOrderOk(xs, TRUE(), TRUE()).
+  templateElementOrderOk([x | xs], _, _). // TO-DO: verify if we want this check :- templateElementOrderOk(xs, TRUE(), TRUE()).
 
   templateElementOrderOk([TEVarDecl(v) | xs], varDeclsDone, initDone) :-
     varDeclsDone == FALSE() | error $[Variable declarations must be at the start of a page or template] @v,

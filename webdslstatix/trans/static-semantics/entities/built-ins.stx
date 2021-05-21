@@ -24,6 +24,7 @@ rules
     declareVar(s_ent, "modified" , datetime(s)),
     declareFunction(s_ent, "save"  , [], VOID()),
     declareFunction(s_ent, "delete", [], VOID()), // TO-DO: not allowed on session entities and global vars
+    declareFunction(s_object, "toString", [], string(s)),
 
     new s_sessionmessage, s_sessionmessage -INHERIT-> s_ent,
     declareType(s, "SessionMessage", ENTITY(s_sessionmessage)),

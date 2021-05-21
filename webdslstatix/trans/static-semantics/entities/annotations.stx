@@ -156,9 +156,8 @@ rules // predicates
     doesNotHaveAnnotation(resolveAnnotation(s_ent, x), INVERSE())
       | error $[Inverse annotations cannot be declared on both sides].
 
-  isMutable : scope * string
-  isMutable(s, x) :-
-    doesNotHaveAnnotation(resolveAnnotation(s, x), DERIVED()) | error $[[x] is not mutable].
+  isMutableB : scope * string -> BOOL
+  isMutableB(s, x) = notB(hasAnnotationB(resolveAnnotation(s, x), DERIVED())).
 
   isMutableProperty : TYPE * string
   isMutableProperty(_, _) :- false | error $[Can only check mutability of native class and entity properties].

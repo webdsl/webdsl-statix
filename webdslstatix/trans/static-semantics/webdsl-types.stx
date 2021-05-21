@@ -27,33 +27,17 @@ signature
     SET  : TYPE -> TYPE
     REF  : TYPE -> TYPE
 
-    // built-in types such as Int, String, DateTime, etc.
+    // built-in types without scopes
     BUILTINTYPE : string * scope -> TYPE
     STATICBUILTINTYPE : string * scope -> TYPE
 
-    PLACEHOLDER : TYPE
     REGEX            : TYPE
     VOID             : TYPE
     TEMPLATEELEMENTS : TYPE
-    NULL            : TYPE
-    UNTYPED         : TYPE
+    NULL             : TYPE
+    UNTYPED          : TYPE
 
 rules // types of constant expressions
-
-  typeOfExp(_, exp@Null()) = NULL() :-
-    @exp.type := NULL().
-
-  typeOfExp(s, Const(exp@Int(_))) = t :-
-    t == int(s),
-    @exp.type := t.
-
-  typeOfExp(s, Const(exp@Long(_))) = t :-
-    t == long(s),
-    @exp.type := t.
-
-  typeOfExp(s, Const(exp@Float(_))) = t :-
-    t == float(s),
-    @exp.type := t.
 
   typeOfExp(s, exp@True()) = t :-
     t == bool(s),
@@ -63,7 +47,26 @@ rules // types of constant expressions
     t == bool(s),
     @exp.type := t.
 
-  typeOfExp(s, Const(exp@StringConst(str))) = t :-
+  typeOfExp(_, exp@Null()) = NULL() :-
+    @exp.type := NULL().
+
+  typeOfExp(s, Const(c)) = typeOfConst(s, c).
+  typeOfPlaceholderExp(s, PHConst(c)) = typeOfConst(s, c).
+
+  typeOfConst : scope * ConstValue -> TYPE
+  typeOfConst(s, exp@Int(_)) = t :-
+    t == int(s),
+    @exp.type := t.
+
+  typeOfConst(s, exp@Long(_)) = t :-
+    t == long(s),
+    @exp.type := t.
+
+  typeOfConst(s, exp@Float(_)) = t :-
+    t == float(s),
+    @exp.type := t.
+
+  typeOfConst(s, exp@StringConst(str)) = t :-
     t == string(s),
     stringOk(s, str),
     @exp.type := t.
@@ -85,24 +88,26 @@ rules // type compatibility of constants
   typeCompatibleB(BUILTINTYPE("Int", _), BUILTINTYPE("Long", _)) = TRUE().
 
   // string types
-  typeCompatibleB(BUILTINTYPE("String", _), T2)      = isStringCompatibleTypeB(T2).
-  typeCompatibleB(BUILTINTYPE("Secret", _), T2)      = isStringCompatibleTypeB(T2).
-  typeCompatibleB(BUILTINTYPE("Email", _), T2)       = isStringCompatibleTypeB(T2).
-  typeCompatibleB(BUILTINTYPE("URL", _), T2)         = isStringCompatibleTypeB(T2).
-  typeCompatibleB(BUILTINTYPE("WikiText", _), T2)    = isStringCompatibleTypeB(T2).
-  typeCompatibleB(BUILTINTYPE("Text", _), T2)        = isStringCompatibleTypeB(T2).
-  typeCompatibleB(BUILTINTYPE("Patch", _), T2)       = isStringCompatibleTypeB(T2).
-  typeCompatibleB(BUILTINTYPE("Placeholder", _), T2) = isStringCompatibleTypeB(T2).
+  typeCompatibleB(T1, BUILTINTYPE("String", _))      = isStringCompatibleTypeB(T1).
+  typeCompatibleB(T1, BUILTINTYPE("Secret", _))      = isStringCompatibleTypeB(T1).
+  typeCompatibleB(T1, BUILTINTYPE("Email", _))       = isStringCompatibleTypeB(T1).
+  typeCompatibleB(T1, BUILTINTYPE("URL", _))         = isStringCompatibleTypeB(T1).
+  typeCompatibleB(T1, BUILTINTYPE("WikiText", _))    = isStringCompatibleTypeB(T1).
+  typeCompatibleB(T1, BUILTINTYPE("Text", _))        = isStringCompatibleTypeB(T1).
+  typeCompatibleB(T1, BUILTINTYPE("Patch", _))       = isStringCompatibleTypeB(T1).
+  typeCompatibleB(T1, BUILTINTYPE("Placeholder", _)) = isStringCompatibleTypeB(T1).
 
   // date types
-  typeCompatibleB(BUILTINTYPE("Date", _), T2)     = isDateCompatibleTypeB(T2).
-  typeCompatibleB(BUILTINTYPE("DateTime", _), T2) = isDateCompatibleTypeB(T2).
-  typeCompatibleB(BUILTINTYPE("Time", _), T2)     = isDateCompatibleTypeB(T2).
+  typeCompatibleB(T1, BUILTINTYPE("Date", _))     = isDateCompatibleTypeB(T1).
+  typeCompatibleB(T1, BUILTINTYPE("DateTime", _)) = isDateCompatibleTypeB(T1).
+  typeCompatibleB(T1, BUILTINTYPE("Time", _))     = isDateCompatibleTypeB(T1).
 
   // misc
   typeCompatibleB(LIST(T1), LIST(T2)) = typeCompatibleB(T1, T2).
   typeCompatibleB(SET(T1), SET(T2))   = typeCompatibleB(T1, T2).
-  typeCompatibleB(REF(T1), REF(T2))   = typeCompatibleB(T1, T2).
+  typeCompatibleB(REF(_), REF(_))     = TRUE().
+  typeCompatibleB(T1, REF(T2))        = typeCompatibleB(T1, T2). // ref is compatible both ways
+  typeCompatibleB(REF(T1), T2)        = typeCompatibleB(T1, T2). // ref is compatible both ways
   typeCompatibleB(NULL(), _) = TRUE().
   typeCompatibleB(_, BUILTINTYPE("Object", _)) = TRUE().
 
@@ -123,15 +128,15 @@ rules // utils
 
   isStringCompatibleTypeB : TYPE -> BOOL
   isStringCompatibleTypeB(_)             = FALSE().
-  isStringCompatibleTypeB(BUILTINTYPE("String", _))      = TRUE().
-  isStringCompatibleTypeB(BUILTINTYPE("Secret", _))      = TRUE().
-  isStringCompatibleTypeB(BUILTINTYPE("Email", _))       = TRUE().
-  isStringCompatibleTypeB(BUILTINTYPE("URL", _))         = TRUE().
-  isStringCompatibleTypeB(BUILTINTYPE("WikiText", _))    = TRUE().
-  isStringCompatibleTypeB(BUILTINTYPE("Text", _))        = TRUE().
-  isStringCompatibleTypeB(BUILTINTYPE("Patch", _))       = TRUE().
-  isStringCompatibleTypeB(BUILTINTYPE("Object", _))      = TRUE().
-  isStringCompatibleTypeB(PLACEHOLDER())                 = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("String", _))       = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("Secret", _))       = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("Email", _))        = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("URL", _))          = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("WikiText", _))     = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("Text", _))         = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("Patch", _))        = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("Object", _))       = TRUE().
+  isStringCompatibleTypeB(BUILTINTYPE("Placeholder", _)) = TRUE().
 
 rules // map sorts to semantic types
 
@@ -154,7 +159,7 @@ rules // map sorts to semantic types
   typeOfSort(s, SimpleSort("WikiText")) = wikitext(s).
   typeOfSort(s, SimpleSort("Text")) = text(s).
   typeOfSort(s, SimpleSort("Patch")) = patch(s).
-  typeOfSort(_, SimpleSort("Placeholder")) = PLACEHOLDER().
+  typeOfSort(s, SimpleSort("Placeholder")) = placeholder(s).
 
   typeOfSort(s, SimpleSort("Date")) = date(s).
   typeOfSort(s, SimpleSort("DateTime")) = datetime(s).
@@ -205,8 +210,15 @@ rules // resolve reference types
     @name.ref := name'.
 
   definedTypeNoRef : scope * string -> TYPE
-  definedTypeNoRef(s, name) = t :- {name'}
-    resolveType(s, name) == [(_, (name', t))|_] | error $[Type [name] is not defined].
+  definedTypeNoRef(s, name) = t :-
+    resolveType(s, name) == [(_, (_, t))|_] | error $[Type [name] is not defined].
+
+  definedTypeIfExists : scope * string -> TYPE
+  definedTypeIfExists(s, name) = definedTypeIfExists_internal(s, resolveType(s, name)).
+
+  definedTypeIfExists_internal : scope * list((path * (string * TYPE))) -> TYPE
+  definedTypeIfExists_internal(_, [(_, (_, t))|_]) = t.
+  definedTypeIfExists_internal(s, []) = entity(s).
 
   variableType : scope * string -> TYPE
   variableType(s, x) = t :- {x'}
@@ -228,6 +240,7 @@ rules // utils
 
   stripGenericType : TYPE -> TYPE
   stripGenericType(t) = UNTYPED() :- false | error $[Must be a list or set, [t] given].
+  stripGenericType(REF(t)) = stripGenericType(t).
   stripGenericType(LIST(t)) = t.
   stripGenericType(SET(t)) = t.
 

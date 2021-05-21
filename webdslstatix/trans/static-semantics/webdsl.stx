@@ -3,17 +3,7 @@ module static-semantics/webdsl
 imports
   signatures/webdsl-statix-sig
 
-  static-semantics/actions/binops
-  static-semantics/actions/built-ins
-  static-semantics/actions/emails
-  static-semantics/actions/functions
-
   static-semantics/entities/annotations
-  static-semantics/entities/built-ins
-
-  static-semantics/types/built-ins
-
-  static-semantics/ui/built-ins
 
   static-semantics/webdsl-ac
   static-semantics/webdsl-actions
@@ -244,13 +234,6 @@ rules // declare common rules and mappings
   expOk(s, exp) :- {T}
     typeOfExp(s, exp) == T.
 
-  declareBuiltIns : scope
-  declareBuiltIns(s) :-
-    declareFunctionIns(s),
-    declareEntityBuiltIns(s),
-    declareTypeBuiltIns(s),
-    declareUIBuiltIns(s).
-
 rules // typing
 
   typesOfExps maps typeOfExp(*, list(*)) = list(*)
@@ -264,6 +247,9 @@ rules // typing
 
   typeOfSimpleExp : scope * SimpleExp -> TYPE
   typeOfSimpleExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
+
+  typeOfPlaceholderExp : scope * PHExp -> TYPE
+  typeOfPlaceholderExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
 
   typesCompatible : list(TYPE) * list(TYPE) -> BOOL
   typesCompatible([], []) = TRUE().

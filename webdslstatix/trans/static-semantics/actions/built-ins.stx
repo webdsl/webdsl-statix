@@ -33,4 +33,5 @@ rules
     declareFunction(s, "readRequestBody"        , []          , string(s)),
 
     declareFunction(s, "attribute", [string(s)], string(s)),
-    declareFunction(s, "attribute", [string(s), string(s)], string(s)).
+    declareFunction(s, "attribute", [string(s), string(s)], string(s)),
+    declareFunction(s, "hasNotNullAttribute", [], bool(s)).

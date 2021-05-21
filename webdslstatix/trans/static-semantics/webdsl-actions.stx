@@ -2,6 +2,8 @@ module static-semantics/webdsl-actions
 
 imports
   static-semantics/actions/binops
+  static-semantics/actions/built-ins
+  static-semantics/actions/emails
   static-semantics/actions/functions
 
   static-semantics/entities/annotations
@@ -38,9 +40,16 @@ rules // statements
   stmtOk(s, _, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a mutable variable].
   stmtOk(s, _, Assignment(v@Var(x), exp), _) :- {t}
     variableType(s, x) == t,
-    isMutable(s, x),
+    or(
+      isMutableB(s, x),
+      isRef(t)
+    ) | error $[Variable [x] is not mutable],
     typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [t]],
     @v.type := t.
+
+  isRef : TYPE -> BOOL
+  isRef(REF(_)) = TRUE().
+  isRef(_) = FALSE().
 
   stmtOk(s, _, Assignment(FieldAccess(v@FAVar(var), x), exp), _) :- {varType t}
     varType == variableType(s, var),
@@ -168,8 +177,14 @@ rules // variables
     typeOfProperty(s, t, x) == propertyType,
     @x.type := propertyType.
 
+  typeOfPlaceholderExp(s, PHFieldAccess(exp, x)) = propertyType :- {t}
+    typeOfExp(s, exp) == t,
+    typeOfProperty(s, t, x) == propertyType,
+    @x.type := propertyType.
+
   typeOfProperty : scope * TYPE * string -> TYPE
   typeOfProperty(_, t, _) = UNTYPED() :- false | error $[Field access is only allowed on native classes and entities, [t] given].
+  typeOfProperty(s, REF(t), x) = typeOfProperty(s, t, x).
   typeOfProperty(_, ENTITY(s), x) = t :-
     propertyType(s, x) == t.
   typeOfProperty(_, NATIVECLASS(s), x) = t :-
@@ -226,12 +241,20 @@ rules // lists and sets
     typesCompatibleWith(t, typesOfExps(s, exps)) | error $[Not all elements are compatible with type [t]] @exps,
     @tsc.type := SET(t).
 
-  typeOfExp(s, ci@CollectionIndex(col, idx)) = t :- {colType idxType}
-    colType == typeOfExp(s, col),
-    idxType == typeOfExp(s, idx),
-    typeCompatible(idxType, int(s)) | error $[Index expression must be of type Int, [idxType] given],
-    t == stripGenericType(colType),
+  typeOfExp(s, ci@CollectionIndex(c, x)) = t :-
+    t == typeOfCollectionIndex(s, c, x),
     @ci.type := t.
+
+  typeOfPlaceholderExp(s, ci@PHCollectionIndex(c, x)) = t :-
+    t == typeOfCollectionIndex(s, c, x),
+    @ci.type := t.
+
+  typeOfCollectionIndex : scope * Exp * Exp -> TYPE
+  typeOfCollectionIndex(s, c, x) = t :- {ct xt}
+    ct == typeOfExp(s, c),
+    xt == typeOfExp(s, x),
+    typeCompatible(xt, int(s)) | error $[Index expression must be of type Int, [xt] given],
+    t == stripGenericType(ct).
 
   typeOfExp(s, ForExp2Exp(ForExp(e1, x, OptSortNone(), e2, _, _))) = LIST(t) :- {s_e1 collectionType varType}
     new s_e1, s_e1 -P-> s,

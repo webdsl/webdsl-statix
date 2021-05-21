@@ -49,23 +49,23 @@ rules // attributes
   attributeOk(s, CommonAttribute2Attribute(AllAttributes())).
   attributeOk(s, CommonAttribute2Attribute(AllAttributesExceptExp(exp))) :- {t}
     t == typeOfExp(s, exp),
-    equalB(TRUE(), orB(
+    or(
       typeCompatibleB(string(s), t),
       orB(
         typeCompatibleB(LIST(string(s)), t),
         typeCompatibleB(SET(string(s)), t)
       )
-    )) | error $[Attribute names should be of type String, List of String of Set of String, but type [t] given] @exp.
+    ) | error $[Attribute names should be of type String, List of String of Set of String, but type [t] given] @exp.
 
   attributeOk(s, CommonAttribute2Attribute(AttributesExp(exp))) :- {t}
     t == typeOfExp(s, exp),
-    equalB(TRUE(), orB(
+    or(
       typeCompatibleB(string(s), t),
       orB(
         typeCompatibleB(LIST(string(s)), t),
         typeCompatibleB(SET(string(s)), t)
       )
-    )) | error $[Attribute names should be of type String, List of String of Set of String, but type [t] given] @exp.
+    ) | error $[Attribute names should be of type String, List of String of Set of String, but type [t] given] @exp.
 
 rules // attribute collections
 

@@ -43,20 +43,22 @@ rules
   long  : scope -> TYPE
   long(s)  = builtInType(s, "Long").
 
-  string   : scope -> TYPE
-  string(s)   = builtInType(s, "String").
-  secret   : scope -> TYPE
-  secret(s)   = builtInType(s, "Secret").
-  email    : scope -> TYPE
-  email(s)    = builtInType(s, "Email").
-  url      : scope -> TYPE
-  url(s)      = builtInType(s, "URL").
-  wikitext : scope -> TYPE
-  wikitext(s) = builtInType(s, "WikiText").
-  text     : scope -> TYPE
-  text(s)     = builtInType(s, "Text").
-  patch    : scope -> TYPE
-  patch(s)    = builtInType(s, "Patch").
+  string      : scope -> TYPE
+  string(s)       = builtInType(s, "String").
+  secret      : scope -> TYPE
+  secret(s)       = builtInType(s, "Secret").
+  email       : scope -> TYPE
+  email(s)        = builtInType(s, "Email").
+  url         : scope -> TYPE
+  url(s)          = builtInType(s, "URL").
+  wikitext    : scope -> TYPE
+  wikitext(s)     = builtInType(s, "WikiText").
+  text        : scope -> TYPE
+  text(s)         = builtInType(s, "Text").
+  patch       : scope -> TYPE
+  patch(s)        = builtInType(s, "Patch").
+  placeholder : scope -> TYPE
+  placeholder(s)  = builtInType(s, "Placeholder").
 
   date     : scope -> TYPE
   date(s)     = builtInType(s, "Date").
@@ -95,6 +97,7 @@ rules
     declareBuiltInType(s, "WikiText"),
     declareBuiltInType(s, "Text"),
     declareBuiltInType(s, "Patch"),
+    declareBuiltInType(s, "Placeholder"),
 
     // date types
     declareBuiltInType(s, "DateTime"),
@@ -105,7 +108,31 @@ rules
     declareBuiltInType(s, "Bool"),
     declareBuiltInType(s, "UUID"),
     declareBuiltInType(s, "File"),
-    declareBuiltInType(s, "Image").
+    declareBuiltInType(s, "Image"),
+
+    declareTypeBuiltInFunctions(s).
+
+  declareTypeBuiltInFunctions : scope
+  declareTypeBuiltInFunctions(s) :- {int string s_file s_image}
+    int == int(s),
+    string == string(s),
+    new s_file, declareExtendEntity(s, "File", s_file),
+    declFunctionEntity(s_file, "download"           , []      , VOID(), FALSE()),
+    declFunctionEntity(s_file, "download"           , [string], VOID(), FALSE()),
+    declFunctionEntity(s_file, "fileName"           , []      , string, FALSE()),
+    declFunctionEntity(s_file, "fileNameForDownload", []      , string, FALSE()),
+
+    declareExtendEntity(s, "Image", s_file), // also expose file functions to image
+    new s_image, declareExtendEntity(s, "Image", s_image),
+//    declFunctionEntity(s_image, "download"           , []                  , VOID()  , FALSE()),
+//    declFunctionEntity(s_image, "download"           , [string]            , VOID()  , FALSE()),
+//    declFunctionEntity(s_image, "fileName"           , []                  , string  , FALSE()),
+//    declFunctionEntity(s_image, "fileNameForDownload", []                  , string  , FALSE()),
+    declFunctionEntity(s_image, "resize"   , [int, int]          , VOID()  , FALSE()),
+    declFunctionEntity(s_image, "crop"     , [int, int, int, int], VOID()  , FALSE()),
+    declFunctionEntity(s_image, "getWidth" , []                  , int     , FALSE()),
+    declFunctionEntity(s_image, "getHeight", []                  , int     , FALSE()),
+    declFunctionEntity(s_image, "clone"    , []                  , image(s), FALSE()).
 
 rules // built-in functions and properties for built-in generic type List
 
@@ -176,6 +203,8 @@ rules // built-in properties for built-in generic type Ref
 
   typeOfCall(s, REF(t), "getValidationErrors", []) = LIST(string(s)).
 
-  typeOfCall(s, REF(t), "getAllowed", []) = LIST(t).
+  typeOfCall(s, REF(LIST(t)), "getAllowed", []) = LIST(t).
+  typeOfCall(s, REF(SET(t)) , "getAllowed", []) = LIST(t).
+  typeOfCall(s, REF(t)      , "getAllowed", []) = LIST(t).
 
-  typeOfCall(s, REF(t), "getReflectionProperty", []) = entity(s). // TO-DO: return ReflectionProperty
+  typeOfCall(s, REF(t), "getReflectionProperty", []) = definedTypeIfExists(s, "ReflectionProperty").

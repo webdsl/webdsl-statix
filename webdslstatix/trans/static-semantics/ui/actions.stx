@@ -70,3 +70,6 @@ rules // expressions
 
   typeOfExp(s, RenderTemplateFunctionCall(tc)) = string(s) :-
     templateCallOk(s, tc).
+
+  typeOfExp(s, ValidateTemplateFunctionCall(tc)) = string(s) :-
+    templateCallOk(s, tc).

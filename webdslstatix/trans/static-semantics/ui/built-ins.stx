@@ -16,7 +16,7 @@ rules
     declTemplate(s, "image", [url(s)], []),
     declTemplate(s, "header", [], []),
     declTemplate(s, "section", [], []),
-    declTemplate(s, "url", [url(s)], []),
+//    declTemplate(s, "url", [url(s)], []), // TO-DO: investigate if url is template or pageplaceholde
     declTemplate(s, "form", [], []),
     declTemplate(s, "dynamicform", [], []),
     declTemplate(s, "captcha", [], []),
@@ -37,4 +37,6 @@ rules
     declTemplate(s, "includeJSLast", [string(s)], []),
     declTemplate(s, "includeHead", [string(s)], []),
 
-    declTemplate(s, "templateContext", [string(s)], []).
+    declTemplate(s, "templateContext", [string(s)], []),
+
+    declarePage(s, "url", [string(s)]).

@@ -4,6 +4,7 @@ imports
   static-semantics/actions/functions
 
   static-semantics/entities/annotations
+  static-semantics/entities/built-ins
 
   static-semantics/types/built-ins
 
