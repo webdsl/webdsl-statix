@@ -1,19 +1,24 @@
 application example
 
-imports built-in
+// a root page is always required in a WebDSL app
+page root { }
 
-  page root {
-    "Hello World!"
-  }
+// function `f` with an integer return type
+function f() : Int { return 1; }
 
-  entity Ent {
-    x : Int
-    y : String
-    other : Ent
-  }
+// function `g` with void return type
+function g() {
+  var x := 1;
 
-  function f() : Int {
-    var e := Ent{};
+// uncomment the following line to spawn the exception
+//  var y := f();
+}
 
-    return e.x;
-  }
+entity Ent {
+
+  // derived property x with constant value 1
+  x : Int := 1
+
+// uncomment the following line to spawn the exception
+//  y : Int := a()
+}

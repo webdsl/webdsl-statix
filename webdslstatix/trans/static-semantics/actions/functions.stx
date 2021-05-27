@@ -29,21 +29,21 @@ rules // functions calls
     t == typeOfCall(s, typeOfExp(s, exp), f, argExps).
 
   typeOfFunctionCall : scope * string * list(Exp)-> TYPE
-  typeOfFunctionCall(s, f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+  typeOfFunctionCall(s, f, args) = typeOfFunctionCallInternal(s, f, args, funSigs) :-
     funSigs == resolveFunction(s, f).
 
   typeOfCall : scope * TYPE * string * list(Exp)-> TYPE
-  typeOfCall(s, ENTITY(s_ent), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+  typeOfCall(s, ENTITY(s_ent), f, args) = typeOfFunctionCallInternal(s, f, args, funSigs) :-
     funSigs == resolveEntityFunction(s_ent, f).
 
-  typeOfCall(s, STATICENTITY(s_ent), f, args) = typeOfFunctionCall_internal(s, f, args, funSigs) :-
+  typeOfCall(s, STATICENTITY(s_ent), f, args) = typeOfFunctionCallInternal(s, f, args, funSigs) :-
     funSigs == resolveStaticEntityFunction(s_ent, f).
 
   typeOfCall(s, REF(t), f, args) = typeOfCall(s, t, f, args).
   typeOfCall(s, t, f, args) = UNTYPED() :- false | error $[First subexpression of a function call must be of type entity, [t] found].
 
-  typeOfFunctionCall_internal : scope * string * list(Exp) * list((path * (string * TYPE))) -> TYPE
-  typeOfFunctionCall_internal(s, f, args, funSigs) = t :- {argTypes f'}
+  typeOfFunctionCallInternal : scope * string * list(Exp) * list((path * (string * TYPE))) -> TYPE
+  typeOfFunctionCallInternal(s, f, args, funSigs) = t :- {argTypes f'}
     argTypes                  == typesOfExps(s, args),
     [(f', FUNCTION(_, t, _))] == mostSpecificSigs(argTypes, typeCompatibleSigs(funSigs, argTypes)) | error $[Zero or multiple function definition with equally specific argument types for function [f]] @f,
     @f.ref := f',

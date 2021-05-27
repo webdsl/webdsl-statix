@@ -108,9 +108,7 @@ rules
     declareBuiltInType(s, "Bool"),
     declareBuiltInType(s, "UUID"),
     declareBuiltInType(s, "File"),
-    declareBuiltInType(s, "Image"),
-
-    declareTypeBuiltInFunctions(s).
+    declareBuiltInType(s, "Image").
 
   declareTypeBuiltInFunctions : scope
   declareTypeBuiltInFunctions(s) :- {int string s_file s_image}
