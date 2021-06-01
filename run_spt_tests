@@ -1,0 +1,109 @@
+#!/bin/bash
+
+trap ctrl_c INT
+
+function ctrl_c() {
+    cleanup
+}
+
+function buildSPTRunner() {
+    git clone https://github.com/metaborg/spt.git
+    cd spt/org.metaborg.spt.cmd
+    mvn package
+    ls target/org.metaborg.spt.cmd*
+    cd ../../
+}
+
+function getJARFileName() {
+    ls spt/org.metaborg.spt.cmd/target/org.metaborg.spt.cmd*
+}
+
+function buildSPT() {
+    cd spt/org.metaborg.meta.lang.spt
+    mvn verify
+    cd ../../
+}
+
+function buildWebDSLStatix() {
+    git clone https://github.com/webdsl/webdsl-statix.git
+    cd webdsl-statix/webdslstatix
+    mvn clean verify
+    cd ../../
+}
+
+function runTests() {
+    for file in "$1"/*
+    do
+        if [ -d "${file}" ] ; then
+            runTestOnDirectory "$file" "$2"
+            runTests "${file}" "$2"
+        fi
+    done
+}
+
+function runTestOnDirectory() {
+    local dirName="$1"
+    local jarFile="$2"
+    local dirNameReplaced=$(echo $dirName | sed -e 's/\//__/g')
+    local resultFile="result/$dirNameReplaced.txt"
+
+    echo "Testing $dirName..."
+
+    java -Xss32m -jar "$jarFile" \
+        --lut webdsl-statix/webdslstatix \
+        --tests "$dirName" \
+        --spt spt/org.metaborg.meta.lang.spt \
+        > "$resultFile"
+
+    prependResultSummary "$resultFile"
+}
+
+function prependResultSummary() {
+    local resultFile="$1"
+    local lastLine=$(tail -1 $resultFile)
+    local resultSummary=""
+
+    if [[ $lastLine == *"o.m.c.t.LoggingTestReporterService - test result:"* ]]; then
+        local passed=$(echo $lastLine | grep -Eo "[0-9]+ passed" | grep -Eo "[0-9]+")
+        local failed=$(echo $lastLine | grep -Eo "[0-9]+ failed" | grep -Eo "[0-9]+")
+        local ignored=$(echo $lastLine | grep -Eo "[0-9]+ ignored" | grep -Eo "[0-9]+")
+        resultSummary="Result:\n- passed: $passed\n- failed: $failed\n- ignored: $ignored\n\n\n\nComplete output:\n\n"
+    else
+        resultSummary="Tests failed. See detailed output for more information"
+    fi
+
+    prependLineToFile "$resultSummary" "$resultFile"
+}
+
+function prependLineToFile() {
+    local line="$1"
+    local file="$2"
+    printf "$line"|cat - "$file" > tmp.txt && mv tmp.txt "$file"
+}
+
+function renameResults {
+    cd result
+    for file in * ; do
+        mv -v "$file" "${file#webdsl-statix__webdslstatix.test__}"
+    done
+    cd ..
+}
+
+function cleanup() {
+    rm -rf spt
+    rm -rf webdsl-statix
+}
+
+function main() {
+    buildSPTRunner
+    local jarFile="$(getJARFileName)"
+    buildSPT
+    buildWebDSLStatix
+    mkdir result
+    runTests "webdsl-statix/webdslstatix.test" "$jarFile"
+    renameResults
+    cleanup
+    echo "DONE!"
+}
+
+main "$1"
