@@ -20,7 +20,7 @@ node{
       withMaven(
         //mavenLocalRepo: "${env.JENKINS_HOME}/m2repos/${env.EXECUTOR_NUMBER}", //http://yellowgrass.org/issue/SpoofaxWithCore/173
         mavenLocalRepo: ".repository",
-        mavenOpts: '-Xmx1G -Xms1G -Xss16m'
+        mavenOpts: '-Xmx4G -Xms4G -Xss64m'
       ){
         sh './run_spt_tests'
       }
