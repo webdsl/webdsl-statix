@@ -1,10 +1,4 @@
 properties([
-  pipelineTriggers([
-    upstream(
-      threshold: hudson.model.Result.SUCCESS,
-      upstreamProjects: '/webdsl/webdsl-statix/master' // build this project after webdsl-statix master is built
-    )
-  ]),
   buildDiscarder(logRotator(artifactNumToKeepStr: '10')),
   disableConcurrentBuilds() //disableds parallel builds
 ])
