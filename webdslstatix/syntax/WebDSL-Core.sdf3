@@ -51,6 +51,12 @@ context-free syntax
       <Definition*>
   >
 
+context-free restrictions
+
+  // TO-DO: this can still go wrong in case two or more spaces are given before the newline
+  "section" -/- [\ ] . [\r\n]
+  "section" -/- [\r\n]
+
 context-free syntax
 
   Unit.ApplicationDefs = <

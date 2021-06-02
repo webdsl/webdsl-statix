@@ -77,13 +77,13 @@ test foreach entity derive [[
   init {
     foreach props { }
   }
-]] parse succeeds parse to InitAction(Block([ForeachStatementEntityDerive("props", [])]))
+]] parse succeeds parse to Init(Block([ForeachStatementEntityDerive("props", [])]))
 
 test foreach entity derive numbers and underscores [[
   init {
     foreach propS_1_2 { }
   }
-]] parse succeeds parse to InitAction(Block([ForeachStatementEntityDerive("propS_1_2", [])]))
+]] parse succeeds parse to Init(Block([ForeachStatementEntityDerive("propS_1_2", [])]))
 
 test foreach entity derive start with numbers not allowed [[
   init {
@@ -103,7 +103,7 @@ test foreach entity derive single statement [[
       g();
     }
   }
-]] parse succeeds parse to InitAction(Block([ForeachStatementEntityDerive("props", [Stat(ThisCall("g", []))])]))
+]] parse succeeds parse to Init(Block([ForeachStatementEntityDerive("props", [Stat(ThisCall("g", []))])]))
 
 test foreach entity derive multiple statements [[
   init {
@@ -112,4 +112,4 @@ test foreach entity derive multiple statements [[
       h();
     }
   }
-]] parse succeeds parse to InitAction(Block([ForeachStatementEntityDerive("props", [Stat(ThisCall("g", [])), Stat(ThisCall("h", []))])]))
+]] parse succeeds parse to Init(Block([ForeachStatementEntityDerive("props", [Stat(ThisCall("g", [])), Stat(ThisCall("h", []))])]))

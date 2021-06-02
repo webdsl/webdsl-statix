@@ -14,43 +14,43 @@ fixture [[
 // placeholder
 test placeholder [[
   placeholder ph { }
-]] parse succeeds parse to Placeholder("ph", [])
+]] parse succeeds parse to TEPlaceholder(Placeholder("ph", []))
 
 test placeholder single element [[
   placeholder ph {
     "content"
   }
-]] parse succeeds parse to Placeholder("ph", [Text([StringValue("content")])])
+]] parse succeeds parse to TEPlaceholder(Placeholder("ph", [Text([StringValue("content")])]))
 
 test placeholder multiple elements [[
   placeholder ph {
     "content"
     "content2"
   }
-]] parse succeeds parse to Placeholder("ph", [Text([StringValue("content")]), Text([StringValue("content2")])])
+]] parse succeeds parse to TEPlaceholder(Placeholder("ph", [Text([StringValue("content")]), Text([StringValue("content2")])]))
 
 test placeholder expression as name [[
   placeholder "ph-"+"1" { }
-]] parse succeeds parse to PlaceholderExp(Add(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), [])
+]] parse succeeds parse to TEPlaceholder(PlaceholderExp(Add(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), []))
 
 test placeholder expression as name single element [[
   placeholder "ph-"+"1" {
     "content"
   }
-]] parse succeeds parse to PlaceholderExp(Add(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), [Text([StringValue("content")])])
+]] parse succeeds parse to TEPlaceholder(PlaceholderExp(Add(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), [Text([StringValue("content")])]))
 
 test placeholder expression as name multiple elements [[
   placeholder "ph-"+"1" {
     "content"
     "content2"
   }
-]] parse succeeds parse to PlaceholderExp(Add(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), [Text([StringValue("content")]), Text([StringValue("content2")])])
+]] parse succeeds parse to TEPlaceholder(PlaceholderExp(Add(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), [Text([StringValue("content")]), Text([StringValue("content2")])]))
 
 
 // placeholder custom html tag
 test placeholder custom html tag [[
   placeholder<div> ph { }
-]] parse succeeds parse to PlaceholderHtml("div", "ph", [])
+]] parse succeeds parse to TEPlaceholder(PlaceholderHtml("div", "ph", []))
 
 test placeholder multiple html tags [[
   placeholder<div span> ph { }
@@ -58,43 +58,43 @@ test placeholder multiple html tags [[
 
 test placeholder custom html tag with layout [[
   placeholder <div> ph { }
-]] parse succeeds parse to PlaceholderHtml("div", "ph", [])
+]] parse succeeds parse to TEPlaceholder(PlaceholderHtml("div", "ph", []))
 
 test placeholder custom html single element [[
   placeholder<div> ph {
     "content"
   }
-]] parse succeeds parse to PlaceholderHtml("div", "ph", [Text([StringValue("content")])])
+]] parse succeeds parse to TEPlaceholder(PlaceholderHtml("div", "ph", [Text([StringValue("content")])]))
 
 test placeholder custom html multiple elements [[
   placeholder<div> ph {
     "content"
     "content2"
   }
-]] parse succeeds parse to PlaceholderHtml("div", "ph", [Text([StringValue("content")]), Text([StringValue("content2")])])
+]] parse succeeds parse to TEPlaceholder(PlaceholderHtml("div", "ph", [Text([StringValue("content")]), Text([StringValue("content2")])]))
 
 test placeholder custom html tag expression as name [[
   placeholder <div> "ph-"+"1" { }
-]] parse succeeds parse to PlaceholderHtmlExp("div", Add(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), [])
+]] parse succeeds parse to TEPlaceholder(PlaceholderHtmlExp("div", Add(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), []))
 
 test placeholder custom html tag expression single element [[
   placeholder <div> "ph-"+"1" {
     "content"
   }
-]] parse succeeds parse to PlaceholderHtmlExp("div", Add(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), [Text([StringValue("content")])])
+]] parse succeeds parse to TEPlaceholder(PlaceholderHtmlExp("div", Add(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), [Text([StringValue("content")])]))
 
 test placeholder custom html tag expression multiple elements [[
   placeholder <div> "ph-"+"1" {
     "content"
     "content2"
   }
-]] parse succeeds parse to PlaceholderHtmlExp("div", Add(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), [Text([StringValue("content")]), Text([StringValue("content2")])])
+]] parse succeeds parse to TEPlaceholder(PlaceholderHtmlExp("div", Add(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), [Text([StringValue("content")]), Text([StringValue("content2")])]))
 
 
 // placeholder with ajax call
 test ajax placeholder [[
   placeholder ph ajaxTemplate()
-]] parse succeeds parse to PlaceholderAjax("ph", TemplateCall(TemplateCallId("ajaxTemplate"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone()))
+]] parse succeeds parse to TEPlaceholderWithAjaxCall(PlaceholderAjax("ph", TemplateCall(TemplateCallId("ajaxTemplate"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone())))
 
 test ajax placeholder no ajax call [[
   placeholder ph
@@ -102,7 +102,7 @@ test ajax placeholder no ajax call [[
 
 test ajax placeholder phexp as name [[
   placeholder "ph-"+"1" ajaxTemplate()
-]] parse succeeds parse to PlaceholderAjaxExp(PHAdd(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), TemplateCall(TemplateCallId("ajaxTemplate"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone()))
+]] parse succeeds parse to TEPlaceholderWithAjaxCall(PlaceholderAjaxExp(PHAdd(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), TemplateCall(TemplateCallId("ajaxTemplate"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone())))
 
 test ajax placeholder phexp as nameno ajax call [[
   placeholder "ph-"+"1"
@@ -112,7 +112,7 @@ test ajax placeholder phexp as nameno ajax call [[
 // placeholder custom html tag ajax call
 test ajax placeholder custom html tag [[
   placeholder<div> ph ajaxTemplate()
-]] parse succeeds parse to PlaceholderAjaxHtml("div", "ph", TemplateCall(TemplateCallId("ajaxTemplate"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone()))
+]] parse succeeds parse to TEPlaceholderWithAjaxCall(PlaceholderAjaxHtml("div", "ph", TemplateCall(TemplateCallId("ajaxTemplate"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone())))
 
 test ajax placeholder multiple html tags [[
   placeholder<div span> ph ajaxTemplate()
@@ -120,7 +120,7 @@ test ajax placeholder multiple html tags [[
 
 test ajax placeholder custom html tag with layout [[
   placeholder <div> ph ajaxTemplate()
-]] parse succeeds parse to PlaceholderAjaxHtml("div", "ph", TemplateCall(TemplateCallId("ajaxTemplate"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone()))
+]] parse succeeds parse to TEPlaceholderWithAjaxCall(PlaceholderAjaxHtml("div", "ph", TemplateCall(TemplateCallId("ajaxTemplate"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone())))
 
 test ajax placeholder custom html tag no ajax call [[
   placeholder<div> ph
@@ -128,7 +128,7 @@ test ajax placeholder custom html tag no ajax call [[
 
 test ajax placeholder custom html tag phexp as name [[
   placeholder<div> "ph-"+"1" ajaxTemplate()
-]] parse succeeds parse to PlaceholderAjaxHtmlExp("div", PHAdd(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), TemplateCall(TemplateCallId("ajaxTemplate"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone()))
+]] parse succeeds parse to TEPlaceholderWithAjaxCall(PlaceholderAjaxHtmlExp("div", PHAdd(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), TemplateCall(TemplateCallId("ajaxTemplate"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone())))
 
 test ajax placeholder multiple html tags phexp as name [[
   placeholder<div span> "ph-"+"1" ajaxTemplate()
@@ -136,7 +136,7 @@ test ajax placeholder multiple html tags phexp as name [[
 
 test ajax placeholder custom html tag phexp as name with layout[[
   placeholder <div> "ph-"+"1" ajaxTemplate()
-]] parse succeeds parse to PlaceholderAjaxHtmlExp("div", PHAdd(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), TemplateCall(TemplateCallId("ajaxTemplate"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone()))
+]] parse succeeds parse to TEPlaceholderWithAjaxCall(PlaceholderAjaxHtmlExp("div", PHAdd(Const(StringConst(String([StringValue("ph-")]))), Const(StringConst(String([StringValue("1")])))), TemplateCall(TemplateCallId("ajaxTemplate"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone())))
 
 test ajax placeholder custom html tag phexp as nameno ajax call [[
   placeholder<div> "ph-"+"1"

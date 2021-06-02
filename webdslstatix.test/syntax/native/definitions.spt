@@ -11,21 +11,21 @@ fixture [[
 
 test native class [[
   native class JavaClass { }
-]] parse succeeds parse to NativeClass("JavaClass", NativeClassAliasNone(), NativeClassSuperNone(), [])
+]] parse succeeds parse to NativeClass("JavaClass", NCAliasNone(), NCSuperNone(), [])
 
 test native class with qualified id [[
   native class Java.Class { }
-]] parse succeeds parse to NativeClass(Qualified("Java", "Class"), NativeClassAliasNone(), NativeClassSuperNone(), [])
+]] parse succeeds parse to NativeClass("Java.Class", NCAliasNone(), NCSuperNone(), [])
 
 test native class with double qualified id [[
   native class My.Java.Class { }
-]] parse succeeds parse to NativeClass(Qualified(Qualified("My", "Java"), "Class"), NativeClassAliasNone(), NativeClassSuperNone(), [])
+]] parse succeeds parse to NativeClass("My.Java.Class", NCAliasNone(), NCSuperNone(), [])
 
 
 // alias
 test native class with alias [[
   native class JavaClass as OtherJavaClass { }
-]] parse succeeds parse to NativeClass("JavaClass", NativeClassAlias("OtherJavaClass"), NativeClassSuperNone(), [])
+]] parse succeeds parse to NativeClass("JavaClass", NCAlias("OtherJavaClass"), NCSuperNone(), [])
 
 test native class no qualified alias allowed [[
   native class JavaClass as Other.JavaClass { }
@@ -34,7 +34,7 @@ test native class no qualified alias allowed [[
 // super
 test native class with super [[
   native class JavaClass : OtherJavaClass { }
-]] parse succeeds parse to NativeClass("JavaClass", NativeClassAliasNone(), NativeClassSuper("OtherJavaClass"), [])
+]] parse succeeds parse to NativeClass("JavaClass", NCAliasNone(), NCSuper("OtherJavaClass"), [])
 
 test native class no qualified super allowed [[
   native class JavaClass : Other.JavaClass { }
@@ -42,4 +42,4 @@ test native class no qualified super allowed [[
 
 test native class alias and super [[
   native class JavaClass as OtherJavaClass : SuperClass { }
-]] parse succeeds parse to NativeClass("JavaClass", NativeClassAlias("OtherJavaClass"), NativeClassSuper("SuperClass"), [])
+]] parse succeeds parse to NativeClass("JavaClass", NCAlias("OtherJavaClass"), NCSuper("SuperClass"), [])

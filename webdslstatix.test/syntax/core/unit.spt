@@ -4,8 +4,8 @@ language webdsl-statix
 
 // qualified ids
 test qualified id simple [[ application x ]] parse succeeds parse to Application("x", [])
-test qualified id [[ application x.y ]] parse succeeds parse to Application(Qualified("x", "y"), [])
-test qualified id nested [[ application x.y.z ]] parse succeeds parse to Application(Qualified(Qualified("x", "y"), "z"), [])
+test qualified id [[ application x.y ]] parse succeeds parse to Application("x.y", [])
+test qualified id nested [[ application x.y.z ]] parse succeeds parse to Application("x.y.z", [])
 
 
 // application and sections
@@ -30,8 +30,9 @@ test application [[
   application x
 
   section section name with spaces
-]] parse succeeds parse to Application("x", [Section(" section name with spaces", [])])
+]] parse succeeds parse to Application("x", [Section("section name with spaces", [])])
 
+// TO-DO: Allow sections with no name
 test application section no name multiple definitions [[
   application x
 
@@ -39,7 +40,7 @@ test application section no name multiple definitions [[
 
     entity Ent1 { }
     entity Ent2 { }
-]] parse succeeds parse to Application("x", [Section("", [EntityNoSuper("Ent1", []), EntityNoSuper("Ent2", [])])])
+]] parse fails // parse succeeds parse to Application("x", [Section("", [EntityNoSuper("Ent1", []), EntityNoSuper("Ent2", [])])])
 
 test application defs and section [[
   application x
@@ -49,7 +50,7 @@ test application defs and section [[
   section 1
 
     entity Ent2 {}
-]] parse succeeds parse to ApplicationDefs("x", [EntityNoSuper("Ent1", [])], [Section(" 1", [EntityNoSuper("Ent2", [])])])
+]] parse succeeds parse to ApplicationDefs("x", [EntityNoSuper("Ent1", [])], [Section("1", [EntityNoSuper("Ent2", [])])])
 
 test application multiple sections [[
   application x
@@ -59,7 +60,7 @@ test application multiple sections [[
 
   section 2
     entity Ent2 {}
-]] parse succeeds parse to Application("x", [Section(" 1", [EntityNoSuper("Ent1", [])]), Section(" 2", [EntityNoSuper("Ent2", [])])])
+]] parse succeeds parse to Application("x", [Section("1", [EntityNoSuper("Ent1", [])]), Section("2", [EntityNoSuper("Ent2", [])])])
 
 test application imports [[
   application x
@@ -88,7 +89,7 @@ test application imports in section [[
   section 1
 
     imports z
-]] parse succeeds parse to ApplicationDefs("x", [Imports("y")], [Section(" 1", [Imports("z")])])
+]] parse succeeds parse to ApplicationDefs("x", [Imports("y")], [Section("1", [Imports("z")])])
 
 test application imports only in section [[
   application x
@@ -96,106 +97,107 @@ test application imports only in section [[
   section 1
 
     imports z
-]] parse succeeds parse to Application("x", [Section(" 1", [Imports("z")])])
+]] parse succeeds parse to Application("x", [Section("1", [Imports("z")])])
 
 
-// module syntax/and sections
-test module syntax/name slashes [[
-  module syntax/x/y
+// module and sections
+test module name slashes [[
+  module x/y
 ]] parse succeeds parse to Module("x/y", [])
 
-test module syntax/no name [[
-  module syntax/]] parse fails
+test module no name [[
+  module ]] parse fails
 
-test module syntax/numbers dashes dots upper case [[
-  module syntax/0_1/2-3.4
+test module numbers dashes dots upper case [[
+  module 0_1/2-3.4
 ]] parse succeeds parse to Module("0_1/2-3.4", [])
 
-test module syntax/no sections no definitions [[
-  module syntax/x
+test module no sections no definitions [[
+  module x
 ]] parse succeeds parse to Module("x", [])
 
-test module syntax/no sections [[
-  module syntax/x
+test module no sections [[
+  module x
 
     entity Ent { }
 ]] parse succeeds parse to ModuleDefs("x", [EntityNoSuper("Ent", [])], [])
 
-test module syntax/no sections multiple definitions [[
-  module syntax/x
+test module no sections multiple definitions [[
+  module x
 
     entity Ent1 { }
     entity Ent2 { }
 ]] parse succeeds parse to ModuleDefs("x", [EntityNoSuper("Ent1", []), EntityNoSuper("Ent2", [])], [])
 
-test module syntax/[[
-  module syntax/x
+test module [[
+  module x
 
   section section name with spaces
-]] parse succeeds parse to Module("x", [Section(" section name with spaces", [])])
+]] parse succeeds parse to Module("x", [Section("section name with spaces", [])])
 
-test module syntax/section no name multiple definitions [[
-  module syntax/x
+// TO-DO: Allow sections with no name
+test module section no name multiple definitions [[
+  module x
 
   section
 
     entity Ent1 { }
     entity Ent2 { }
-]] parse succeeds parse to Module("x", [Section("", [EntityNoSuper("Ent1", []), EntityNoSuper("Ent2", [])])])
+]] parse fails // parse succeeds parse to Module("x", [Section("", [EntityNoSuper("Ent1", []), EntityNoSuper("Ent2", [])])])
 
-test module syntax/defs and section [[
-  module syntax/x
+test module defs and section [[
+  module x
 
     entity Ent1 {}
 
   section 1
 
     entity Ent2 {}
-]] parse succeeds parse to ModuleDefs("x", [EntityNoSuper("Ent1", [])], [Section(" 1", [EntityNoSuper("Ent2", [])])])
+]] parse succeeds parse to ModuleDefs("x", [EntityNoSuper("Ent1", [])], [Section("1", [EntityNoSuper("Ent2", [])])])
 
-test module syntax/multiple sections [[
-  module syntax/x
+test module multiple sections [[
+  module x
 
   section 1
     entity Ent1 {}
 
   section 2
     entity Ent2 {}
-]] parse succeeds parse to Module("x", [Section(" 1", [EntityNoSuper("Ent1", [])]), Section(" 2", [EntityNoSuper("Ent2", [])])])
+]] parse succeeds parse to Module("x", [Section("1", [EntityNoSuper("Ent1", [])]), Section("2", [EntityNoSuper("Ent2", [])])])
 
-test module syntax/imports [[
-  module syntax/x
+test module imports [[
+  module x
 
     imports y
 ]] parse succeeds parse to ModuleDefs("x", [Imports("y")], [])
 
-test module syntax/imports numbers dashes dots upper case [[
-  module syntax/x
+test module imports numbers dashes dots upper case [[
+  module x
 
     imports 0_1/2-3.4
 ]] parse succeeds parse to ModuleDefs("x", [Imports("0_1/2-3.4")], [])
 
-test module syntax/imports multiple [[
-  module syntax/x
+test module imports multiple [[
+  module x
 
     imports y
     imports y/z
 ]] parse succeeds parse to ModuleDefs("x", [Imports("y"), Imports("y/z")], [])
 
-test module syntax/imports in section [[
-  module syntax/x
+test module imports in section [[
+  module x
 
     imports y
 
   section 1
 
     imports z
-]] parse succeeds parse to ModuleDefs("x", [Imports("y")], [Section(" 1", [Imports("z")])])
+]] parse succeeds parse to ModuleDefs("x", [Imports("y")], [Section("1", [Imports("z")])])
 
-test module syntax/imports only in section [[
-  module syntax/x
+test module imports only in section [[
+  module x
 
   section 1
 
     imports z
-]] parse succeeds parse to Module("x", [Section(" 1", [Imports("z")])])
+]] parse succeeds parse to Module("x", [Section("1", [Imports("z")])])

@@ -14,94 +14,94 @@ fixture [[
 // property
 test native class property [[
   x : Int
-]] parse succeeds parse to NativeClassProperty("x", NativeSimpleType("Int"))
+]] parse succeeds parse to NCProperty("x", NativeSimpleType("Int"))
 
 
 // types
 test native simple type [[
   x : Int
-]] parse succeeds parse to NativeClassProperty("x", NativeSimpleType("Int"))
+]] parse succeeds parse to NCProperty("x", NativeSimpleType("Int"))
 
 test native generic type [[
   x : ArrayList<Int>
-]] parse succeeds parse to NativeClassProperty("x", NativeGenericType("ArrayList", [NativeSimpleType("Int")]))
+]] parse succeeds parse to NCProperty("x", NativeGenericType("ArrayList", [NativeSimpleType("Int")]))
 
 test native generic type multiple [[
   x : Map<Int, String>
-]] parse succeeds parse to NativeClassProperty("x", NativeGenericType("Map", [NativeSimpleType("Int"), NativeSimpleType("String")]))
+]] parse succeeds parse to NCProperty("x", NativeGenericType("Map", [NativeSimpleType("Int"), NativeSimpleType("String")]))
 
 test native list type [[
   x : [Int]
-]] parse succeeds parse to NativeClassProperty("x", NativeGenericTypeList([NativeSimpleType("Int")]))
+]] parse succeeds parse to NCProperty("x", NativeGenericTypeList([NativeSimpleType("Int")]))
 
 test native list type multiple [[
   x : [Int, String]
-]] parse succeeds parse to NativeClassProperty("x", NativeGenericTypeList([NativeSimpleType("Int"), NativeSimpleType("String")]))
+]] parse succeeds parse to NCProperty("x", NativeGenericTypeList([NativeSimpleType("Int"), NativeSimpleType("String")]))
 
 test native set type [[
   x : {Int}
-]] parse succeeds parse to NativeClassProperty("x", NativeGenericTypeSet([NativeSimpleType("Int")]))
+]] parse succeeds parse to NCProperty("x", NativeGenericTypeSet([NativeSimpleType("Int")]))
 
 test native set type multiple [[
   x : {Int, String}
-]] parse succeeds parse to NativeClassProperty("x", NativeGenericTypeSet([NativeSimpleType("Int"), NativeSimpleType("String")]))
+]] parse succeeds parse to NCProperty("x", NativeGenericTypeSet([NativeSimpleType("Int"), NativeSimpleType("String")]))
 
 test native list type nested [[
   x : [ [Int] ]
-]] parse succeeds parse to NativeClassProperty("x", NativeGenericTypeList([NativeGenericTypeList([NativeSimpleType("Int")])]))
+]] parse succeeds parse to NCProperty("x", NativeGenericTypeList([NativeGenericTypeList([NativeSimpleType("Int")])]))
 
 
 // functions
 test native class function [[
   f()
-]] parse succeeds parse to NativeClassFunction(NativeClassFunctionStaticNone(), "f", [], NativeClassFunctionReturnNone()) 
+]] parse succeeds parse to NCFunctionElement(NCFunction(NCFunctionStaticNone(), "f", [], NCFunctionReturnNone())) 
 
 test native class function with return [[
   f() : Int
-]] parse succeeds parse to NativeClassFunction(NativeClassFunctionStaticNone(), "f", [], NativeClassFunctionReturn(NativeSimpleType("Int")))
+]] parse succeeds parse to NCFunctionElement(NCFunction(NCFunctionStaticNone(), "f", [], NCFunctionReturn(NativeSimpleType("Int"))))
 
 test native class function with single argument [[
   f(Int)
-]] parse succeeds parse to NativeClassFunction(NativeClassFunctionStaticNone(), "f", [NativeSimpleType("Int")], NativeClassFunctionReturnNone())
+]] parse succeeds parse to NCFunctionElement(NCFunction(NCFunctionStaticNone(), "f", [NativeSimpleType("Int")], NCFunctionReturnNone()))
 
 test native class function with multiple arguments [[
   f(Int, String, [Int])
-]] parse succeeds parse to NativeClassFunction(NativeClassFunctionStaticNone(), "f", [NativeSimpleType("Int"), NativeSimpleType("String"), NativeGenericTypeList([NativeSimpleType("Int")])], NativeClassFunctionReturnNone())
+]] parse succeeds parse to NCFunctionElement(NCFunction(NCFunctionStaticNone(), "f", [NativeSimpleType("Int"), NativeSimpleType("String"), NativeGenericTypeList([NativeSimpleType("Int")])], NCFunctionReturnNone()))
 
 test native function static [[
   static f()
-]] parse succeeds parse to NativeClassFunction(NativeClassFunctionStatic(), "f", [], NativeClassFunctionReturnNone())
+]] parse succeeds parse to NCFunctionElement(NCFunction(NCFunctionStatic(), "f", [], NCFunctionReturnNone()))
 
 
 // function from static
 test native class function from static [[
   f as f()
-]] parse succeeds parse to NativeClassFunctionFromStatic("f", NativeClassFunction(NativeClassFunctionStaticNone(), "f", [], NativeClassFunctionReturnNone()))
+]] parse succeeds parse to NCFunctionFromStaticElement(NCFunctionFromStatic("f", NCFunction(NCFunctionStaticNone(), "f", [], NCFunctionReturnNone())))
 
 test native class function from static qualified id [[
   f.g as f()
-]] parse succeeds parse to NativeClassFunctionFromStatic(Qualified("f", "g"), NativeClassFunction(NativeClassFunctionStaticNone(), "f", [], NativeClassFunctionReturnNone()))
+]] parse succeeds parse to NCFunctionFromStaticElement(NCFunctionFromStatic("f.g", NCFunction(NCFunctionStaticNone(), "f", [], NCFunctionReturnNone())))
 
 
 // constructor
 test native class constructor [[
   constructor()
-]] parse succeeds parse to NativeClassConstructor([])
+]] parse succeeds parse to NCConstructor([])
 
 test native class constructor single arg [[
   constructor(Int)
-]] parse succeeds parse to NativeClassConstructor([NativeSimpleType("Int")])
+]] parse succeeds parse to NCConstructor([NativeSimpleType("Int")])
 
 test native class constructor multiple args [[
   constructor(Int, String, [Int])
-]] parse succeeds parse to NativeClassConstructor([NativeSimpleType("Int"), NativeSimpleType("String"), NativeGenericTypeList([NativeSimpleType("Int")])])
+]] parse succeeds parse to NCConstructor([NativeSimpleType("Int"), NativeSimpleType("String"), NativeGenericTypeList([NativeSimpleType("Int")])])
 
 
 // constructor from static
 test native class function from static [[
   f as constructor(Int)
-]] parse succeeds parse to NativeClassConstructorFromStatic("f", [NativeSimpleType("Int")])
+]] parse succeeds parse to NCConstructorFromStatic("f", [NativeSimpleType("Int")])
 
 test native class function from static qualified id [[
   f.g as constructor(Int, String)
-]] parse succeeds parse to NativeClassConstructorFromStatic(Qualified("f", "g"), [NativeSimpleType("Int"), NativeSimpleType("String")])
+]] parse succeeds parse to NCConstructorFromStatic("f.g", [NativeSimpleType("Int"), NativeSimpleType("String")])
