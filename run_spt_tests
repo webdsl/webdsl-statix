@@ -3,32 +3,11 @@
 trap ctrl_c INT
 
 function ctrl_c() {
-    cleanup
-}
-
-function buildSPTRunner() {
-    git clone https://github.com/metaborg/spt.git
-    cd spt/org.metaborg.spt.cmd
-    mvn package
-    ls target/org.metaborg.spt.cmd*
-    cd ../../
+    echo "Stopping execution of tests"
 }
 
 function getJARFileName() {
     ls spt/org.metaborg.spt.cmd/target/org.metaborg.spt.cmd*
-}
-
-function buildSPT() {
-    cd spt/org.metaborg.meta.lang.spt
-    mvn verify
-    cd ../../
-}
-
-function buildWebDSLStatix() {
-    git clone https://github.com/webdsl/webdsl-statix.git
-    cd webdsl-statix/webdslstatix
-    mvn clean verify
-    cd ../../
 }
 
 function runTests() {
@@ -50,7 +29,7 @@ function runTestOnDirectory() {
     echo "Testing $dirName..."
 
     java -Xss32m -jar "$jarFile" \
-        --lut webdsl-statix/webdslstatix \
+        --lut webdslstatix \
         --tests "$dirName" \
         --spt spt/org.metaborg.meta.lang.spt \
         > "$resultFile"
@@ -69,7 +48,7 @@ function prependResultSummary() {
         local ignored=$(echo $lastLine | grep -Eo "[0-9]+ ignored" | grep -Eo "[0-9]+")
         resultSummary="Result:\n- passed: $passed\n- failed: $failed\n- ignored: $ignored\n\n\n\nComplete output:\n\n"
     else
-        resultSummary="Tests failed. See detailed output for more information"
+        resultSummary="Tests failed. See detailed output for more information\n\n"
     fi
 
     prependLineToFile "$resultSummary" "$resultFile"
@@ -84,26 +63,17 @@ function prependLineToFile() {
 function renameResults {
     cd result
     for file in * ; do
-        mv -v "$file" "${file#webdsl-statix__webdslstatix.test__}"
+        mv -v "$file" "${file#webdslstatix.test__}"
     done
     cd ..
 }
 
-function cleanup() {
-    rm -rf spt
-    rm -rf webdsl-statix
-}
-
 function main() {
-    buildSPTRunner
     local jarFile="$(getJARFileName)"
-    buildSPT
-    buildWebDSLStatix
     mkdir result
-    runTests "webdsl-statix/webdslstatix.test" "$jarFile"
+    runTests "webdslstatix.test" "$jarFile"
     renameResults
-    cleanup
     echo "DONE!"
 }
 
-main "$1"
+main
