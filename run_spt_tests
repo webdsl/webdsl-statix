@@ -24,7 +24,7 @@ function runTestOnDirectory() {
     local dirName="$1"
     local jarFile="$2"
     local dirNameReplaced=$(echo $dirName | sed -e 's/\//__/g')
-    local resultFile="result/$dirNameReplaced.txt"
+    local resultFile="spt-results/$dirNameReplaced.txt"
 
     echo "Testing $dirName..."
 
@@ -61,7 +61,7 @@ function prependLineToFile() {
 }
 
 function renameResults {
-    cd result
+    cd spt-results
     for file in * ; do
         mv -v "$file" "${file#webdslstatix.test__}"
     done
@@ -70,7 +70,7 @@ function renameResults {
 
 function main() {
     local jarFile="$(getJARFileName)"
-    mkdir result
+    mkdir spt-results
     runTests "webdslstatix.test" "$jarFile"
     renameResults
     echo "DONE!"

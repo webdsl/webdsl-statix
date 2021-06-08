@@ -53,7 +53,7 @@ node{
       }
     }
 
-    stage('Execute tests') {
+    stage('Run SPT Tests') {
       withMaven(
         mavenLocalRepo: ".repository",
         mavenOpts: '-Xmx4G -Xms4G -Xss64m'
@@ -66,7 +66,7 @@ node{
 
     stage('Archive') {
       archiveArtifacts(
-        artifacts: 'result/',
+        artifacts: 'spt-results/',
         excludes: null,
         onlyIfSuccessful: false
       )
