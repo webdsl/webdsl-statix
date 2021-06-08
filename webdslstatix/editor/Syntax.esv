@@ -24,12 +24,10 @@ menus
 
   menu: "Syntax" (openeditor)
 
-    action: "Format"                         = editor-format (source)
-    action: "Show AST"                       = debug-show-aterm (source)
-    action: "Show desugared AST"             = debug-show-desugared-aterm (source)
-    action: "Show explicated injections AST" = debug-show-desugared-explicated-injections-aterm (source)
+    action: "Format"          = editor-format (source)
+    action: "Show parsed AST" = debug-show-aterm (source)
 
 views
-  
+
   outline view: editor-outline (source)
     expand to level: 3
