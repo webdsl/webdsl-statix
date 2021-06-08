@@ -1,0 +1,46 @@
+#!/bin/bash
+
+trap ctrl_c INT
+
+function ctrl_c() {
+    echo "Stopping execution of end to end tests"
+}
+
+repositories=(
+    "https://github.com/webdsl/reposearch.git"
+    "https://github.com/webdsl/yellowgrass.git"
+)
+
+function getJARFileName() {
+    ls spoofax-sunshine/org.metaborg.sunshine2/target/org.metaborg.sunshine2*
+}
+
+function runEndToEndTests() {
+    local jarFile="$1"
+
+    for repo in ${repositories[@]}; do
+        analyzeRepo "$repo" "$jarFile"
+    done
+}
+
+function analyzeRepo() {
+    local repo="$1"
+    local jarFile="$2"
+    local dirName=$(basename $repo .git)
+    local resultFile="e2e-results/$dirName.txt"
+
+    git clone "$repo"
+    java -jar "$jarFile" build \
+        -l webdslstatix \
+        -p "$dirName" \
+        &> "$resultFile"
+}
+
+function main() {
+    local jarFile="$(getJARFileName)"
+    mkdir e2e-results
+    runEndToEndTests "$jarFile"
+    echo "DONE!"
+}
+
+main
