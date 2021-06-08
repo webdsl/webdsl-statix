@@ -24,7 +24,7 @@ language:
     placeholder:
       prefix: "$"
   statix:
-    concurrent: true
+    concurrent: false
   stratego:
     format: ctree
     args:
