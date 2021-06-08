@@ -7,8 +7,10 @@ node{
   try{
     stage('Checkout') {
       checkout scm
-      sh "git clean -fXd"
-      sh "git clone https://github.com/metaborg/spt.git"
+      sh '''
+         git clean -fXd
+         git clone https://github.com/metaborg/spt.git
+         '''
     }
 
     stage('Build SPT Runner') {
@@ -16,10 +18,12 @@ node{
         mavenLocalRepo: ".repository",
         mavenOpts: '-Xmx4G -Xms4G -Xss64m'
       ){
-        sh "cd spt/org.metaborg.spt.cmd"
-        sh "mvn package"
-        sh "ls target/org.metaborg.spt.cmd*"
-        sh "cd ../../"
+        sh '''
+           cd spt/org.metaborg.spt.cmd
+           mvn package
+           ls target/org.metaborg.spt.cmd*
+           cd ../../
+           '''
       }
     }
 
@@ -28,9 +32,11 @@ node{
         mavenLocalRepo: ".repository",
         mavenOpts: '-Xmx4G -Xms4G -Xss64m'
       ){
-        sh "cd spt/org.metaborg.meta.lang.spt"
-        sh "mvn clean verify"
-        sh "cd ../../"
+        sh '''
+           cd spt/org.metaborg.meta.lang.spt
+           mvn clean verify
+           cd ../../
+           '''
       }
     }
 
@@ -39,18 +45,22 @@ node{
         mavenLocalRepo: ".repository",
         mavenOpts: '-Xmx4G -Xms4G -Xss64m'
       ){
-        sh "cd webdslstatix"
-        sh "mvn clean verify"
-        sh "cd ../"
+        sh '''
+           cd webdslstatix
+           mvn clean verify
+           cd ../
+           '''
       }
     }
 
-    stage('Build and Test') {
+    stage('Execute tests') {
       withMaven(
         mavenLocalRepo: ".repository",
         mavenOpts: '-Xmx4G -Xms4G -Xss64m'
       ){
-        sh './run_spt_tests'
+        sh '''
+           ./run_spt_tests
+           '''
       }
     }
 
@@ -63,8 +73,10 @@ node{
     }
 
     stage('Cleanup') {
-      sh "rm -rf spt"
-      sh "git clean -fXd"
+      sh '''
+         rm -rf spt
+         git clean -fXd
+         '''
     }
 
   } catch (e) {

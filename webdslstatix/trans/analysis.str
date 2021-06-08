@@ -15,8 +15,8 @@ imports
 rules // Analysis
 
   // see README.md for details on how to switch to multi-file analysis
-  pre-analyze     = desugar-all; origin-track-forced(explicate-injections-webdsl-statix-Unit)
-  post-analyze    =              origin-track-forced(implicate-injections-webdsl-statix-Unit)
+  pre-analyze     = desugar-all; origin-track-forced(explicate-injections-webdsl-statix)
+  post-analyze    =              origin-track-forced(implicate-injections-webdsl-statix)
 
   // single-file analysis
 //  editor-analyze  = stx-editor-analyze(pre-analyze, post-analyze|"statics", "applicationOk")
