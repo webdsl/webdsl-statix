@@ -363,10 +363,10 @@ context-free priorities
     Exp.SmallerThan
     Exp.SmallerThanOrEqual
   } >
+  { Exp.RetrievalExp } >
   {left : Exp.And } >
   {left : Exp.Or } >
   { Exp.HqlExp } >
-  { Exp.RetrievalExp } >
   { Exp.SearcherDef } >
   { Exp.IfExp }
 

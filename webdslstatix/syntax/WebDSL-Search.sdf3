@@ -294,7 +294,7 @@ lexical syntax
   SearcherKW = "in"
   SearcherKW = "matching"
 
-context-free restrictions
+lexical restrictions
 
   "as"
   "asc"
