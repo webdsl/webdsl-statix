@@ -31,8 +31,9 @@ rules
     declareVar(s, sub, STATICBUILTINTYPE(sub, s_sub)).
 
   builtInType : scope * string -> TYPE
-  builtInType(s, name) = t :-
-    resolveType(s, name) == [(_, (_, t@BUILTINTYPE(name, _)))] | error $[Built-in type [name] does not exist].
+  builtInType(s, name) = t :- {ts}
+    resolveType(s, name) == ts | error $[Built-in type [name] does not exist [ts]],
+    ts == [(_, (_, t@BUILTINTYPE(name, _)))] | error $[Built-in type [name] does not exist [ts]].
 
 rules
 

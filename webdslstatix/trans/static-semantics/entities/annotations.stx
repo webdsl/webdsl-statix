@@ -38,7 +38,7 @@ rules // annotation declaration and resolving
     !annotation[(p, new), a] in s.
 
   resolveAnnotation : scope * string -> list((path * (string * ANNOTATION)))
-  resolveAnnotation(s, x) = dropUniqueIdsAnno(ps) :-
+  resolveAnnotation(s, x) = dropUniqueIdsAnno(ps) :- // TO-DO: change this to drop and filter unique ids with annotations
     query annotation filter P* F* EXTEND?
                      and { x' :- x' == ((x, _), _) }
                      min $ < P, $ < F, $ < EXTEND, P < F, P < EXTEND, F < EXTEND

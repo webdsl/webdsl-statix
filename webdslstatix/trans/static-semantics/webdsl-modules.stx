@@ -1,11 +1,6 @@
 module static-semantics/webdsl-modules
 
 imports
-  static-semantics/actions/built-ins
-  static-semantics/entities/built-ins
-  static-semantics/types/built-ins
-  static-semantics/ui/built-ins
-
   static-semantics/webdsl-ui
   static-semantics/webdsl
 
@@ -17,25 +12,23 @@ signature
 rules // unit rules
 
   unitOk(s_global, Application(app, sections)) :- {s_app}
-    new s_app,
+    new s_app, s_app -IMPORT-> s_global,
     declareMod(s_global, app, s_app),
-    declareMod(s_global, "_APPLICATION_SCOPE", s_app), // declare this scope as the main application scope
+//    declareMod(s_global, "_APPLICATION_SCOPE", s_app), // declare this scope as the main application scope
     importModules(s_global, s_app, app, sections),
-    declareBuiltIns(s_app),
     sectionsOk(s_app, sections),
     rootPageDefined(s_app, app).
 
   unitOk(s_global, Module(m, sections)) :- {s_mod}
-    new s_mod,
+    new s_mod, s_mod -IMPORT-> s_global,
     declareMod(s_global, m, s_mod),
     importModules(s_global, s_mod, m, sections),
-    sectionsOk(s_mod, sections),
-    importedByApplicationRoot(s_global, s_mod, m).
+    sectionsOk(s_mod, sections).
+//    importedByApplicationRoot(s_global, s_mod, m).
 
   unitOk(s_global, BuiltIn(sections)) :- {s_builtin}
-    new s_builtin,
+    new s_builtin, s_builtin -IMPORT-> s_global,
     declareMod(s_global, "built-in", s_builtin),
-    declareBuiltIns(s_builtin),
     importModules(s_global, s_builtin, "built-in", sections),
     sectionsOk(s_builtin, sections).
 
@@ -43,27 +36,6 @@ rules // unit rules
   importModules(s_global, s, m, sections) :-
     declareImports(s_global, m, sections),
     extendModuleScope(s_global, m, s).
-
-  declareBuiltInsIfNotDeclared : scope
-  declareBuiltInsIfNotDeclared(s) :- {result}
-    query builtInsDeclared filter IMPORT* in s |-> result,
-    declareBuiltInsIfNotDeclared_internal(s, result).
-
-  declareBuiltInsIfNotDeclared_internal : scope * list((path * scope))
-  declareBuiltInsIfNotDeclared_internal(s, []) :- declareBuiltIns(s). // built-ins are not declared yet
-  declareBuiltInsIfNotDeclared_internal(s, _). // built-ins are already declared
-
-  saveBuiltInsDeclared : scope
-  saveBuiltInsDeclared(s) :-
-    !builtInsDeclared[s] in s.
-
-  declareBuiltIns : scope
-  declareBuiltIns(s) :-
-    declareFunctionIns(s),
-    declareEntityBuiltIns(s),
-    declareTypeBuiltIns(s),
-    declareTypeBuiltInFunctions(s),
-    declareUIBuiltIns(s).
 
 rules // import definition rules
 
@@ -106,12 +78,20 @@ rules // extend module scopes
   importModuleInScope : scope * scope * string
   importModuleInScope(s_global, s, mod) :- {s_mod}
     resolveMod(s_global, mod) == [(_, (_, s_mod))] | error $[Cannot resolve module [mod]],
-    s -IMPORT-> s_mod.
+    importModuleScopeIfDeclared(s, s_mod, modDeclaredB(resolveMod(s_global, mod))).
 
-  importedByApplicationRoot : scope * scope * string
-  importedByApplicationRoot(s_global, s_mod, mod) :- {s_app}
-    resolveMod(s_global, "_APPLICATION_SCOPE") == [(_, (_, s_app))],
-    try { query () filter IMPORT*
-                   and { s_app' :- s_app' == s_app }
-                   in s_mod |-> [_|_]
-        } | warning $[Module [mod] is not (transitively) imported by the application root]@mod.
+  modDeclaredB : list((path * (string * scope))) -> BOOL
+  modDeclaredB([]) = FALSE().
+  modDeclaredB(_) = TRUE().
+
+  importModuleScopeIfDeclared : scope * scope * BOOL
+  importModuleScopeIfDeclared(s, s_mod, TRUE()) :- s -IMPORT-> s_mod.
+  importModuleScopeIfDeclared(_, _, FALSE()).
+
+//  importedByApplicationRoot : scope * scope * string
+//  importedByApplicationRoot(s_global, s_mod, mod) :- {s_app}
+//    resolveMod(s_global, "_APPLICATION_SCOPE") == [(_, (_, s_app))],
+//    try { query () filter IMPORT*
+//                   and { s_app' :- s_app' == s_app }
+//                   in s_mod |-> [_|_]
+//        } | warning $[Module [mod] is not (transitively) imported by the application root]@mod.

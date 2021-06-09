@@ -15,32 +15,32 @@ imports
 rules // entity declaration
 
   // entity x : super { ... }
-  defOk(s_global, e@Entity(x, super, bodydecs)) :- {s_entity super' s_super}
-    resolveType(s_global, super) == [(_, (super', ENTITY(s_super)))] | error $[Entity [super] is not defined] @super,
-    new s_entity, s_entity -INHERIT-> s_super,
+  defOk(s, e@Entity(x, super, bodydecs)) :- {s_entity super' s_super}
+    resolveType(s, super) == [(_, (super', ENTITY(s_super)))] | error $[Entity [super] is not defined] @super,
+    new s_entity, s_entity -INHERIT-> s_super, s_entity -IMPORT-> s,
     noCircularInheritance(s_entity) | error $[Circular inhertitance detected] @e,
-    declEntity(s_global, s_entity, x, bodydecs),
+    declEntity(s, s_entity, x, bodydecs),
     declareEntityAnnotation(s_entity, SUBENTITY()),
     @super.ref := super'.
 
   // entity x { ... }
-  defOk(s_global, EntityNoSuper(x, bodydecs)) :- {s_entity s_super}
-    entity(s_global) == ENTITY(s_super),
-    new s_entity, s_entity -INHERIT-> s_super,
-    declEntity(s_global, s_entity, x, bodydecs).
+  defOk(s, EntityNoSuper(x, bodydecs)) :- {s_entity s_super}
+    entity(s) == ENTITY(s_super),
+    new s_entity, s_entity -INHERIT-> s_super, s_entity -IMPORT-> s,
+    declEntity(s, s_entity, x, bodydecs).
 
   // session x { ... }
-  defOk(s_global, SessionEntity(x, bodydecs)) :- {s_entity}
-    new s_entity, s_entity -IMPORT-> s_global,
-    declEntity(s_global, s_entity, x, bodydecs),
+  defOk(s, SessionEntity(x, bodydecs)) :- {s_entity}
+    new s_entity, s_entity -IMPORT-> s,
+    declEntity(s, s_entity, x, bodydecs),
     declareEntityAnnotation(s_entity, SESSIONENTITY()).
 
   declEntity : scope * scope * string * list(EntityBodyDeclaration)
-  declEntity(s_global, s_entity, entity_name, bodydecs) :-
-    declareExtendEntity(s_global, entity_name, s_entity), // declare entity_scope to be linked to entity_name
-    extendEntityScopes(resolveExtendEntity(s_global, entity_name), s_entity),
-    declareType(s_global, entity_name, ENTITY(s_entity)),
-    declareVar(s_global, entity_name, STATICENTITY(s_entity)), // declare entity_name as global variable that refers to the static scope
+  declEntity(s, s_entity, entity_name, bodydecs) :-
+    declareExtendEntity(s, entity_name, s_entity), // declare entity_scope to be linked to entity_name
+    extendEntityScopes(resolveExtendEntity(s, entity_name), s_entity),
+    declareType(s, entity_name, ENTITY(s_entity)),
+    declareVar(s, entity_name, STATICENTITY(s_entity)), // declare entity_name as global variable that refers to the static scope
     declThisVar(s_entity),
     declEntityBody(s_entity, bodydecs).
 
