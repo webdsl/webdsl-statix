@@ -72,7 +72,7 @@ rules // template definitions
 rules // template elements
 
   templateElementOk : scope * scope * TemplateElement // TYPE argument is the return type in a function
-  templateElementOk(_, _, e) :- false | error $[This template element is not yet implemented] @e.
+  templateElementOk(_, _, e) :- try { false } | warning $[This template element is not yet implemented] @e.
 
   templateElementsOk : scope * list(TemplateElement)
   templateElementsOk(_, []).

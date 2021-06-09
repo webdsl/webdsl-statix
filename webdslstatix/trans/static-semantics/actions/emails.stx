@@ -7,5 +7,5 @@ imports
 
 rules
 
-  typeOfExp(s, SendEmailFunctionCall(_)) = bool(s).
-    /* TO-DO: implement validation of email call */
+  typeOfExp(s, SendEmailFunctionCall(e)) = bool(s) :- /* TO-DO: implement validation of email call */
+    try { false } | warning $[Static analysis of email call not yet implemented] .

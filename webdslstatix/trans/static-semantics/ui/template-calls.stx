@@ -29,13 +29,15 @@ rules // template calls
 
   templatePropAssignmentsOk maps templatePropAssignmentOk(*, list(*))
   templatePropAssignmentOk : scope * PropertyAssignment
-  templatePropAssignmentOk(s, _). // TO-DO:  :- false | error $[Template property assignments are not implemented yet]. // TO-DO
+  templatePropAssignmentOk(s, _) :- // TO-DO
+    try { false } | warning $[Template property assignments are not implemented yet].
 
   typesOfTemplateArgExps maps typeOfTemplateArgExp(*, list(*)) = list(*)
   typeOfTemplateArgExp : scope * TemplateArgExp -> TYPE
   typeOfTemplateArgExp(s, Exp(exp))                      = typeOfExp(s, exp).
   typeOfTemplateArgExp(s, TemplateElementsArgument(exp)) = TEMPLATEELEMENTS().
-  typeOfTemplateArgExp(s, ExpEntityDerive(_, _))         = UNTYPED() :- false | error $[Derive expressions not implemented yet]. // TO-DO
+  typeOfTemplateArgExp(s, ExpEntityDerive(_, _))         = UNTYPED() :- // TO-DO
+    try { false } | warning $[Derive expressions not implemented yet].
 
 rules // elements template call
 

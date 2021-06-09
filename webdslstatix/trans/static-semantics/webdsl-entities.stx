@@ -79,7 +79,7 @@ rules // entity declaration
 rules // entity body declaration
 
   declEntityBodyDeclaration : scope * EntityBodyDeclaration
-  declEntityBodyDeclaration(_, _) :- false | error $[This entity body declaration is not yet implemented].
+  declEntityBodyDeclaration(_, _) :- try { false } | warning $[This entity body declaration is not yet implemented].
   declEntityBody maps declEntityBodyDeclaration(*, list(*))
 
   // entity function

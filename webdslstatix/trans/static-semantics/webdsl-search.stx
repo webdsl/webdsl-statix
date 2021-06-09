@@ -18,4 +18,5 @@ rules
   typeOfRetrievalExp(s, SearchResultsSize(_)) = int(s).
   typeOfRetrievalExp(s, SearchTimeString(_)) = string(s).
   typeOfRetrievalExp(s, Suggest(_, _, _)) = LIST(string(s)).
-  typeOfRetrievalExp(_, _) = UNTYPED(). // TO-DO: :- false | error $[This expression is not implemented yet].
+  typeOfRetrievalExp(_, _) = UNTYPED() :- // TO-DO
+    try { false } | warning $[This expression is not implemented yet].

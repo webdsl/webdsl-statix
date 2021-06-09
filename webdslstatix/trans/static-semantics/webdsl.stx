@@ -213,20 +213,22 @@ rules // variable declaration and resolving
 rules // declare common rules and mappings
 
   unitOk : scope * Unit
-  unitOk(_, _) :- false | error $[This unit is not yet implemented].
+  unitOk(_, _) :- try { false } | warning $[This unit is not yet implemented].
 
   sectionOk : scope * Section
-  sectionOk(s, _) :- false | error $[This sections is not yet implemented].
+  sectionOk(s, _) :- try { false } | warning $[This sections is not yet implemented].
   sectionsOk maps sectionOk(*, list(*))
 
   sectionOk(s, Section(_, defs)) :- defsOk(s, defs).
 
   defOk : scope * Definition
-  defOk(_,_). // TO-DO:  :- false | error $[This definition is not yet implemented].
+  defOk(_,_) :- // TO-DO
+    try { false } | warning $[This definition is not yet implemented].
+
   defsOk maps defOk(*, list(*))
 
   stmtOk : scope * scope * Statement * TYPE // TYPE argument is the return type in a function
-  stmtOk(_, _, stmt, _) :- false | error $[This statement is not yet implemented] @stmt.
+  stmtOk(_, _, stmt, _) :- try { false } | warning $[This statement is not yet implemented] @stmt.
 
   stmtsOk : scope * list(Statement) * TYPE
   stmtsOk(_, [], _).
@@ -251,7 +253,7 @@ rules // typing
 
   typesOfExps maps typeOfExp(*, list(*)) = list(*)
   typeOfExp : scope * Exp -> TYPE
-  typeOfExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
+  typeOfExp(s, exp) = UNTYPED() :- try { false } | warning $[typing of expression [exp] is not yet implemented].
 
   typeOfExpTyped : scope * Exp -> TYPE
   typeOfExpTyped(s, exp) = t :-
@@ -259,10 +261,10 @@ rules // typing
     t != UNTYPED() | error $[Cannot resolve type [t]] @exp.
 
   typeOfSimpleExp : scope * SimpleExp -> TYPE
-  typeOfSimpleExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
+  typeOfSimpleExp(s, exp) = UNTYPED() :- try { false } | warning $[typing of expression [exp] is not yet implemented].
 
   typeOfPlaceholderExp : scope * PHExp -> TYPE
-  typeOfPlaceholderExp(s, exp) = UNTYPED() :- false | error $[typing of expression [exp] is not yet implemented].
+  typeOfPlaceholderExp(s, exp) = UNTYPED() :- try { false } | warning $[typing of expression [exp] is not yet implemented].
 
   typesCompatible : list(TYPE) * list(TYPE) -> BOOL
   typesCompatible([], []) = TRUE().
