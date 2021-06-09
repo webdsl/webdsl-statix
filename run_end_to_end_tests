@@ -29,11 +29,33 @@ function analyzeRepo() {
     local dirName=$(basename $repo .git)
     local resultFile="e2e-results/$dirName.txt"
 
-    git clone "$repo"
+    git clone "$repo"  --recurse-submodules
+    addBuiltInToRepo "$dirName"
     java -jar "$jarFile" build \
         -l webdslstatix \
         -p "$dirName" \
         &> "$resultFile"
+}
+
+function addBuiltInToRepo() {
+	local repoDir="$1"
+	local builtInDir="$repoDir/.servletapp/src-webdsl-template"
+
+	if [ ! -f "$builtInDir/built-in.app" ]; then
+		getLatestBuiltIn
+		mkdir -p "$builtInDir"
+		cp "built-in.app" "$builtInDir/built-in.app"
+	fi
+
+	sed -i -e "1s/.*/application $repoDir\n\nimports built-in/" "$repoDir/$repoDir.app"
+}
+
+function getLatestBuiltIn() {
+	if [ ! -f "built-in.app" ]; then
+		echo "built-in.app does not exist, getting latest version from GitHub."
+		wget https://raw.githubusercontent.com/webdsl/webdsl/master/src/org/webdsl/dsl/project/template-webdsl/built-in.app \
+			-q -O "built-in.app"
+	fi
 }
 
 function main() {
