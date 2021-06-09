@@ -14,6 +14,12 @@ imports
   static-semantics/webdsl-types
   static-semantics/webdsl
 
+rules // definitions
+
+  defOk(s, GlobalInit(Block(stmts))) :- {s_init}
+    new s_init, s_init -IMPORT-> s,
+    stmtsOk(s_init, stmts, VOID()).
+
 rules // statements
 
   stmtOk(s, _, Stat(exp), _) :-
