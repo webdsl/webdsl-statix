@@ -18,7 +18,7 @@ node{
       withMaven(
         mavenLocalRepo: ".repository",
         mavenOpts: '-Xmx4G -Xms4G -Xss64m'
-      ){
+      ) {
         sh '''
            cd spt/org.metaborg.spt.cmd
            mvn package
@@ -32,7 +32,7 @@ node{
       withMaven(
         mavenLocalRepo: ".repository",
         mavenOpts: '-Xmx4G -Xms4G -Xss64m'
-      ){
+      ) {
         sh '''
            cd spt/org.metaborg.meta.lang.spt
            mvn clean verify
@@ -45,7 +45,7 @@ node{
       withMaven(
         mavenLocalRepo: ".repository",
         mavenOpts: '-Xmx4G -Xms4G -Xss64m'
-      ){
+      ) {
         sh '''
            cd spoofax-sunshine/org.metaborg.sunshine2
            mvn package
@@ -59,7 +59,7 @@ node{
       withMaven(
         mavenLocalRepo: ".repository",
         mavenOpts: '-Xmx4G -Xms4G -Xss64m'
-      ){
+      ) {
         sh '''
            cd webdslstatix
            mvn clean verify
@@ -72,7 +72,7 @@ node{
       withMaven(
         mavenLocalRepo: ".repository",
         mavenOpts: '-Xmx4G -Xms4G -Xss64m'
-      ){
+      ) {
         sh '''
            ./run_spt_tests
            '''
@@ -80,9 +80,14 @@ node{
     }
 
     stage('Run End-To-End Tests') {
-      sh '''
-         ./run_end_to_end_tests
-         '''
+      withMaven(
+        mavenLocalRepo: ".repository",
+        mavenOpts: '-Xmx4G -Xms4G -Xss64m'
+      ) {
+        sh '''
+            ./run_end_to_end_tests
+          '''
+      }
     }
 
     stage('Archive') {

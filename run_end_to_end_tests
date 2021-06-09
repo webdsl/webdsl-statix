@@ -31,7 +31,7 @@ function analyzeRepo() {
 
     git clone "$repo"  --recurse-submodules
     addBuiltInToRepo "$dirName"
-    java -jar "$jarFile" build \
+    java -Xmx4G -Xms4G -Xss64m -jar "$jarFile" build \
         -l webdslstatix \
         -p "$dirName" \
         &> "$resultFile"
