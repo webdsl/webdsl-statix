@@ -17,7 +17,7 @@ rules // entity declaration
   // entity x : super { ... }
   defOk(s, e@Entity(x, super, bodydecs)) :- {s_entity super' s_super}
     resolveType(s, super) == [(_, (super', ENTITY(s_super)))] | error $[Entity [super] is not defined] @super,
-    new s_entity, s_entity -INHERIT-> s_super, s_entity -IMPORT-> s,
+    new s_entity, s_entity -INHERIT-> s_super,
     noCircularInheritance(s_entity) | error $[Circular inhertitance detected] @e,
     declEntity(s, s_entity, x, bodydecs),
     declareEntityAnnotation(s_entity, SUBENTITY()),
@@ -26,12 +26,12 @@ rules // entity declaration
   // entity x { ... }
   defOk(s, EntityNoSuper(x, bodydecs)) :- {s_entity s_super}
     entity(s) == ENTITY(s_super),
-    new s_entity, s_entity -INHERIT-> s_super, s_entity -IMPORT-> s,
+    new s_entity, s_entity -INHERIT-> s_super,
     declEntity(s, s_entity, x, bodydecs).
 
   // session x { ... }
   defOk(s, SessionEntity(x, bodydecs)) :- {s_entity}
-    new s_entity, s_entity -IMPORT-> s,
+    new s_entity, s_entity -DEF-> s,
     declEntity(s, s_entity, x, bodydecs),
     declareEntityAnnotation(s_entity, SESSIONENTITY()).
 

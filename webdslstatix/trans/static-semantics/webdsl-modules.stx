@@ -4,94 +4,19 @@ imports
   static-semantics/webdsl-ui
   static-semantics/webdsl
 
-signature
-
-  relations
-    builtInsDeclared : scope
-
 rules // unit rules
 
-  unitOk(s_global, Application(app, sections)) :- {s_app}
-    new s_app, s_app -IMPORT-> s_global,
-    declareMod(s_global, app, s_app),
-//    declareMod(s_global, "_APPLICATION_SCOPE", s_app), // declare this scope as the main application scope
-    importModules(s_global, s_app, app, sections),
-    sectionsOk(s_app, sections),
-    rootPageDefined(s_app, app).
+  unitOk(s_global, Application(app, sections)) :-
+    sectionsOk(s_global, sections),
+    rootPageDefined(s_global, app).
 
-  unitOk(s_global, Module(m, sections)) :- {s_mod}
-    new s_mod, s_mod -IMPORT-> s_global,
-    declareMod(s_global, m, s_mod),
-    importModules(s_global, s_mod, m, sections),
-    sectionsOk(s_mod, sections).
-//    importedByApplicationRoot(s_global, s_mod, m).
+  unitOk(s_global, Module(m, sections)) :-
+    sectionsOk(s_global, sections).
 
-  unitOk(s_global, BuiltIn(sections)) :- {s_builtin}
-    new s_builtin, s_builtin -IMPORT-> s_global,
-    declareMod(s_global, "built-in", s_builtin),
-    importModules(s_global, s_builtin, "built-in", sections),
-    sectionsOk(s_builtin, sections).
-
-  importModules : scope * scope * string * list(Section)
-  importModules(s_global, s, m, sections) :-
-    declareImports(s_global, m, sections),
-    extendModuleScope(s_global, m, s).
+  unitOk(s_global, BuiltIn(sections)) :-
+    sectionsOk(s_global, sections).
 
 rules // import definition rules
 
-  declareImports : scope * string * list(Section)
-  declareImports(_, _, []).
-  declareImports(s, x, [_ | ss]) :-
-    declareImports(s, x, ss).
-
-  declareImports(s, x, [Section(_, defs) | ss]) :-
-    declareImportsInSection(s, x, defs),
-    declareImports(s, x, ss).
-
-  declareImportsInSection : scope * string * list(Definition)
-  declareImportsInSection(_, _, []).
-  declareImportsInSection(s, x, [_ | defs]) :- declareImportsInSection(s, x, defs).
-  declareImportsInSection(s, x, [ImportsBuiltIn() | defs]) :-
-    declareImport(s, x, "built-in"),
-    declareImportsInSection(s, x, defs).
-
-  declareImportsInSection(s, x, [Imports(y) | defs]) :-
-    declareImport(s, x, y),
-    declareImportsInSection(s, x, defs).
-
   defOk(_, Imports(_)). // imports are handled in another rule, discard them here
   defOk(_, ImportsBuiltIn()).
-
-rules // extend module scopes
-
-  extendModuleScope : scope * string * scope
-  extendModuleScope(s_global, m, s) :- {modules}
-    resolveImport(s_global, m) == modules,
-    importModulesInScope(s_global, s, modules).
-
-  importModulesInScope : scope * scope * list((path * (string * string)))
-  importModulesInScope(_, _, []).
-  importModulesInScope(s_global, s, [(_, (_, mod)) | tl]) :-
-    importModuleInScope(s_global, s, mod),
-    importModulesInScope(s_global, s, tl).
-
-  importModuleInScope : scope * scope * string
-  importModuleInScope(s_global, s, mod) :- {s_mod}
-    resolveMod(s_global, mod) == [(_, (_, s_mod))] | error $[Cannot resolve module [mod]],
-    importModuleScopeIfDeclared(s, s_mod, modDeclaredB(resolveMod(s_global, mod))).
-
-  modDeclaredB : list((path * (string * scope))) -> BOOL
-  modDeclaredB([]) = FALSE().
-  modDeclaredB(_) = TRUE().
-
-  importModuleScopeIfDeclared : scope * scope * BOOL
-  importModuleScopeIfDeclared(s, s_mod, TRUE()) :- s -IMPORT-> s_mod.
-  importModuleScopeIfDeclared(_, _, FALSE()).
-
-//  importedByApplicationRoot : scope * scope * string
-//  importedByApplicationRoot(s_global, s_mod, mod) :- {s_app}
-//    resolveMod(s_global, "_APPLICATION_SCOPE") == [(_, (_, s_app))],
-//    try { query () filter IMPORT*
-//                   and { s_app' :- s_app' == s_app }
-//                   in s_mod |-> [_|_]
-//        } | warning $[Module [mod] is not (transitively) imported by the application root]@mod.

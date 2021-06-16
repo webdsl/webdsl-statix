@@ -12,7 +12,7 @@ rules
 
   declareEntityBuiltIns : scope
   declareEntityBuiltIns(s) :- {s_object s_ent s_sessionmessage s_sessionmanager}
-    new s_object, s_object -IMPORT-> s,
+    new s_object, s_object -DEF-> s,
     new s_ent, s_ent -INHERIT-> s_object,
     declareType(s, "Object", BUILTINTYPE("Object", s_object)),
     declareType(s, "Entity", ENTITY(s_ent)),

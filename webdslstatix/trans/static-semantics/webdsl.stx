@@ -37,10 +37,9 @@ signature
       F       // function edge label for embedding functions, templates and pages in a scope
       EXTEND  // extend edge label for extending entities
       INHERIT // inherit edge label for subclasses
-      IMPORT  // import edge label for importing the global scope and other modules
+      DEF     // definition edge label for embedding top-level definitions in the global scope
 
   relations
-    mod     : string * scope
     import  : string * string
 
     type         : (string * scope) * TYPE
@@ -54,34 +53,6 @@ signature
 
     var      : (string * scope) * TYPE
 
-rules // module and import declaration and resolving
-
-  declareMod : scope * string * scope
-  declareMod(s, m, s_mod) :-
-    !mod[m, s_mod] in s,
-    resolveMod(s, m) == [_] | error $[Module [m] is already declared].
-
-  resolveMod : scope * string -> list((path * (string * scope)))
-  resolveMod(s, m) = mods :-
-    query mod filter e
-              and { m' :- m' == (m, _) }
-              min
-              and true
-              in s |-> mods.
-
-  declareImport : scope * string * string
-  declareImport(s, x, y) :-
-    !import[x, y] in s,
-    !import[y, x] in s.
-
-  resolveImport : scope * string -> list((path * (string * string)))
-  resolveImport(s, x) = imports :-
-    query import filter e
-                 and { x' :- x' == (x, _) }
-                 min
-                 and true
-                 in s |-> imports.
-
 rules // type declaration and resolving
 
   declareType : scope * string * TYPE
@@ -91,7 +62,7 @@ rules // type declaration and resolving
 
   resolveType : scope * string -> list((path * (string * TYPE)))
   resolveType(s, name) = dropAndFilterUniqueIds(ps) :-
-    query type filter P* F* EXTEND? INHERIT* IMPORT*
+    query type filter P* F* EXTEND? INHERIT* DEF?
                and { e' :- e' == ((name, _), _) }
 //               min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
 //               and { ((_, id), _), ((_, id), _) }
@@ -105,7 +76,7 @@ rules // extend entity declaration
 
   resolveExtendEntity : scope * string -> list((path * (string * scope)))
   resolveExtendEntity(s, e) = ps :-
-    query extendentity filter P* F* EXTEND* INHERIT* IMPORT*
+    query extendentity filter P* F* EXTEND* INHERIT* DEF?
                        and { e' :- e' == (e, _) }
                        in s |-> ps.
 
@@ -126,7 +97,7 @@ rules // ui declaration and resolving
 
   resolveTemplate : scope * string -> list((path * (string * TYPE)))
   resolveTemplate(s, t) = dropAndFilterUniqueIds(ps) :-
-    query template filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
+    query template filter P* F* EXTEND? (INHERIT EXTEND?)* DEF?
                    and { t' :- t' == ((t, _), _) }
 //                   min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
 //                   and { ((_, id), _), ((_, id'), _) }
@@ -134,7 +105,7 @@ rules // ui declaration and resolving
 
   resolvePage : scope * string -> list((path * (string * TYPE)))
   resolvePage(s, p) = dropAndFilterUniqueIds(ps) :-
-    query page filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
+    query page filter P* F* EXTEND? (INHERIT EXTEND?)* DEF?
                and { p' :- p' == ((p, _), _) }
 //               min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
 //               and { ((_, id), _), ((_, id'), _) }
@@ -154,10 +125,10 @@ rules // function declaration and resolving
 
   resolveFunction : scope * string -> list((path * (string * TYPE)))
   resolveFunction(s, f) = dropAndFilterUniqueIds(ps) :-
-    query function filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
+    query function filter P* F* EXTEND? (INHERIT EXTEND?)* DEF?
                    and { f' :- f' == ((f, _), _) }
-                   min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
-                   and { ((_, id), _), ((_, id), _) }
+//                   min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
+//                   and { ((_, id), _), ((_, id), _) }
                    in s |-> ps.
 
   resolveEntityFunction : scope * string -> list((path * (string * TYPE)))
@@ -185,9 +156,9 @@ rules // variable declaration and resolving
 
   resolveVar : scope * string -> list((path * (string * TYPE)))
   resolveVar(s, x) = dropAndFilterUniqueIds(ps) :-
-    query var filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
+    query var filter P* F* EXTEND? (INHERIT EXTEND?)* DEF?
               and { x' :- x' == ((x, _), _) }
-              min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
+              min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < DEF
               and true
               in s |-> ps.
 
