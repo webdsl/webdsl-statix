@@ -8,27 +8,21 @@ imports
 
 signature
   relations
-    attributeCollection : string * scope
+    attributeCollection : string
 
 rules // attribute collection declaration and resolving
 
   declareAttributeCollection : scope * string
   declareAttributeCollection(s, c) :-
-    !attributeCollection[c, new] in s,
+    !attributeCollection[c] in s,
     resolveAttributeCollection(s, c) == [_] | error $[Attribute collection [c] is defined multiple times].
 
   resolveAttributeCollection : scope * string -> list((path * string))
-  resolveAttributeCollection(s, c) = dropUniqueIdsStringOnly(ps) :- // TO-DO: change this to filter and drop with strings only
+  resolveAttributeCollection(s, c) = ps :-
     query attributeCollection
       filter P* F* EXTEND? (INHERIT EXTEND?)* DEF?
-      and { c' :- c' == (c, _) }
-      min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < DEF
-      and { (_, id), (_, id) }
+      and { c' :- c' == c }
       in s |-> ps.
-
-  dropUniqueIdsStringOnly maps dropUniqueIdStringOnly(list(*)) = list(*)
-  dropUniqueIdStringOnly : (path * (string * scope)) -> (path * string)
-  dropUniqueIdStringOnly((p, (x, id))) = (p, x).
 
 rules // attributes
 
