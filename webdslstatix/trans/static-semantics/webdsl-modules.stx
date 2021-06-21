@@ -6,17 +6,59 @@ imports
 
 rules // unit rules
 
-  unitOk(s_global, Application(app, sections)) :-
-    sectionsOk(s_global, sections),
-    rootPageDefined(s_global, app).
+  unitOk(s_global, Application(app, sections)) :- {s_mod}
+    new s_mod, s_mod -IMPORT-> s_global,
+    declareMod(s_global, app, s_mod),
+    importModules(s_global, s_mod, sections),
+    sectionsOk(s_mod, sections),
+    rootPageDefined(s_mod, app).
 
-  unitOk(s_global, Module(m, sections)) :-
-    sectionsOk(s_global, sections).
+  unitOk(s_global, Module(m, sections)) :- {s_mod}
+    new s_mod, s_mod -IMPORT-> s_global,
+    declareMod(s_global, m, s_mod),
+    importModules(s_global, s_mod, sections),
+    sectionsOk(s_mod, sections).
 
-  unitOk(s_global, BuiltIn(sections)) :-
-    sectionsOk(s_global, sections).
+  unitOk(s_global, BuiltIn(sections)) :- {s_mod}
+    new s_mod, s_mod -IMPORT-> s_global,
+    declareMod(s_global, "_BUILTIN", s_mod),
+    importModules(s_global, s_mod, sections),
+    sectionsOk(s_mod, sections).
 
 rules // import definition rules
 
   defOk(_, Imports(_)). // imports are handled in another rule, discard them here
   defOk(_, ImportsBuiltIn()).
+
+  importModules : scope * scope * list(Section)
+  importModules(_, _, []).
+  importModules(s, s_mod, [_ | ss]) :-
+    importModules(s, s_mod, ss).
+
+  importModules(s, s_mod, [Section(_, defs) | ss]) :-
+    importModulesInSection(s, s_mod, defs),
+    importModules(s, s_mod, ss).
+
+  importModulesInSection : scope * scope * list(Definition)
+  importModulesInSection(_, _, []).
+  importModulesInSection(s, s_mod, [_ | defs]) :- importModulesInSection(s, s_mod, defs).
+  importModulesInSection(s, s_mod, [ImportsBuiltIn() | defs]) :-
+    importModule(s, s_mod, "_BUILTIN"),
+    importModulesInSection(s, s_mod, defs).
+
+  importModulesInSection(s, s_mod, [Imports(y) | defs]) :-
+    importModule(s, s_mod, y),
+    importModulesInSection(s, s_mod, defs).
+
+  importModule : scope * scope * string
+  importModule(s, s_mod, y) :- {s_y}
+    resolveMod(s, y) == [(_, (_, s_y))] | error $[Cannot resolve module [y]],
+    importModuleScopeIfDeclared(s_mod, s_y, modDeclaredB(resolveMod(s, y))).
+
+  modDeclaredB : list((path * (string * scope))) -> BOOL
+  modDeclaredB([]) = FALSE().
+  modDeclaredB(_) = TRUE().
+
+  importModuleScopeIfDeclared : scope * scope * BOOL
+  importModuleScopeIfDeclared(s_mod, s_y, TRUE()) :- s_mod -IMPORT-> s_y.
+  importModuleScopeIfDeclared(_, _, FALSE()).

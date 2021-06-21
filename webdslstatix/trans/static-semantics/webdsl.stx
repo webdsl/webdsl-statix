@@ -38,8 +38,10 @@ signature
       EXTEND  // extend edge label for extending entities
       INHERIT // inherit edge label for subclasses
       DEF     // definition edge label for embedding top-level definitions in the global scope
+      IMPORT  // import edge label for importing another module
 
   relations
+    mod     : string * scope
     import  : string * string
 
     type         : string * TYPE
@@ -53,6 +55,19 @@ signature
 
     var      : string * TYPE
 
+rules // module declaration and resolving
+
+  declareMod : scope * string * scope
+  declareMod(s, m, s_mod) :-
+    !mod[m, s_mod] in s,
+    resolveMod(s, m) == [_] | error $[Module [m] is already declared].
+
+  resolveMod : scope * string -> list((path * (string * scope)))
+  resolveMod(s, m) = mods :-
+    query mod filter e
+              and { m' :- m' == (m, _) }
+              in s |-> mods.
+
 rules // type declaration and resolving
 
   declareType : scope * string * TYPE
@@ -62,7 +77,7 @@ rules // type declaration and resolving
 
   resolveType : scope * string -> list((path * (string * TYPE)))
   resolveType(s, name) = ps :-
-    query type filter P* F* EXTEND? INHERIT* DEF?
+    query type filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT?))
                and { e' :- e' == (name, _) }
                in s |-> ps.
 
@@ -74,7 +89,7 @@ rules // extend entity declaration
 
   resolveExtendEntity : scope * string -> list((path * (string * scope)))
   resolveExtendEntity(s, e) = ps :-
-    query extendentity filter P* F* EXTEND* INHERIT* DEF?
+    query extendentity filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT?))
                        and { e' :- e' == (e, _) }
                        in s |-> ps.
 
@@ -95,13 +110,13 @@ rules // ui declaration and resolving
 
   resolveTemplate : scope * string -> list((path * (string * TYPE)))
   resolveTemplate(s, t) = ps :-
-    query template filter P* F* EXTEND? (INHERIT EXTEND?)* DEF?
+    query template filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
                    and { t' :- t' == (t, _) }
                    in s |-> ps.
 
   resolvePage : scope * string -> list((path * (string * TYPE)))
   resolvePage(s, p) = ps :-
-    query page filter P* F* EXTEND? (INHERIT EXTEND?)* DEF?
+    query page filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
                and { p' :- p' == (p, _) }
                in s |-> ps.
 
@@ -119,7 +134,7 @@ rules // function declaration and resolving
 
   resolveFunction : scope * string -> list((path * (string * TYPE)))
   resolveFunction(s, f) = ps :-
-    query function filter P* F* EXTEND? (INHERIT EXTEND?)* DEF?
+    query function filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
                    and { f' :- f' == (f, _) }
                    in s |-> ps.
 
@@ -148,9 +163,9 @@ rules // variable declaration and resolving
 
   resolveVar : scope * string -> list((path * (string * TYPE)))
   resolveVar(s, x) = ps :-
-    query var filter P* F* EXTEND? (INHERIT EXTEND?)* DEF?
+    query var filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
               and { x' :- x' == (x, _) }
-              min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < DEF
+              min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < DEF, DEF < IMPORT
               and true
               in s |-> ps.
 
