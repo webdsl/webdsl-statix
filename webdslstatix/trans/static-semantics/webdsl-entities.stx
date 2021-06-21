@@ -59,7 +59,7 @@ rules // entity declaration
   declExtendEntity : scope * string * list(EntityBodyDeclaration)
   declExtendEntity(s_global, entity_name, bodydecs) :- {s_extend_entity entity_scopes}
     resolveType(s_global, entity_name) == [_] | error $[Entity [entity_name] is not defined],
-    new s_extend_entity,
+    new s_extend_entity, s_extend_entity -DEF-> s_global,
     declareExtendEntity(s_global, entity_name, s_extend_entity), // declare entity_scope to be linked to entity_name
     extendEntityScopes(resolveExtendEntity(s_global, entity_name), s_extend_entity),
     declEntityBody(s_extend_entity, bodydecs).
