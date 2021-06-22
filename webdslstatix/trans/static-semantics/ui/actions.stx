@@ -36,7 +36,7 @@ rules // var decls in templates and pages
     declareVar(s_decl, x, t),
     @x.type := t.
 
-rules // actions
+rules // action definitions
 
   templateActionOk : scope * list(FormalArg) * list(Statement)
   templateActionOk(s, args, stmts) :- {s_fun s_fun_body argTypes}
@@ -46,10 +46,21 @@ rules // actions
     new s_fun_body, s_fun_body -P-> s_fun,
     stmtsOk(s_fun_body, stmts, PAGE(_)).
 
+  defOk(_, Action2Definition(Action(_, a, _, _))) :- false | error $[Actions are only allowed in pages and templates] @a.
+
+rules // action calls
+
   templateElementOk(s, _, Action2TemplateElement(Action(_, a, FormalArgs(args), Block(stmts)))) :-
     templateActionOk(s, args, stmts).
 
-rules // special action blocks in templates
+  actionCallOrInlineOk : scope * ActionCallOrInline
+  actionCallOrInlineOk(_, ActionCall(_)) :- // TO-DO
+    try { false } | warning $[Action calls not yet implemented].
+
+  actionCallOrInlineOk(s, InlineAction(Block(stmts))) :-
+    templateActionOk(s, [], stmts).
+
+rules // action blocks in templates
 
   templateElementOk(s, _, Init(Block(stmts))) :-
     stmtsOk(s, stmts, UNTYPED()).
@@ -65,6 +76,12 @@ rules // special action blocks in templates
 
   templateElementOk(s, _, ValidateAction(Block(stmts))) :-
     stmtsOk(s, stmts, UNTYPED()).
+
+rules // statements
+
+  stmtOk(s, _, r@Return(_), PAGE(_)) :- false | error $[Expected page call in return statement].
+  stmtOk(s, _, r@Return(ThisCall2Exp(ThisCall(p, exps))), PAGE(_)) :-
+    pageCallOk(s, p, exps).
 
 rules // expressions
 

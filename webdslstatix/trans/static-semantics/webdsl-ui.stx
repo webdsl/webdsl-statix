@@ -117,6 +117,11 @@ rules // template elements
 
   templateElementOk(s, _, TemplateDefinition2TemplateElement(td)) :- defineTemplateOk(s, td, FALSE()).
 
+  templateElementOk(s, _, SubmitElem(a, props, elems)) :-
+    actionCallOrInlineOk(s, a),
+    templatePropAssignmentsOk(s, props),
+    templateElementsOk(s, elems).
+
 rules // expressions
 
   typeOfExp(s, TemplateName2Exp(TemplateName())) = string(s). // TO-DO: only allow this if inside a template
