@@ -7,6 +7,8 @@ test entityinversewrongtype1 [[
 
 application test
 
+page root {}
+
 section datamodel
 
   entity User {

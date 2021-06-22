@@ -7,6 +7,8 @@ test variablenotdefined [[
 
 application test
 
+page root {}
+
 section functions
 
 globals {

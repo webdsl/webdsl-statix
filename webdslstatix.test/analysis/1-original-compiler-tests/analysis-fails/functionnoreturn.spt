@@ -7,6 +7,8 @@ test functionnoreturn [[
 
 application test
 
+page root {}
+
 section datamodel
 
 globals {

@@ -6,6 +6,8 @@ test vardeclinit-assign-type [[
 //is not of type Int
 
 application test
+
+page root {}
   entity User{}
   function a(){
     var a :Int := "string";

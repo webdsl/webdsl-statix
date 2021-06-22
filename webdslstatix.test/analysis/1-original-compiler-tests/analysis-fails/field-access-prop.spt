@@ -8,6 +8,8 @@ test field-access-prop [[
 
 
 application test
+
+page root {}
   entity User{
     name :: String
   }

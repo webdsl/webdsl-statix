@@ -7,6 +7,8 @@ test idannodouble [[
 
 application test
 
+page root {}
+
 section datamodel
 
   entity SuperUser {

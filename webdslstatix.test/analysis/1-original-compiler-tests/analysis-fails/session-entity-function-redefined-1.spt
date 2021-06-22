@@ -7,6 +7,8 @@ test session-entity-function-redefined-1 [[
 
 application test
 
+page root {}
+
   session user{
     name :: String
     function dup(a:Int,b:String):String

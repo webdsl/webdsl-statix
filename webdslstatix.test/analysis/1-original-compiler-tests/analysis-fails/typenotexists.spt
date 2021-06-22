@@ -7,6 +7,8 @@ test typenotexists [[
 
 application test
 
+page root {}
+
 section functions
 
 globals {

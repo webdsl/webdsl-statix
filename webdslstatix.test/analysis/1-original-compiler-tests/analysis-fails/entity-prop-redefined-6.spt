@@ -7,6 +7,8 @@ test entity-prop-redefined-6 [[
 
 application test
 
+page root {}
+
   entity SuperUser {
   }
 

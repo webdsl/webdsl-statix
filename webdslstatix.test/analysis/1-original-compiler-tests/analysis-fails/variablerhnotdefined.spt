@@ -6,6 +6,8 @@ test variablerhnotdefined [[
 //Variable 'a' not defined
 application test
 
+page root {}
+
 section functions
 
 

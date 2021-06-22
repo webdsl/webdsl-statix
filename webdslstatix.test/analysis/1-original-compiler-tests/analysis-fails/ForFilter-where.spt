@@ -7,6 +7,8 @@ test ForFilter-where [[
 
 application test
 
+  page root() { }
+
   entity Entity2{
     name :: String
   }

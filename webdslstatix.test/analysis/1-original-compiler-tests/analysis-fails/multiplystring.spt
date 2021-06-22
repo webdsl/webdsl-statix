@@ -7,6 +7,8 @@ test multiplystring [[
 
 application test
 
+page root {}
+
 section functions
 
 globals {

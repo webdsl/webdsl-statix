@@ -7,6 +7,8 @@ test functionreturn [[
 
 application test
 
+page root {}
+
 section datamodel
 
   function getA(i : Int) : Int {

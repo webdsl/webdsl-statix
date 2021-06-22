@@ -7,6 +7,8 @@ test action-as-definition [[
 
 application test
 
+page root() { }
+
 action test(s:String){
   
 }

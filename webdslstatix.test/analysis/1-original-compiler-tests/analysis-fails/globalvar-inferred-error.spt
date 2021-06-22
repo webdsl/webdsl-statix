@@ -8,6 +8,8 @@ test globalvar-inferred-error [[
 
 application v75_44M_cW6
 
+page root {}
+
   var GKY_dO := {} 
   predicate UC ( ) { GKY_dO }
 ]] analysis fails

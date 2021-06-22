@@ -7,6 +7,8 @@ test session-entity-prop-redefined-2 [[
 
 application test
 
+page root {}
+
   session user{
   }
   

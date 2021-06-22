@@ -7,6 +7,8 @@ test functionwrongreturn [[
 
 application test
 
+page root {}
+
 section functions
 
   function f(i : Int) : String {
