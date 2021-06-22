@@ -37,24 +37,25 @@ signature
       F       // function edge label for embedding functions, templates and pages in a scope
       EXTEND  // extend edge label for extending entities
       INHERIT // inherit edge label for subclasses
-      IMPORT  // import edge label for importing the global scope and other modules
+      DEF     // definition edge label for embedding top-level definitions in the global scope
+      IMPORT  // import edge label for importing another module
 
   relations
     mod     : string * scope
     import  : string * string
 
-    type         : (string * scope) * TYPE
+    type         : string * TYPE
 
     extendentity : string * scope
 
-    page     : (string * scope) * TYPE
-    template : (string * scope) * TYPE
+    page     : string * TYPE
+    template : string * TYPE
 
-    function : (string * scope) * TYPE
+    function : string * TYPE
 
-    var      : (string * scope) * TYPE
+    var      : string * TYPE
 
-rules // module and import declaration and resolving
+rules // module declaration and resolving
 
   declareMod : scope * string * scope
   declareMod(s, m, s_mod) :-
@@ -65,36 +66,19 @@ rules // module and import declaration and resolving
   resolveMod(s, m) = mods :-
     query mod filter e
               and { m' :- m' == (m, _) }
-              min
-              and true
               in s |-> mods.
-
-  declareImport : scope * string * string
-  declareImport(s, x, y) :-
-    !import[x, y] in s,
-    !import[y, x] in s.
-
-  resolveImport : scope * string -> list((path * (string * string)))
-  resolveImport(s, x) = imports :-
-    query import filter e
-                 and { x' :- x' == (x, _) }
-                 min
-                 and true
-                 in s |-> imports.
 
 rules // type declaration and resolving
 
   declareType : scope * string * TYPE
   declareType(s, name, t) :-
-    !type[(name, new), t] in s,
+    !type[name, t] in s,
     resolveType(s, name) == [(_, (_, t))] | error $[Type [name] is defined multiple times] @name.
 
   resolveType : scope * string -> list((path * (string * TYPE)))
-  resolveType(s, name) = dropAndFilterUniqueIds(ps) :-
-    query type filter P* F* EXTEND? INHERIT* IMPORT*
-               and { e' :- e' == ((name, _), _) }
-//               min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
-//               and { ((_, id), _), ((_, id), _) }
+  resolveType(s, name) = ps :-
+    query type filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT?))
+               and { e' :- e' == (name, _) }
                in s |-> ps.
 
 rules // extend entity declaration
@@ -105,7 +89,7 @@ rules // extend entity declaration
 
   resolveExtendEntity : scope * string -> list((path * (string * scope)))
   resolveExtendEntity(s, e) = ps :-
-    query extendentity filter P* F* EXTEND* INHERIT* IMPORT*
+    query extendentity filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT?))
                        and { e' :- e' == (e, _) }
                        in s |-> ps.
 
@@ -113,31 +97,27 @@ rules // ui declaration and resolving
 
   declareTemplate : scope * string * list(TYPE)
   declareTemplate(s, t, ts) :-
-    !template[(t, new), TEMPLATE(ts)] in s,
+    !template[t, TEMPLATE(ts)] in s,
     resolvePage(s, t) == [] | error $[Page/template [t] is defined multiple times] @t.
 
   declarePage : scope * string * list(TYPE)
   declarePage(s, p, ts) :-
-    !page[(p, new), PAGE(ts)] in s,
+    !page[p, PAGE(ts)] in s,
     resolveUi(s, p) == [(_, (_, PAGE(ts)))] | error $[Page/template [p] is defined multiple times] @p.
 
   resolveUi : scope * string -> list((path * (string * TYPE)))
   resolveUi(s, x) = addQueryResults(resolveTemplate(s, x), resolvePage(s, x)).
 
   resolveTemplate : scope * string -> list((path * (string * TYPE)))
-  resolveTemplate(s, t) = dropAndFilterUniqueIds(ps) :-
-    query template filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-                   and { t' :- t' == ((t, _), _) }
-//                   min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
-//                   and { ((_, id), _), ((_, id'), _) }
+  resolveTemplate(s, t) = ps :-
+    query template filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
+                   and { t' :- t' == (t, _) }
                    in s |-> ps.
 
   resolvePage : scope * string -> list((path * (string * TYPE)))
-  resolvePage(s, p) = dropAndFilterUniqueIds(ps) :-
-    query page filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-               and { p' :- p' == ((p, _), _) }
-//               min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
-//               and { ((_, id), _), ((_, id'), _) }
+  resolvePage(s, p) = ps :-
+    query page filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
+               and { p' :- p' == (p, _) }
                in s |-> ps.
 
 rules // function declaration and resolving
@@ -150,57 +130,55 @@ rules // function declaration and resolving
 
   declareFunction_internal : scope * string * list(TYPE) * TYPE * BOOL
   declareFunction_internal(s, f, args, return, static) :-
-    !function[(f, new), FUNCTION(args, return, static)] in s.
+    !function[f, FUNCTION(args, return, static)] in s.
 
   resolveFunction : scope * string -> list((path * (string * TYPE)))
-  resolveFunction(s, f) = dropAndFilterUniqueIds(ps) :-
-    query function filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-                   and { f' :- f' == ((f, _), _) }
-                   min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
-                   and { ((_, id), _), ((_, id), _) }
+  resolveFunction(s, f) = ps :-
+    query function filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
+                   and { f' :- f' == (f, _) }
                    in s |-> ps.
 
   resolveEntityFunction : scope * string -> list((path * (string * TYPE)))
-  resolveEntityFunction(s, x) = dropAndFilterUniqueIds(ps) :-
+  resolveEntityFunction(s, x) = ps :-
     query function filter EXTEND? (INHERIT EXTEND?)*
-                   and { x' :- x' == ((x, _), _) }
+                   and { x' :- x' == (x, _) }
                    min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
-                   and { ((f, _), FUNCTION(args, _, _)), ((f, _), FUNCTION(args, _, _)) }
+                   and { (f, FUNCTION(args, _, _)), (f, FUNCTION(args, _, _)) }
                    in s |-> ps.
 
   resolveStaticEntityFunction : scope * string -> list((path * (string * TYPE)))
-  resolveStaticEntityFunction(s, x) = dropAndFilterUniqueIds(ps) :-
+  resolveStaticEntityFunction(s, x) = ps :-
     query function filter EXTEND? (INHERIT EXTEND?)*
-                   and { x' :- x' == ((x, _), FUNCTION(_, _, TRUE())) }
+                   and { x' :- x' == (x, FUNCTION(_, _, TRUE())) }
                    min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
-                   and { ((f, _), FUNCTION(args, _, _)), ((f, _), FUNCTION(args, _, _)) }
+                   and { (f, FUNCTION(args, _, _)), (f, FUNCTION(args, _, _)) }
                    in s |-> ps.
 
 rules // variable declaration and resolving
 
   declareVar : scope * string * TYPE
   declareVar(s, x, t) :-
-    !var[(x, new), t] in s,
+    !var[x, t] in s,
     noDuplicateVarDefs(s, x).
 
   resolveVar : scope * string -> list((path * (string * TYPE)))
-  resolveVar(s, x) = dropAndFilterUniqueIds(ps) :-
-    query var filter P* F* EXTEND? (INHERIT EXTEND?)* IMPORT*
-              and { x' :- x' == ((x, _), _) }
-              min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < IMPORT
+  resolveVar(s, x) = ps :-
+    query var filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
+              and { x' :- x' == (x, _) }
+              min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < DEF, DEF < IMPORT
               and true
               in s |-> ps.
 
   resolveProperty : scope * string -> list((path * (string * TYPE)))
-  resolveProperty(s_entity, x) = dropAndFilterUniqueIds(ps) :-
+  resolveProperty(s_entity, x) = ps :-
     query var filter EXTEND? (INHERIT EXTEND?)*
-              and { x' :- x' == ((x, _), _) }
+              and { x' :- x' == (x, _) }
               in s_entity |-> ps.
 
   resolveMutableProperty : scope * string -> list((path * (string * TYPE)))
-  resolveMutableProperty(s_entity, x) = dropAndFilterUniqueIds(ps) :-
+  resolveMutableProperty(s_entity, x) = ps :-
     query var filter EXTEND? (INHERIT EXTEND?)*
-              and { x' :- x' == ((x, _), _) }
+              and { x' :- x' == (x, _) }
               in s_entity |-> ps.
 
   declareParameters : scope * list((string * TYPE))
@@ -320,35 +298,6 @@ rules // utils
   addQueryResults : list((path * (string * TYPE))) * list((path * (string * TYPE))) -> list((path * (string * TYPE)))
   addQueryResults([], ls) = ls.
   addQueryResults([hd | tl], ls) = [hd | addQueryResults(tl, ls)].
-
-  // functional rule to drop the unique id (implemented as scope) from query results
-//  dropUniqueIds maps dropUniqueId(list(*)) = list(*)
-//  dropUniqueId : (path * ((string * scope) * TYPE)) -> (path * (string * TYPE))
-//  dropUniqueId((p, ((x, id), t))) = (p, (x, t)).
-
-  dropAndFilterUniqueIds : list((path * ((string * scope) * TYPE))) -> list((path * (string * TYPE)))
-  dropAndFilterUniqueIds(ps) = dropAndFilterUniqueIdsInternal(ps, [], []).
-
-  dropAndFilterUniqueIdsInternal : list((path * ((string * scope) * TYPE))) * list(scope) * list((path * (string * TYPE))) -> list((path * (string * TYPE)))
-  dropAndFilterUniqueIdsInternal([], _, acc) = acc.
-  dropAndFilterUniqueIdsInternal([hd@((_, ((_, id), _))) | tl], ids, acc) = result :- {isUnique ids' acc'}
-    isUnique == isDistinctId(ids, id),
-    ids' == appendIdListIfDistinct(id, ids, isUnique),
-    acc' == appendQueryResultsIfDistinctId(hd, acc, isUnique),
-    result == dropAndFilterUniqueIdsInternal(tl, ids', acc').
-
-  isDistinctId : list(scope) * scope -> BOOL
-  isDistinctId([], _) = TRUE().
-  isDistinctId([id | _], id) = FALSE().
-  isDistinctId([_ | ids], id) = isDistinctId(ids, id).
-
-  appendIdListIfDistinct : scope * list(scope) * BOOL -> list(scope)
-  appendIdListIfDistinct(s, acc, TRUE()) = [s | acc].
-  appendIdListIfDistinct(_, acc, FALSE()) = acc.
-
-  appendQueryResultsIfDistinctId : (path * ((string * scope) * TYPE)) * list((path * (string * TYPE))) * BOOL -> list((path * (string * TYPE)))
-  appendQueryResultsIfDistinctId((p, ((x, _), t)), acc, FALSE()) = acc.
-  appendQueryResultsIfDistinctId((p, ((x, _), t)), acc, TRUE()) = [(p, (x, t)) | acc].
 
   // functional rule to drop all results with longer paths than the minimal
   filterShortestPath : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
