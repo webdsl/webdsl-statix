@@ -58,4 +58,4 @@ rules // navigate calls
   pageCallOk(s, p, args) :- {argTypes ts}
     pageType(s, p) == PAGE(ts),
     argTypes == typesOfExps(s, args),
-    typesCompatible(argTypes, ts) == TRUE() | error $[Given argument types not compatible with page definition. Got [argTypes] but expected [ts]].
+    typesCompatible(argTypes, ts) == TRUE() | error $[Given argument types not compatible with page definition. Got [argTypes] but expected [ts]] @args.

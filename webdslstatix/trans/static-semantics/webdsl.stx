@@ -34,6 +34,7 @@ signature
   name-resolution
     labels
       P       // parent edge label for consecutive statements
+      T       // forward template edge labels to resolve placeholders and actions
       F       // function edge label for embedding functions, templates and pages in a scope
       EXTEND  // extend edge label for extending entities
       INHERIT // inherit edge label for subclasses
@@ -52,6 +53,7 @@ signature
     template : string * TYPE
 
     function : string * TYPE
+    action   : string * TYPE
 
     var      : string * TYPE
 
@@ -153,6 +155,19 @@ rules // function declaration and resolving
                    min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
                    and { (f, FUNCTION(args, _, _)), (f, FUNCTION(args, _, _)) }
                    in s |-> ps.
+
+rules // action declaration and resolving
+
+  declareAction : scope * string * list(TYPE)
+  declareAction(s, a, ts) :-
+    !action[a, ACTION(ts)] in s,
+    resolveAction(s, a) == [(_, (_, ACTION(ts)))] | error $[Action [a] is defined multiple times] @a.
+
+  resolveAction : scope * string -> list((path * (string * TYPE)))
+  resolveAction(s, a) = as :-
+    query action filter T*
+                 and { a' :- a' == (a, _) }
+                 in s |-> as.
 
 rules // variable declaration and resolving
 

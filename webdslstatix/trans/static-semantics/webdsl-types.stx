@@ -13,6 +13,7 @@ signature
     // list of argument types, return type
     // and BOOL that indicates if function is static or not
     FUNCTION : list(TYPE) * TYPE * BOOL -> TYPE
+    ACTION   : list(TYPE) -> TYPE
 
     ENTITY       : scope -> TYPE
     STATICENTITY : scope -> TYPE

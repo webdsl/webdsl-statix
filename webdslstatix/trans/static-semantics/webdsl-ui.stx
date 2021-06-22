@@ -78,6 +78,7 @@ rules // template elements
   templateElementsOk(_, []).
   templateElementsOk(s, [element | tail]) :- {s_next}
     new s_next, s_next -P-> s,
+    s_next -T-> s, s -T-> s_next, // create forward and backward template edges to resolve placeholders or actions defined later
     templateElementOk(s, s_next, element),
     templateElementsOk(s_next, tail).
 

@@ -38,27 +38,35 @@ rules // var decls in templates and pages
 
 rules // action definitions
 
-  templateActionOk : scope * list(FormalArg) * list(Statement)
-  templateActionOk(s, args, stmts) :- {s_fun s_fun_body argTypes}
+  templateActionOk : scope * string * list(FormalArg) * list(Statement) * BOOL
+  templateActionOk(s, a, args, stmts, declare) :- {s_fun s_fun_body argTypes}
     new s_fun, s_fun -P-> s, // TO-DO: possibly create different label for edges out of actions, abusing P label here
     argTypes == typesOfArgs(s, args),
     declareParameters(s_fun, zipArgTypes(args, argTypes)),
     new s_fun_body, s_fun_body -P-> s_fun,
+    optionallyDeclareAction(s, a, argTypes, declare),
     stmtsOk(s_fun_body, stmts, PAGE(_)).
+
+  optionallyDeclareAction : scope * string * list(TYPE) * BOOL
+  optionallyDeclareAction(_, _, _, FALSE()).
+  optionallyDeclareAction(s, a, ts, TRUE()) :- declareAction(s, a, ts).
 
   defOk(_, Action2Definition(Action(_, a, _, _))) :- false | error $[Actions are only allowed in pages and templates] @a.
 
 rules // action calls
 
   templateElementOk(s, _, Action2TemplateElement(Action(_, a, FormalArgs(args), Block(stmts)))) :-
-    templateActionOk(s, args, stmts).
+    templateActionOk(s, a, args, stmts, TRUE()).
 
   actionCallOrInlineOk : scope * ActionCallOrInline
-  actionCallOrInlineOk(_, ActionCall(_)) :- // TO-DO
-    try { false } | warning $[Action calls not yet implemented].
+  actionCallOrInlineOk(s, ActionCall(ThisCall(a, args))) :- {argTypes a' ts}
+    argTypes == typesOfExps(s, args),
+    resolveAction(s, a) == [(_, (a', ACTION(ts))) | _] | error $[Action [a] not defined] @a,
+    typesCompatible(argTypes, ts) == TRUE() | error $[Given argument types not compatible with action definition. Got [argTypes] but expected [ts]] @args,
+    @a.ref := a'.
 
   actionCallOrInlineOk(s, InlineAction(Block(stmts))) :-
-    templateActionOk(s, [], stmts).
+    templateActionOk(s, "", [], stmts, FALSE()).
 
 rules // action blocks in templates
 
