@@ -123,6 +123,21 @@ rules // template elements
     templatePropAssignmentsOk(s, props),
     templateElementsOk(s, elems).
 
+  templateElementOk(s, _, SubmitLinkElem(a, props, elems)) :-
+    actionCallOrInlineOk(s, a),
+    templatePropAssignmentsOk(s, props),
+    templateElementsOk(s, elems).
+
+  templateElementOk(s, _, DownloadLink(a, props, elems)) :-
+    actionCallOrInlineOk(s, a),
+    templatePropAssignmentsOk(s, props),
+    templateElementsOk(s, elems).
+
+  templateElementOk(s, _, OutputImage(a, props, elems)) :-
+    actionCallOrInlineOk(s, a),
+    templatePropAssignmentsOk(s, props),
+    templateElementsOk(s, elems).
+
 rules // expressions
 
   typeOfExp(s, TemplateName2Exp(TemplateName())) = string(s). // TO-DO: only allow this if inside a template
