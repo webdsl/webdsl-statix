@@ -53,7 +53,9 @@ signature
     template : string * TYPE
 
     function : string * TYPE
-    action   : string * TYPE
+
+    action      : string * TYPE
+    placeholder : string
 
     var      : string * TYPE
 
@@ -98,8 +100,14 @@ rules // extend entity declaration
 rules // ui declaration and resolving
 
   declareTemplate : scope * string * list(TYPE)
-  declareTemplate(s, t, ts) :-
-    !template[t, TEMPLATE(ts)] in s,
+  declareTemplate(s, t, ts) :- declareTemplate_internal(s, t, ts, FALSE()).
+
+  declareAjaxTemplate : scope * string * list(TYPE)
+  declareAjaxTemplate(s, t, ts) :- declareTemplate_internal(s, t, ts, TRUE()).
+
+  declareTemplate_internal : scope * string * list(TYPE) * BOOL
+  declareTemplate_internal(s, t, ts, ajax) :-
+    !template[t, TEMPLATE(ts, ajax)] in s,
     resolvePage(s, t) == [] | error $[Page/template [t] is defined multiple times] @t.
 
   declarePage : scope * string * list(TYPE)
@@ -114,6 +122,12 @@ rules // ui declaration and resolving
   resolveTemplate(s, t) = ps :-
     query template filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
                    and { t' :- t' == (t, _) }
+                   in s |-> ps.
+
+  resolveAjaxTemplate : scope * string -> list((path * (string * TYPE)))
+  resolveAjaxTemplate(s, t) = ps :-
+    query template filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
+                   and { t' :- t' == (t, TEMPLATE(_, TRUE())) }
                    in s |-> ps.
 
   resolvePage : scope * string -> list((path * (string * TYPE)))
@@ -156,7 +170,7 @@ rules // function declaration and resolving
                    and { (f, FUNCTION(args, _, _)), (f, FUNCTION(args, _, _)) }
                    in s |-> ps.
 
-rules // action declaration and resolving
+rules // action and placeholder declaration and resolving
 
   declareAction : scope * string * list(TYPE)
   declareAction(s, a, ts) :-
@@ -165,9 +179,20 @@ rules // action declaration and resolving
 
   resolveAction : scope * string -> list((path * (string * TYPE)))
   resolveAction(s, a) = as :-
-    query action filter T*
+    query action filter P* T*
                  and { a' :- a' == (a, _) }
                  in s |-> as.
+
+  declarePlaceholder : scope * string
+  declarePlaceholder(s, ph) :-
+    !placeholder[ph] in s,
+    resolvePlaceholder(s, ph) == [(_, ph)] | error $[Placeholder [ph] is defined multiple times].
+
+  resolvePlaceholder : scope * string -> list((path * string))
+  resolvePlaceholder(s, ph) = phs :-
+    query placeholder filter P* T*
+                      and { ph' :- ph' == ph }
+                      in s |-> phs.
 
 rules // variable declaration and resolving
 
@@ -309,6 +334,11 @@ rules // utils
   pathLength(_PathStep(p, _, _)) = x :- {x'}
     x' == pathLength(p),
     x #= x' + 1.
+
+  noDuplicatesString : string * list(string)
+  noDuplicatesString(_, []).
+  noDuplicatesString(x, [x | _]) :- false.
+  noDuplicatesString(x, [y | ys]) :- noDuplicatesString(x, ys).
 
   addQueryResults : list((path * (string * TYPE))) * list((path * (string * TYPE))) -> list((path * (string * TYPE)))
   addQueryResults([], ls) = ls.

@@ -22,7 +22,9 @@ signature
     STATICNATIVECLASS : scope -> TYPE
 
     PAGE     : list(TYPE) -> TYPE
-    TEMPLATE : list(TYPE) -> TYPE
+
+    // BOOL indicates if template is ajax-enabled or not
+    TEMPLATE : list(TYPE) * BOOL -> TYPE
 
     LIST : TYPE -> TYPE
     SET  : TYPE -> TYPE

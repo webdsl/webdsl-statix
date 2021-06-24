@@ -8,8 +8,12 @@ application test
 
 section pages
 
+htmlwrapper{
+  block div[class="block"]
+}
+
 define page root() {
-  block[id:= hoi, id:= hoi2] { "hoi1"} 
+  block[id:= "hoi", id:= "hoi2"] { "hoi1"} 
 }
 ]] analysis fails
 

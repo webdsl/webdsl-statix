@@ -11,7 +11,7 @@ imports
 rules // placeholders and ajax
 
   templateElementOk(s, _, TEPlaceholder(PlaceholderHtml(_, ph, elems))) :-
-    declarePlaceholderVar(s, ph),
+    declarePlaceholder(s, ph),
     templateElementsOk(s, elems).
 
   templateElementOk(s, _, TEPlaceholder(PlaceholderHtmlExp(_, e, elems))) :-
@@ -19,7 +19,7 @@ rules // placeholders and ajax
     templateElementsOk(s, elems).
 
   templateElementOk(s, _, TEPlaceholder(Placeholder(ph, elems))) :-
-    declarePlaceholderVar(s, ph),
+    declarePlaceholder(s, ph),
     templateElementsOk(s, elems).
 
   templateElementOk(s, _, TEPlaceholder(PlaceholderExp(e, elems))) :-
@@ -27,7 +27,7 @@ rules // placeholders and ajax
     templateElementsOk(s, elems).
 
   templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjaxHtml(_, ph, tc))) :-
-    declarePlaceholderVar(s, ph),
+    declarePlaceholder(s, ph),
     templateCallOk(s, tc).
 
   templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjaxHtmlExp(_, e, tc))) :-
@@ -35,33 +35,33 @@ rules // placeholders and ajax
     templateCallOk(s, tc).
 
   templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjax(ph, tc))) :-
-    declarePlaceholderVar(s, ph),
+    declarePlaceholder(s, ph),
     templateCallOk(s, tc).
 
   templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjaxExp(e, tc))) :-
     typeCompatible(typeOfPlaceholderExp(s, e), string(s)) | error $[Expression should be compatible with String],
     templateCallOk(s, tc).
 
-  declarePlaceholderVar : scope * string
-  declarePlaceholderVar(_, _). // TO-DO: declare in whole template
-
 rules // ajax statements
 
   stmtOk(s, _, AjaxStatement(stmt), _) :- ajaxStmtOk(s, stmt).
 
   ajaxStmtOk : scope * AjaxStatement
-  ajaxStmtOk(s, AjaxReplace(_, _)).
+  ajaxStmtOk(_, _) :- // TO-DO
+    try { false } | warning $[Ajax statements not implemented yet].
 
-  ajaxStmtOk(s, AjaxAppend(_, _)).
-
-  ajaxStmtOk(s, AjaxVisibility(_, _)).
-
-  ajaxStmtOk(s, AjaxRelocate(_)).
-
-  ajaxStmtOk(s, AjaxRestyle(_, _)).
-
-  ajaxStmtOk(s, AjaxClear(_)).
-
-  ajaxStmtOk(s, AjaxRefresh()).
-
-  ajaxStmtOk(s, AjaxRunScript(_)).
+//  ajaxStmtOk(s, AjaxReplace(_, _)) .
+//
+//  ajaxStmtOk(s, AjaxAppend(_, _)).
+//
+//  ajaxStmtOk(s, AjaxVisibility(_, _)).
+//
+//  ajaxStmtOk(s, AjaxRelocate(_)).
+//
+//  ajaxStmtOk(s, AjaxRestyle(_, _)).
+//
+//  ajaxStmtOk(s, AjaxClear(_)).
+//
+//  ajaxStmtOk(s, AjaxRefresh()).
+//
+//  ajaxStmtOk(s, AjaxRunScript(_)).

@@ -36,24 +36,34 @@ rules // template definitions
 
   defineTemplateOk : scope * TemplateDefinition * BOOL
   defineTemplateOk(s, DefineTemplate(mods, t, FormalArgs(fargs), TemplateArgs(targs), elements), declare) :- {fargTypes targTypes s_template s_body}
-    // TO-DO: analyse mods
+    uiModsOk(s, mods),
     new s_template, s_template -F-> s,
     fargTypes == typesOfArgs(s, fargs),
     targTypes == typesOfTemplateArgs(s, targs),
     declareParameters(s_template, zipArgTypes(fargs, fargTypes)),
     declTArgs(s_template, targTypes),
     new s_body, s_body -P-> s_template,
-    optionallyDeclareTemplate(s, t, fargTypes, targTypes, declare),
+    optionallyDeclareTemplate(s, t, fargTypes, targTypes, isAjaxTemplate(mods), declare),
     templateElementOrderOk(elements, FALSE(), FALSE()),
     templateElementsOk(s_body, elements).
 
-  optionallyDeclareTemplate : scope * string * list(TYPE) * list((string * list(TYPE))) * BOOL
-  optionallyDeclareTemplate(_, _, _, _, FALSE()).
-  optionallyDeclareTemplate(s, t, fargTypes, targTypes, TRUE()) :- declTemplate(s, t, fargTypes, targTypes).
+  uiModsOk maps uiModOk(*, list(*))
+  uiModOk : scope * Modifier
+  uiModOk(_, _) :- try { false } | warning $[This modifier is not yet implemented].
+  uiModOk(s, AjaxTemplate()).
 
-  declTemplate : scope * string * list(TYPE) * list((string * list(TYPE)))
-  declTemplate(s, t, fargTypes, targTypes) :- {result}
-    declareTemplate(s, t, fargTypes),
+  isAjaxTemplate : list(Modifier) -> BOOL
+  isAjaxTemplate([]) = FALSE().
+  isAjaxTemplate([_ | mods]) = isAjaxTemplate(mods).
+  isAjaxTemplate([AjaxTemplate() | _]) = TRUE().
+
+  optionallyDeclareTemplate : scope * string * list(TYPE) * list((string * list(TYPE))) * BOOL * BOOL
+  optionallyDeclareTemplate(_, _, _, _, _, FALSE()).
+  optionallyDeclareTemplate(s, t, fargTypes, targTypes, ajax, TRUE()) :- declTemplate(s, t, fargTypes, targTypes, ajax).
+
+  declTemplate : scope * string * list(TYPE) * list((string * list(TYPE))) * BOOL
+  declTemplate(s, t, fargTypes, targTypes, ajax) :- {result}
+    declareTemplate_internal(s, t, fargTypes, ajax),
     resolveTemplate(s, t) == result,
     amountOfTemplateDeclsWithArgs(result, fargTypes, 0) == 1
       | error $[Duplicate definition of template [t] with argument types [fargTypes]] @t.
@@ -61,12 +71,12 @@ rules // template definitions
   declTArgs maps declTArg(*, list(*))
   declTArg : scope * (string * list(TYPE))
   declTArg(s, (t, argTypes)) :-
-    declTemplate(s, t, argTypes, []).
+    declTemplate(s, t, argTypes, [], FALSE()).
 
   // helper function that results in the amount of template definitions with the given argument types
   amountOfTemplateDeclsWithArgs : list((path *(string * TYPE))) * list(TYPE) * int -> int
   amountOfTemplateDeclsWithArgs([], _, n) = n.
-  amountOfTemplateDeclsWithArgs([ (_, (_, TEMPLATE(args))) | tail], args, n) = amountOfTemplateDeclsWithArgs(tail, args, i) :- i #= n + 1.
+  amountOfTemplateDeclsWithArgs([ (_, (_, TEMPLATE(args, _))) | tail], args, n) = amountOfTemplateDeclsWithArgs(tail, args, i) :- i #= n + 1.
   amountOfTemplateDeclsWithArgs([ _ | tail], args, n) = amountOfTemplateDeclsWithArgs(tail, args, n).
 
 rules // template elements

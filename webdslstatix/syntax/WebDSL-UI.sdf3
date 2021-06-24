@@ -379,9 +379,9 @@ context-free syntax
   PropertyAssignment = CommonAttribute
   PropertyAssignment = PropertySubmitMultiple
   PropertySubmitMultiple.PropertySubmitMultiple = <<SubmitProp> = <{ActionCallOrInlineOrExp ";"}+>>
-  ActionCallOrInlineOrExp = ActionCallOrInline
-  ActionCallOrInlineOrExp = PropertySubmitExp
-  PropertySubmitExp = Exp
+  ActionCallOrInlineOrExp.ActionCallOrInline = ActionCallOrInline
+  ActionCallOrInlineOrExp.ActionCallOrInlineExp = PropertySubmitExp
+  PropertySubmitExp.PropertySubmitExp = Exp
   TemplateElement = OutputShorthand
 
   // require at least two actions to get this constructor

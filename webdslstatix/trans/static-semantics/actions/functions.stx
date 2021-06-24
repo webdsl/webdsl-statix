@@ -169,7 +169,7 @@ rules  // rules and functions for function overloading
   zipSigsWithTypesCompatible maps zipSigWithTypesCompatible(*, list(*)) = list(*)
   zipSigWithTypesCompatible : list(TYPE) * (string * TYPE) -> (BOOL * (string * TYPE))
   zipSigWithTypesCompatible(args, f@(_, FUNCTION(funArgs, _, _))) = (typesCompatible(args, funArgs), f).
-  zipSigWithTypesCompatible(args, f@(_, TEMPLATE(templArgs))) = (typesCompatible(args, templArgs), f).
+  zipSigWithTypesCompatible(args, f@(_, TEMPLATE(templArgs, _))) = (typesCompatible(args, templArgs), f).
 
   // function that prunes the list of compatible signatures
   // to a list of most specific signatures
@@ -190,7 +190,7 @@ rules  // rules and functions for function overloading
   matchingSigs : list(TYPE) * list((string * TYPE)) -> list((string * TYPE))
   matchingSigs(_, []) = [].
   matchingSigs(args, [f@(_, FUNCTION(args, _, _)) | fs]) = [f | matchingSigs(args, fs)].
-  matchingSigs(args, [f@(_, TEMPLATE(args))    | fs]) = [f | matchingSigs(args, fs)].
+  matchingSigs(args, [f@(_, TEMPLATE(args, _))    | fs]) = [f | matchingSigs(args, fs)].
   matchingSigs(args, [_ | fs]) = matchingSigs(args, fs).
 
   // function that computes the total amount of inheritance edges from caller arguments to defined arguments

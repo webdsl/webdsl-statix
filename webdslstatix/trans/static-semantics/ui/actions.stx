@@ -58,6 +58,11 @@ rules // action calls
   templateElementOk(s, _, Action2TemplateElement(Action(_, a, FormalArgs(args), Block(stmts)))) :-
     templateActionOk(s, a, args, stmts, TRUE()).
 
+  actionCallOrInlineOrExpOk : scope * ActionCallOrInlineOrExp
+  actionCallOrInlineOrExpOk(s, ActionCallOrInline(a)) :- actionCallOrInlineOk(s, a).
+  actionCallOrInlineOrExpOk(s, ActionCallOrInlineExp(PropertySubmitExp(e))) :-
+    typeCompatible(typeOfExp(s, e), string(s)) | error $[Expression must be compatible with type String].
+
   actionCallOrInlineOk : scope * ActionCallOrInline
   actionCallOrInlineOk(s, ActionCall(ThisCall(a, args))) :- {argTypes a' ts}
     argTypes == typesOfExps(s, args),
