@@ -34,6 +34,7 @@ signature
     BUILTINTYPE : string * scope -> TYPE
     STATICBUILTINTYPE : string * scope -> TYPE
 
+    PLACEHOLDER      : TYPE
     REGEX            : TYPE
     VOID             : TYPE
     TEMPLATEELEMENTS : TYPE

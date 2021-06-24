@@ -47,21 +47,42 @@ rules // ajax statements
   stmtOk(s, _, AjaxStatement(stmt), _) :- ajaxStmtOk(s, stmt).
 
   ajaxStmtOk : scope * AjaxStatement
-  ajaxStmtOk(_, _) :- // TO-DO
-    try { false } | warning $[Ajax statements not implemented yet].
+  ajaxStmtOk(_, _) :-
+    try { false } | warning $[This ajax statement is not yet implemented].
 
-//  ajaxStmtOk(s, AjaxReplace(_, _)) .
-//
-//  ajaxStmtOk(s, AjaxAppend(_, _)).
-//
-//  ajaxStmtOk(s, AjaxVisibility(_, _)).
-//
-//  ajaxStmtOk(s, AjaxRelocate(_)).
-//
-//  ajaxStmtOk(s, AjaxRestyle(_, _)).
-//
-//  ajaxStmtOk(s, AjaxClear(_)).
-//
-//  ajaxStmtOk(s, AjaxRefresh()).
-//
-//  ajaxStmtOk(s, AjaxRunScript(_)).
+  ajaxStmtOk(s, AjaxReplace(e, tc)) :-
+    ajaxPlaceholderExpressionOk(s, e),
+    ajaxTemplateCallOk(s, tc)
+      | error $[Unable to find an ajax enabled template with a compatible signature] @tc.
+
+  ajaxStmtOk(s, AjaxAppend(e, tc)) :-
+    ajaxPlaceholderExpressionOk(s, e),
+    ajaxTemplateCallOk(s, tc)
+      | error $[Unable to find an ajax enabled template with a compatible signature] @tc.
+
+  ajaxStmtOk(s, AjaxVisibility(e, _)) :-
+    ajaxPlaceholderExpressionOk(s, e).
+
+  ajaxStmtOk(s, AjaxRelocate(pc)) :-
+    pageCallOk(s, pc).
+
+  ajaxStmtOk(s, AjaxRestyle(ph, e)) :-
+    ajaxPlaceholderExpressionOk(s, e),
+    typeCompatible(typeOfExp(s, e), string(s)) | error $[CSS classname must be compatible with type String].
+
+  ajaxStmtOk(s, AjaxClear(ph)) :-
+    ajaxPlaceholderExpressionOk(s, ph).
+
+  ajaxStmtOk(s, AjaxRefresh()).
+
+  ajaxStmtOk(s, AjaxRunScript(e)) :-
+    typeCompatible(typeOfExp(s, e), string(s)) | error $[Javascript code must be compatible with type String].
+
+  ajaxPlaceholderExpressionOk : scope * Exp
+  ajaxPlaceholderExpressionOk(s, e) :-
+    typeCompatible(typeOfExp(s, e), string(s))
+      | error $[Expression should be compatible with type string or a placeholder variable] @e.
+
+  ajaxPlaceholderExpressionOk(s, Var(ph)) :- { ph' }
+    resolvePlaceholder(s, ph) == [(_, ph') | _] | error $[Unable to find placeholder [ph]],
+    @ph.ref := ph'.

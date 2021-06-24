@@ -119,13 +119,18 @@ rules // ui declaration and resolving
   resolveUi(s, x) = addQueryResults(resolveTemplate(s, x), resolvePage(s, x)).
 
   resolveTemplate : scope * string -> list((path * (string * TYPE)))
-  resolveTemplate(s, t) = ps :-
+  resolveTemplate(s, t) = resolveTemplate_internal(s, t, FALSE()).
+
+  resolveAjaxTemplate : scope * string -> list((path * (string * TYPE)))
+  resolveAjaxTemplate(s, t) = resolveTemplate_internal(s, t, TRUE()).
+
+  resolveTemplate_internal : scope * string * BOOL -> list((path * (string * TYPE)))
+  resolveTemplate_internal(s, t, FALSE()) = ps :-
     query template filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
                    and { t' :- t' == (t, _) }
                    in s |-> ps.
 
-  resolveAjaxTemplate : scope * string -> list((path * (string * TYPE)))
-  resolveAjaxTemplate(s, t) = ps :-
+  resolveTemplate_internal(s, t, TRUE()) = ps :-
     query template filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
                    and { t' :- t' == (t, TEMPLATE(_, TRUE())) }
                    in s |-> ps.
@@ -186,6 +191,7 @@ rules // action and placeholder declaration and resolving
   declarePlaceholder : scope * string
   declarePlaceholder(s, ph) :-
     !placeholder[ph] in s,
+    declareVar(s, ph, PLACEHOLDER()) | error $[A variable named [ph] is already defined in this context],
     resolvePlaceholder(s, ph) == [(_, ph)] | error $[Placeholder [ph] is defined multiple times].
 
   resolvePlaceholder : scope * string -> list((path * string))

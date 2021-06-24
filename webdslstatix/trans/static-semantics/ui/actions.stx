@@ -94,7 +94,7 @@ rules // statements
 
   stmtOk(s, _, r@Return(_), PAGE(_)) :- false | error $[Expected page call in return statement].
   stmtOk(s, _, r@Return(ThisCall2Exp(ThisCall(p, exps))), PAGE(_)) :-
-    pageCallOk(s, p, exps).
+    pageCallOk_internal(s, p, exps).
 
 rules // expressions
 

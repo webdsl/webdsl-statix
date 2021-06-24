@@ -214,7 +214,6 @@ rules // variables
   noDuplicateVarDefs(s, x) :-
     query var filter P*
               and { x' :- x' == (x, _) }
-              min $ < P
               in s |-> [_].
 
   noDuplicateVarDefsInSuper : scope * string
