@@ -4,11 +4,6 @@ imports
   static-semantics/webdsl-ui
   static-semantics/webdsl
 
-signature
-
-  relations
-    builtInsDeclared : scope
-
 rules // unit rules
 
   unitOk(s_global, Application(app, sections)) :- {s_app}
@@ -19,10 +14,11 @@ rules // unit rules
     sectionsOk(s_app, sections),
     rootPageDefined(s_app, app).
 
-  unitOk(s_global, Module(m, sections)) :- {s_mod}
+  // TO-DO: make compatible with new constructors and implement wildcard imports
+  unitOk(s_global, Module(ModuleName(ms), sections)) :- {s_mod}
     new s_mod, s_mod -IMPORT-> s_global,
-    declareMod(s_global, m, s_mod),
-    importModules(s_global, s_mod, m, sections),
+//    declareMod(s_global, m, s_mod),
+//    importModules(s_global, s_mod, m, sections),
     sectionsOk(s_mod, sections).
 //    importedByApplicationRoot(s_global, s_mod, m).
 
@@ -55,8 +51,9 @@ rules // import definition rules
     declareImport(s, x, "built-in"),
     declareImportsInSection(s, x, defs).
 
+  // TO-DO: make compatible with new constructors and implement wildcard imports
   declareImportsInSection(s, x, [Imports(y) | defs]) :-
-    declareImport(s, x, y),
+//    declareImport(s, x, y),
     declareImportsInSection(s, x, defs).
 
   defOk(_, Imports(_)). // imports are handled in another rule, discard them here

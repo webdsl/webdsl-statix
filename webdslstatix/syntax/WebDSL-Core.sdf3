@@ -93,7 +93,7 @@ context-free syntax
   >
 
   Definition.Imports = <
-    imports <ModuleName>
+    imports <ImportName>
   >
 
   Definition.ImportsBuiltIn = <

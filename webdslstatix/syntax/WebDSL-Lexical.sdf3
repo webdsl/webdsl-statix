@@ -2,7 +2,7 @@ module WebDSL-Lexical
 
 lexical sorts
 
-  QId TemplateId VarId FAVarId FunId PropertyId Id PageId ExtendedId ModuleName SectionName
+  QId TemplateId VarId FAVarId FunId PropertyId Id PageId ExtendedId SectionName
 
 lexical syntax
 
@@ -16,8 +16,22 @@ lexical syntax
   Id = [a-zA-Z] [a-zA-Z0-9\_]*
   PageId = [a-zA-Z] [a-zA-Z0-9\_\-]*
   ExtendedId = [a-zA-Z0-9\-\_\.]+
-  ModuleName = {ExtendedId "/"}+
   SectionName = ~[\n\r]*
+
+context-free sorts
+
+  ModuleName ModulePart ImportName OptWildcardImport
+
+context-free syntax
+
+  ModulePart.ModulePart = <<ExtendedId>>
+  OptWildcardImport.WildcardImport = "/*"
+  OptWildcardImport.NoWildcardImport = <>
+
+syntax
+
+  ModuleName-CF.ModuleName = { ModulePart-CF "/"}+
+  ImportName-CF.ImportName = ModuleName-CF OptWildcardImport-CF
 
 lexical restrictions
 
