@@ -17,7 +17,7 @@ imports
 rules // definitions
 
   defOk(s, GlobalInit(Block(stmts))) :- {s_init}
-    new s_init, s_init -IMPORT-> s,
+    new s_init, s_init -DEF-> s,
     stmtsOk(s_init, stmts, VOID()).
 
 rules // statements
@@ -213,7 +213,7 @@ rules // variables
   noDuplicateVarDefs : scope * string
   noDuplicateVarDefs(s, x) :-
     query var filter P*
-              and { x' :- x' == ((x, _), _) }
+              and { x' :- x' == (x, _) }
               min $ < P
               in s |-> [_].
 

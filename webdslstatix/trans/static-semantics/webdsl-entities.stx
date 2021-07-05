@@ -17,7 +17,7 @@ rules // entity declaration
   // entity x : super { ... }
   defOk(s, e@Entity(x, super, bodydecs)) :- {s_entity super' s_super}
     resolveType(s, super) == [(_, (super', ENTITY(s_super)))] | error $[Entity [super] is not defined] @super,
-    new s_entity, s_entity -INHERIT-> s_super, s_entity -IMPORT-> s,
+    new s_entity, s_entity -INHERIT-> s_super, s_entity -DEF-> s,
     noCircularInheritance(s_entity) | error $[Circular inhertitance detected] @e,
     declEntity(s, s_entity, x, bodydecs),
     declareEntityAnnotation(s_entity, SUBENTITY()),
@@ -26,12 +26,12 @@ rules // entity declaration
   // entity x { ... }
   defOk(s, EntityNoSuper(x, bodydecs)) :- {s_entity s_super}
     entity(s) == ENTITY(s_super),
-    new s_entity, s_entity -INHERIT-> s_super, s_entity -IMPORT-> s,
+    new s_entity, s_entity -INHERIT-> s_super, s_entity -DEF-> s,
     declEntity(s, s_entity, x, bodydecs).
 
   // session x { ... }
   defOk(s, SessionEntity(x, bodydecs)) :- {s_entity}
-    new s_entity, s_entity -IMPORT-> s,
+    new s_entity, s_entity -DEF-> s,
     declEntity(s, s_entity, x, bodydecs),
     declareEntityAnnotation(s_entity, SESSIONENTITY()).
 
@@ -59,7 +59,7 @@ rules // entity declaration
   declExtendEntity : scope * string * list(EntityBodyDeclaration)
   declExtendEntity(s_global, entity_name, bodydecs) :- {s_extend_entity entity_scopes}
     resolveType(s_global, entity_name) == [_] | error $[Entity [entity_name] is not defined],
-    new s_extend_entity,
+    new s_extend_entity, s_extend_entity -DEF-> s_global,
     declareExtendEntity(s_global, entity_name, s_extend_entity), // declare entity_scope to be linked to entity_name
     extendEntityScopes(resolveExtendEntity(s_global, entity_name), s_extend_entity),
     declEntityBody(s_extend_entity, bodydecs).

@@ -14,7 +14,7 @@ rules
   declareBuiltInType : scope * string
   declareBuiltInType(s, name) :- {s_type s_object}
     object(s) == BUILTINTYPE(_, s_object),
-    new s_type, s_type -INHERIT-> s_object,
+    new s_type, s_type -INHERIT-> s_object, s_type -DEF-> s,
     declareExtendEntity(s, name, s_type), // declare s_type to be linked to type name
     extendEntityScopes(resolveExtendEntity(s, name), s_type),
     declareType(s, name, BUILTINTYPE(name, s_type)),
@@ -23,7 +23,7 @@ rules
   declareBuiltInSubType : scope * string * string
   declareBuiltInSubType(s, sub, super) :- {s_sub s_super}
     builtInType(s, super) == BUILTINTYPE(super, s_super),
-    new s_sub, s_sub -INHERIT-> s_super,
+    new s_sub, s_sub -INHERIT-> s_super, s_sub -DEF-> s,
     noCircularInheritance(s_sub) | error $[Circular inheritance detected in built-in type [sub]],
     declareExtendEntity(s, sub, s_sub), // declare s_type to be linked to type name
     extendEntityScopes(resolveExtendEntity(s, sub), s_sub),
