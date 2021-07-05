@@ -61,7 +61,21 @@ rules // import definition rules
 
   importModuleScopeIfDeclared : scope * scope * BOOL
   importModuleScopeIfDeclared(s_mod, s_y, TRUE()) :- s_mod -IMPORT-> s_y.
+  importModuleScopeIfDeclared(s_mod, s_mod, TRUE()). // restrict self import
   importModuleScopeIfDeclared(_, _, FALSE()).
+
+  importModulesInSection(s, s_mod, [i@Imports(ImportName(ModuleName(mps), WildcardImport())) | defs]) :-
+    importModulesWildcard(s_mod, resolveModWildcard(s, modulePartsToStrings(mps)), i),
+    importModulesInSection(s, s_mod, defs).
+
+  importModulesWildcard : scope * list((path * (list(string) * scope))) * Definition
+  importModulesWildcard(_, [], i) :- false | error $[Cannot resolve modules] @i.
+  importModulesWildcard(s_mod, mods, _) :- importModulesWildcard_internal(s_mod, mods).
+
+  importModulesWildcard_internal maps importModuleWildcard_internal(*, list(*))
+  importModuleWildcard_internal : scope * (path * (list(string) * scope))
+  importModuleWildcard_internal(s_mod, (_, (_, s_y))) :- s_mod -IMPORT-> s_y.
+  importModuleWildcard_internal(s_mod, (_, (_, s_mod))). // restrict self import
 
 rules // utils
 

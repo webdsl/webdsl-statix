@@ -68,15 +68,18 @@ rules // module declaration and resolving
               in s |-> mods.
 
   resolveModWildcard : scope * list(string) -> list((path * (list(string) * scope)))
-  resolveModWildcard(s, names) = mods :- { names' }
+  resolveModWildcard(s, names) = mods :-
     query mod filter e
-              and { m' :- m' == (names', _), isPrefix(names, names') }
+              and { m' :- isPrefix(names, m') }
               in s |-> mods.
 
-  isPrefix : list(string) * list(string)
-  isPrefix([], _).
-  isPrefix([x | xs], [x | ys]) :- isPrefix(xs, ys).
-  isPrefix(_, _) :- false.
+  isPrefix : list(string) * (list(string) * scope)
+  isPrefix(names, (names', _)) :- isPrefix_internal(names, names').
+
+  isPrefix_internal : list(string) * list(string)
+  isPrefix_internal([], _).
+  isPrefix_internal([x | xs], [x | ys]) :- isPrefix_internal(xs, ys).
+  isPrefix_internal(_, _) :- false.
 
 rules // type declaration and resolving
 
