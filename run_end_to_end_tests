@@ -29,7 +29,7 @@ function analyzeRepo() {
     local dirName=$(basename $repo .git)
     local resultFile="e2e-results/$dirName.txt"
 
-    git clone "$repo"  --recurse-submodules
+    git clone --single-branch --branch experiment/wildcard-imports "$repo" --recurse-submodules
 
     addBuiltInToRepo "$dirName"
 

@@ -100,9 +100,7 @@ context-free syntax
     imports built-in
   >
 
-lexical syntax
-
-  ModuleName = "built-in" {reject}
+  ImportName = "built-in" {reject}
 
 context-free syntax
 
