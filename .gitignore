@@ -2,3 +2,5 @@
 .project
 *.aterm
 *.desugared.aterm
+*.scopegraph
+
