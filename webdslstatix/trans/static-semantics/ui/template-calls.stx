@@ -84,7 +84,7 @@ rules // property assignments
     templatePropAssignmentsOkNoDuplicates(s, pas, [x | xs]).
 
   templatePropAssignmentOk : scope * PropertyAssignment -> string // return name of property for duplicate check
-  templatePropAssignmentOk(s, _) = x :- // TO-DO
+  templatePropAssignmentOk(s, _) = "_IGNORE" :- // TO-DO
     try { false } | warning $[This template property assignment is not implemented yet].
 
   templatePropAssignmentOk(s, PropertyAssignment(x, e)) = x :-
@@ -92,3 +92,8 @@ rules // property assignments
 
   templatePropAssignmentOk(s, PropertySubmit(x, a)) = x :-
     actionCallOrInlineOrExpOk(s, a).
+
+  templatePropAssignmentOk(s, AttributeSelection2PropertyAssignment(AttributeIgnoreDefault(c@"class"))) = "_IGNORE".
+  templatePropAssignmentOk(s, AttributeSelection2PropertyAssignment(AttributeIgnoreDefault(c@"style"))) = "_IGNORE".
+  templatePropAssignmentOk(s, AttributeSelection2PropertyAssignment(AttributeIgnoreDefault(_))) = "_IGNORE" :-
+    false | error $[Only "class" and "style" are implicitly combined with defaults].

@@ -357,6 +357,7 @@ rules // utils
   noDuplicatesString : string * list(string)
   noDuplicatesString(_, []).
   noDuplicatesString(x, [x | _]) :- false.
+  noDuplicatesString(x, ["_IGNORE" | ys]) :- noDuplicatesString(x, ys).
   noDuplicatesString(x, [y | ys]) :- noDuplicatesString(x, ys).
 
   addQueryResults : list((path * (string * TYPE))) * list((path * (string * TYPE))) -> list((path * (string * TYPE)))
