@@ -1,6 +1,8 @@
 module static-semantics/webdsl-types
 
 imports
+  static-semantics/entities/annotations
+
   static-semantics/types/built-ins
   static-semantics/types/type-extensions
 
@@ -231,9 +233,16 @@ rules // resolve reference types
 
   propertyTypes maps propertyType(*, list(*)) = list(*)
   propertyType : scope * string -> TYPE
-  propertyType(s, x) = t :- {x'}
-    resolveProperty(s, x) == [(_, (x', t))] | error $[Property [x] is not defined] @x,
+  propertyType(s, x) = t :- { ps x' }
+    ps == withoutAnnotation(resolveProperty(s, x), OVERRIDABLE()),
+    ps == [(_, (x', t)) | _] | error $[Property [x] is not defined] @x,
+    singleResult(ps, "Property", x),
     @x.ref := x'.
+
+  singleResult : list((path * (string * TYPE))) * string * string
+  singleResult([], type, x) :- false | error $[[type] [x] is not defined] @x.
+  singleResult([_ | [_ | _]], type, x) :- false | error $[[type] [x] is defined multiple times] @x.
+  singleResult(_, _, _).
 
   pageType : scope * string -> TYPE
   pageType(s, p) = t :- {p'}
