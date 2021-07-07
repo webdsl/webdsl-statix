@@ -24,7 +24,7 @@ rules // template calls
 
   // BOOL denotes if template must be ajax enabled
   templateCallOk_internal : scope * TemplateCall * BOOL
-  templateCallOk_internal(s, TemplateCall(TemplateCallId(t), TCallArgs(targs), TCallPropAssigns(propAssigns), TemplateBody(body)), ajax) :- {argTypes nameCompatibleSigs mostSpecificSigs t'}
+  templateCallOk_internal(s, TemplateCall(TemplateCallId(t), TCallArgs(targs), TCallPropAssigns(propAssigns), TemplateBody(body)), ajax) :-
     templatePropAssignmentsOk(s, propAssigns),
     templateElementsOk(s, body),
     templateCallMatchesSig(s, t, targs, ajax).
@@ -35,7 +35,8 @@ rules // template calls
     argTypes == typesOfTemplateArgExps(s, targs),
     nameCompatibleSigs == resolveTemplate_internal(s, t, ajax),
     mostSpecificSigs == mostSpecificSigs(argTypes, typeCompatibleSigs(nameCompatibleSigs, argTypes)),
-    mostSpecificSigs == [(t', TEMPLATE(_, _))] | error $[Zero or multiple template definitions with equally specific argument types for function [t]] @t,
+    mostSpecificSigs == [(t', TEMPLATE(_, _)) | _] | error $[Cannot resolve template [t] with compatible argument types] @t,
+    singleSignature(mostSpecificSigs, "template", t) | error $[Cannot resolve template [t] with compatible argument types] @t,
     @t.ref := t'.
 
   typesOfTemplateArgExps maps typeOfTemplateArgExp(*, list(*)) = list(*)

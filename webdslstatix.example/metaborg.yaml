@@ -10,5 +10,5 @@ build:
   useBuildSystemSpec: true
 runtime:
   statix:
-    message-trace-length: 3  # default: 0, full trace: -1
+    message-trace-length: 0  # default: 0, full trace: -1
     message-term-depth: -1    # full trace: -1

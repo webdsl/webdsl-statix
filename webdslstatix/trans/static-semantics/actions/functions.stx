@@ -43,11 +43,18 @@ rules // functions calls
   typeOfCall(s, t, f, args) = UNTYPED() :- false | error $[First subexpression of a function call must be of type entity, [t] found].
 
   typeOfFunctionCallInternal : scope * string * list(Exp) * list((path * (string * TYPE))) -> TYPE
-  typeOfFunctionCallInternal(s, f, args, funSigs) = t :- {argTypes f'}
+  typeOfFunctionCallInternal(s, f, args, funSigs) = t :- { argTypes f' result }
     argTypes                  == typesOfExps(s, args),
-    [(f', FUNCTION(_, t, _))] == mostSpecificSigs(argTypes, typeCompatibleSigs(funSigs, argTypes)) | error $[Zero or multiple function definition with equally specific argument types for function [f]] @f,
+    result == mostSpecificSigs(argTypes, typeCompatibleSigs(funSigs, argTypes)),
+    singleSignature(result, "function", f) | error $[Cannot resolve function [f] with compatible argument types] @f,
+    [(f', FUNCTION(_, t, _)) | _] == result | error $[Cannot resolve function [f] with compatible argument types] @f,
     @f.ref := f',
     @f.type := t.
+
+  singleSignature : list((string * TYPE)) * string * string
+  singleSignature([], type, f) :- false | error $[Cannot resolve [type] [f] with compatible argument types] @f.
+  singleSignature([_ | [_ | _]], type, f) :- false | error $[Found multiple definitions of [type] [f] with equally specific argument types] @f.
+  singleSignature(_, _, _).
 
 rules // invoke time interval
 
