@@ -204,8 +204,10 @@ rules // action and placeholder declaration and resolving
   declarePlaceholder : scope * string
   declarePlaceholder(s, ph) :-
     !placeholder[ph] in s,
-    declareVar(s, ph, PLACEHOLDER()) | error $[A variable named [ph] is already defined in this context],
-    resolvePlaceholder(s, ph) == [(_, ph)] | error $[Placeholder [ph] is defined multiple times].
+    resolvePlaceholder(s, ph) == [(_, ph)] | error $[Placeholder [ph] is defined multiple times],
+    query var filter P*
+              and { ph' :- ph' == (ph, _) }
+              in s |-> [] | error $[A variable named [ph] is already defined in this context].
 
   resolvePlaceholder : scope * string -> list((path * string))
   resolvePlaceholder(s, ph) = phs :-
