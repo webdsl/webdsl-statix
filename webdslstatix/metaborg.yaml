@@ -23,8 +23,8 @@ language:
     sdf2table: java
     placeholder:
       prefix: "$"
-  statix:
-    concurrent: false
+#  statix:
+#    mode: concurrent
   stratego:
     format: ctree
     args:
