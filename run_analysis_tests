@@ -83,7 +83,7 @@ function main() {
     local jarFile="$(getJARFileName)"
     mkdir -p analysis-results
     mkdir -p test-environment/.servletapp/src-webdsl-template
-    wget https://raw.githubusercontent.com/webdsl/webdsl/master/src/org/webdsl/dsl/project/template-webdsl/built-in.app -q -O test-environment/.servletapp/src-webdsl-template/built-in.app
+    cp stripped-built-in.app test-environment/.servletapp/src-webdsl-template/built-in.app
     runTests "webdslstatix.test/analysis/1-original-compiler-tests" "$jarFile"
     aggregateResultData "1-original-compiler-tests"
     echo "DONE!"
