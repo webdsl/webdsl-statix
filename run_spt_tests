@@ -15,7 +15,7 @@ function runTests() {
     do
         if [ -d "${file}" ] ; then
             runTestOnDirectory "$file" "$2"
-            runTests "${file}" "$2"
+            # runTests "${file}" "$2"
         fi
     done
 }
@@ -32,7 +32,7 @@ function runTestOnDirectory() {
         --lut webdslstatix \
         --tests "$dirName" \
         --spt spt/org.metaborg.meta.lang.spt \
-        > "$resultFile"
+        2>&1 | tee "$resultFile"
 
     prependResultSummary "$resultFile"
 }
@@ -71,7 +71,8 @@ function renameResults {
 function main() {
     local jarFile="$(getJARFileName)"
     mkdir spt-results
-    runTests "webdslstatix.test" "$jarFile"
+    runTests "webdslstatix.test/syntax" "$jarFile"
+    runTests "webdslstatix.test/analysis" "$jarFile"
     renameResults
     echo "DONE!"
 }
