@@ -10,6 +10,7 @@ rules // unit rules
     new s_mod, s_mod -IMPORT-> s_global,
     declareMod(s_global, [app], s_mod),
     importModules(s_global, s_mod, sections),
+    importModule(s_global, s_mod, ["_BUILTIN"]),
     sectionsOk(s_mod, sections),
     rootPageDefined(s_mod, app).
 
@@ -17,6 +18,7 @@ rules // unit rules
     new s_mod, s_mod -IMPORT-> s_global,
     declareMod(s_global, modulePartsToStrings(mps), s_mod),
     importModules(s_global, s_mod, sections),
+    importModule(s_global, s_mod, ["_BUILTIN"]),
     sectionsOk(s_mod, sections).
 
   unitOk(s_global, BuiltIn(sections)) :- { s_mod }
@@ -42,10 +44,6 @@ rules // import definition rules
   importModulesInSection : scope * scope * list(Definition)
   importModulesInSection(_, _, []).
   importModulesInSection(s, s_mod, [_ | defs]) :- importModulesInSection(s, s_mod, defs).
-  importModulesInSection(s, s_mod, [ImportsBuiltIn() | defs]) :-
-    importModule(s, s_mod, ["_BUILTIN"]),
-    importModulesInSection(s, s_mod, defs).
-
   importModulesInSection(s, s_mod, [Imports(ImportName(ModuleName(mps), NoWildcardImport())) | defs]) :-
     importModule(s, s_mod, modulePartsToStrings(mps)),
     importModulesInSection(s, s_mod, defs).
