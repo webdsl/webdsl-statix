@@ -15,7 +15,6 @@ function runTests() {
     do
         if [ -d "${file}" ] ; then
             runTestOnDirectory "$file" "$2"
-            # runTests "${file}" "$2"
         fi
     done
 }
@@ -71,8 +70,7 @@ function renameResults {
 function main() {
     local jarFile="$(getJARFileName)"
     mkdir spt-results
-    runTests "webdslstatix.test/syntax" "$jarFile"
-    runTests "webdslstatix.test/analysis" "$jarFile"
+    runTestOnDirectory "webdslstatix.test/syntax" "$jarFile"
     renameResults
     echo "DONE!"
 }

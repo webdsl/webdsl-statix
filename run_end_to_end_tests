@@ -36,7 +36,7 @@ function analyzeRepo() {
     java -Xmx4G -Xms4G -Xss64m -jar "$jarFile" build \
         -l webdslstatix \
         -p "$dirName" \
-        &> "$resultFile"
+        2>&1 | tee "$resultFile"
 
     prependResultSummary $resultFile $dirName
 }
@@ -68,7 +68,7 @@ function prependResultSummary() {
     local messageSummary=$(cat "$resultFile" | grep -Eo "[0-9]+ messages.*")
     local linesOfCode=$(find $dirName -name '*.app' | xargs wc -l | grep -Eo "[0-9]+ total")
 
-    printf "$linesOfCode lines of code\n$messageSummary\n\n\n\nComplete output:\n\n" | cat - "$file" > tmp.txt && mv tmp.txt "$resultFile"
+    printf "$linesOfCode lines of code\n$messageSummary\n\n\n\nComplete output:\n\n" | cat - "$resultFile" > tmp.txt && mv tmp.txt "$resultFile"
 }
 
 function main() {

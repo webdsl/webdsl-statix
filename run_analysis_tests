@@ -1,0 +1,92 @@
+#!/bin/bash
+
+trap ctrl_c INT
+
+function ctrl_c() {
+    echo "Stopping execution of tests"
+}
+
+function getJARFileName() {
+    ls spoofax-sunshine/org.metaborg.sunshine2/target/org.metaborg.sunshine2*
+}
+
+function runTests() {
+    local dir="$1"
+    local jarFile="$2"
+
+    for file in $dir/*; do
+        if [ -d $file ]; then
+            runTests $file $jarFile
+        else
+            runTest $file $jarFile
+        fi
+    done
+}
+
+function runTest() {
+    local test="$1"
+    local jarFile="$2"
+    local testName=${test%.app}
+    local testReplaced=$(echo $testName | sed -e 's/\//__/g')
+
+    rm test-environment/*
+    cp "$test" test-environment/
+
+    java -Xmx4G -Xms4G -Xss64m -jar "$jarFile" build \
+        -l webdslstatix \
+        -p test-environment \
+        2>&1 | tee "analysis-results/$testReplaced.txt"
+
+    addResultSummary "$testReplaced"
+}
+
+function addResultSummary() {
+    local resultFile="$1"
+    local errors=$(cat "analysis-results/$resultFile.txt" | grep "ERROR in file" | grep -v "built-in.app" | wc -l | xargs)
+    local summary="$errors error(s)\n\n\n"
+
+    printf "$summary\n\n\n"|cat - "analysis-results/$resultFile.txt" > tmp.txt && mv tmp.txt "analysis-results/$resultFile.txt"
+    mv -v "analysis-results/$resultFile.txt" "analysis-results/${resultFile#webdslstatix.test__}.txt"
+}
+
+function aggregateResultData() {
+    local name="$1"
+    local passed="0"
+    local failed="0"
+
+    for file in analysis-results/*$name*analysis-fails*.txt; do
+        if [ -f "$file" ]; then
+            local errors=$(head -n 1 $file | grep -Eo "[0-9]+")
+            if [ ! "$errors" -eq "0" ]; then
+                passed=$(($passed+1))
+            else
+                failed=$(($failed+1))
+            fi
+        fi
+    done
+
+    for file in analysis-results/*$name*analysis-succeeds*.txt; do
+        if [ -f "$file" ]; then
+            local errors=$(head -n 1 $file | grep -Eo "[0-9]+")
+            if [ "$errors" -eq "0" ]; then
+                passed=$(($passed+1))
+            else
+                failed=$(($failed+1))
+            fi
+        fi
+    done
+
+    printf "Result:\n- passed: $passed\n- failed: $failed\n\n" > analysis-results/$name.txt
+}
+
+function main() {
+    local jarFile="$(getJARFileName)"
+    mkdir -p analysis-results
+    mkdir -p test-environment/.servletapp/src-webdsl-template
+    wget https://raw.githubusercontent.com/webdsl/webdsl/master/src/org/webdsl/dsl/project/template-webdsl/built-in.app -q -O test-environment/.servletapp/src-webdsl-template/built-in.app
+    runTests "webdslstatix.test/analysis/1-original-compiler-tests" "$jarFile"
+    aggregateResultData "1-original-compiler-tests"
+    echo "DONE!"
+}
+
+main
