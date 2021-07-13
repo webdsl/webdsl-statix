@@ -20,6 +20,9 @@ rules
     declareFunction(s, "random"  , [int(s), int(s)], int(s)),
     declareFunction(s, "random"  , [int(s)], int(s)),
 
+    declareFunction(s, "randomUUID", [], uuid(s)),
+    declareFunction(s, "UUIDFromString", [string(s)], uuid(s)),
+
     declareFunction(s, "getSessionManager", [], definedTypeNoRef(s, "SessionManager")),
 
     declareFunction(s, "cancel"  , [], VOID()),
@@ -34,4 +37,6 @@ rules
 
     declareFunction(s, "attribute", [string(s)], string(s)),
     declareFunction(s, "attribute", [string(s), string(s)], string(s)),
-    declareFunction(s, "hasNotNullAttribute", [], bool(s)).
+    declareFunction(s, "hasNotNullAttribute", [], bool(s)),
+
+    declareFunction(s, "message", [string(s)], VOID()).

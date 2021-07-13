@@ -100,9 +100,10 @@ rules // entity body declaration
     annotationsOk(s, x, sortType, annos).
 
   // derived entity property
-  declEntityBodyDeclaration(s, DerivedProperty(x, propkind, sort, PropAnnos(annos), exp)) :- {sortType}
+  declEntityBodyDeclaration(s, DerivedProperty(x, propkind, sort, PropAnnos(annos), exp)) :- {sortType expType}
     sortType == typeOfSort(s, sort),
-    equalType(sortType, typeOfExp(s, exp)) | error $[Expression [exp] must be of type [sort]] @exp,
+    expType == typeOfExp(s, exp),
+    typeCompatible(expType, sortType) | error $[Expression [exp] must be compatible with type [sortType], [expType] given] @exp,
     declProperty(s, x, sortType),
     declareAnnotation(s, x, DERIVED()),
     annotationsOk(s, x, sortType, annos).

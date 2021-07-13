@@ -76,7 +76,7 @@ rules // action calls
 rules // action blocks in templates
 
   templateElementOk(s, _, Init(Block(stmts))) :-
-    stmtsOk(s, stmts, UNTYPED()).
+    stmtsOk(s, stmts, PAGE(_)).
 
   templateElementOk(s, _, DataBindAction(Block(stmts))) :-
     stmtsOk(s, stmts, UNTYPED()).
