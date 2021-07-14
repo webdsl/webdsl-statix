@@ -7,7 +7,7 @@ imports
 rules // unit rules
 
   unitOk(s_global, Application(app, sections)) :- { s_mod }
-    new s_mod, s_mod -IMPORT-> s_global,
+    new s_mod, s_mod -IMPORT-> s_global, s_global -GLOBAL-> s_mod,
     declareMod(s_global, [app], s_mod),
     importModules(s_global, s_mod, sections),
     importModule(s_global, s_mod, ["_BUILTIN"]),
@@ -15,14 +15,14 @@ rules // unit rules
     rootPageDefined(s_mod, app).
 
   unitOk(s_global, Module(ModuleName(mps), sections)) :- { s_mod }
-    new s_mod, s_mod -IMPORT-> s_global,
+    new s_mod, s_mod -IMPORT-> s_global, s_global -GLOBAL-> s_mod,
     declareMod(s_global, modulePartsToStrings(mps), s_mod),
     importModules(s_global, s_mod, sections),
     importModule(s_global, s_mod, ["_BUILTIN"]),
     sectionsOk(s_mod, sections).
 
   unitOk(s_global, BuiltIn(sections)) :- { s_mod }
-    new s_mod, s_mod -IMPORT-> s_global,
+    new s_mod, s_mod -IMPORT-> s_global, s_global -GLOBAL-> s_mod,
     declareMod(s_global, ["_BUILTIN"], s_mod),
     importModules(s_global, s_mod, sections),
     sectionsOk(s_mod, sections).

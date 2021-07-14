@@ -39,6 +39,7 @@ signature
       INHERIT // inherit edge label for subclasses
       DEF     // definition edge label for embedding top-level definitions in the global scope
       IMPORT  // import edge label for importing another module
+      GLOBAL  // global edge label for edges from global scope to other modules
 
   relations
     mod : list(string) * scope
@@ -102,8 +103,15 @@ rules // extend entity declaration
 
   resolveExtendEntity : scope * string -> list((path * (string * scope)))
   resolveExtendEntity(s, e) = ps :-
-    query extendentity filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT?))
+    query extendentity filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT? GLOBAL?))
                        and { e' :- e' == (e, _) }
+                       min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < DEF, $ < IMPORT, $ < GLOBAL,
+                           P < F, P < EXTEND, P < INHERIT, P < DEF, P < IMPORT, P < GLOBAL,
+                           F < EXTEND, F < INHERIT, F < DEF, F < IMPORT, F < GLOBAL,
+                           EXTEND < INHERIT,
+                           DEF < IMPORT, DEF < GLOBAL,
+                           IMPORT < GLOBAL
+                       and { (entity, entity_scope), (entity, entity_scope) }
                        in s |-> ps.
 
 rules // ui declaration and resolving
