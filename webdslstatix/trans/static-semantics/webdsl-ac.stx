@@ -16,6 +16,16 @@ rules
   acDefOk : scope * AccessControlDefinition
   acDefOk(_,_) :- false | error $[This access control definition is not yet supported].
 
+rules // securitycontext and principal
+
+  declareACBuiltIns : scope
+  declareACBuiltIns(s) :- {s_class}
+    new s_class,
+    declareExtendEntity(s, "securityContext", s_class), // declare s_type to be linked to type name
+    extendEntityScopes(resolveExtendEntity(s, "securityContext"), s_class),
+    declareType(s, "securityContext", NATIVECLASS(s_class)),
+    declareVar(s, "securityContext", NATIVECLASS(s_class)).
+
   defOk(s, AccessControlPrincipalDef(ent, properties)) :- principalDefOk(s, ent, properties).
   acDefOk(s, AccessControlPrincipalAcDef(ent, properties)) :- principalDefOk(s, ent, properties).
 
@@ -32,22 +42,41 @@ rules
     isStringCompatibleType(s) | error $[Credential types should be compatible with String type] @x.
 
   declSecurityContext : scope * list(string) * list(TYPE)
-  declSecurityContext(s, properties, types) :- {s_security_context s_principal}
+  declSecurityContext(s, properties, types) :- {s_extend_security_context s_principal}
     new s_principal,
     declProperties(s_principal, properties, types),
-    new s_security_context,
-    declProperty(s_security_context, "principal", ENTITY(s_principal)),
-    declProperty(s_security_context, "loggedIn", bool(s)),
-    declareVar(s, "securityContext", ENTITY(s_security_context)).
+    new s_extend_security_context,
+    declProperty(s_extend_security_context, "principal", ENTITY(s_principal)),
+    declProperty(s_extend_security_context, "loggedIn", bool(s)),
+    declareExtendEntity(s, "securityContext", s_extend_security_context),
+    extendEntityScopes(resolveExtendEntity(s, "securityContext"), s_extend_security_context).
 
-  acDefOk(s, Rule(AccessControlRule(_, _, _, exp, nested))) :-
+  principalType : scope -> TYPE
+  principalType(s) = t :- { s_securityContext }
+    resolveType(s, "securityContext") == [(_, (_, NATIVECLASS(s_securityContext)))] | error $[securityContext not defined],
+    resolveProperty(s_securityContext, "principal") == [(_, (_, t))] | error $[principal is not defined].
+
+rules // access control rules
+
+  acDefOk(s, Rule(AccessControlRule(_, _, _, exp, nested))) :- { s_rule principalType bool }
     // TO-DO: check correct reference using type and match id
-    nestedAcRulesOk(s, nested),
-    equalType(typeOfExp(s, exp), bool(s)) | error $[Rule should result in a boolean expression] @exp.
+    bool == bool(s),
+    new s_rule, s_rule -F-> s,
+    principalType == principalType(s),
+    declareVar(s_rule, "principal", principalType),
+    declareVar(s_rule, "loggedIn", bool),
+    nestedAcRulesOk(s_rule, nested),
+    equalType(typeOfExp(s_rule, exp), bool) | error $[Rule should result in a boolean expression] @exp.
 
-  acDefOk(s, Rule(SpecialAccessControlRule(exp))) :-
-    equalType(typeOfExp(s, exp), bool(s)) | error $[Rule should result in a boolean expression] @exp.
+  acDefOk(s, Rule(SpecialAccessControlRule(exp))) :- { s_rule principalType bool }
+    // TO-DO: check correct reference using type and match id
+    bool == bool(s),
+    new s_rule, s_rule -F-> s,
+    principalType == principalType(s),
+    declareVar(s_rule, "principal", principalType),
+    declareVar(s_rule, "loggedIn", bool),
+    equalType(typeOfExp(s_rule, exp), bool) | error $[Rule should result in a boolean expression] @exp.
 
   nestedAcRulesOk maps nestedAcRuleOk(*, list(*))
   nestedAcRuleOk : scope * AccessControlRule
-  nestedAcRuleOk(_, _) :- false | error $[Nested access control rules are not supported yet].
+  nestedAcRuleOk(_, _) :- try { false } | warning $[Nested access control rules are not supported yet].

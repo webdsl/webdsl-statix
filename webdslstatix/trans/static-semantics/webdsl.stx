@@ -275,6 +275,7 @@ rules // declare common rules and mappings
 
   declareBuiltIns : scope
   declareBuiltIns(s) :-
+    declareACBuiltIns(s),
     declareFunctionIns(s),
     declareEntityBuiltIns(s),
     declareTypeBuiltIns(s),
