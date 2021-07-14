@@ -85,6 +85,17 @@ rules // entity declaration
     declareVar(s_ent, "this", ENTITY(s_ent)),
     declareAnnotation(s_ent, "this", DERIVED()). // prevent mutability of this var
 
+  defOk(s, Enum(e, values)) :- { s_entity t }
+    new s_entity, s_entity -DEF-> s,
+    declareVar(s_entity, "name", string(s)),
+    t == ENTITY(s_entity),
+    declareType(s, e, t),
+    declareEnumValues(s, values, t).
+
+  declareEnumValues maps declareEnumValue(*, list(*), *)
+  declareEnumValue : scope * EnumValue * TYPE
+  declareEnumValue(s, EnumValue(v, _), t) :- declareVar(s, v, t).
+
 rules // entity body declaration
 
   declEntityBodyDeclaration : scope * EntityBodyDeclaration
