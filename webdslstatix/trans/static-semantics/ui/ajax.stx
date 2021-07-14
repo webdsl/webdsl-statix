@@ -10,37 +10,37 @@ imports
 
 rules // placeholders and ajax
 
-  templateElementOk(s, _, TEPlaceholder(PlaceholderHtml(_, ph, elems))) :-
-    declarePlaceholder(s, ph),
-    templateElementsOk(s, elems).
+  templateElementOk(s, _, s_pha, TEPlaceholder(PlaceholderHtml(_, ph, elems))) :-
+    declarePlaceholder(s_pha, ph),
+    templateElementsOk(s, s_pha, elems).
 
-  templateElementOk(s, _, TEPlaceholder(PlaceholderHtmlExp(_, e, elems))) :-
+  templateElementOk(s, _, s_pha, TEPlaceholder(PlaceholderHtmlExp(_, e, elems))) :-
     typeCompatible(typeOfExp(s, e), string(s)) | error $[Expression should be compatible with String],
-    templateElementsOk(s, elems).
+    templateElementsOk(s, s_pha, elems).
 
-  templateElementOk(s, _, TEPlaceholder(Placeholder(ph, elems))) :-
-    declarePlaceholder(s, ph),
-    templateElementsOk(s, elems).
+  templateElementOk(s, _, s_pha, TEPlaceholder(Placeholder(ph, elems))) :-
+    declarePlaceholder(s_pha, ph),
+    templateElementsOk(s, s_pha, elems).
 
-  templateElementOk(s, _, TEPlaceholder(PlaceholderExp(e, elems))) :-
+  templateElementOk(s, _, s_pha, TEPlaceholder(PlaceholderExp(e, elems))) :-
     typeCompatible(typeOfExp(s, e), string(s)) | error $[Expression should be compatible with String],
-    templateElementsOk(s, elems).
+    templateElementsOk(s, s_pha, elems).
 
-  templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjaxHtml(_, ph, tc))) :-
-    declarePlaceholder(s, ph),
-    templateCallOk(s, tc).
+  templateElementOk(s, _, s_pha, TEPlaceholderWithAjaxCall(PlaceholderAjaxHtml(_, ph, tc))) :-
+    declarePlaceholder(s_pha, ph),
+    templateCallOk(s, s_pha, tc).
 
-  templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjaxHtmlExp(_, e, tc))) :-
+  templateElementOk(s, _, s_pha, TEPlaceholderWithAjaxCall(PlaceholderAjaxHtmlExp(_, e, tc))) :-
     typeCompatible(typeOfPlaceholderExp(s, e), string(s)) | error $[Expression should be compatible with String],
-    templateCallOk(s, tc).
+    templateCallOk(s, s_pha, tc).
 
-  templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjax(ph, tc))) :-
-    declarePlaceholder(s, ph),
-    templateCallOk(s, tc).
+  templateElementOk(s, _, s_pha, TEPlaceholderWithAjaxCall(PlaceholderAjax(ph, tc))) :-
+    declarePlaceholder(s_pha, ph),
+    templateCallOk(s, s_pha, tc).
 
-  templateElementOk(s, _, TEPlaceholderWithAjaxCall(PlaceholderAjaxExp(e, tc))) :-
+  templateElementOk(s, _, s_pha, TEPlaceholderWithAjaxCall(PlaceholderAjaxExp(e, tc))) :-
     typeCompatible(typeOfPlaceholderExp(s, e), string(s)) | error $[Expression should be compatible with String],
-    templateCallOk(s, tc).
+    templateCallOk(s, s_pha, tc).
 
 rules // ajax statements
 
@@ -52,12 +52,12 @@ rules // ajax statements
 
   ajaxStmtOk(s, AjaxReplace(e, tc)) :-
     ajaxPlaceholderExpressionOk(s, e),
-    ajaxTemplateCallOk(s, tc)
+    ajaxTemplateCallOk(s, s, tc)
       | error $[Unable to find an ajax enabled template with a compatible signature] @tc.
 
   ajaxStmtOk(s, AjaxAppend(e, tc)) :-
     ajaxPlaceholderExpressionOk(s, e),
-    ajaxTemplateCallOk(s, tc)
+    ajaxTemplateCallOk(s, s, tc)
       | error $[Unable to find an ajax enabled template with a compatible signature] @tc.
 
   ajaxStmtOk(s, AjaxVisibility(e, _)) :-
@@ -84,5 +84,5 @@ rules // ajax statements
       | error $[Expression should be compatible with type string or a placeholder variable] @e.
 
   ajaxPlaceholderExpressionOk(s, Var(ph)) :- { ph' }
-    resolvePlaceholder(s, ph) == [(_, ph') | _] | error $[Unable to find placeholder [ph]],
+    resolvePlaceholder(s, ph) == [(_, (ph', _)) | _] | error $[Unable to find placeholder [ph]],
     @ph.ref := ph'.

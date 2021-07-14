@@ -34,7 +34,6 @@ signature
   name-resolution
     labels
       P       // parent edge label for consecutive statements
-      T       // forward template edge labels to resolve placeholders and actions
       F       // function edge label for embedding functions, templates and pages in a scope
       EXTEND  // extend edge label for extending entities
       INHERIT // inherit edge label for subclasses
@@ -52,9 +51,6 @@ signature
     template : string * TYPE
 
     function : string * TYPE
-
-    action      : string * TYPE
-    placeholder : string
 
     var      : string * TYPE
 
@@ -169,7 +165,7 @@ rules // function declaration and resolving
   resolveFunction : scope * string -> list((path * (string * TYPE)))
   resolveFunction(s, f) = ps :-
     query function filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
-                   and { f' :- f' == (f, _) }
+                   and { f' :- f' == (f, FUNCTION(_, _, _)) }
                    in s |-> ps.
 
   resolveEntityFunction : scope * string -> list((path * (string * TYPE)))
@@ -192,28 +188,25 @@ rules // action and placeholder declaration and resolving
 
   declareAction : scope * string * list(TYPE)
   declareAction(s, a, ts) :-
-    !action[a, ACTION(ts)] in s,
+    !function[a, ACTION(ts)] in s,
     resolveAction(s, a) == [(_, (_, ACTION(ts)))] | error $[Action [a] is defined multiple times] @a.
 
   resolveAction : scope * string -> list((path * (string * TYPE)))
   resolveAction(s, a) = as :-
-    query action filter P* T*
-                 and { a' :- a' == (a, _) }
-                 in s |-> as.
+    query function filter P*
+                   and { a' :- a' == (a, ACTION(_)) }
+                   in s |-> as.
 
   declarePlaceholder : scope * string
   declarePlaceholder(s, ph) :-
-    !placeholder[ph] in s,
-    resolvePlaceholder(s, ph) == [(_, ph)] | error $[Placeholder [ph] is defined multiple times],
-    query var filter P*
-              and { ph' :- ph' == (ph, _) }
-              in s |-> [] | error $[A variable named [ph] is already defined in this context].
+    !var[ph, PLACEHOLDER()] in s,
+    noDuplicateVarDefs(s, ph) | error $[Variable [ph] is defined multiple times] @ph.
 
-  resolvePlaceholder : scope * string -> list((path * string))
+  resolvePlaceholder : scope * string -> list((path * (string * TYPE)))
   resolvePlaceholder(s, ph) = phs :-
-    query placeholder filter P* T*
-                      and { ph' :- ph' == ph }
-                      in s |-> phs.
+    query var filter P*
+              and { ph' :- ph' == (ph, PLACEHOLDER()) }
+              in s |-> phs.
 
 rules // variable declaration and resolving
 

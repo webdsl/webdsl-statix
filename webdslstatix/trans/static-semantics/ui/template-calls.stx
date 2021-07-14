@@ -13,20 +13,20 @@ imports
 
 rules // template calls
 
-  templateElementOk(s, _, TemplateCall2TemplateElement(tc)) :-
-    templateCallOk(s, tc).
+  templateElementOk(s, _, s_pha, TemplateCall2TemplateElement(tc)) :-
+    templateCallOk(s, s_pha, tc).
 
-  ajaxTemplateCallOk : scope * TemplateCall
-  ajaxTemplateCallOk(s, tc) :- templateCallOk_internal(s, tc, TRUE()).
+  ajaxTemplateCallOk : scope * scope * TemplateCall
+  ajaxTemplateCallOk(s, s_pha, tc) :- templateCallOk_internal(s, s_pha, tc, TRUE()).
 
-  templateCallOk : scope * TemplateCall
-  templateCallOk(s, tc) :- templateCallOk_internal(s, tc, FALSE()).
+  templateCallOk : scope * scope * TemplateCall
+  templateCallOk(s, s_pha, tc) :- templateCallOk_internal(s, s_pha, tc, FALSE()).
 
   // BOOL denotes if template must be ajax enabled
-  templateCallOk_internal : scope * TemplateCall * BOOL
-  templateCallOk_internal(s, TemplateCall(TemplateCallId(t), TCallArgs(targs), TCallPropAssigns(propAssigns), TemplateBody(body)), ajax) :-
+  templateCallOk_internal : scope * scope * TemplateCall * BOOL
+  templateCallOk_internal(s, s_pha, TemplateCall(TemplateCallId(t), TCallArgs(targs), TCallPropAssigns(propAssigns), TemplateBody(body)), ajax) :-
     templatePropAssignmentsOk(s, propAssigns),
-    templateElementsOk(s, body),
+    templateElementsOk(s, s_pha, body),
     templateCallMatchesSig(s, t, targs, ajax).
 
   // BOOL denotes if template must be ajax enabled
@@ -49,16 +49,16 @@ rules // template calls
 rules // elements template call
 
   // elements
-  templateCallOk(_, TemplateCall(TemplateCallId("elements"), TCallArgs(targs), TCallPropAssigns(propAssigns), TemplateBody(body))) :-
-    targs == []       | error $[Cannot pass arguments to passed template elements],
-    body == []        | error $[Cannot pass template elements to passed template elements].
+  templateCallOk(_, _, TemplateCall(TemplateCallId("elements"), TCallArgs(targs), TCallPropAssigns(propAssigns), TemplateBody(body))) :-
+    targs == [] | error $[Cannot pass arguments to passed template elements],
+    body == []  | error $[Cannot pass template elements to passed template elements].
 
 rules // navigate calls
 
-  templateElementOk(s, _, NavigateCall(pc, props, elems)) :-
+  templateElementOk(s, _, s_pha, NavigateCall(pc, props, elems)) :-
     pageCallOk(s, pc),
     templatePropAssignmentsOk(s, props),
-    templateElementsOk(s, elems).
+    templateElementsOk(s, s_pha, elems).
 
   pageCallOk : scope * PageCall
   pageCallOk(s, PageCall(p, args)) :-
