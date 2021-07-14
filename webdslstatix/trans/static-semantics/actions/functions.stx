@@ -19,14 +19,20 @@ rules // functions calls
   typeOfPlaceholderExp(s, PHThisCall(ThisCall(f, argExps))) = t :-
     t == typeOfFunctionCall(s, f, argExps).
 
-  typeOfExp(s, Call(exp, f, argExps)) = t :-
-    t == typeOfCall(s, typeOfExp(s, exp), f, argExps).
+  typeOfExp(s, Call(exp, f, argExps)) = t :- { expType s_eval }
+    expType == typeOfExp(s, exp),
+    new s_eval, s_eval -P-> s,
+    t == typeOfCall(s_eval, expType, f, argExps).
 
-  typeOfSimpleExp(s, SimpleCall(exp, f, argExps)) = t :-
-    t == typeOfCall(s, typeOfSimpleExp(s, exp), f, argExps).
+  typeOfSimpleExp(s, SimpleCall(exp, f, argExps)) = t :- { expType s_eval }
+    expType == typeOfSimpleExp(s, exp),
+    new s_eval, s_eval -P-> s,
+    t == typeOfCall(s_eval, expType, f, argExps).
 
-  typeOfPlaceholderExp(s, PHCall(exp, f, argExps)) = t :-
-    t == typeOfCall(s, typeOfExp(s, exp), f, argExps).
+  typeOfPlaceholderExp(s, PHCall(exp, f, argExps)) = t :- { expType s_eval }
+    expType == typeOfExp(s, exp),
+    new s_eval, s_eval -P-> s,
+    t == typeOfCall(s_eval, expType, f, argExps).
 
   typeOfFunctionCall : scope * string * list(Exp)-> TYPE
   typeOfFunctionCall(s, f, args) = typeOfFunctionCallInternal(s, f, args, funSigs) :-
@@ -44,7 +50,7 @@ rules // functions calls
 
   typeOfFunctionCallInternal : scope * string * list(Exp) * list((path * (string * TYPE))) -> TYPE
   typeOfFunctionCallInternal(s, f, args, funSigs) = t :- { argTypes f' result }
-    argTypes                  == typesOfExps(s, args),
+    argTypes == typesOfExps(s, args),
     result == mostSpecificSigs(argTypes, typeCompatibleSigs(funSigs, argTypes)),
     singleSignature(result, "function", f) | error $[Cannot resolve function [f] with compatible argument types] @f,
     [(f', FUNCTION(_, t, _)) | _] == result | error $[Cannot resolve function [f] with compatible argument types] @f,
