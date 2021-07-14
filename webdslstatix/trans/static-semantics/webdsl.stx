@@ -262,11 +262,13 @@ rules // declare common rules and mappings
   stmtOk : scope * scope * Statement * TYPE // TYPE argument is the return type in a function
   stmtOk(_, _, stmt, _) :- try { false } | warning $[This statement is not yet implemented] @stmt.
 
+
   stmtsOk : scope * list(Statement) * TYPE
   stmtsOk(_, [], _).
-  stmtsOk(s, [stmt | tail], rt) :- {s_next}
-    new s_next, s_next -P-> s,
-    stmtOk(s, s_next, stmt, rt),
+  stmtsOk(s, [stmt | tail], rt) :- {s_decl s_next}
+    new s_decl, s_decl -P-> s,
+    new s_next, s_next -P-> s_decl,
+    stmtOk(s, s_decl, stmt, rt),
     stmtsOk(s_next, tail, rt).
 
   expOk : scope * Exp
