@@ -43,5 +43,8 @@ rules
   typeOfHqlExpression : scope * HQLExpression -> TYPE
   typeOfHqlExpression(s, e) = t :- try { false } | warning $[HQL Expression [e] not yet implemented] @e.
   typeOfHqlExpression(s, HQLAvg(e)) = float(s) :- { t } t == typeOfHqlExpression(s, e).
+  typeOfHqlExpression(s, HQLSum(e)) = int(s) :- { t } t == typeOfHqlExpression(s, e). // TO-DO: possibly return float instead of int, based on selection
+  typeOfHqlExpression(s, HQLMin(e)) = int(s) :- { t } t == typeOfHqlExpression(s, e). // TO-DO: possibly return float instead of int, based on selection
+  typeOfHqlExpression(s, HQLMax(e)) = int(s) :- { t } t == typeOfHqlExpression(s, e). // TO-DO: possibly return float instead of int, based on selection
   typeOfHqlExpression(s, HQLCountStar()) = int(s).
   typeOfHqlExpression(s, HQLCount(e)) = int(s) :- { t } t == typeOfHqlExpression(s, e).
