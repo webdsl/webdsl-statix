@@ -1,6 +1,8 @@
 module static-semantics/webdsl-ac
 
 imports
+  static-semantics/actions/functions
+
   static-semantics/types/built-ins
 
   static-semantics/webdsl-actions
@@ -58,25 +60,40 @@ rules // securitycontext and principal
 
 rules // access control rules
 
-  acDefOk(s, Rule(AccessControlRule(_, _, _, exp, nested))) :- { s_rule principalType bool }
+  acDefOk(s, Rule(r)) :- acRuleOk(s, r).
+
+  acRuleOk : scope * AccessControlRule
+  acRuleOk(_, _) :- try { false } | warning $[This access control rule is not yet implemented].
+  acRuleOk(s, AccessControlRule(_, x, MatchArgs(args, _), exp, nested)) :- { s_rule argTypes principalType bool }
     // TO-DO: check correct reference using type and match id
     bool == bool(s),
     new s_rule, s_rule -F-> s,
-    principalType == principalType(s),
+    argTypes == typesOfArgs(s, args),
+    declareParameters(s_rule, zipArgTypes(args, argTypes)),
+    principalType == principalType(s) | error $[Unable to find principal type] @x,
     declareVar(s_rule, "principal", principalType),
     declareVar(s_rule, "loggedIn", bool),
     nestedAcRulesOk(s_rule, nested),
     equalType(typeOfExp(s_rule, exp), bool) | error $[Rule should result in a boolean expression] @exp.
 
-  acDefOk(s, Rule(SpecialAccessControlRule(exp))) :- { s_rule principalType bool }
-    // TO-DO: check correct reference using type and match id
+  acRuleOk(s, SpecialAccessControlRule(exp)) :- { s_rule principalType bool }
     bool == bool(s),
     new s_rule, s_rule -F-> s,
-    principalType == principalType(s),
+    principalType == principalType(s) | error $[Unable to find principal type],
     declareVar(s_rule, "principal", principalType),
     declareVar(s_rule, "loggedIn", bool),
     equalType(typeOfExp(s_rule, exp), bool) | error $[Rule should result in a boolean expression] @exp.
 
   nestedAcRulesOk maps nestedAcRuleOk(*, list(*))
   nestedAcRuleOk : scope * AccessControlRule
-  nestedAcRuleOk(_, _) :- try { false } | warning $[Nested access control rules are not supported yet].
+  nestedAcRuleOk(_, _) :- try { false } | warning $[This nested access control rule is yet implemented].
+  nestedAcRuleOk(s, AccessControlRule(_, x, MatchArgs(args, _), exp, nested)) :- { s_rule argTypes }
+    new s_rule, s_rule -P-> s, // P label here instead of F to correctly resolve and error on variable usage
+    argTypes == typesOfArgs(s, args),
+    declareParameters(s_rule, zipArgTypes(args, argTypes)),
+    nestedAcRulesOk(s_rule, nested),
+    equalType(typeOfExp(s_rule, exp), bool(s)) | error $[Rule should result in a boolean expression] @exp.
+
+  nestedAcRuleOk(s, SpecialAccessControlRule(exp)) :- { s_rule }
+    new s_rule, s_rule -P-> s,
+    equalType(typeOfExp(s_rule, exp), bool(s)) | error $[Rule should result in a boolean expression] @exp.
