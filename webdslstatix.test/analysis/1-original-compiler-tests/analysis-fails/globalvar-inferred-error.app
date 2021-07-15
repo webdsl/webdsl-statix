@@ -3,5 +3,7 @@
 
 application v75_44M_cW6
 
-  var GKY_dO := {} 
+  page root { }
+
+  var GKY_dO := { "", 1 };
   predicate UC ( ) { GKY_dO }

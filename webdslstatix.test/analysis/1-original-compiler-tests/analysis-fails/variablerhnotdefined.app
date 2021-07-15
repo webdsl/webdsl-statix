@@ -1,11 +1,11 @@
 //Variable 'a' not defined
 application test
 
+  page root { }
+
 section functions
 
-globals {
   function do() {
     var b : Int;
     b := a;
   }
-}

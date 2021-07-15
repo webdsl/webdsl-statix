@@ -4,6 +4,8 @@
 //#1 it is recommended to define read access control settings in the synchronization configuration for entity: Test3
 application test
 
+  page root { }
+
   entity User {
     name2 :: String
     complex :: WikiText

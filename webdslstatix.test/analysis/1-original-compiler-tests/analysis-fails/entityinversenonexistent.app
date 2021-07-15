@@ -1,6 +1,8 @@
 //Inverse not allowed between types
 application test
 
+  page root { }
+
 section datamodel
 
   entity User {

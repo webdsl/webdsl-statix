@@ -2,6 +2,8 @@
 
 application test
 
+  page root { }
+
  entity Conference {
    proceedings      -> Set<Proceedings> (inverse=Proceedings.conference)
  }

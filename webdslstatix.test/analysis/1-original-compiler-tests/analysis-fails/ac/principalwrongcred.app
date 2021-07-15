@@ -2,6 +2,8 @@
 
 application test
 
+  page root { }
+
 section principal
 
 entity User{

@@ -18,13 +18,12 @@ section datamodel
   {
     return a-b;
   }
-  globals {
+
     function test3(a:Int,b:Int):Int
     {
       return a-b;
     }
-  }
-  globals {
+
     function test4(a:Int,b:Int):Int
     {
       return a+b;
@@ -33,23 +32,20 @@ section datamodel
     {
       return a*b;
     }
-  }  
+
 
    
   var alice : User := User { username := "Alice" };
   var bob : User := User { username := "Bob" };
   var charlie : User := User { username := "Charlie" };
   var dave : User := User { username := "Dave" };
-  
-  globals {
-    var eve : User := User { username := "Eve" };
-  }
-  
-  globals {
-    var mallory : User := User { username := "Mallory" };
-    var ivan : User := User { username := "Ivan" };
-    var justin : User := User { username := "Justin" };  
-  }
+
+  var eve : User := User { username := "Eve" };
+
+  var mallory : User := User { username := "Mallory" };
+  var ivan : User := User { username := "Ivan" };
+  var justin : User := User { username := "Justin" };  
+
 
   define main() 
   {

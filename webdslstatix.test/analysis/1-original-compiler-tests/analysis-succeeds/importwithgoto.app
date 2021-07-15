@@ -2,6 +2,8 @@ application test
 
 imports module/module/goto
 
+  page root { }
+
 section needsimport
 
   define body() {

@@ -4,6 +4,8 @@
 
 application test
 
+page root { }
+
 entity User{name :: String}
 
 principal is User with credentials name

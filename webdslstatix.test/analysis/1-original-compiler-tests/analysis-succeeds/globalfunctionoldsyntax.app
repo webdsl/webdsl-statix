@@ -10,12 +10,12 @@ section datamodel
     username :: String
   }
   
-  globals {
-    function test(a:Int):Int
-    {
-      return a+1;
-    }
+
+  function test(a:Int):Int
+  {
+    return a+1;
   }
+
   define main() 
   {
     body()

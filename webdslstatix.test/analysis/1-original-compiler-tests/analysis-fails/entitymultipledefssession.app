@@ -2,6 +2,8 @@
 
 application test
 
+  page root { }
+
   
   session user{
     name :: String

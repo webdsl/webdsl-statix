@@ -1,6 +1,8 @@
 //is incompatible with type of entity property
 application test
 
+  page root { }
+
   entity Person {
     name :: String
     tag :: String

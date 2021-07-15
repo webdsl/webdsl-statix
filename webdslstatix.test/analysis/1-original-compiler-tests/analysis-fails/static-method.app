@@ -5,6 +5,8 @@
 
 application test
 
+  page root { }
+
 entity TestEntity1 {
   static function getA(i : Int) {
     return "a";

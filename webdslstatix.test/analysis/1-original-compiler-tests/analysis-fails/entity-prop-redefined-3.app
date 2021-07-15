@@ -2,6 +2,8 @@
 
 application test
 
+  page root { }
+
   entity SuperUser {}
 
   entity User : SuperUser{

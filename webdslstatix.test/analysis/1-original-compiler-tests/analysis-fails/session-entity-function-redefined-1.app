@@ -2,6 +2,8 @@
 
 application test
 
+  page root { }
+
   session user{
     name :: String
     function dup(a:Int,b:String):String

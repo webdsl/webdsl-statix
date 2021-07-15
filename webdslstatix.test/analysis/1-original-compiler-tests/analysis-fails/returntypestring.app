@@ -2,10 +2,10 @@
 
 application test
 
+  page root { }
+
 section functions
 
-globals {
   function f(i : Int) : String {
     return i * i;
   }
-}

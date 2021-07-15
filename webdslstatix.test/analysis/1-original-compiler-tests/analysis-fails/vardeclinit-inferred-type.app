@@ -3,6 +3,8 @@
 
 application test
 
+  page root { }
+
   function do() {
     var a := test(); //shouldn't break rename phase
     var b := String;

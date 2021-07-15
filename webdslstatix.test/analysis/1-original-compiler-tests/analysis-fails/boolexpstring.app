@@ -2,9 +2,10 @@
 
 application test
 
+  page root { }
+
 section functions
 
-globals {
   function f(i : Int) : Void {
     var a : Bool := true;
     var b : Bool := true;
@@ -14,4 +15,3 @@ globals {
       var z : Int := 2;
     }
   }
-}

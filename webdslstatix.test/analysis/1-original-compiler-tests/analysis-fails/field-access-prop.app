@@ -3,6 +3,9 @@
 
 
 application test
+
+  page root { }
+
   entity User{
     name :: String
   }

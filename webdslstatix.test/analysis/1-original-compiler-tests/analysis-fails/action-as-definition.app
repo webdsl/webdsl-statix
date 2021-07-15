@@ -2,6 +2,8 @@
 
 application test
 
+  page root { }
+
 action test(s:String){
   
 }

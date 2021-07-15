@@ -2,6 +2,8 @@
 
 application test
 
+  page root { }
+
   entity User{
     test :: String
   }

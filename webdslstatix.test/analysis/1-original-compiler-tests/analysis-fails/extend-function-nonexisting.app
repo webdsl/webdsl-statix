@@ -5,6 +5,8 @@
 
 application test
 
+  page root { }
+
 function x() { }
 
 extend function x(i : Int) { }

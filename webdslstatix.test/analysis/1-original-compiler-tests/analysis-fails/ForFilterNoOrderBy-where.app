@@ -2,6 +2,8 @@
 
 application test
 
+  page root { }
+
   entity Entity0{
     name :: String
   }

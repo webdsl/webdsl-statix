@@ -1,6 +1,8 @@
 //Function with signature test(Int, String) of entity 'Test' is defined multiple times.
 application test
 
+  page root { }
+
   session test{
     name :: String
 

@@ -2,9 +2,10 @@
 
 application test
 
+  page root { }
+
 section datamodel
 
-globals {
   function getA(i : Int) : String {
     return "a";
   }
@@ -12,4 +13,3 @@ globals {
   extend function getA(i : Int) {
     return "b";
   }
-}

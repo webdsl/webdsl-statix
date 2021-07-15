@@ -1,6 +1,8 @@
 //is not allowed
 application test
 
+  page root { }
+
   entity Entity {
     property :: String
   }

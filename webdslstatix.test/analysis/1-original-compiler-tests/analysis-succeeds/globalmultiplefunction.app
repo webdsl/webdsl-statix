@@ -18,22 +18,22 @@ section datamodel
   {
     return a-b;
   }
-  globals {
-    function test3(a:Int,b:Int):Int
-    {
-      return a-b;
-    }
+
+  function test3(a:Int,b:Int):Int
+  {
+    return a-b;
   }
-  globals {
-    function test4(a:Int,b:Int):Int
-    {
-      return a+b;
-    }
-    function test5(a:Int,b:Int):Int
-    {
-      return a*b;
-    }
-  }  
+
+
+  function test4(a:Int,b:Int):Int
+  {
+    return a+b;
+  }
+  function test5(a:Int,b:Int):Int
+  {
+    return a*b;
+  }
+
 
   define main() 
   {

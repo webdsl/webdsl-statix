@@ -9,6 +9,8 @@
 //#2 a boost value can only be specified in a mapping for simple properties. For reference/composite properties, boost values should be specified in the search mapping of the embedded type
 application test
 
+  page root { }
+
 //A
 entity SuperA {
     a :: String
