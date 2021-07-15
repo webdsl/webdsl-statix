@@ -17,7 +17,7 @@ function runTests() {
     for file in $dir/*; do
         if [ -d $file ]; then
             runTests $file $jarFile
-        else
+        elif [ "${file: -4}" == ".app" ]; then
             runTest $file $jarFile
         fi
     done
