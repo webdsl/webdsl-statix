@@ -33,10 +33,11 @@ rules // page definitions
 
 rules // template definitions
 
-  defOk(s, TemplateDefinition(td@DefineTemplate(_, _, _, _, _))) :- defineTemplateOk(s, td, TRUE()).
+  defOk(s, TemplateDefinition(td@DefineTemplate(_, _, _, _, _))) :- defineTemplateOk(s, td).
 
-  defineTemplateOk : scope * TemplateDefinition * BOOL
-  defineTemplateOk(s, DefineTemplate(mods, t, FormalArgs(fargs), TemplateArgs(targs), elements), declare) :- {fargTypes targTypes s_template s_pha s_body}
+  // last BOOL defines if the template is top-level (TRUE) or nested (FALSE)
+  defineTemplateOk : scope * TemplateDefinition
+  defineTemplateOk(s, DefineTemplate(mods, t, FormalArgs(fargs), TemplateArgs(targs), elements)) :- {fargTypes targTypes s_template s_pha s_body}
     uiModsOk(s, mods),
     new s_template, s_template -F-> s,
     fargTypes == typesOfArgs(s, fargs),
@@ -45,7 +46,7 @@ rules // template definitions
     declTArgs(s_template, targTypes),
     new s_pha, s_pha -P-> s_template,
     new s_body, s_body -P-> s_pha,
-    optionallyDeclareTemplate(s, t, fargTypes, targTypes, isAjaxTemplate(mods), declare),
+    declTemplate(s, t, fargTypes, targTypes, isAjaxTemplate(mods)),
     templateElementOrderOk(elements, FALSE(), FALSE()),
     templateElementsOk(s_body, s_pha, elements).
 
@@ -53,6 +54,20 @@ rules // template definitions
   uiModOk : scope * Modifier
   uiModOk(_, _) :- try { false } | warning $[This modifier is not yet implemented].
   uiModOk(s, AjaxTemplate()).
+
+  nestedTemplateOk : scope * TemplateDefinition
+  nestedTemplateOk(s, DefineTemplate(_, t, FormalArgs(fargs), TemplateArgs(targs), elements)) :- {fargTypes targTypes sigs s_template s_pha s_body}
+    new s_template, s_template -P-> s, // use P edge label instead of F to get correct duplicate variable errors and resolve queries correctly
+    fargTypes == typesOfArgs(s, fargs),
+    targTypes == typesOfTemplateArgs(s, targs),
+    declareParameters(s_template, zipArgTypes(fargs, fargTypes)),
+    declTArgs(s_template, targTypes),
+    sigs == resolveTemplate(s, t),
+    matchingSigs(fargTypes, dropPaths(sigs)) == [_] | error $[No template [t] with argument types [fargTypes] exists] @t,
+    new s_pha, s_pha -P-> s_template,
+    new s_body, s_body -P-> s_pha,
+    templateElementOrderOk(elements, FALSE(), FALSE()),
+    templateElementsOk(s_body, s_pha, elements).
 
   isAjaxTemplate : list(Modifier) -> BOOL
   isAjaxTemplate([]) = FALSE().
@@ -128,7 +143,7 @@ rules // template elements
     templateElementsOk(s, s_pha, then),
     templateElementsOk(s, s_pha, else).
 
-  templateElementOk(s, _,  _, TemplateDefinition2TemplateElement(td)) :- defineTemplateOk(s, td, FALSE()).
+  templateElementOk(s, _,  _, TemplateDefinition2TemplateElement(td)) :- nestedTemplateOk(s, td).
 
   templateElementOk(s, _, s_pha, SubmitElem(a, props, elems)) :-
     actionCallOrInlineOk(s, a),
