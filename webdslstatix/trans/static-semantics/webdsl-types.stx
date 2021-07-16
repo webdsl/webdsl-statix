@@ -257,6 +257,11 @@ rules // utils
   stripGenericType(LIST(t)) = t.
   stripGenericType(SET(t)) = t.
 
+  stripRefTypes maps stripRefType(list(*)) = list(*)
+  stripRefType : TYPE -> TYPE
+  stripRefType(t) = t.
+  stripRefType(REF(t)) = stripRefType(t).
+
   typed : scope * Exp
   typed(s, exp) :- inequalType(typeOfExp(s, exp), UNTYPED()).
 

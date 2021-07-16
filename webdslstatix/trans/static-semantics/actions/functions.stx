@@ -199,12 +199,17 @@ rules  // rules and functions for function overloading
   mostSpecificSigs_helper(args, sigs, [])       = filterLeastInheritanceAmount(minOfList(inheritanceAmounts), zipInheritanceAmountWithSig(inheritanceAmounts, sigs)) :-
     inheritanceAmounts == inheritanceAmounts(args, sigs).
 
-  // helper function for mostSpecificFunSigs that returns the exactly matching signature
+  // helper function for mostSpecificFunSigs that returns the exactly matching signatures
   matchingSigs : list(TYPE) * list((string * TYPE)) -> list((string * TYPE))
   matchingSigs(_, []) = [].
-  matchingSigs(args, [f@(_, FUNCTION(args, _, _)) | fs]) = [f | matchingSigs(args, fs)].
-  matchingSigs(args, [f@(_, TEMPLATE(args, _))    | fs]) = [f | matchingSigs(args, fs)].
-  matchingSigs(args, [_ | fs]) = matchingSigs(args, fs).
+  matchingSigs(args, [(x, FUNCTION(params, rt, static)) | fs]) = matchingSigs_helper(args, (x, FUNCTION(stripRefTypes(params), rt, static)), fs).
+  matchingSigs(args, [(x, TEMPLATE(params, ajax))       | fs]) = matchingSigs_helper(args, (x, TEMPLATE(stripRefTypes(params), rt)), fs).
+
+  // helper function for matchingSigs that compares the argument types after stripping the Ref<> sorts
+  matchingSigs_helper : list(TYPE) * (string * TYPE) * list((string * TYPE)) -> list((string * TYPE))
+  matchingSigs_helper(args, f@(_, FUNCTION(args, _, _)), fs) = [f | matchingSigs(args, fs)].
+  matchingSigs_helper(args, f@(_, TEMPLATE(args, _))   , fs) = [f | matchingSigs(args, fs)].
+  matchingSigs_helper(args, _, fs) = matchingSigs(args, fs).
 
   // function that computes the total amount of inheritance edges from caller arguments to defined arguments
   inheritanceAmounts maps inheritanceAmount(*, list(*)) = list(*)
