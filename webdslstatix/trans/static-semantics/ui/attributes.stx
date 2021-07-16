@@ -44,8 +44,12 @@ rules // attributes
     attributesOk(s, attributes_if),
     attributesOk(s, attributes_else).
 
-  attributeOk(s, CommonAttribute2Attribute(AllAttributes())).
-  attributeOk(s, CommonAttribute2Attribute(AllAttributesExceptExp(exp))) :- {t}
+  attributeOk(s, CommonAttribute2Attribute(ca)) :- commonAttributeOk(s, ca).
+
+  commonAttributeOk : scope * CommonAttribute
+  commonAttributeOk(_, _) :- try { false } | warning $[This common attribute is not yet implemented].
+  commonAttributeOk(s, AllAttributes()).
+  commonAttributeOk(s, AllAttributesExceptExp(exp)) :- {t}
     t == typeOfExp(s, exp),
     or(
       typeCompatibleB(string(s), t),
@@ -55,7 +59,7 @@ rules // attributes
       )
     ) | error $[Attribute names should be of type String, List of String of Set of String, but type [t] given] @exp.
 
-  attributeOk(s, CommonAttribute2Attribute(AttributesExp(exp))) :- {t}
+  commonAttributeOk(s, AttributesExp(exp)) :- {t}
     t == typeOfExp(s, exp),
     or(
       typeCompatibleB(string(s), t),

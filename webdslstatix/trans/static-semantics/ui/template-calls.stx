@@ -6,6 +6,7 @@ imports
   static-semantics/types/built-ins
 
   static-semantics/ui/actions
+  static-semantics/ui/attributes
 
   static-semantics/webdsl-types
   static-semantics/webdsl-ui
@@ -72,7 +73,6 @@ rules // navigate calls
 
 rules // property assignments
 
-//  templatePropAssignmentsOk maps templatePropAssignmentOk(*, list(*))
   templatePropAssignmentsOk : scope * list(PropertyAssignment)
   templatePropAssignmentsOk(s, pas) :- templatePropAssignmentsOkNoDuplicates(s, pas, []).
 
@@ -97,3 +97,6 @@ rules // property assignments
   templatePropAssignmentOk(s, AttributeSelection2PropertyAssignment(AttributeIgnoreDefault(c@"style"))) = "_IGNORE".
   templatePropAssignmentOk(s, AttributeSelection2PropertyAssignment(AttributeIgnoreDefault(_))) = "_IGNORE" :-
     false | error $[Only "class" and "style" are implicitly combined with defaults].
+
+  templatePropAssignmentOk(s, CommonAttribute2PropertyAssignment(ca)) = "_IGNORE" :-
+    commonAttributeOk(s, ca).
