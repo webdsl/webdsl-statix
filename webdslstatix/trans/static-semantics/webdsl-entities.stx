@@ -170,7 +170,12 @@ rules // entity resolving
 
   typeOfThis : scope -> TYPE
   typeOfThis(s_ent) = t :-
-    resolveVar(s_ent, "this") == [(_, (_, t))].
+    resolveVar(s_ent, "this") == [(_, (_, t))] | error $["this" is not defined in this context].
+
+  typeOfExp(s, This()) = typeOfThis(s).
+
+  typeOfProperty(_, _, "this") = UNTYPED() :-
+    false | error $[This is only accessible from within the entity].
 
 rules // subtyping
 
