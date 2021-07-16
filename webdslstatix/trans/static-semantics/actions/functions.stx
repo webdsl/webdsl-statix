@@ -215,16 +215,27 @@ rules  // rules and functions for function overloading
   inheritanceAmounts maps inheritanceAmount(*, list(*)) = list(*)
   inheritanceAmount : list(TYPE) * (string * TYPE) -> int
   inheritanceAmount(args, (_, FUNCTION(sigTypes, _, _))) = inheritanceAmount_helper(args, sigTypes).
+  inheritanceAmount(args, (_, TEMPLATE(sigTypes, _)))    = inheritanceAmount_helper(args, sigTypes).
 
   // helper function for getInheritanceAmount that computers the total amount of inheritance edges
   inheritanceAmount_helper : list(TYPE) * list(TYPE) -> int
   inheritanceAmount_helper([], []) = 0.
-  inheritanceAmount_helper([ENTITY(s_arg) | argtl], [ENTITY(s_sig) | sigtl]) = x :- {y z}
+  inheritanceAmount_helper([argT | argtl], [sigT | sigtl]) = x :- { s_arg s_sig y z }
+    s_arg == scopeFromType(argT),
+    s_sig == scopeFromType(sigT),
     y == inheritEdgesAmount(s_arg, s_sig),
     z == inheritanceAmount_helper(argtl, sigtl),
     x #= y + z.
 
-  //TO-DO: make this broader than only entities, make `scopeFromType` functional rule
+  // in case of two built-in types, check if compatible but do not calculate inheritance edges
+  inheritanceAmount_helper([arg@BUILTINTYPE(_, _) | argtl], [sig@BUILTINTYPE(_, _) | sigtl]) = x :-
+    typeCompatible(arg, sig) | error $[Argument type [arg] is not compatible with signature type [sig]],
+    x == inheritanceAmount_helper(argtl, sigtl).
+
+  scopeFromType : TYPE -> scope
+  scopeFromType(ENTITY(s)) = s.
+  scopeFromType(NATIVECLASS(s)) = s.
+  scopeFromType(BUILTINTYPE(_, s)) = s.
 
   // function that zips the inheritance amount with the signature
   zipInheritanceAmountWithSig : list(int) * list((string * TYPE)) -> list((int * (string * TYPE)))
