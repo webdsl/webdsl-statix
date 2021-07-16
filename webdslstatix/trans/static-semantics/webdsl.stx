@@ -390,3 +390,7 @@ rules // utils
   zipQueryResultsWithPathLength maps zipQueryResultWithPathLength(list(*)) = list(*)
   zipQueryResultWithPathLength : (path * (string * TYPE)) -> (int * (path * (string * TYPE)))
   zipQueryResultWithPathLength(r@(p, _)) = (pathLength(p), r).
+
+  queryResultTypes maps queryResultType(list(*)) = list(*)
+  queryResultType : (path * (string * TYPE)) -> TYPE
+  queryResultType((_, (_, t))) = t.

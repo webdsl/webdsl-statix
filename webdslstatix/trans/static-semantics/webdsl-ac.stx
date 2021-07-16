@@ -5,10 +5,43 @@ imports
 
   static-semantics/types/built-ins
 
+  static-semantics/ui/template-calls
+
   static-semantics/webdsl-actions
   static-semantics/webdsl-entities
   static-semantics/webdsl-types
   static-semantics/webdsl
+
+rules // built-ins
+
+  declareACBuiltIns : scope
+  declareACBuiltIns(s) :- {s_class}
+    new s_class,
+    declareExtendEntity(s, "securityContext", s_class), // declare s_type to be linked to type name
+    extendEntityScopes(resolveExtendEntity(s, "securityContext"), s_class),
+    declareType(s, "securityContext", NATIVECLASS(s_class)),
+    declareVar(s, "securityContext", NATIVECLASS(s_class)),
+
+    declareFunction(s, "loggedIn", [], bool(s)),
+    declareFunction(s, "logout", [], entity(s)),
+    declareFunction(s, "principalAsEntity", [], entity(s)),
+
+    declareTemplate(s, "login", []),
+    declareTemplate(s, "logout", []),
+    declareTemplate(s, "authentication", []).
+
+  typeOfFunctionCall(s, "loggedIn", []) = bool(s) :- principalDefined(s).
+  typeOfFunctionCall(s, "logout", []) = VOID() :- principalDefined(s).
+  typeOfFunctionCall(s, "principalAsEntity", []) = entity(s) :- principalDefined(s).
+  typeOfFunctionCall(s, "authenticate", argExps) = bool(s) :- { argTypes credentialTypes }
+    principalDefined(s),
+    argTypes == typesOfExps(s, argExps),
+    credentialTypes == credentialTypes(s),
+    typesCompatible(argTypes, credentialTypes) == TRUE() | error $[Argument types [argTypes] not compatible with credential types [credentialTypes]].
+
+  templateCallMatchesSig(s, "login", [], _) :- principalDefined(s).
+  templateCallMatchesSig(s, "logout", [], _) :- principalDefined(s).
+  templateCallMatchesSig(s, "authenticate", [], _) :- principalDefined(s).
 
 rules
 
@@ -20,42 +53,34 @@ rules
 
 rules // securitycontext and principal
 
-  declareACBuiltIns : scope
-  declareACBuiltIns(s) :- {s_class}
-    new s_class,
-    declareExtendEntity(s, "securityContext", s_class), // declare s_type to be linked to type name
-    extendEntityScopes(resolveExtendEntity(s, "securityContext"), s_class),
-    declareType(s, "securityContext", NATIVECLASS(s_class)),
-    declareVar(s, "securityContext", NATIVECLASS(s_class)).
-
   defOk(s, AccessControlPrincipalDef(ent, properties)) :- principalDefOk(s, ent, properties).
   acDefOk(s, AccessControlPrincipalAcDef(ent, properties)) :- principalDefOk(s, ent, properties).
 
   principalDefOk : scope * string * list(string)
-  principalDefOk(s, ent, properties) :- {s_ent credential_types t}
+  principalDefOk(s, ent, properties) :- {s_ent credentialTypes t}
     // TO-DO: only give principal access to the credential properties instead of all
     definedType(s, ent) == t@ENTITY(s_ent),
-    propertyTypes(s_ent, properties) == credential_types,
-    compatibleCredentialTypes(properties, credential_types),
-    declSecurityContext(s, t).
+    propertyTypes(s_ent, properties) == credentialTypes,
+    compatibleCredentialTypes(properties, credentialTypes),
+    declSecurityContext(s, t, credentialTypes).
 
   compatibleCredentialTypes maps compatibleCredentialType(list(*), list(*))
   compatibleCredentialType : string * TYPE
   compatibleCredentialType(x, s) :-
     isStringCompatibleType(s) | error $[Credential types should be compatible with String type] @x.
 
-  declSecurityContext : scope * TYPE
-  declSecurityContext(s, principalType) :- { s_extend_security_context }
+  declSecurityContext : scope * TYPE * list(TYPE)
+  declSecurityContext(s, principalType, credentialTypes) :- { s_extend_security_context }
     new s_extend_security_context,
     declProperty(s_extend_security_context, "principal", principalType),
     declProperty(s_extend_security_context, "loggedIn", bool(s)),
+    declareCredentials(s_extend_security_context, credentialTypes),
     declareExtendEntity(s, "securityContext", s_extend_security_context),
     extendEntityScopes(resolveExtendEntity(s, "securityContext"), s_extend_security_context).
 
-  principalType : scope -> TYPE
-  principalType(s) = t :- { s_securityContext }
-    resolveType(s, "securityContext") == [(_, (_, NATIVECLASS(s_securityContext)))] | error $[securityContext not defined],
-    resolveProperty(s_securityContext, "principal") == [(_, (_, t))] | error $[principal is not defined].
+  declareCredentials maps declareCredential(*, list(*))
+  declareCredential : scope * TYPE
+  declareCredential(s, t) :- !var["credentials", t] in s.
 
 rules // access control rules
 
@@ -96,3 +121,20 @@ rules // access control rules
   nestedAcRuleOk(s, SpecialAccessControlRule(exp)) :- { s_rule }
     new s_rule, s_rule -P-> s,
     equalType(typeOfExp(s_rule, exp), bool(s)) | error $[Rule should result in a boolean expression] @exp.
+
+rules // utils
+
+  principalDefined : scope
+  principalDefined(s) :- { t }
+    principalType(s) == t | error $[Principal is not defined].
+
+  principalType : scope -> TYPE
+  principalType(s) = t :- { s_securityContext }
+    resolveType(s, "securityContext") == [(_, (_, NATIVECLASS(s_securityContext)))] | error $[securityContext not defined],
+    resolveProperty(s_securityContext, "principal") == [(_, (_, t))] | error $[principal is not defined].
+
+  credentialTypes : scope -> list(TYPE)
+  credentialTypes(s) = ts :- { s_securityContext }
+    resolveType(s, "securityContext") == [(_, (_, NATIVECLASS(s_securityContext)))] | error $[securityContext not defined],
+    queryResultTypes(resolveProperty(s_securityContext, "credentials")) == ts,
+    ts == [_ | _] | error $[No credentials have been defined].
