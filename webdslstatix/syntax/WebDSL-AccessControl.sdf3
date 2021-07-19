@@ -13,16 +13,12 @@ context-free sorts
 
   // Access control sorts
   AccessControlDefinition AccessControlRule AccessControlPointcutElement
-  AccessControlImportRulesArg PolicyExp
+  AccessControlImportRulesArg PolicyExp MatchName
 
-lexical sorts
+syntax
 
-  MatchId
-
-lexical syntax
-
-  MatchId = [a-zA-Z] [a-zA-Z0-9\_\-]* [\*]?
-  MatchId = [\*]
+  MatchName-CF.MatchNameWildCard = "*"
+  MatchName-CF.MatchName = PageId-LEX OptWildCardArg-CF
 
 context-free syntax
 
@@ -61,7 +57,7 @@ context-free syntax
   AccessControlDefinition.Rule = AccessControlRule
 
   AccessControlRule.AccessControlRule = <
-    rule <AccessControlType> <MatchId> <OptMatchArgs> {
+    rule <AccessControlType> <MatchName> <OptMatchArgs> {
       <Exp> <AccessControlRule*>
     }
   >
@@ -72,7 +68,7 @@ context-free syntax
   >
 
   AccessControlPointcutElement.AccessControlPointcutElement = <
-    <AccessControlType> <MatchId> ( <{Id ","}*> <OptWildCardArg> )
+    <AccessControlType> <MatchName> ( <{Id ","}*> <OptWildCardArg> )
   >
 
   Section.ACPolicy = <
