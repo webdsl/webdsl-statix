@@ -274,9 +274,3 @@ rules // utils
   equalTypeB : TYPE * TYPE -> BOOL
   equalTypeB(T, T) = TRUE().
   equalTypeB(_, _) = FALSE().
-
-  equalTypesB : list(TYPE) * list(TYPE) -> BOOL
-  equalTypesB([], []) = TRUE().
-  equalTypesB([], _) = FALSE().
-  equalTypesB(_, []) = FALSE().
-  equalTypesB([T1 | t1s], [T2 | t2s]) = andB(equalTypeB(T1, T2), equalTypesB(t1s, t2s)).

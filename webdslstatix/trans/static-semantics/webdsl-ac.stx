@@ -123,18 +123,44 @@ rules // access control rules
     equalType(typeOfExp(s_rule, exp), bool(s)) | error $[Rule should result in a boolean expression] @exp.
 
   acRuleSignatureOk : scope * AccessControlType * MatchName * OptMatchArgs
-  acRuleSignatureOk(_, _, _, _) :- try { false } | warning $[This access control signature is not checked yet].
+  acRuleSignatureOk(_, _, m, _) :- try { false } | warning $[This access control signature is not checked yet] @m.
 
   // a wildcard in the name is always ok
   acRuleSignatureOk(_, _, MatchNameWildCard(), _).
   acRuleSignatureOk(_, _, MatchName(_, WildCardArg()), _).
+
   acRuleSignatureOk(s, ACTypePage(), MatchName(p, OptWildCardArgNone()), MatchArgs(_, WildCardArg())) :-
     pageType(s, p) == PAGE(_).
 
   acRuleSignatureOk(s, ACTypePage(), MatchName(p, OptWildCardArgNone()), MatchArgs(args, OptWildCardArgNone())) :- { argTypes sigTypes }
     pageType(s, p) == PAGE(sigTypes),
     typesOfArgs(s, args) == argTypes,
-    equalTypesB(argTypes, sigTypes) == TRUE() | error $[Argument types [argTypes] are not equal to the page signature types [sigTypes]] @args.
+    argTypes == sigTypes | error $[Argument types [argTypes] are not equal to the page signature types [sigTypes]] @args.
+
+  acRuleSignatureOk(_, ACTypeAction(), _, _).
+
+  acRuleSignatureOk(s, ACTypeTemplate(), MatchName(t, OptWildCardArgNone()), MatchArgs(_, WildCardArg())) :-
+    resolveTemplateNoAjax(s, t) == [_ | _].
+
+  acRuleSignatureOk(s, ACTypeTemplate(), MatchName(t, OptWildCardArgNone()), MatchArgs(args, OptWildCardArgNone())) :- { argTypes queryResult ts }
+    argTypes == typesOfArgs(s, args),
+    queryResult@[_ | _] == resolveTemplateNoAjax(s, t) | error $[No template named [t] exists. For ajax templates, use 'rule ajaxtemplate'] @t,
+    ts == queryResultTypes(queryResult),
+    acRuleSignatureArgsMatching(argTypes, ts) | error $[Argument types [argTypes] do not match any existing template signature types [ts]] @args.
+
+  acRuleSignatureOk(s, ACTypeAjaxTemplate(), MatchName(t, OptWildCardArgNone()), MatchArgs(_, WildCardArg())) :-
+    resolveAjaxTemplate(s, t) == [_ | _].
+
+  acRuleSignatureOk(s, ACTypeAjaxTemplate(), MatchName(t, OptWildCardArgNone()), MatchArgs(args, OptWildCardArgNone())) :- { argTypes queryResult ts }
+    argTypes == typesOfArgs(s, args),
+    queryResult@[_ | _] == resolveAjaxTemplate(s, t) | error $[No template named [t] exists. For non-ajax templates, use 'rule template'] @t,
+    ts == queryResultTypes(queryResult),
+    acRuleSignatureArgsMatching(argTypes, ts) | error $[Argument types [argTypes] do not match any existing ajax template signature types [ts]] @args.
+
+  acRuleSignatureArgsMatching : list(TYPE) * list(TYPE)
+  acRuleSignatureArgsMatching(_, []) :- false.
+  acRuleSignatureArgsMatching(args, [TEMPLATE(args, _) | _]).
+  acRuleSignatureArgsMatching(args, [_ | ts]) :- acRuleSignatureArgsMatching(args, ts).
 
 rules // utils
 

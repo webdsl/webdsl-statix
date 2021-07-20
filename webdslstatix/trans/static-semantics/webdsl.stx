@@ -141,6 +141,12 @@ rules // ui declaration and resolving
   resolveAjaxTemplate : scope * string -> list((path * (string * TYPE)))
   resolveAjaxTemplate(s, t) = resolveTemplate_internal(s, t, TRUE()).
 
+  resolveTemplateNoAjax : scope * string -> list((path * (string * TYPE)))
+  resolveTemplateNoAjax(s, t) = ps :-
+    query template filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
+                   and { t' :- t' == (t, TEMPLATE(_, FALSE())) }
+                   in s |-> ps.
+
   resolveTemplate_internal : scope * string * BOOL -> list((path * (string * TYPE)))
   resolveTemplate_internal(s, t, FALSE()) = ps :-
     query template filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
