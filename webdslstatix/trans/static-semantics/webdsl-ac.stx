@@ -88,8 +88,8 @@ rules // access control rules
 
   acRuleOk : scope * AccessControlRule
   acRuleOk(_, _) :- try { false } | warning $[This access control rule is not yet implemented].
-  acRuleOk(s, AccessControlRule(_, x, MatchArgs(args, _), exp, nested)) :- { s_rule argTypes principalType bool }
-    // TO-DO: check correct reference using type and match id
+  acRuleOk(s, AccessControlRule(t, x, mas@MatchArgs(args, _), exp, nested)) :- { s_rule argTypes principalType bool }
+    acRuleSignatureOk(s, t, x, mas),
     bool == bool(s),
     new s_rule, s_rule -F-> s,
     argTypes == typesOfArgs(s, args),
@@ -121,6 +121,20 @@ rules // access control rules
   nestedAcRuleOk(s, SpecialAccessControlRule(exp)) :- { s_rule }
     new s_rule, s_rule -P-> s,
     equalType(typeOfExp(s_rule, exp), bool(s)) | error $[Rule should result in a boolean expression] @exp.
+
+  acRuleSignatureOk : scope * AccessControlType * MatchName * OptMatchArgs
+  acRuleSignatureOk(_, _, _, _) :- try { false } | warning $[This access control signature is not checked yet].
+
+  // a wildcard in the name is always ok
+  acRuleSignatureOk(_, _, MatchNameWildCard(), _).
+  acRuleSignatureOk(_, _, MatchName(_, WildCardArg()), _).
+  acRuleSignatureOk(s, ACTypePage(), MatchName(p, OptWildCardArgNone()), MatchArgs(_, WildCardArg())) :-
+    pageType(s, p) == PAGE(_).
+
+  acRuleSignatureOk(s, ACTypePage(), MatchName(p, OptWildCardArgNone()), MatchArgs(args, OptWildCardArgNone())) :- { argTypes sigTypes }
+    pageType(s, p) == PAGE(sigTypes),
+    typesOfArgs(s, args) == argTypes,
+    equalTypesB(argTypes, sigTypes) == TRUE() | error $[Argument types [argTypes] are not equal to the page signature types [sigTypes]] @args.
 
 rules // utils
 
