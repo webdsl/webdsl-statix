@@ -3,11 +3,14 @@ module static-semantics/ui/template-calls
 imports
   static-semantics/actions/functions
 
+  static-semantics/entities/annotations
+
   static-semantics/types/built-ins
 
   static-semantics/ui/actions
   static-semantics/ui/attributes
 
+  static-semantics/webdsl-actions
   static-semantics/webdsl-types
   static-semantics/webdsl-ui
   static-semantics/webdsl
@@ -34,6 +37,7 @@ rules // template calls
   templateCallMatchesSig : scope * string * list(TemplateArgExp) * BOOL
   templateCallMatchesSig(s, t, targs, ajax) :- {argTypes nameCompatibleSigs mostSpecificSigs t'}
     argTypes == typesOfTemplateArgExps(s, targs),
+    inputTemplateCallOk(s, t, targs, argTypes),
     nameCompatibleSigs == resolveTemplate_internal(s, t, ajax),
     mostSpecificSigs == mostSpecificSigs(argTypes, typeCompatibleSigs(nameCompatibleSigs, argTypes)),
     mostSpecificSigs == [(t', TEMPLATE(_, _)) | _] | error $[Cannot resolve template [t] with compatible argument types] @t,
@@ -100,3 +104,16 @@ rules // property assignments
 
   templatePropAssignmentOk(s, CommonAttribute2PropertyAssignment(ca)) = "_IGNORE" :-
     commonAttributeOk(s, ca).
+
+rules // mutability check for input templates
+
+  inputTemplateCallOk : scope * string * list(TemplateArgExp) * list(TYPE)
+  inputTemplateCallOk(s, _, _, _). // all other template calls are ok
+  inputTemplateCallOk(s, "input", [Exp(e) | _], [t | _]) :- isMutableExp(s, e, t).
+
+  isMutableExp : scope * Exp * TYPE
+  isMutableExp(_, e, t) :- false | error $[Cannot verify mutability of expression [e]] @e.
+  isMutableExp(s, Var(x), t) :- isMutableOrRef(s, x, t).
+  isMutableExp(s, FieldAccess(FAVar(var), x), t) :- {varType}
+    varType == variableType(s, var),
+    isMutableProperty(varType, x).

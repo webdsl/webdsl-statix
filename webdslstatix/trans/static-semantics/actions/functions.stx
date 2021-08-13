@@ -233,6 +233,9 @@ rules  // rules and functions for function overloading
     x == inheritanceAmount_helper(argtl, sigtl).
 
   scopeFromType : TYPE -> scope
+  scopeFromType(REF(t)) = scopeFromType(t).
+  scopeFromType(LIST(t)) = scopeFromType(t).
+  scopeFromType(SET(t)) = scopeFromType(t).
   scopeFromType(ENTITY(s)) = s.
   scopeFromType(NATIVECLASS(s)) = s.
   scopeFromType(BUILTINTYPE(_, s)) = s.
