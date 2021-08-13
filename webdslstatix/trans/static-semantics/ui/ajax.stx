@@ -50,25 +50,25 @@ rules // ajax statements
   ajaxStmtOk(_, _) :-
     try { false } | warning $[This ajax statement is not yet implemented].
 
-  ajaxStmtOk(s, AjaxReplace(e, tc)) :-
-    ajaxPlaceholderExpressionOk(s, e),
+  ajaxStmtOk(s, AjaxReplace(ph, tc)) :-
+    ajaxPlaceholderExpressionOk(s, ph),
     ajaxTemplateCallOk(s, s, tc)
       | error $[Unable to find an ajax enabled template with a compatible signature] @tc.
 
-  ajaxStmtOk(s, AjaxAppend(e, tc)) :-
-    ajaxPlaceholderExpressionOk(s, e),
+  ajaxStmtOk(s, AjaxAppend(ph, tc)) :-
+    ajaxPlaceholderExpressionOk(s, ph),
     ajaxTemplateCallOk(s, s, tc)
       | error $[Unable to find an ajax enabled template with a compatible signature] @tc.
 
-  ajaxStmtOk(s, AjaxVisibility(e, _)) :-
-    ajaxPlaceholderExpressionOk(s, e).
+  ajaxStmtOk(s, AjaxVisibility(ph, _)) :-
+    ajaxPlaceholderExpressionOk(s, ph).
 
   ajaxStmtOk(s, AjaxRelocate(pc)) :-
     pageCallOk(s, pc).
 
   ajaxStmtOk(s, AjaxRestyle(ph, e)) :-
-    ajaxPlaceholderExpressionOk(s, e),
-    typeCompatible(typeOfExp(s, e), string(s)) | error $[CSS classname must be compatible with type String].
+    ajaxPlaceholderExpressionOk(s, ph),
+    typeCompatible(typeOfExp(s, e), string(s)) | error $[CSS classname must be compatible with type String] @e.
 
   ajaxStmtOk(s, AjaxClear(ph)) :-
     ajaxPlaceholderExpressionOk(s, ph).
@@ -76,7 +76,7 @@ rules // ajax statements
   ajaxStmtOk(s, AjaxRefresh()).
 
   ajaxStmtOk(s, AjaxRunScript(e)) :-
-    typeCompatible(typeOfExp(s, e), string(s)) | error $[Javascript code must be compatible with type String].
+    typeCompatible(typeOfExp(s, e), string(s)) | error $[Javascript code must be compatible with type String] @e.
 
   ajaxPlaceholderExpressionOk : scope * Exp
   ajaxPlaceholderExpressionOk(s, e) :-

@@ -5,6 +5,10 @@ application test
 
 section predicate
 
+entity User { name :: String }
+
+principal is User with credentials name
+
 predicate foo(i:Int){
-  i  
+  i
 }

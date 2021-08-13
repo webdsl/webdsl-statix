@@ -5,7 +5,7 @@ application test
 
 access control rules
 
-  rule page name()
+  rule page root()
   {
     true
   }

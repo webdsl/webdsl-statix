@@ -17,7 +17,11 @@ define page root(){
   var sub1 := SubClassOne{name := "sub1"};
   var sub2 := SubClassTwo{name := "sub2"};
 
-  temp({super2}) //set not allowed for list arg
+  var set := {super2};
+  var list := [super2];
+
+  temp(set) //set not allowed for list arg
+  temp(list)
 }
 
 define temp(s1:List<SuperClass>){" 1 "}

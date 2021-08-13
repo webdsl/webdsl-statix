@@ -110,8 +110,9 @@ rules // access control rules
 
   nestedAcRulesOk maps nestedAcRuleOk(*, list(*))
   nestedAcRuleOk : scope * AccessControlRule
-  nestedAcRuleOk(_, _) :- try { false } | warning $[This nested access control rule is yet implemented].
-  nestedAcRuleOk(s, AccessControlRule(_, x, MatchArgs(args, _), exp, nested)) :- { s_rule argTypes }
+  nestedAcRuleOk(_, _) :- false | error $[Nested rules must be of type "action"].
+  nestedAcRuleOk(_, AccessControlRule(t, _, _, _, _)) :- false | error $[Nested rules must be of type "action"] @t.
+  nestedAcRuleOk(s, AccessControlRule(ACTypeAction(), x, MatchArgs(args, _), exp, nested)) :- { s_rule argTypes }
     new s_rule, s_rule -P-> s, // P label here instead of F to correctly resolve and error on variable usage
     argTypes == typesOfArgs(s, args),
     declareParameters(s_rule, zipArgTypes(args, argTypes)),
@@ -162,6 +163,23 @@ rules // access control rules
   acRuleSignatureArgsMatching(args, [TEMPLATE(args, _) | _]).
   acRuleSignatureArgsMatching(args, [_ | ts]) :- acRuleSignatureArgsMatching(args, ts).
 
+rules // predicates
+
+  defOk(s, Predicate(p, args, exp)) :- predicateOk(s, p, args, exp).
+  acDefOk(s, PredicateAc(p, args, exp)) :- predicateOk(s, p, args, exp).
+  declEntityBodyDeclaration(s, PredicateInEntity(p, args, exp)) :- predicateOk(s, p, args, exp).
+
+  predicateOk : scope * string * OptFormalArgs * Exp
+  predicateOk(s, p, FormalArgs(args), exp) :- { bool s_predicate argTypes principalType }
+    bool == bool(s),
+    new s_predicate, s_predicate -F-> s,
+    argTypes == typesOfArgs(s, args),
+    declareParameters(s_predicate, zipArgTypes(args, argTypes)),
+    principalType == principalType(s) | error $[Unable to find principal type] @p,
+    declareVar(s_predicate, "principal", principalType),
+    declareVar(s_predicate, "loggedIn", bool),
+    equalType(typeOfExp(s_predicate, exp), bool) | error $[Predicate should result in a boolean expression] @exp.
+
 rules // utils
 
   principalDefined : scope
@@ -171,7 +189,7 @@ rules // utils
   principalType : scope -> TYPE
   principalType(s) = t :- { s_securityContext }
     resolveType(s, "securityContext") == [(_, (_, NATIVECLASS(s_securityContext)))] | error $[securityContext not defined],
-    resolveProperty(s_securityContext, "principal") == [(_, (_, t))] | error $[principal is not defined].
+    resolveProperty(s_securityContext, "principal") == [(_, (_, t))] | error $[Principal is not defined].
 
   credentialTypes : scope -> list(TYPE)
   credentialTypes(s) = ts :- { s_securityContext }

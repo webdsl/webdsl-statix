@@ -19,6 +19,6 @@ define page root(){
   temp(sub1,sub2)
 }
 
-define temp(s1:SuperClass,s2:SuperClass){" 1 "}
-define temp(s:SubClassOne,s1:SuperClass){" 2 "}
-define temp(s1:SuperClass,s1:SubClassTwo){" 3 "}
+define temp(s1:SuperClass , s2:SuperClass){" 1 "}
+define temp(s1:SubClassOne, s2:SuperClass){" 2 "}
+define temp(s1:SuperClass , s2:SubClassTwo){" 3 "}

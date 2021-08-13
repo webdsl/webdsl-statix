@@ -19,17 +19,22 @@ imports
 
 rules // page definitions
 
-  defOk(s_global, TemplateDefinition(DefinePage(mods, x, FormalArgs(fargs), TemplateArgs(targs), elements))) :- {fargTypes s_page s_pha s_body}
-    // TO-DO: analyse mods
+  defOk(s, TemplateDefinition(DefinePage(mods, x, FormalArgs(fargs), TemplateArgs(targs), elements))) :- {fargTypes s_page s_pha s_body}
+    pageModsOk(s, mods),
     targs == [] | error $[Template arguments are not allowed on page definitions] @targs,
-    new s_page, s_page -F-> s_global,
-    fargTypes == typesOfArgs(s_global, fargs),
+    new s_page, s_page -F-> s,
+    fargTypes == typesOfArgs(s, fargs),
     declareParameters(s_page, zipArgTypes(fargs, fargTypes)),
     new s_pha, s_pha -P-> s_page,
     new s_body, s_body -P-> s_pha,
-    declarePage(s_global, x, fargTypes),
+    declarePage(s, x, fargTypes),
     templateElementOrderOk(elements, FALSE(), FALSE()),
     templateElementsOk(s_body, s_pha, elements).
+
+  pageModsOk maps pageModOk(*, list(*))
+  pageModOk : scope * Modifier
+  pageModOk(_, _) :- try { false } | warning $[This modifier is not yet implemented].
+  pageModOk(s, AjaxTemplate()) :- false | error $[A page cannot be an ajax template].
 
 rules // template definitions
 

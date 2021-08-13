@@ -213,13 +213,13 @@ rules // action and placeholder declaration and resolving
 
   declarePlaceholder : scope * string
   declarePlaceholder(s, ph) :-
-    !var[ph, PLACEHOLDER()] in s,
+    !var[ph, placeholder(s)] in s,
     noDuplicateVarDefs(s, ph) | error $[Variable [ph] is defined multiple times] @ph.
 
   resolvePlaceholder : scope * string -> list((path * (string * TYPE)))
   resolvePlaceholder(s, ph) = phs :-
     query var filter P*
-              and { ph' :- ph' == (ph, PLACEHOLDER()) }
+              and { ph' :- ph' == (ph, BUILTINTYPE("Placeholder", _)) }
               in s |-> phs.
 
 rules // variable declaration and resolving
