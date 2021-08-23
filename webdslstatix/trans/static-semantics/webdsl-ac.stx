@@ -165,12 +165,13 @@ rules // access control rules
 
 rules // predicates
 
-  defOk(s, Predicate(p, args, exp)) :- predicateOk(s, p, args, exp).
-  acDefOk(s, PredicateAc(p, args, exp)) :- predicateOk(s, p, args, exp).
-  declEntityBodyDeclaration(s, PredicateInEntity(p, args, exp)) :- predicateOk(s, p, args, exp).
+  defOk(s, Predicate(p, args, exp)) :- predicateOk(s, p, args, exp, TRUE()).
+  acDefOk(s, PredicateAc(p, args, exp)) :- predicateOk(s, p, args, exp, TRUE()).
+  declEntityBodyDeclaration(s, PredicateInEntity(p, args, exp)) :- predicateOk(s, p, args, exp, FALSE()).
 
-  predicateOk : scope * string * OptFormalArgs * Exp
-  predicateOk(s, p, FormalArgs(args), exp) :- { bool s_predicate argTypes principalType }
+  // last bool denotes if predicate is declared in global scope
+  predicateOk : scope * string * OptFormalArgs * Exp * BOOL
+  predicateOk(s, p, FormalArgs(args), exp, global) :- { bool s_predicate argTypes principalType }
     bool == bool(s),
     new s_predicate, s_predicate -F-> s,
     argTypes == typesOfArgs(s, args),
@@ -178,7 +179,13 @@ rules // predicates
     principalType == principalType(s) | error $[Unable to find principal type] @p,
     declareVar(s_predicate, "principal", principalType),
     declareVar(s_predicate, "loggedIn", bool),
-    equalType(typeOfExp(s_predicate, exp), bool) | error $[Predicate should result in a boolean expression] @exp.
+    equalType(typeOfExp(s_predicate, exp), bool) | error $[Predicate should result in a boolean expression] @exp,
+    declPredicate(s, p, argTypes, bool, global).
+
+  // last bool arg denotes if the scope is global
+  declPredicate : scope * string * list(TYPE) * TYPE * BOOL
+  declPredicate(s, p, argTypes, return, TRUE()) :- declFunctionGlobal(s, p, argTypes, return).
+  declPredicate(s, p, argTypes, return, FALSE()) :- declFunctionEntity(s, p, argTypes, return, FALSE()).
 
 rules // utils
 
