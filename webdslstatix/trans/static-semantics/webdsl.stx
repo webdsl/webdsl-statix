@@ -56,36 +56,25 @@ signature
     var      : string * TYPE
 
     typeOf : TYPE
-    modOf : scope
-    extendentityOf : scope
 
 rules // module declaration and resolving
 
   declareMod : scope * list(string) * scope
   declareMod(s, m, s_mod) :-
-    !mod[m, withMod(s_mod)] in s,
+    !mod[m, s_mod] in s,
     resolveMod(s, m) == [_] | error $[Module [m] is already declared].
 
   resolveMod : scope * list(string) -> list((path * (list(string) * scope)))
-  resolveMod(s, m) = modsOf(ss) :-
+  resolveMod(s, m) = ss :-
     query mod filter e
               and { m' :- m' == (m, _) }
               in s |-> ss.
 
   resolveModWildcard : scope * list(string) -> list((path * (list(string) * scope)))
-  resolveModWildcard(s, names) = modsOf(ss) :-
+  resolveModWildcard(s, names) = /*modsOf(*/ ss /*)*/ :-
     query mod filter e
               and { m' :- isPrefix(names, m') }
               in s |-> ss.
-
-  withMod : scope -> scope
-  withMod(s_mod) = s :-
-    new s, !modOf[s_mod] in s.
-
-  modsOf maps modOf(list(*)) = list(*)
-  modOf : (path * (list(string) * scope)) -> (path * (list(string) * scope))
-  modOf((p, (m, s))) = (p, (m, s_mod)) :-
-    query modOf filter e in s |-> [(_, s_mod)].
 
   isPrefix : list(string) * (list(string) * scope)
   isPrefix(names, (names', _)) :- isPrefix_internal(names, names').
@@ -121,10 +110,10 @@ rules // extend entity declaration
 
   declareExtendEntity : scope * string * scope
   declareExtendEntity(s, e, s_extend) :-
-    !extendentity[e, withExtendentity(s_extend)] in s.
+    !extendentity[e, s_extend] in s.
 
   resolveExtendEntity : scope * string -> list((path * (string * scope)))
-  resolveExtendEntity(s, e) = extendentitiesOf(ps) :-
+  resolveExtendEntity(s, e) = ps :-
     query extendentity filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT? GLOBAL?))
                        and { e' :- e' == (e, _) }
                        min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < DEF, $ < IMPORT, $ < GLOBAL,
@@ -135,15 +124,6 @@ rules // extend entity declaration
                            IMPORT < GLOBAL
                        and { (entity, entity_scope), (entity, entity_scope) }
                        in s |-> ps.
-
-  withExtendentity : scope -> scope
-  withExtendentity(s_extend_entity) = s :-
-    new s, !extendentityOf[s_extend_entity] in s.
-
-  extendentitiesOf maps extendentityOf(list(*)) = list(*)
-  extendentityOf : (path * (string * scope)) -> (path * (string * scope))
-  extendentityOf((p, (x, s))) = (p, (x, s_extend_entity)) :-
-    query extendentityOf filter e in s |-> [(_, s_extend_entity)].
 
 rules // ui declaration and resolving
 
