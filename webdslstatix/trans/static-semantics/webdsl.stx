@@ -53,7 +53,7 @@ signature
 
     function : string * TYPE
 
-    var      : string * TYPE
+    var      : string * scope
 
     typeOf : TYPE
 
@@ -223,24 +223,27 @@ rules // action and placeholder declaration and resolving
 
   declarePlaceholder : scope * string
   declarePlaceholder(s, ph) :-
-    !var[ph, placeholder(s)] in s,
+    !var[ph, withType(placeholder(s))] in s,
     noDuplicateVarDefs(s, ph) | error $[Variable [ph] is defined multiple times] @ph.
 
   resolvePlaceholder : scope * string -> list((path * (string * TYPE)))
-  resolvePlaceholder(s, ph) = phs :-
-    query var filter P*
-              and { ph' :- ph' == (ph, BUILTINTYPE("Placeholder", _)) }
-              in s |-> phs.
+  resolvePlaceholder(s, ph) = filterPlaceholdersOnly(typesOf(phs)) :-
+    query var filter P* in s |-> phs.
+
+  //BUILTINTYPE("Placeholder", _)
+  filterPlaceholdersOnly : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
+  filterPlaceholdersOnly([]) = [].
+  filterPlaceholdersOnly([hd@(_, (_, BUILTINTYPE("Placeholder", _))) | tl]) = [].
 
 rules // variable declaration and resolving
 
   declareVar : scope * string * TYPE
   declareVar(s, x, t) :-
-    !var[x, t] in s,
+    !var[x, withType(t)] in s,
     noDuplicateVarDefs(s, x).
 
   resolveVar : scope * string -> list((path * (string * TYPE)))
-  resolveVar(s, x) = ps :-
+  resolveVar(s, x) = typesOf(ps) :-
     query var filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
               and { x' :- x' == (x, _) }
               min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < DEF, DEF < IMPORT
@@ -248,13 +251,13 @@ rules // variable declaration and resolving
               in s |-> ps.
 
   resolveProperty : scope * string -> list((path * (string * TYPE)))
-  resolveProperty(s_entity, x) = ps :-
+  resolveProperty(s_entity, x) = typesOf(ps) :-
     query var filter EXTEND? (INHERIT EXTEND?)*
               and { x' :- x' == (x, _) }
               in s_entity |-> ps.
 
   resolveMutableProperty : scope * string -> list((path * (string * TYPE)))
-  resolveMutableProperty(s_entity, x) = ps :-
+  resolveMutableProperty(s_entity, x) = typesOf(ps) :-
     query var filter EXTEND? (INHERIT EXTEND?)*
               and { x' :- x' == (x, _) }
               in s_entity |-> ps.
