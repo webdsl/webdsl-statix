@@ -1,0 +1,16 @@
+module analysis/analysis-fails/globalvar-inferred-error
+
+language webdsl-statix
+
+test globalvar-inferred-error [[
+//Global variable GKY_dO has illegal type.
+//^ Internal error
+
+application v75_44M_cW6
+
+page root {}
+
+  var GKY_dO := {} 
+  predicate UC ( ) { GKY_dO }
+]] analysis fails
+

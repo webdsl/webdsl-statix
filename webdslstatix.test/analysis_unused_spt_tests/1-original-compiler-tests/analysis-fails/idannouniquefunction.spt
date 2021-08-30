@@ -1,0 +1,22 @@
+module analysis/analysis-fails/idannouniquefunction
+
+language webdsl-statix
+
+test idannouniquefunction [[
+//Function with name
+
+application test
+
+page root {}
+
+section datamodel
+
+  entity User {
+    name :: String (id)
+  }
+
+  function getUniqueUser(name:String){
+  
+  }
+]] analysis fails
+

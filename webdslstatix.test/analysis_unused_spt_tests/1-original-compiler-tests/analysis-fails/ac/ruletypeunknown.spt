@@ -1,0 +1,25 @@
+module analysis/analysis-fails/ac/ruletypeunknown
+
+language webdsl-statix
+
+test ruletypeunknown [[
+//rule type unknown
+
+application test
+
+page root {}
+
+entity User{name :: String}
+
+principal is User with credentials name
+
+access control rules
+
+  rule pag name()
+  {
+    true
+  }
+  
+  
+]] analysis fails
+

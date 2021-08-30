@@ -17,7 +17,7 @@ rules // entity declaration
   // entity x : super { ... }
   defOk(s, e@Entity(x, super, bodydecs)) :- {s_entity super' s_super}
     resolveType(s, super) == [(_, (super', ENTITY(s_super)))] | error $[Entity [super] is not defined] @super,
-    new s_entity, s_entity -INHERIT-> s_super, s_entity -IMPORT-> s,
+    new s_entity, s_entity -INHERIT-> s_super, s_entity -DEF-> s,
     noCircularInheritance(s_entity) | error $[Circular inhertitance detected] @e,
     declEntity(s, s_entity, x, bodydecs),
     declareEntityAnnotation(s_entity, SUBENTITY()),
@@ -26,12 +26,12 @@ rules // entity declaration
   // entity x { ... }
   defOk(s, EntityNoSuper(x, bodydecs)) :- {s_entity s_super}
     entity(s) == ENTITY(s_super),
-    new s_entity, s_entity -INHERIT-> s_super, s_entity -IMPORT-> s,
+    new s_entity, s_entity -INHERIT-> s_super, s_entity -DEF-> s,
     declEntity(s, s_entity, x, bodydecs).
 
   // session x { ... }
   defOk(s, SessionEntity(x, bodydecs)) :- {s_entity}
-    new s_entity, s_entity -IMPORT-> s,
+    new s_entity, s_entity -DEF-> s,
     declEntity(s, s_entity, x, bodydecs),
     declareEntityAnnotation(s_entity, SESSIONENTITY()).
 
@@ -57,12 +57,21 @@ rules // entity declaration
   defOk(s_global, ExtendSessionEntity(x, bodydecs)) :- declExtendEntity(s_global, x, bodydecs).
 
   declExtendEntity : scope * string * list(EntityBodyDeclaration)
-  declExtendEntity(s_global, entity_name, bodydecs) :- {s_extend_entity entity_scopes}
-    resolveType(s_global, entity_name) == [_] | error $[Entity [entity_name] is not defined],
-    new s_extend_entity,
-    declareExtendEntity(s_global, entity_name, s_extend_entity), // declare entity_scope to be linked to entity_name
-    extendEntityScopes(resolveExtendEntity(s_global, entity_name), s_extend_entity),
+  declExtendEntity(s, entity_name, bodydecs) :- {s_extend_entity entity_scopes}
+    resolveType(s, entity_name) == [(_, (_, ENTITY(_)))] | error $[Entity [entity_name] is not defined],
+    new s_extend_entity, s_extend_entity -DEF-> s,
+    declareExtendEntityIfDefined(s, entity_name, s_extend_entity, entityDeclaredB(resolveType(s, entity_name))),
     declEntityBody(s_extend_entity, bodydecs).
+
+  declareExtendEntityIfDefined : scope * string * scope * BOOL
+  declareExtendEntityIfDefined(_, _, _, FALSE()).
+  declareExtendEntityIfDefined(s, entity_name, s_extend_entity, TRUE()) :-
+    declareExtendEntity(s, entity_name, s_extend_entity), // declare entity_scope to be linked to entity_name
+    extendEntityScopes(resolveExtendEntity(s, entity_name), s_extend_entity).
+
+  entityDeclaredB : list((path * (string * TYPE))) -> BOOL
+  entityDeclaredB(_) = FALSE().
+  entityDeclaredB([(_, (_, ENTITY(_)))]) = TRUE().
 
   noCircularInheritance : scope
   noCircularInheritance(s_ent) :- {res}
@@ -75,6 +84,17 @@ rules // entity declaration
   declThisVar(s_ent) :-
     declareVar(s_ent, "this", ENTITY(s_ent)),
     declareAnnotation(s_ent, "this", DERIVED()). // prevent mutability of this var
+
+  defOk(s, Enum(e, values)) :- { s_entity t }
+    new s_entity, s_entity -DEF-> s,
+    declareVar(s_entity, "name", string(s)),
+    t == ENTITY(s_entity),
+    declareType(s, e, t),
+    declareEnumValues(s, values, t).
+
+  declareEnumValues maps declareEnumValue(*, list(*), *)
+  declareEnumValue : scope * EnumValue * TYPE
+  declareEnumValue(s, EnumValue(v, _), t) :- declareVar(s, v, t).
 
 rules // entity body declaration
 
@@ -100,9 +120,10 @@ rules // entity body declaration
     annotationsOk(s, x, sortType, annos).
 
   // derived entity property
-  declEntityBodyDeclaration(s, DerivedProperty(x, propkind, sort, PropAnnos(annos), exp)) :- {sortType}
+  declEntityBodyDeclaration(s, DerivedProperty(x, propkind, sort, PropAnnos(annos), exp)) :- {sortType expType}
     sortType == typeOfSort(s, sort),
-    equalType(sortType, typeOfExp(s, exp)) | error $[Expression [exp] must be of type [sort]] @exp,
+    expType == typeOfExp(s, exp),
+    typeCompatible(expType, sortType) | error $[Expression [exp] must be compatible with type [sortType], [expType] given] @exp,
     declProperty(s, x, sortType),
     declareAnnotation(s, x, DERIVED()),
     annotationsOk(s, x, sortType, annos).
@@ -149,7 +170,12 @@ rules // entity resolving
 
   typeOfThis : scope -> TYPE
   typeOfThis(s_ent) = t :-
-    resolveVar(s_ent, "this") == [(_, (_, t))].
+    resolveVar(s_ent, "this") == [(_, (_, t))] | error $["this" is not defined in this context].
+
+  typeOfExp(s, This()) = typeOfThis(s).
+
+  typeOfProperty(_, _, "this") = UNTYPED() :-
+    false | error $[This is only accessible from within the entity].
 
 rules // subtyping
 

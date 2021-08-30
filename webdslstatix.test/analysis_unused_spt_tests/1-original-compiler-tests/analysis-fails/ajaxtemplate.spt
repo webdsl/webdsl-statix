@@ -1,0 +1,24 @@
+module analysis/analysis-fails/ajaxtemplate
+
+language webdsl-statix
+
+test ajaxtemplate [[
+//An ajax-enabled template must be called here
+
+application test
+
+  htmlwrapper {
+    block div [class="block"]
+  }
+
+  define page root() {
+    block[onclick := action {replace(test,bla(4));}] { 
+      placeholder test {"hoi1"}
+    } 
+  }
+  
+  define bla(i:Int){
+    output(i)
+  }
+]] analysis fails
+

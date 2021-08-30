@@ -31,6 +31,7 @@ rules
   normalize-action : OrderNonSpecific(x) -> OrderAscending(x)
   
   normalize-action : IfNoElse(e, bit) -> If(e, bit, Block([]))
+  normalize-action : If(e, then, OptElseSome(else)) -> If(e, then, else)
   
   normalize-action : IfWithElseIf(e, then, elseif*, else) -> If(e, then, else')
     with

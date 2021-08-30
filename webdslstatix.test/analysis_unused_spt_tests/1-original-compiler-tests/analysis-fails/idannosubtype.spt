@@ -1,0 +1,21 @@
+module analysis/analysis-fails/idannosubtype
+
+language webdsl-statix
+
+test idannosubtype [[
+//Id annotation not allowed in subtypes
+
+application test
+
+page root {}
+
+section datamodel
+
+  entity SuperUser {
+    fullname :: String
+  }
+  entity User : SuperUser {
+    name :: String (id)
+  }
+]] analysis fails
+

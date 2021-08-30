@@ -1,0 +1,19 @@
+module analysis/analysis-fails/variablerhnotdefined
+
+language webdsl-statix
+
+test variablerhnotdefined [[
+//Variable 'a' not defined
+application test
+
+page root {}
+
+section functions
+
+
+  function do() {
+    var b : Int;
+    b := a;
+  }
+]] analysis fails
+

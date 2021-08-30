@@ -19,14 +19,20 @@ rules // functions calls
   typeOfPlaceholderExp(s, PHThisCall(ThisCall(f, argExps))) = t :-
     t == typeOfFunctionCall(s, f, argExps).
 
-  typeOfExp(s, Call(exp, f, argExps)) = t :-
-    t == typeOfCall(s, typeOfExp(s, exp), f, argExps).
+  typeOfExp(s, Call(exp, f, argExps)) = t :- { expType s_eval }
+    expType == typeOfExp(s, exp),
+    new s_eval, s_eval -P-> s,
+    t == typeOfCall(s_eval, expType, f, argExps).
 
-  typeOfSimpleExp(s, SimpleCall(exp, f, argExps)) = t :-
-    t == typeOfCall(s, typeOfSimpleExp(s, exp), f, argExps).
+  typeOfSimpleExp(s, SimpleCall(exp, f, argExps)) = t :- { expType s_eval }
+    expType == typeOfSimpleExp(s, exp),
+    new s_eval, s_eval -P-> s,
+    t == typeOfCall(s_eval, expType, f, argExps).
 
-  typeOfPlaceholderExp(s, PHCall(exp, f, argExps)) = t :-
-    t == typeOfCall(s, typeOfExp(s, exp), f, argExps).
+  typeOfPlaceholderExp(s, PHCall(exp, f, argExps)) = t :- { expType s_eval }
+    expType == typeOfExp(s, exp),
+    new s_eval, s_eval -P-> s,
+    t == typeOfCall(s_eval, expType, f, argExps).
 
   typeOfFunctionCall : scope * string * list(Exp)-> TYPE
   typeOfFunctionCall(s, f, args) = typeOfFunctionCallInternal(s, f, args, funSigs) :-
@@ -43,11 +49,18 @@ rules // functions calls
   typeOfCall(s, t, f, args) = UNTYPED() :- false | error $[First subexpression of a function call must be of type entity, [t] found].
 
   typeOfFunctionCallInternal : scope * string * list(Exp) * list((path * (string * TYPE))) -> TYPE
-  typeOfFunctionCallInternal(s, f, args, funSigs) = t :- {argTypes f'}
-    argTypes                  == typesOfExps(s, args),
-    [(f', FUNCTION(_, t, _))] == mostSpecificSigs(argTypes, typeCompatibleSigs(funSigs, argTypes)) | error $[Zero or multiple function definition with equally specific argument types for function [f]] @f,
+  typeOfFunctionCallInternal(s, f, args, funSigs) = t :- { argTypes f' result }
+    argTypes == typesOfExps(s, args),
+    result == mostSpecificSigs(argTypes, typeCompatibleSigs(funSigs, argTypes)),
+    singleSignature(result, "function", f) | error $[Cannot resolve function [f] with compatible argument types] @f,
+    [(f', FUNCTION(_, t, _)) | _] == result | error $[Cannot resolve function [f] with compatible argument types] @f,
     @f.ref := f',
     @f.type := t.
+
+  singleSignature : list((string * TYPE)) * string * string
+  singleSignature([], type, f) :- false | error $[Cannot resolve [type] [f] with compatible argument types] @f.
+  singleSignature([_ | [_ | _]], type, f) :- false | error $[Found multiple definitions of [type] [f] with equally specific argument types] @f.
+  singleSignature(_, _, _).
 
 rules // invoke time interval
 
@@ -138,9 +151,9 @@ rules // function definitions
   noDuplicateFunDefsEntity : scope * string * list(TYPE)
   noDuplicateFunDefsEntity(s, f, types) :- {ps}
     query function filter EXTEND?
-                   and { f' :- f' == ((f, _), _) }
+                   and { f' :- f' == (f, _) }
                    in s |-> ps,
-    amountOfFunDeclsWithArgs(dropAndFilterUniqueIds(ps), types, 0) == 1
+    amountOfFunDeclsWithArgs(ps, types, 0) == 1
         | error $[Duplicate definition of function [f] with argument types [types]] @f.
 
   // helper function for noDuplicateFunDefs that counts the amount of function with a given name and argument types
@@ -169,7 +182,7 @@ rules  // rules and functions for function overloading
   zipSigsWithTypesCompatible maps zipSigWithTypesCompatible(*, list(*)) = list(*)
   zipSigWithTypesCompatible : list(TYPE) * (string * TYPE) -> (BOOL * (string * TYPE))
   zipSigWithTypesCompatible(args, f@(_, FUNCTION(funArgs, _, _))) = (typesCompatible(args, funArgs), f).
-  zipSigWithTypesCompatible(args, f@(_, TEMPLATE(templArgs))) = (typesCompatible(args, templArgs), f).
+  zipSigWithTypesCompatible(args, f@(_, TEMPLATE(templArgs, _))) = (typesCompatible(args, templArgs), f).
 
   // function that prunes the list of compatible signatures
   // to a list of most specific signatures
@@ -186,27 +199,46 @@ rules  // rules and functions for function overloading
   mostSpecificSigs_helper(args, sigs, [])       = filterLeastInheritanceAmount(minOfList(inheritanceAmounts), zipInheritanceAmountWithSig(inheritanceAmounts, sigs)) :-
     inheritanceAmounts == inheritanceAmounts(args, sigs).
 
-  // helper function for mostSpecificFunSigs that returns the exactly matching signature
+  // helper function for mostSpecificFunSigs that returns the exactly matching signatures
   matchingSigs : list(TYPE) * list((string * TYPE)) -> list((string * TYPE))
   matchingSigs(_, []) = [].
-  matchingSigs(args, [f@(_, FUNCTION(args, _, _)) | fs]) = [f | matchingSigs(args, fs)].
-  matchingSigs(args, [f@(_, TEMPLATE(args))    | fs]) = [f | matchingSigs(args, fs)].
-  matchingSigs(args, [_ | fs]) = matchingSigs(args, fs).
+  matchingSigs(args, [(x, FUNCTION(params, rt, static)) | fs]) = matchingSigs_helper(args, (x, FUNCTION(stripRefTypes(params), rt, static)), fs).
+  matchingSigs(args, [(x, TEMPLATE(params, ajax))       | fs]) = matchingSigs_helper(args, (x, TEMPLATE(stripRefTypes(params), rt)), fs).
+
+  // helper function for matchingSigs that compares the argument types after stripping the Ref<> sorts
+  matchingSigs_helper : list(TYPE) * (string * TYPE) * list((string * TYPE)) -> list((string * TYPE))
+  matchingSigs_helper(args, f@(_, FUNCTION(args, _, _)), fs) = [f | matchingSigs(args, fs)].
+  matchingSigs_helper(args, f@(_, TEMPLATE(args, _))   , fs) = [f | matchingSigs(args, fs)].
+  matchingSigs_helper(args, _, fs) = matchingSigs(args, fs).
 
   // function that computes the total amount of inheritance edges from caller arguments to defined arguments
   inheritanceAmounts maps inheritanceAmount(*, list(*)) = list(*)
   inheritanceAmount : list(TYPE) * (string * TYPE) -> int
   inheritanceAmount(args, (_, FUNCTION(sigTypes, _, _))) = inheritanceAmount_helper(args, sigTypes).
+  inheritanceAmount(args, (_, TEMPLATE(sigTypes, _)))    = inheritanceAmount_helper(args, sigTypes).
 
   // helper function for getInheritanceAmount that computers the total amount of inheritance edges
   inheritanceAmount_helper : list(TYPE) * list(TYPE) -> int
   inheritanceAmount_helper([], []) = 0.
-  inheritanceAmount_helper([ENTITY(s_arg) | argtl], [ENTITY(s_sig) | sigtl]) = x :- {y z}
+  inheritanceAmount_helper([argT | argtl], [sigT | sigtl]) = x :- { s_arg s_sig y z }
+    s_arg == scopeFromType(argT),
+    s_sig == scopeFromType(sigT),
     y == inheritEdgesAmount(s_arg, s_sig),
     z == inheritanceAmount_helper(argtl, sigtl),
     x #= y + z.
 
-  //TO-DO: make this broader than only entities, make `scopeFromType` functional rule
+  // in case of two built-in types, check if compatible but do not calculate inheritance edges
+  inheritanceAmount_helper([arg@BUILTINTYPE(_, _) | argtl], [sig@BUILTINTYPE(_, _) | sigtl]) = x :-
+    typeCompatible(arg, sig) | error $[Argument type [arg] is not compatible with signature type [sig]],
+    x == inheritanceAmount_helper(argtl, sigtl).
+
+  scopeFromType : TYPE -> scope
+  scopeFromType(REF(t)) = scopeFromType(t).
+  scopeFromType(LIST(t)) = scopeFromType(t).
+  scopeFromType(SET(t)) = scopeFromType(t).
+  scopeFromType(ENTITY(s)) = s.
+  scopeFromType(NATIVECLASS(s)) = s.
+  scopeFromType(BUILTINTYPE(_, s)) = s.
 
   // function that zips the inheritance amount with the signature
   zipInheritanceAmountWithSig : list(int) * list((string * TYPE)) -> list((int * (string * TYPE)))

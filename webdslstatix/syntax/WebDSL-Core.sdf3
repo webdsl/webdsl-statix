@@ -93,16 +93,14 @@ context-free syntax
   >
 
   Definition.Imports = <
-    imports <ModuleName>
+    imports <ImportName>
   >
 
   Definition.ImportsBuiltIn = <
     imports built-in
   >
 
-lexical syntax
-
-  ModuleName = "built-in" {reject}
+  ImportName = "built-in" {reject}
 
 context-free syntax
 

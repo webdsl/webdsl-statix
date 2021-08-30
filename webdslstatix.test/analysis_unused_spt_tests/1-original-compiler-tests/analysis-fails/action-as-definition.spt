@@ -1,0 +1,16 @@
+module analysis/analysis-fails/action-as-definition
+
+language webdsl-statix
+
+test action-as-definition [[
+//Actions are only allowed in pages and templates.
+
+application test
+
+page root() { }
+
+action test(s:String){
+  
+}
+]] analysis fails
+

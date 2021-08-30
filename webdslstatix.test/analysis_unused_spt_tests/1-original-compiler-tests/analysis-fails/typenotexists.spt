@@ -1,0 +1,20 @@
+module analysis/analysis-fails/typenotexists
+
+language webdsl-statix
+
+test typenotexists [[
+// Type not defined
+
+application test
+
+page root {}
+
+section functions
+
+globals {
+  function do(a: A) {
+
+  }
+}
+]] analysis fails
+

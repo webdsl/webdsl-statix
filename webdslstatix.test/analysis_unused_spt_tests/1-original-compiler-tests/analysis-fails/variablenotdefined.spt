@@ -1,0 +1,20 @@
+module analysis/analysis-fails/variablenotdefined
+
+language webdsl-statix
+
+test variablenotdefined [[
+// invalid left-hand side in assignment
+
+application test
+
+page root {}
+
+section functions
+
+globals {
+  function do() {
+    a := 3;
+  }
+}
+]] analysis fails
+

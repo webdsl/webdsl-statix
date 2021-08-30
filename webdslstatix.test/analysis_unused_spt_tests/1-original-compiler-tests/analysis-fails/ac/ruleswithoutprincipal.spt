@@ -1,0 +1,18 @@
+module analysis/analysis-fails/ac/ruleswithoutprincipal
+
+language webdsl-statix
+
+test ruleswithoutprincipal [[
+//cannot have access control rules without a principal declaration
+application test
+
+page root {}
+
+access control rules
+
+  rule page name()
+  {
+    true
+  }
+]] analysis fails
+

@@ -29,14 +29,14 @@ function analyzeRepo() {
     local dirName=$(basename $repo .git)
     local resultFile="e2e-results/$dirName.txt"
 
-    git clone "$repo"  --recurse-submodules
+    git clone --single-branch --branch experiment/wildcard-imports "$repo" --recurse-submodules
 
     addBuiltInToRepo "$dirName"
 
     java -Xmx4G -Xms4G -Xss64m -jar "$jarFile" build \
         -l webdslstatix \
         -p "$dirName" \
-        &> "$resultFile"
+        2>&1 | tee "$resultFile"
 
     prependResultSummary $resultFile $dirName
 }
@@ -67,8 +67,14 @@ function prependResultSummary() {
     local dirName="$2"
     local messageSummary=$(cat "$resultFile" | grep -Eo "[0-9]+ messages.*")
     local linesOfCode=$(find $dirName -name '*.app' | xargs wc -l | grep -Eo "[0-9]+ total")
+    local projectErrors=$(cat "$resultFile" | grep "ERROR in file" | grep -v "built-in.app" | grep -v "/elib/" | wc -l | xargs)
+    local projectWarnings=$(cat "$resultFile" | grep "WARNING in file" | grep -v "built-in.app" | grep -v "/elib/" | wc -l | xargs)
+    local builtInErrors=$(cat "$resultFile" | grep "ERROR in file" | grep "built-in.app" | wc -l | xargs)
+    local builtInWarnings=$(cat "$resultFile" | grep "WARNING in file" | grep "built-in.app" | wc -l | xargs)
+    local elibErrors=$(cat "$resultFile" | grep "ERROR in file" | grep "/elib/" | wc -l | xargs)
+    local elibWarnings=$(cat "$resultFile" | grep "WARNING in file" | grep "/elib/" | wc -l | xargs)
 
-    printf "$linesOfCode lines of code\n$messageSummary\n\n\n\nComplete output:\n\n" | cat - "$file" > tmp.txt && mv tmp.txt "$resultFile"
+    printf "$linesOfCode lines of code\n\nResult:\n- Project: $projectErrors errors, $projectWarnings warnings\n- built-in.app: $builtInErrors errors, $builtInWarnings warnings\n- elib: $elibErrors errors, $elibWarnings warnings\n\n$messageSummary\n\n\n\nComplete output:\n\n" | cat - "$resultFile" > tmp.txt && mv tmp.txt "$resultFile"
 }
 
 function main() {

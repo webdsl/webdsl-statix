@@ -45,6 +45,12 @@ rules
   normalize-ui : SubmitLinkAction(exp, action, props) -> SubmitLink(exp, action, props)
   normalize-ui : SubmitLinkNoProps(exp, action) -> SubmitLink(exp, action, [])
 
+  // desugar deprecated submit and submitlink syntax to submitelem and submitlinkelem
+  normalize-ui : Submit(exp, action, props) -> SubmitElem(action, [], elems)
+    with elems := [TemplateCall(TemplateCallId("output"), TCallArgs([Exp(exp)]), TCallPropAssigns([]), TemplateBody([]))]
+  normalize-ui : SubmitLink(exp, action, props) -> SubmitLinkElem(action, [], elems)
+    with elems := [TemplateCall(TemplateCallId("output"), TCallArgs([Exp(exp)]), TCallPropAssigns([]), TemplateBody([]))]
+
   normalize-ui : SubmitElemNoProps(action, elems) -> SubmitElem(action, [], elems)
   normalize-ui : SubmitLinkElemNoProps(action, elems) -> SubmitLinkElem(action, [], elems)
   normalize-ui : DownloadLinkNoProps(action, elems) -> DownloadLink(action, [], elems)

@@ -1,0 +1,15 @@
+module analysis/analysis-fails/entitynamehygiene-2
+
+language webdsl-statix
+
+test entitynamehygiene-2 [[
+//is not allowed
+application test
+
+page root {}
+
+  entity Int {
+    property :: String
+  }
+]] analysis fails
+

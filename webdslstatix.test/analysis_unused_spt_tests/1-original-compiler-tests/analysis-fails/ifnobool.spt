@@ -1,0 +1,20 @@
+module analysis/analysis-fails/ifnobool
+
+language webdsl-statix
+
+test ifnobool [[
+// should be of type Bool
+
+application test
+
+page root {}
+
+section functions
+
+  function do() {
+    if ("no bool") {
+      var a : String := "dinges";
+    }
+  }
+]] analysis fails
+

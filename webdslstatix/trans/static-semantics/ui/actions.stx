@@ -13,9 +13,9 @@ imports
 
 rules // var decls in templates and pages
 
-  templateElementOk(s, s_decl, TEVarDecl(varDecl))            :- templateVarDeclOk(s, s_decl, varDecl).
-  templateElementOk(s, s_decl, RequestScopeTemplate(varDecl)) :- templateVarDeclOk(s, s_decl, varDecl).
-  templateElementOk(s, s_decl, LocalScopeTemplate(varDecl))   :- templateVarDeclOk(s, s_decl, varDecl).
+  templateElementOk(s, s_decl, _, TEVarDecl(varDecl))            :- templateVarDeclOk(s, s_decl, varDecl).
+  templateElementOk(s, s_decl, _, RequestScopeTemplate(varDecl)) :- templateVarDeclOk(s, s_decl, varDecl).
+  templateElementOk(s, s_decl, _, LocalScopeTemplate(varDecl))   :- templateVarDeclOk(s, s_decl, varDecl).
 
   templateVarDeclOk: scope * scope * VarDecl
   templateVarDeclOk(s, s_decl, TemplateVarDecl(x, sort)) :- {t}
@@ -36,40 +36,70 @@ rules // var decls in templates and pages
     declareVar(s_decl, x, t),
     @x.type := t.
 
-rules // actions
+rules // action definitions
 
-  templateActionOk : scope * list(FormalArg) * list(Statement)
-  templateActionOk(s, args, stmts) :- {s_fun s_fun_body argTypes}
+  templateActionOk : scope * scope * string * list(FormalArg) * list(Statement) * BOOL
+  templateActionOk(s, s_pha, a, args, stmts, declare) :- {s_fun s_fun_body argTypes}
     new s_fun, s_fun -P-> s, // TO-DO: possibly create different label for edges out of actions, abusing P label here
     argTypes == typesOfArgs(s, args),
     declareParameters(s_fun, zipArgTypes(args, argTypes)),
     new s_fun_body, s_fun_body -P-> s_fun,
+    optionallyDeclareAction(s_pha, a, argTypes, declare),
     stmtsOk(s_fun_body, stmts, PAGE(_)).
 
-  templateElementOk(s, _, Action2TemplateElement(Action(_, a, FormalArgs(args), Block(stmts)))) :-
-    templateActionOk(s, args, stmts).
+  optionallyDeclareAction : scope * string * list(TYPE) * BOOL
+  optionallyDeclareAction(_, _, _, FALSE()).
+  optionallyDeclareAction(s, a, ts, TRUE()) :- declareAction(s, a, ts).
 
-rules // special action blocks in templates
+  defOk(_, Action2Definition(Action(_, a, _, _))) :- false | error $[Actions are only allowed in pages and templates] @a.
 
-  templateElementOk(s, _, Init(Block(stmts))) :-
+rules // action calls
+
+  templateElementOk(s, _, s_pha, Action2TemplateElement(Action(_, a, FormalArgs(args), Block(stmts)))) :-
+    templateActionOk(s, s_pha, a, args, stmts, TRUE()).
+
+  actionCallOrInlineOrExpOk : scope * ActionCallOrInlineOrExp
+  actionCallOrInlineOrExpOk(s, ActionCallOrInline(a)) :- actionCallOrInlineOk(s, a).
+  actionCallOrInlineOrExpOk(s, ActionCallOrInlineExp(PropertySubmitExp(e))) :-
+    typeCompatible(typeOfExp(s, e), string(s)) | error $[Expression must be compatible with type String].
+
+  actionCallOrInlineOk : scope * ActionCallOrInline
+  actionCallOrInlineOk(s, ActionCall(ThisCall(a, args))) :- {argTypes a' ts}
+    argTypes == typesOfExps(s, args),
+    resolveAction(s, a) == [(_, (a', ACTION(ts))) | _] | error $[Action [a] not defined] @a,
+    typesCompatible(argTypes, ts) == TRUE() | error $[Given argument types not compatible with action definition. Got [argTypes] but expected [ts]] @args,
+    @a.ref := a'.
+
+  actionCallOrInlineOk(s, InlineAction(Block(stmts))) :-
+    templateActionOk(s, s, "", [], stmts, FALSE()).
+
+rules // action blocks in templates
+
+  templateElementOk(s, _, _, Init(Block(stmts))) :-
+    stmtsOk(s, stmts, PAGE(_)).
+
+  templateElementOk(s, _, _, DataBindAction(Block(stmts))) :-
     stmtsOk(s, stmts, UNTYPED()).
 
-  templateElementOk(s, _, DataBindAction(Block(stmts))) :-
+  templateElementOk(s, _, _, RenderAction(Block(stmts))) :-
     stmtsOk(s, stmts, UNTYPED()).
 
-  templateElementOk(s, _, RenderAction(Block(stmts))) :-
+  templateElementOk(s, _, _, AllPhasesAction(Block(stmts))) :-
     stmtsOk(s, stmts, UNTYPED()).
 
-  templateElementOk(s, _, AllPhasesAction(Block(stmts))) :-
+  templateElementOk(s, _, _, ValidateAction(Block(stmts))) :-
     stmtsOk(s, stmts, UNTYPED()).
 
-  templateElementOk(s, _, ValidateAction(Block(stmts))) :-
-    stmtsOk(s, stmts, UNTYPED()).
+rules // statements
+
+  stmtOk(s, _, r@Return(_), PAGE(_)) :- false | error $[Expected page call in return statement].
+  stmtOk(s, _, r@Return(ThisCall2Exp(ThisCall(p, exps))), PAGE(_)) :-
+    pageCallOk_internal(s, p, exps).
 
 rules // expressions
 
   typeOfExp(s, RenderTemplateFunctionCall(tc)) = string(s) :-
-    templateCallOk(s, tc).
+    templateCallOk(s, s, tc).
 
   typeOfExp(s, ValidateTemplateFunctionCall(tc)) = string(s) :-
-    templateCallOk(s, tc).
+    templateCallOk(s, s, tc).

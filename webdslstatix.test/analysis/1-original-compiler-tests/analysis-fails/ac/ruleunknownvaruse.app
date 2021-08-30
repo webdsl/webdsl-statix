@@ -1,0 +1,20 @@
+//not defined
+
+//this check is not really necessary anymore, see variablenotdefined.app
+
+application test
+
+page root { }
+
+page name(a : Bool) { }
+
+entity User{name :: String}
+
+principal is User with credentials name
+
+access control rules
+
+  rule page name(a:Bool)
+  {
+    a && b
+  }

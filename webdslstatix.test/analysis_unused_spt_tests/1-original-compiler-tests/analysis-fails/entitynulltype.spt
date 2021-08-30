@@ -1,0 +1,17 @@
+module analysis/analysis-fails/entitynulltype
+
+language webdsl-statix
+
+test entitynulltype [[
+//Attribute type Null is not allowed
+application test
+
+page root {}
+
+section datamodel
+
+  entity User {
+    authoredPapers :: Null
+  }
+]] analysis fails
+

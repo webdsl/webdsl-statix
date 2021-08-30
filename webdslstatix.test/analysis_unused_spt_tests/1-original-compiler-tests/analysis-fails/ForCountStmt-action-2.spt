@@ -1,0 +1,21 @@
+module analysis/analysis-fails/ForCountStmt-action-2
+
+language webdsl-statix
+
+test ForCountStmt-action-2 [[
+//Expression should be of type
+
+application test
+
+  page root() { }
+
+  entity Entity2 {
+    
+  }
+
+  function root(){
+    for(i:Int from Entity2{} to 4){
+    }
+  }
+]] analysis fails
+

@@ -17,7 +17,7 @@ imports
 rules // definitions
 
   defOk(s, GlobalInit(Block(stmts))) :- {s_init}
-    new s_init, s_init -IMPORT-> s,
+    new s_init, s_init -DEF-> s,
     stmtsOk(s_init, stmts, VOID()).
 
 rules // statements
@@ -46,12 +46,16 @@ rules // statements
   stmtOk(s, _, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a mutable variable].
   stmtOk(s, _, Assignment(v@Var(x), exp), _) :- {t}
     variableType(s, x) == t,
+    isMutableOrRef(s, x, t),
+    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [t]],
+    @v.type := t.
+
+  isMutableOrRef : scope * string * TYPE
+  isMutableOrRef(s, x, t) :-
     or(
       isMutableB(s, x),
       isRef(t)
-    ) | error $[Variable [x] is not mutable],
-    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [t]],
-    @v.type := t.
+    ) | error $[Variable [x] is not mutable] @x.
 
   isRef : TYPE -> BOOL
   isRef(REF(_)) = TRUE().
@@ -198,23 +202,25 @@ rules // variables
 
   defOk(s, GlobalVarDecl(x, sort)) :- {t}
     t == typeOfSort(s, sort),
-    declareVar(s, x, t).
+    declareVar(s, x, t),
+    declareAnnotation(s, x, DERIVED()).
 
   defOk(s, GlobalVarDeclInit(x, sort, exp)) :- {t}
     t == typeOfSort(s, sort),
     typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [sort]] @exp,
-    declareVar(s, x, t).
+    declareVar(s, x, t),
+    declareAnnotation(s, x, DERIVED()).
 
   defOk(s, GlobalVarDeclInitInferred(x, exp)) :- {t}
     t == typeOfExp(s, exp),
     inequalType(t, UNTYPED()) | error $[Cannot resolve type of expression [exp]],
-    declareVar(s, x, t).
+    declareVar(s, x, t),
+    declareAnnotation(s, x, DERIVED()).
 
   noDuplicateVarDefs : scope * string
   noDuplicateVarDefs(s, x) :-
     query var filter P*
-              and { x' :- x' == ((x, _), _) }
-              min $ < P
+              and { x' :- x' == (x, _) }
               in s |-> [_].
 
   noDuplicateVarDefsInSuper : scope * string

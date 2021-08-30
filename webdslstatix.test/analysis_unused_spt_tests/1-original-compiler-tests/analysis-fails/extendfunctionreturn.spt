@@ -1,0 +1,24 @@
+module analysis/analysis-fails/extendfunctionreturn
+
+language webdsl-statix
+
+test extendfunctionreturn [[
+// function getA has no return type but tries to return a variable
+
+application test
+
+page root {}
+
+section datamodel
+
+globals {
+  function getA(i : Int) : String {
+    return "a";
+  }
+  
+  extend function getA(i : Int) {
+    return "b";
+  }
+}
+]] analysis fails
+

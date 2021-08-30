@@ -1,0 +1,31 @@
+module analysis/analysis-fails/session-entity-function-redefined-2
+
+language webdsl-statix
+
+test session-entity-function-redefined-2 [[
+//Function with signature test(Int, String) of entity 'Test' is defined multiple times.
+application test
+
+page root {}
+
+  session test{
+    name :: String
+
+  }
+  
+  extend session test{
+
+    function test(a:Int,b:String):String
+    {
+      return "test";
+    }
+  }
+  extend session test{
+    
+    function test(a:Int,b:String):String
+    {
+      return "test";
+    }
+  }
+]] analysis fails
+

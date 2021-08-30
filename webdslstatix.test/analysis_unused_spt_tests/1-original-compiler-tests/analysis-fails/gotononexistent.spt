@@ -1,0 +1,20 @@
+module analysis/analysis-fails/gotononexistent
+
+language webdsl-statix
+
+test gotononexistent [[
+//no page with signature
+
+application test
+
+page root {}
+
+section functions
+
+define page home(i : Int) {
+  init {
+    goto nonexistent(i);
+  }
+}
+]] analysis fails
+

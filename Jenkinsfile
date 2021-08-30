@@ -68,13 +68,24 @@ node{
       }
     }
 
-    stage('Run SPT Tests') {
+    stage('Run SPT Tests (Syntax)') {
       withMaven(
         mavenLocalRepo: ".repository",
         mavenOpts: '-Xmx4G -Xms4G -Xss64m'
       ) {
         sh '''
            ./run_spt_tests
+           '''
+      }
+    }
+
+    stage('Run Analysis Tests') {
+      withMaven(
+        mavenLocalRepo: ".repository",
+        mavenOpts: '-Xmx4G -Xms4G -Xss64m'
+      ) {
+        sh '''
+           ./run_analysis_tests
            '''
       }
     }
@@ -92,7 +103,7 @@ node{
 
     stage('Archive') {
       archiveArtifacts(
-        artifacts: 'spt-results/ , e2e-results/',
+        artifacts: 'spt-results/ , e2e-results/, analysis-results/',
         excludes: null,
         onlyIfSuccessful: false
       )

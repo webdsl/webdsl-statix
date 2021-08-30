@@ -1,0 +1,20 @@
+module analysis/analysis-fails/functionnoreturn
+
+language webdsl-statix
+
+test functionnoreturn [[
+// function getA has no return type but tries to return a variable
+
+application test
+
+page root {}
+
+section datamodel
+
+globals {
+  function getA(i : Int) {
+    return "a";
+  }
+}
+]] analysis fails
+

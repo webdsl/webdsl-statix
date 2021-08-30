@@ -10,7 +10,7 @@ rules
   normalize-core : ModuleDefs(x, defs, sections)      -> Module(x, [Section("s", defs) | sections])
   normalize-core : BuiltInDefs(defs, sections)        -> BuiltIn([Section("s", defs) | sections])
 
-  normalize-core : Module(".servletapp/src-webdsl-template/built-in", sections) -> BuiltIn(sections)
+  normalize-core : Module(ModuleName([ModulePart(".servletapp"), ModulePart("src-webdsl-template"), ModulePart("built-in")]), sections) -> BuiltIn(sections)
 
   normalize-core : RefSortAlt(sort) -> RefSort(sort)
 

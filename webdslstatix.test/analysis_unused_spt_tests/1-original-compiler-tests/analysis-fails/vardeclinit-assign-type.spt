@@ -1,0 +1,20 @@
+module analysis/analysis-fails/vardeclinit-assign-type
+
+language webdsl-statix
+
+test vardeclinit-assign-type [[
+//is not of type Int
+
+application test
+
+page root {}
+  entity User{}
+  function a(){
+    var a :Int := "string";
+    var a :Int := User{};
+    
+  }
+
+  
+]] analysis fails
+

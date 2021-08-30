@@ -1,0 +1,22 @@
+module analysis/analysis-fails/entitymultipledefssession
+
+language webdsl-statix
+
+test entitymultipledefssession [[
+//is defined multiple times
+
+application test
+
+
+page root {}
+  
+  session user{
+    name :: String
+  }
+  
+  session user{
+    name :: String
+    password :: Secret
+  }
+]] analysis fails
+

@@ -1,0 +1,20 @@
+module analysis/analysis-fails/ac/principalwrongcred
+
+language webdsl-statix
+
+test principalwrongcred [[
+//is not a property of entity
+
+application test
+
+page root {}
+
+section principal
+
+entity User{
+name :: String
+}
+
+principal is User with credentials nam
+]] analysis fails
+

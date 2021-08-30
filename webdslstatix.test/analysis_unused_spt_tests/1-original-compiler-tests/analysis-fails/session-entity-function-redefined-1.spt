@@ -1,0 +1,28 @@
+module analysis/analysis-fails/session-entity-function-redefined-1
+
+language webdsl-statix
+
+test session-entity-function-redefined-1 [[
+//Function with signature dup(Int, String) of entity 'User' is defined multiple times.
+
+application test
+
+page root {}
+
+  session user{
+    name :: String
+    function dup(a:Int,b:String):String
+    {
+      return b;
+    }
+  }
+  
+  extend session user{
+    number :: Int
+    function dup(a:Int,b:String):String
+    {
+      return "test";
+    }
+  }
+]] analysis fails
+

@@ -1,0 +1,23 @@
+module analysis/analysis-fails/ac/special-ac-rule
+
+language webdsl-statix
+
+test special-ac-rule [[
+//#1 rule type unknown
+//#1 rule should contain a Bool expression
+
+application test
+
+page root {}
+
+entity User{name :: String}
+
+principal is User with credentials name
+
+access control rules
+
+  rule dfgertfcghfersthfgdfghx { true }
+  rule logsql { true }
+  rule logsql { "not a Bool" }
+]] analysis fails
+

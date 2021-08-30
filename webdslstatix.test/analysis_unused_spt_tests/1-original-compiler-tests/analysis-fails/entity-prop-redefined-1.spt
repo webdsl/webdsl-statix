@@ -1,0 +1,20 @@
+module analysis/analysis-fails/entity-prop-redefined-1
+
+language webdsl-statix
+
+test entity-prop-redefined-1 [[
+//Property 'name' of entity 'User' is defined multiple times.
+
+application test
+
+page root {}
+
+  entity User{
+    name :: String (id)
+  }
+  
+  extend entity User{
+    name :: Int
+  }
+]] analysis fails
+

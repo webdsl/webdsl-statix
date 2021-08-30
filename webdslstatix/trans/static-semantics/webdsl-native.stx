@@ -33,7 +33,7 @@ rules // declarations
 
   nativeClassOk : scope * string * string * scope * list(NCElement)
   nativeClassOk(s, c, alias, s_super, elems) :- {s_class}
-    new s_class, s_class -INHERIT-> s_super,
+    new s_class, s_class -INHERIT-> s_super, s_class -DEF-> s,
     noCircularInheritance(s_class) | error $[Circular inhertitance detected] @c,
     declareNativeClass(s, alias, s_class),
     declareVar(s, alias, STATICNATIVECLASS(s_class)), // declare class name as global variable that refers to the static scope

@@ -1,0 +1,23 @@
+module analysis/analysis-fails/ifelsenobool
+
+language webdsl-statix
+
+test ifelsenobool [[
+// should be of type Bool
+
+application test
+
+page root {}
+
+section functions
+
+
+  function do() {
+    if ("no bool") {
+      var a : String := "dinges";
+    } else {
+      var a : String := "dinges";
+    }
+  }
+]] analysis fails
+

@@ -1,0 +1,17 @@
+module analysis/analysis-fails/ac/predicateboolexp
+
+language webdsl-statix
+
+test predicateboolexp [[
+//predicate should contain a Bool expression
+application test
+
+  page root() { }
+
+section predicate
+
+predicate foo(i:Int){
+  i  
+}
+]] analysis fails
+

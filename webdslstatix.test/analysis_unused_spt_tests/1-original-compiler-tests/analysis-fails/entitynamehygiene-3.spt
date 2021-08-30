@@ -1,0 +1,15 @@
+module analysis/analysis-fails/entitynamehygiene-3
+
+language webdsl-statix
+
+test entitynamehygiene-3 [[
+// Entity name: "small" should start with a Capital
+application test
+
+page root {}
+
+  entity small {
+    property :: String
+  }
+]] analysis fails
+
