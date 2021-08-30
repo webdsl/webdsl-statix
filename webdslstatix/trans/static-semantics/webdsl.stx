@@ -44,35 +44,48 @@ signature
   relations
     mod : list(string) * scope
 
-    type : string * TYPE
+    type : string * scope
 
     extendentity : string * scope
 
-    page     : string * TYPE
-    template : string * TYPE
+    page     : string * scope
+    template : string * scope
 
     function : string * TYPE
 
     var      : string * TYPE
 
+    typeOf : TYPE
+    modOf : scope
+    extendentityOf : scope
+
 rules // module declaration and resolving
 
   declareMod : scope * list(string) * scope
   declareMod(s, m, s_mod) :-
-    !mod[m, s_mod] in s,
+    !mod[m, withMod(s_mod)] in s,
     resolveMod(s, m) == [_] | error $[Module [m] is already declared].
 
   resolveMod : scope * list(string) -> list((path * (list(string) * scope)))
-  resolveMod(s, m) = mods :-
+  resolveMod(s, m) = modsOf(ss) :-
     query mod filter e
               and { m' :- m' == (m, _) }
-              in s |-> mods.
+              in s |-> ss.
 
   resolveModWildcard : scope * list(string) -> list((path * (list(string) * scope)))
-  resolveModWildcard(s, names) = mods :-
+  resolveModWildcard(s, names) = modsOf(ss) :-
     query mod filter e
               and { m' :- isPrefix(names, m') }
-              in s |-> mods.
+              in s |-> ss.
+
+  withMod : scope -> scope
+  withMod(s_mod) = s :-
+    new s, !modOf[s_mod] in s.
+
+  modsOf maps modOf(list(*)) = list(*)
+  modOf : (path * (list(string) * scope)) -> (path * (list(string) * scope))
+  modOf((p, (m, s))) = (p, (m, s_mod)) :-
+    query modOf filter e in s |-> [(_, s_mod)].
 
   isPrefix : list(string) * (list(string) * scope)
   isPrefix(names, (names', _)) :- isPrefix_internal(names, names').
@@ -86,23 +99,32 @@ rules // type declaration and resolving
 
   declareType : scope * string * TYPE
   declareType(s, name, t) :-
-    !type[name, t] in s,
+    !type[name, withType(t)] in s,
     resolveType(s, name) == [(_, (_, t))] | error $[Type [name] is defined multiple times] @name.
 
   resolveType : scope * string -> list((path * (string * TYPE)))
-  resolveType(s, name) = ps :-
+  resolveType(s, name) = typesOf(ts) :-
     query type filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT?))
                and { e' :- e' == (name, _) }
-               in s |-> ps.
+               in s |-> ts.
+
+  withType : TYPE -> scope
+  withType(t) = s :-
+    new s, !typeOf[t] in s.
+
+  typesOf maps typeOf(list(*)) = list(*)
+  typeOf : (path * (string * scope)) -> (path * (string * TYPE))
+  typeOf((p, (x, s))) = (p, (x, t)) :-
+    query typeOf filter e in s |-> [(_, t)].
 
 rules // extend entity declaration
 
   declareExtendEntity : scope * string * scope
   declareExtendEntity(s, e, s_extend) :-
-    !extendentity[e, s_extend] in s.
+    !extendentity[e, withExtendentity(s_extend)] in s.
 
   resolveExtendEntity : scope * string -> list((path * (string * scope)))
-  resolveExtendEntity(s, e) = ps :-
+  resolveExtendEntity(s, e) = extendentitiesOf(ps) :-
     query extendentity filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT? GLOBAL?))
                        and { e' :- e' == (e, _) }
                        min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < DEF, $ < IMPORT, $ < GLOBAL,
@@ -114,6 +136,15 @@ rules // extend entity declaration
                        and { (entity, entity_scope), (entity, entity_scope) }
                        in s |-> ps.
 
+  withExtendentity : scope -> scope
+  withExtendentity(s_extend_entity) = s :-
+    new s, !extendentityOf[s_extend_entity] in s.
+
+  extendentitiesOf maps extendentityOf(list(*)) = list(*)
+  extendentityOf : (path * (string * scope)) -> (path * (string * scope))
+  extendentityOf((p, (x, s))) = (p, (x, s_extend_entity)) :-
+    query extendentityOf filter e in s |-> [(_, s_extend_entity)].
+
 rules // ui declaration and resolving
 
   declareTemplate : scope * string * list(TYPE)
@@ -124,12 +155,12 @@ rules // ui declaration and resolving
 
   declareTemplate_internal : scope * string * list(TYPE) * BOOL
   declareTemplate_internal(s, t, ts, ajax) :-
-    !template[t, TEMPLATE(ts, ajax)] in s,
+    !template[t, withType(TEMPLATE(ts, ajax))] in s,
     resolvePage(s, t) == [] | error $[Page/template [t] is defined multiple times] @t.
 
   declarePage : scope * string * list(TYPE)
   declarePage(s, p, ts) :-
-    !page[p, PAGE(ts)] in s,
+    !page[p, withType(PAGE(ts))] in s,
     resolveUi(s, p) == [(_, (_, PAGE(ts)))] | error $[Page/template [p] is defined multiple times] @p.
 
   resolveUi : scope * string -> list((path * (string * TYPE)))
@@ -141,25 +172,24 @@ rules // ui declaration and resolving
   resolveAjaxTemplate : scope * string -> list((path * (string * TYPE)))
   resolveAjaxTemplate(s, t) = resolveTemplate_internal(s, t, TRUE()).
 
-  resolveTemplateNoAjax : scope * string -> list((path * (string * TYPE)))
-  resolveTemplateNoAjax(s, t) = ps :-
-    query template filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
-                   and { t' :- t' == (t, TEMPLATE(_, FALSE())) }
-                   in s |-> ps.
-
   resolveTemplate_internal : scope * string * BOOL -> list((path * (string * TYPE)))
-  resolveTemplate_internal(s, t, FALSE()) = ps :-
+  resolveTemplate_internal(s, t, FALSE()) = typesOf(ps) :-
     query template filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
                    and { t' :- t' == (t, _) }
                    in s |-> ps.
 
-  resolveTemplate_internal(s, t, TRUE()) = ps :-
-    query template filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
-                   and { t' :- t' == (t, TEMPLATE(_, TRUE())) }
-                   in s |-> ps.
+  resolveTemplate_internal(s, t, TRUE()) = filterTemplateResults(resolveTemplate_internal(s, t, FALSE()), TRUE()).
+
+  resolveTemplateNoAjax : scope * string -> list((path * (string * TYPE)))
+  resolveTemplateNoAjax(s, t) = filterTemplateResults(resolveTemplate_internal(s, t, FALSE()), FALSE()).
+
+  filterTemplateResults : list((path * (string * TYPE))) * BOOL -> list((path * (string * TYPE)))
+  filterTemplateResults([], _) = [].
+  filterTemplateResults([t@(_, (_, TEMPLATE(_, b))) | ts], b) = [t | filterTemplateResults(ts, b)].
+  filterTemplateResults([_ | ts], b) = filterTemplateResults(ts, b).
 
   resolvePage : scope * string -> list((path * (string * TYPE)))
-  resolvePage(s, p) = ps :-
+  resolvePage(s, p) = typesOf(ps) :-
     query page filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
                and { p' :- p' == (p, _) }
                in s |-> ps.
