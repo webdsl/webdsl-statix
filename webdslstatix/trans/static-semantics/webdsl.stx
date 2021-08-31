@@ -51,7 +51,7 @@ signature
     page     : string * scope
     template : string * scope
 
-    function : string * TYPE
+    function : string * scope
 
     var      : string * scope
 
@@ -183,42 +183,67 @@ rules // function declaration and resolving
   declareStaticFunction(s, f, args, return) :- declareFunction_internal(s, f, args, return, TRUE()).
 
   declareFunction_internal : scope * string * list(TYPE) * TYPE * BOOL
-  declareFunction_internal(s, f, args, return, static) :-
-    !function[f, FUNCTION(args, return, static)] in s.
+  declareFunction_internal(s, f, args, return, static) :- { s_type }
+    s_type == withType(FUNCTION(args, return, static)),
+    !function[f, s_type] in s.
 
   resolveFunction : scope * string -> list((path * (string * TYPE)))
-  resolveFunction(s, f) = ps :-
+  resolveFunction(s, f) = filterFunctionResults(typesOf(ps), FALSE()) :-
     query function filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
-                   and { f' :- f' == (f, FUNCTION(_, _, _)) }
+                   and { f' :- f' == (f, _) }
                    in s |-> ps.
 
   resolveEntityFunction : scope * string -> list((path * (string * TYPE)))
-  resolveEntityFunction(s, x) = ps :-
+  resolveEntityFunction(s, x) = filterDuplicateTypeResults(filterFunctionResults(typesOf(ps), FALSE())) :-
     query function filter EXTEND? (INHERIT EXTEND?)*
                    and { x' :- x' == (x, _) }
-                   min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
-                   and { (f, FUNCTION(args, _, _)), (f, FUNCTION(args, _, _)) }
+//                   min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
+//                   and { (f, FUNCTION(args, _, _)), (f, FUNCTION(args, _, _)) }
                    in s |-> ps.
 
   resolveStaticEntityFunction : scope * string -> list((path * (string * TYPE)))
-  resolveStaticEntityFunction(s, x) = ps :-
+  resolveStaticEntityFunction(s, x) = filterDuplicateTypeResults(filterFunctionResults(typesOf(ps), TRUE())) :-
     query function filter EXTEND? (INHERIT EXTEND?)*
-                   and { x' :- x' == (x, FUNCTION(_, _, TRUE())) }
-                   min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
-                   and { (f, FUNCTION(args, _, _)), (f, FUNCTION(args, _, _)) }
+                   and { x' :- x' == (x, _) }
+//                   min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
+//                   and { (f, FUNCTION(args, _, _)), (f, FUNCTION(args, _, _)) }
                    in s |-> ps.
+
+  // last BOOL arg indiciates if only static function should be returned (TRUE()) or all functions (FALSE())
+  filterFunctionResults : list((path * (string * TYPE))) * BOOL -> list((path * (string * TYPE)))
+  filterFunctionResults([], _) = [].
+  filterFunctionResults([f@(_, (_, FUNCTION(_, _, TRUE()))) | fs], b@TRUE()) = [f | filterFunctionResults(fs, b)].
+  filterFunctionResults([f@(_, (_, FUNCTION(_, _, _))) | fs], b@FALSE()) = [f | filterFunctionResults(fs, b)].
+  filterFunctionResults([_ | fs], b) = filterFunctionResults(fs, b).
+
+  filterDuplicateTypeResults : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
+  filterDuplicateTypeResults(rs) = filterDistinctTypeResultsZipped(zipTypeResultsWithDistinctBool(rs, [])).
+
+  zipTypeResultsWithDistinctBool : list((path * (string * TYPE))) * list(TYPE) -> list(((path * (string * TYPE)) * BOOL))
+  zipTypeResultsWithDistinctBool([], _) = [].
+  zipTypeResultsWithDistinctBool([r@(_, (_, t)) | rs], ts) = [(r, notB(typeInTypeListB(t, ts))) | zipTypeResultsWithDistinctBool(rs, [t | ts])].
+
+  typeInTypeListB : TYPE * list(TYPE) -> BOOL
+  typeInTypeListB(_, []) = FALSE().
+  typeInTypeListB(t, [t | _]) = TRUE().
+  typeInTypeListB(t, [_ | ts]) = typeInTypeListB(t, ts).
+
+  filterDistinctTypeResultsZipped : list(((path * (string * TYPE)) * BOOL)) -> list((path * (string * TYPE)))
+  filterDistinctTypeResultsZipped([]) = [].
+  filterDistinctTypeResultsZipped([(r, TRUE()) | rs]) = [r | filterDistinctTypeResultsZipped(rs)].
+  filterDistinctTypeResultsZipped([_ | rs]) = filterDistinctTypeResultsZipped(rs).
 
 rules // action and placeholder declaration and resolving
 
   declareAction : scope * string * list(TYPE)
   declareAction(s, a, ts) :-
-    !function[a, ACTION(ts)] in s,
+    !function[a, withType(ACTION(ts))] in s,
     resolveAction(s, a) == [(_, (_, ACTION(ts)))] | error $[Action [a] is defined multiple times] @a.
 
   resolveAction : scope * string -> list((path * (string * TYPE)))
-  resolveAction(s, a) = as :-
+  resolveAction(s, a) = filterActionResults(typesOf(as)) :-
     query function filter P*
-                   and { a' :- a' == (a, ACTION(_)) }
+                   and { a' :- a' == (a, _) }
                    in s |-> as.
 
   declarePlaceholder : scope * string
@@ -227,13 +252,18 @@ rules // action and placeholder declaration and resolving
     noDuplicateVarDefs(s, ph) | error $[Variable [ph] is defined multiple times] @ph.
 
   resolvePlaceholder : scope * string -> list((path * (string * TYPE)))
-  resolvePlaceholder(s, ph) = filterPlaceholdersOnly(typesOf(phs)) :-
+  resolvePlaceholder(s, ph) = filterPlaceholderResults(typesOf(phs)) :-
     query var filter P* in s |-> phs.
 
-  //BUILTINTYPE("Placeholder", _)
-  filterPlaceholdersOnly : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
-  filterPlaceholdersOnly([]) = [].
-  filterPlaceholdersOnly([hd@(_, (_, BUILTINTYPE("Placeholder", _))) | tl]) = [].
+  filterActionResults : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
+  filterActionResults([]) = [].
+  filterActionResults([a@(_, (_, ACTION(_))) | as]) = [a | filterActionResults(as)].
+  filterActionResults([_ | as]) = filterActionResults(as).
+
+  filterPlaceholderResults : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
+  filterPlaceholderResults([]) = [].
+  filterPlaceholderResults([a@(_, (_, ACTION(_))) | as]) = [a | filterPlaceholderResults(as)].
+  filterPlaceholderResults([_ | as]) = filterPlaceholderResults(as).
 
 rules // variable declaration and resolving
 
