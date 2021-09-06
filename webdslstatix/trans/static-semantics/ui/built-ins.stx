@@ -25,11 +25,11 @@ rules
 
     declareTemplate(s, "navigate", []),
     declareTemplate(s, "navigate", [url(s)]),
-    declareTemplate(s, "navigate", [PAGE(_)]),
+//    declareTemplate(s, "navigate", [PAGE(_)]), // disable PAGE(_) declarations for now since they are producing nabl2.Var in libraries
     declareTemplate(s, "navigate", [string(s), url(s)]),
-    declareTemplate(s, "navigate", [string(s), PAGE(_)]),
+//    declareTemplate(s, "navigate", [string(s), PAGE(_)]), // disable PAGE(_) declarations for now since they are producing nabl2.Var in libraries
     declareTemplate(s, "navigatebutton", [url(s), string(s)]),
-    declareTemplate(s, "navigatebutton", [PAGE(_), string(s)]),
+//    declareTemplate(s, "navigatebutton", [PAGE(_), string(s)]), // disable PAGE(_) declarations for now since they are producing nabl2.Var in libraries
 
     declareTemplate(s, "includeCSS", [string(s)]),
     declareTemplate(s, "includeCSS", [string(s), string(s)]),
