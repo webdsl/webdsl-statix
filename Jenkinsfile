@@ -85,7 +85,7 @@ node{
         mavenOpts: '-Xmx4G -Xms4G -Xss64m'
       ) {
         sh '''
-           echo "SKIPPED ANALYSIS TESTS IN CONCURRENT BRANCH"
+           echo "SKIPPED ANALYSIS TESTS IN TRADITIONAL-SOLVER BRANCH"
            '''
       }
     }
