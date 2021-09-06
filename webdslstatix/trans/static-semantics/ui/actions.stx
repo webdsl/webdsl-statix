@@ -98,8 +98,14 @@ rules // statements
 
 rules // expressions
 
+  // pass new scope as placeholder and action scope because passing `s`
+  // would introduce a CloseLabel exception in the concurrent solver.
+  // this causes any actions/placeholders references and declarations to fail
+  // but this is not a big deal since there's no use case for working with
+  // actions/placeholders in rendertemplate(...) and validatetemplate(...) calls
+
   typeOfExp(s, RenderTemplateFunctionCall(tc)) = string(s) :-
-    templateCallOk(s, s, tc).
+    templateCallOk(s, new, tc).
 
   typeOfExp(s, ValidateTemplateFunctionCall(tc)) = string(s) :-
-    templateCallOk(s, s, tc).
+    templateCallOk(s, new, tc).

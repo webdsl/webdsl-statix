@@ -153,7 +153,7 @@ rules // function definitions
     query function filter EXTEND?
                    and { f' :- f' == (f, _) }
                    in s |-> ps,
-    amountOfFunDeclsWithArgs(ps, types, 0) == 1
+    amountOfFunDeclsWithArgs(filterFunctionResults(typesOf(ps), FALSE()), types, 0) == 1
         | error $[Duplicate definition of function [f] with argument types [types]] @f.
 
   // helper function for noDuplicateFunDefs that counts the amount of function with a given name and argument types
