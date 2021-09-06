@@ -50,6 +50,7 @@ signature
 
     page     : string * scope
     template : string * scope
+    ac       : string * scope
 
     function : string * scope
 
@@ -174,6 +175,19 @@ rules // ui declaration and resolving
                and { p' :- p' == (p, _) }
                in s |-> ps.
 
+rules // ac rules
+
+  declarePointcut : scope * string * list(TYPE)
+  declarePointcut(s, p, ts) :-
+    !ac[p, withType(POINTCUT(p, ts))] in s,
+    resolvePointcut(s, p) == [_] | error $[Pointcut [p] is defined multiple times] @p.
+
+  resolvePointcut : scope * string -> list((path * (string * TYPE)))
+  resolvePointcut(s, p) = typesOf(ps) :-
+    query ac filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
+             and { p' :- p' == (p, _) }
+             in s |-> ps.
+
 rules // function declaration and resolving
 
   declareFunction : scope * string * list(TYPE) * TYPE
@@ -197,16 +211,12 @@ rules // function declaration and resolving
   resolveEntityFunction(s, x) = filterDuplicateTypeResults(filterFunctionResults(typesOf(ps), FALSE())) :-
     query function filter EXTEND? (INHERIT EXTEND?)*
                    and { x' :- x' == (x, _) }
-//                   min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
-//                   and { (f, FUNCTION(args, _, _)), (f, FUNCTION(args, _, _)) }
                    in s |-> ps.
 
   resolveStaticEntityFunction : scope * string -> list((path * (string * TYPE)))
   resolveStaticEntityFunction(s, x) = filterDuplicateTypeResults(filterFunctionResults(typesOf(ps), TRUE())) :-
     query function filter EXTEND? (INHERIT EXTEND?)*
                    and { x' :- x' == (x, _) }
-//                   min $ < EXTEND, $ < INHERIT, EXTEND < INHERIT
-//                   and { (f, FUNCTION(args, _, _)), (f, FUNCTION(args, _, _)) }
                    in s |-> ps.
 
   // last BOOL arg indiciates if only static function should be returned (TRUE()) or all functions (FALSE())
@@ -443,3 +453,19 @@ rules // utils
   queryResultTypes maps queryResultType(list(*)) = list(*)
   queryResultType : (path * (string * TYPE)) -> TYPE
   queryResultType((_, (_, t))) = t.
+
+  argNames maps argName(list(*)) = list(*)
+  argName : FormalArg -> string
+  argName(Arg(x, _)) = x.
+
+  sameElements : list(string) * list(string)
+    sameElements1 : list(string) * list(string) * list(string)
+
+  sameElements(l1, l2) :-
+    sameElements1(l1, l2, l2),
+    sameElements1(l2, l1, l1).
+
+    sameElements1([], _, _) :- true.
+    sameElements1([x | xs], [x | ys], completeYs) :- sameElements1(xs, completeYs, completeYs).
+    sameElements1([x | xs], [y | ys], completeYs) :- sameElements1([x | xs], ys, completeYs).
+    sameElements1([x | xs], []      , completeYs) :- false.

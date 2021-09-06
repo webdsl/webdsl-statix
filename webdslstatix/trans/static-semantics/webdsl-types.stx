@@ -28,6 +28,9 @@ signature
     // BOOL indicates if template is ajax-enabled or not
     TEMPLATE : list(TYPE) * BOOL -> TYPE
 
+    // access control
+    POINTCUT  : string * list(TYPE) -> TYPE
+
     LIST : TYPE -> TYPE
     SET  : TYPE -> TYPE
     REF  : TYPE -> TYPE

@@ -11,7 +11,7 @@ principal is User with credentials name
 
 access control rules
 
-  rule page name()
+  rule page root()
   {
     //should just complain about the expression, but not about the rule not having a Bool check
     1+true-4543+"45trgrt"

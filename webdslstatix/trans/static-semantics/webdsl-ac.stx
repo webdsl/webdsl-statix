@@ -187,6 +187,19 @@ rules // predicates
   declPredicate(s, p, argTypes, return, TRUE()) :- declFunctionGlobal(s, p, argTypes, return).
   declPredicate(s, p, argTypes, return, FALSE()) :- declFunctionEntity(s, p, argTypes, return, FALSE()).
 
+rules // pointcuts
+
+  acDefOk(s, AccessControlPointcut(p, fargs, elems)) :- { ts }
+    ts == typesOfArgs(s, fargs),
+    declarePointcut(s, p, ts),
+    acPointcutElemsOk(s, argNames(fargs), elems).
+
+  acPointcutElemsOk maps acPointcutElemOk(*, *, list(*))
+  acPointcutElemOk : scope * list(string) * AccessControlPointcutElement
+  acPointcutElemOk(s, pointcutArgs, elem@AccessControlPointcutElement(t, x, args, _)) :-
+    sameElements(pointcutArgs, args) | error $[Pointcut element must use all pointcut arguments: [pointcutArgs]] @elem,
+    try { false } | warning $[This pointcut element is not yet supported] @t.
+
 rules // utils
 
   principalDefined : scope

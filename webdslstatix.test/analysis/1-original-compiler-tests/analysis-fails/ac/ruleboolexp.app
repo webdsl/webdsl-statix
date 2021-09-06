@@ -10,7 +10,7 @@ principal is User with credentials name
 
 access control rules
 
-  rule page name()
+  rule page root()
   {
     //Int
     1+1
