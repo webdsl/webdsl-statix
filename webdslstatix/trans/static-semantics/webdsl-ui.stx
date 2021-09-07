@@ -27,14 +27,20 @@ rules // page definitions
     declareParameters(s_page, zipArgTypes(fargs, fargTypes)),
     new s_pha, s_pha -P-> s_page,
     new s_body, s_body -P-> s_pha,
-    declarePage(s, x, fargTypes),
+    optionallyDeclarePage(s, x, fargTypes, notB(isOverrideB(mods))),
+    overriddenElementExists(s, Page(), x, FALSE(), isOverrideB(mods)),
     templateElementOrderOk(elements, FALSE(), FALSE()),
     templateElementsOk(s_body, s_pha, elements).
+
+  optionallyDeclarePage : scope * string * list(TYPE) * BOOL
+  optionallyDeclarePage(_, _, _, FALSE()).
+  optionallyDeclarePage(s, x, fargTypes, TRUE()) :- declarePage(s, x, fargTypes).
 
   pageModsOk maps pageModOk(*, list(*))
   pageModOk : scope * Modifier
   pageModOk(_, _) :- try { false } | warning $[This modifier is not yet implemented].
   pageModOk(s, AjaxTemplate()) :- false | error $[A page cannot be an ajax template].
+  pageModOk(s, TemplateModOverride()).
 
 rules // template definitions
 
@@ -51,7 +57,8 @@ rules // template definitions
     declTArgs(s_template, targTypes),
     new s_pha, s_pha -P-> s_template,
     new s_body, s_body -P-> s_pha,
-    declTemplate(s, t, fargTypes, targTypes, isAjaxTemplate(mods)),
+    optionallyDeclareTemplate(s, t, fargTypes, targTypes, isAjaxTemplate(mods), notB(isOverrideB(mods))),
+    overriddenElementExists(s, Template(), t, isAjaxTemplate(mods), isOverrideB(mods)),
     templateElementOrderOk(elements, FALSE(), FALSE()),
     templateElementsOk(s_body, s_pha, elements).
 
@@ -59,6 +66,7 @@ rules // template definitions
   uiModOk : scope * Modifier
   uiModOk(_, _) :- try { false } | warning $[This modifier is not yet implemented].
   uiModOk(s, AjaxTemplate()).
+  uiModOk(s, TemplateModOverride()).
 
   nestedTemplateOk : scope * TemplateDefinition
   nestedTemplateOk(s, DefineTemplate(_, t, FormalArgs(fargs), TemplateArgs(targs), elements)) :- {fargTypes targTypes sigs s_template s_pha s_body}
@@ -78,6 +86,17 @@ rules // template definitions
   isAjaxTemplate([]) = FALSE().
   isAjaxTemplate([_ | mods]) = isAjaxTemplate(mods).
   isAjaxTemplate([AjaxTemplate() | _]) = TRUE().
+
+  isOverrideB : list(Modifier) -> BOOL
+  isOverrideB([]) = FALSE().
+  isOverrideB([_ | mods]) = isOverrideB(mods).
+  isOverrideB([TemplateModOverride() | _]) = TRUE().
+
+  overriddenElementExists : scope * Modifier * string * BOOL * BOOL
+  overriddenElementExists(_, _, _, _, FALSE()).
+  overriddenElementExists(s, Page(), p, _, TRUE()) :- resolvePage(s, p) == [(_, (_, _))] | error $[Page [p] does not exist] @p.
+  overriddenElementExists(s, Template(), t, FALSE(), TRUE()) :- resolveTemplateNoAjax(s, t) == [(_, (_, _))] | error $[Template [t] does not exist] @t.
+  overriddenElementExists(s, Template(), t, TRUE(), TRUE()) :- resolveAjaxTemplate(s, t) == [(_, (_, _))] | error $[Ajax template [t] does not exist] @t.
 
   optionallyDeclareTemplate : scope * string * list(TYPE) * list((string * list(TYPE))) * BOOL * BOOL
   optionallyDeclareTemplate(_, _, _, _, _, FALSE()).

@@ -10,7 +10,7 @@ rules
         <elem> (Page(), mods)
       ; newMods := <filter(not(?Page()))> mods
 
-  normalize-ui : Define([], x, fargs, targs, telements) -> DefineTemplate([], x, fargs, targs, telements)
+//  normalize-ui : Define([], x, fargs, targs, telements) -> DefineTemplate([], x, fargs, targs, telements)
 
   normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineTemplate(newMods, x, fargs, targs, telements)
     where
@@ -25,6 +25,14 @@ rules
     where
         <elem> (Email(), mods)
       ; newMods := <filter(not(?Email()))> mods
+
+  normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineTemplate(mods, x, fargs, targs, telements)
+    where
+        <not(fetch-elem(?Page()))> mods
+      ; <not(fetch-elem(?Template()))> mods
+      ; <not(fetch-elem(?AjaxTemplate()))> mods
+      ; <not(fetch-elem(?Email()))> mods
+      ; <not(fetch-elem(?WebService()))> mods
 
   normalize-ui : OptFormalArgsNone() -> FormalArgs([])
   normalize-ui : OptTemplateArgsNone() -> TemplateArgs([])

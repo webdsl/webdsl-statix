@@ -272,8 +272,8 @@ rules // action and placeholder declaration and resolving
 
   filterPlaceholderResults : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
   filterPlaceholderResults([]) = [].
-  filterPlaceholderResults([a@(_, (_, ACTION(_))) | as]) = [a | filterPlaceholderResults(as)].
-  filterPlaceholderResults([_ | as]) = filterPlaceholderResults(as).
+  filterPlaceholderResults([ph@(_, (_, BUILTINTYPE("Placeholder", _))) | phs]) = [ph | filterPlaceholderResults(phs)].
+  filterPlaceholderResults([_ | phs]) = filterPlaceholderResults(phs).
 
 rules // variable declaration and resolving
 

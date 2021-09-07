@@ -263,12 +263,12 @@ native class org.webdsl.search.SearchStatistics as SearchStatistics{
 }
 
 //The default analyzer, equal to the one used by default in hibernate search
-default_builtin_analyzer analyzer hsearchstandardanalyzer{
-  tokenizer = StandardTokenizer
-  token filter = StandardFilter
-  token filter = LowerCaseFilter
-  token filter = StopFilter
-}
+//default_builtin_analyzer analyzer hsearchstandardanalyzer{
+//  tokenizer = StandardTokenizer
+//  token filter = StandardFilter
+//  token filter = LowerCaseFilter
+//  token filter = StopFilter
+//}
 
 //Template showing the info available through Hibernate Search statistics
 template showSearchStats(){
@@ -755,9 +755,9 @@ native class utils.ThreadLocalEmailContext as ThreadLocalEmailContext{
 function inEmailContext(): Bool {
 
 }
-define email sendQueuedEmail( q: QueuedEmail ){
-
-}
+//define email sendQueuedEmail( q: QueuedEmail ){
+//
+//}
 
 
 // logging
