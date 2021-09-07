@@ -469,3 +469,8 @@ rules // utils
     sameElements1([x | xs], [x | ys], completeYs) :- sameElements1(xs, completeYs, completeYs).
     sameElements1([x | xs], [y | ys], completeYs) :- sameElements1([x | xs], ys, completeYs).
     sameElements1([x | xs], []      , completeYs) :- false.
+
+  typesOfStrings maps typeOfString(*, list(*)) = list(*)
+  typeOfString : scope * string -> TYPE
+  typeOfString(s, x) = t :-
+    resolveVar(s, x) == [(_, (_, t))] | error $[Unable to find variable [x]].

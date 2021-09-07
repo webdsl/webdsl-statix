@@ -131,17 +131,17 @@ rules // access control rules
   acRuleSignatureOk(_, _, MatchName(_, WildCardArg()), _).
 
   acRuleSignatureOk(s, ACTypePage(), MatchName(p, OptWildCardArgNone()), MatchArgs(_, WildCardArg())) :-
-    pageType(s, p) == PAGE(_).
+    pageType(s, p) == PAGE(_) | error $[No page named [p] exists] @p.
 
   acRuleSignatureOk(s, ACTypePage(), MatchName(p, OptWildCardArgNone()), MatchArgs(args, OptWildCardArgNone())) :- { argTypes sigTypes }
-    pageType(s, p) == PAGE(sigTypes),
+    pageType(s, p) == PAGE(sigTypes) | error $[No page named [p] exists] @p,
     typesOfArgs(s, args) == argTypes,
     argTypes == sigTypes | error $[Argument types [argTypes] are not equal to the page signature types [sigTypes]] @args.
 
   acRuleSignatureOk(_, ACTypeAction(), _, _).
 
   acRuleSignatureOk(s, ACTypeTemplate(), MatchName(t, OptWildCardArgNone()), MatchArgs(_, WildCardArg())) :-
-    resolveTemplateNoAjax(s, t) == [_ | _].
+    resolveTemplateNoAjax(s, t) == [_ | _] | error $[No template named [t] exists. For ajax templates, use 'rule ajaxtemplate'] @t.
 
   acRuleSignatureOk(s, ACTypeTemplate(), MatchName(t, OptWildCardArgNone()), MatchArgs(args, OptWildCardArgNone())) :- { argTypes queryResult ts }
     argTypes == typesOfArgs(s, args),
@@ -150,17 +150,27 @@ rules // access control rules
     acRuleSignatureArgsMatching(argTypes, ts) | error $[Argument types [argTypes] do not match any existing template signature types [ts]] @args.
 
   acRuleSignatureOk(s, ACTypeAjaxTemplate(), MatchName(t, OptWildCardArgNone()), MatchArgs(_, WildCardArg())) :-
-    resolveAjaxTemplate(s, t) == [_ | _].
+    resolveAjaxTemplate(s, t) == [_ | _] | error $[No ajax template named [t] exists. For non-ajax templates, use 'rule template'] @t.
 
   acRuleSignatureOk(s, ACTypeAjaxTemplate(), MatchName(t, OptWildCardArgNone()), MatchArgs(args, OptWildCardArgNone())) :- { argTypes queryResult ts }
     argTypes == typesOfArgs(s, args),
-    queryResult@[_ | _] == resolveAjaxTemplate(s, t) | error $[No template named [t] exists. For non-ajax templates, use 'rule template'] @t,
+    queryResult@[_ | _] == resolveAjaxTemplate(s, t) | error $[No ajax template named [t] exists. For non-ajax templates, use 'rule template'] @t,
     ts == queryResultTypes(queryResult),
     acRuleSignatureArgsMatching(argTypes, ts) | error $[Argument types [argTypes] do not match any existing ajax template signature types [ts]] @args.
+
+  acRuleSignatureOk(s, ACTypePointcut(), MatchName(p, OptWildCardArgNone()), MatchArgs(_, WildCardArg())) :-
+    resolvePointcut(s, p) == [_ | _] | error $[No pointcut named [p] exists] @p.
+
+  acRuleSignatureOk(s, ACTypePointcut(), MatchName(p, OptWildCardArgNone()), MatchArgs(args, OptWildCardArgNone())) :- { argTypes queryResult ts }
+    argTypes == typesOfArgs(s, args),
+    queryResult@[_ | _] == resolvePointcut(s, p) | error $[No pointcut named [p] exists] @p,
+    ts == queryResultTypes(queryResult),
+    acRuleSignatureArgsMatching(argTypes, ts) | error $[Argument types [argTypes] do not match any existing pointcut signature types [ts]] @args.
 
   acRuleSignatureArgsMatching : list(TYPE) * list(TYPE)
   acRuleSignatureArgsMatching(_, []) :- false.
   acRuleSignatureArgsMatching(args, [TEMPLATE(args, _) | _]).
+  acRuleSignatureArgsMatching(args, [POINTCUT(_, args) | _]).
   acRuleSignatureArgsMatching(args, [_ | ts]) :- acRuleSignatureArgsMatching(args, ts).
 
 rules // predicates
@@ -189,16 +199,47 @@ rules // predicates
 
 rules // pointcuts
 
-  acDefOk(s, AccessControlPointcut(p, fargs, elems)) :- { ts }
+  acDefOk(s, AccessControlPointcut(p, fargs, elems)) :- { ts s_pointcut }
     ts == typesOfArgs(s, fargs),
     declarePointcut(s, p, ts),
-    acPointcutElemsOk(s, argNames(fargs), elems).
+    new s_pointcut,
+    declareParameters(s_pointcut, zipArgTypes(fargs, ts)),
+    acPointcutElemsOk(s, s_pointcut, argNames(fargs), ts, elems).
 
-  acPointcutElemsOk maps acPointcutElemOk(*, *, list(*))
-  acPointcutElemOk : scope * list(string) * AccessControlPointcutElement
-  acPointcutElemOk(s, pointcutArgs, elem@AccessControlPointcutElement(t, x, args, _)) :-
-    sameElements(pointcutArgs, args) | error $[Pointcut element must use all pointcut arguments: [pointcutArgs]] @elem,
-    try { false } | warning $[This pointcut element is not yet supported] @t.
+  acPointcutElemsOk maps acPointcutElemOk(*, *, *, *, list(*))
+  acPointcutElemOk : scope * scope * list(string) * list(TYPE) * AccessControlPointcutElement
+  acPointcutElemOk(s, s_pointcut, pointcutArgNames, ts, elem@AccessControlPointcutElement(_, _, args, _)) :-
+    acPointcutElementDefined(s, s_pointcut, elem),
+    sameElements(pointcutArgNames, args) | error $[Pointcut element must use all pointcut arguments: [pointcutArgNames]] @elem.
+
+  acPointcutElementDefined : scope * scope * AccessControlPointcutElement
+  acPointcutElementDefined(_, _, AccessControlPointcutElement(_, MatchName(p, WildCardArg()), _, _)).
+  acPointcutElementDefined(_, _, AccessControlPointcutElement(t, _, _, _)) :-
+    false | error $[Only pages, templates and ajaxtemplates are supported in pointcuts] @t.
+
+  acPointcutElementDefined(s, s_pointcut, elem@AccessControlPointcutElement(ACTypePage(), MatchName(p, _), args, optWc)) :- { ts argTypes }
+    argTypes == typesOfStrings(s_pointcut, args),
+    resolvePage(s, p) == [(_, (_, PAGE(ts)))] | error $[Page [p] is not defined] @p,
+    acPointcutElementArgsCompatible(argTypes, ts, optWc) | error $[Incompatible argument types for page [p]] @elem.
+
+  acPointcutElementDefined(s, s_pointcut, elem@AccessControlPointcutElement(ACTypeTemplate(), MatchName(t, _), args, optWc)) :- { ts argTypes }
+    argTypes == typesOfStrings(s_pointcut, args),
+    resolveTemplateNoAjax(s, t) == [(_, (_, TEMPLATE(ts, _)))] | error $[Template [t] is not defined] @t,
+    acPointcutElementArgsCompatible(argTypes, ts, optWc) | error $[Incompatible argument types for template [t]] @elem.
+
+  acPointcutElementDefined(s, s_pointcut, elem@AccessControlPointcutElement(ACTypeAjaxTemplate(), MatchName(t, _), args, optWc)) :- { ts argTypes }
+    argTypes == typesOfStrings(s_pointcut, args),
+    resolveTemplateNoAjax(s, t) == [(_, (_, TEMPLATE(ts, _)))] | error $[Ajax template [t] is not defined] @t,
+    acPointcutElementArgsCompatible(argTypes, ts, optWc) | error $[Incompatible argument types for ajax template [t]] @elem.
+
+  acPointcutElementArgsCompatible : list(TYPE) * list(TYPE) * OptWildCardArg
+  acPointcutElementArgsCompatible([], [], _).
+  acPointcutElementArgsCompatible([], [_ | _], WildCardArg()).
+  acPointcutElementArgsCompatible([], [_ | _], OptWildCardArgNone()) :- false.
+  acPointcutElementArgsCompatible([_ | _], [], _) :- false.
+  acPointcutElementArgsCompatible([t1 | t1s], [t2 | t2s], optWc) :-
+    typeCompatible(t1, t2),
+    acPointcutElementArgsCompatible(t1s, t2s, optWc).
 
 rules // utils
 
