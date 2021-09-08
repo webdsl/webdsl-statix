@@ -189,7 +189,7 @@ rules  // rules and functions for function overloading
   mostSpecificSigs : list(TYPE) * list((string * TYPE)) -> list((string * TYPE))
   mostSpecificSigs(args, []) = [].     // In case no functions are compatible, return empty list
   mostSpecificSigs(args, fs@[_]) = fs. // In case of only one compatible signature, return that
-  mostSpecificSigs(args, sigs) = mostSpecificSigs_helper(args, sigs, matchingSigs(args, sigs)).
+  mostSpecificSigs(args, sigs) = mostSpecificSigs_helper(args, sigs, matchingSigs(stripRefTypes(args), sigs)).
 
   // helper function for mostSpecificFunSigs that returns
   // the exactly matching signatures if they exists,
