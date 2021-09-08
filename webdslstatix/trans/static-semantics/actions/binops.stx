@@ -21,14 +21,14 @@ rules // binary operators
     typeOfExp(s, e1) == t1,
     typeOfExp(s, e2) == t2,
     lubForAdd(t1, t2) == t,
-    inequalType(t, UNTYPED()) | error $[Wrong operand types for operator Add: [e1] has type [t1], [e2] has type [t2]].
+    inequalType(t, UNTYPED()) | error $[Wrong types for addition: [e1] has type [t1], [e2] has type [t2]].
 
   // (e1 - e2)
   typeOfExp(s, exp@Sub(e1, e2)) = T :- {T1 T2}
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     equalNumericType(T1, T2) == T,
-    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator Mod: [e1] has type [T1], [e2] has type [T2]],
+    inequalType(T, UNTYPED()) | error $[Wrong types for subtraction: [e1] has type [T1], [e2] has type [T2]],
     @exp.type := T.
 
   // (e1 * e2)
@@ -36,7 +36,7 @@ rules // binary operators
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     equalNumericType(T1, T2) == T,
-    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator Mod: [e1] has type [T1], [e2] has type [T2]],
+    inequalType(T, UNTYPED()) | error $[Wrong types for multiplication: [e1] has type [T1], [e2] has type [T2]],
     @exp.type := T.
 
   // (e1 / e2)
@@ -44,7 +44,7 @@ rules // binary operators
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     equalNumericType(T1, T2) == T,
-    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator Mod: [e1] has type [T1], [e2] has type [T2]],
+    inequalType(T, UNTYPED()) | error $[Wrong types for dividing: [e1] has type [T1], [e2] has type [T2]],
     @exp.type := T.
 
   // (e1 % e2)
@@ -52,7 +52,7 @@ rules // binary operators
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     equalNumericType(T1, T2) == T,
-    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator Mod: [e1] has type [T1], [e2] has type [T2]],
+    inequalType(T, UNTYPED()) | error $[Wrong types for mod: [e1] has type [T1], [e2] has type [T2]],
     @exp.type := T.
 
   // (e1 > e2)
@@ -60,7 +60,7 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1], [e2] has type [T2]],
+    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong types for larger than: [e1] has type [T1], [e2] has type [T2]],
     @exp.type := t.
 
   // (e1 >= e2)
@@ -68,7 +68,7 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1], [e2] has type [T2]],
+    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong types for larger than or equals: [e1] has type [T1], [e2] has type [T2]],
     @exp.type := t.
 
   // (e1 < e2)
@@ -76,7 +76,7 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1], [e2] has type [T2]],
+    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong types for smaller than: [e1] has type [T1], [e2] has type [T2]],
     @exp.type := t.
 
   // (e1 <= e2)
@@ -84,21 +84,21 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator Mod: [e1] has type [T1], [e2] has type [T2]],
+    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for smaller than or equal: [e1] has type [T1], [e2] has type [T2]],
     @exp.type := t.
 
   // (e1 && e2)
   typeOfExp(s, exp@And(e1, e2)) = b :- {T1 T2}
     b == bool(s),
-    typeOfExp(s, e1) == T1, typeCompatible(T1, b) | error $[Wrong operand types for operator And: [e1] has type [T1]],
-    typeOfExp(s, e2) == T2, typeCompatible(T2, b) | error $[Wrong operand types for operator And: [e2] has type [T2]],
+    typeOfExp(s, e1) == T1, typeCompatible(T1, b) | error $[Wrong types for and: [e1] has type [T1], expected Bool],
+    typeOfExp(s, e2) == T2, typeCompatible(T2, b) | error $[Wrong types for and: [e2] has type [T2], expected Bool],
     @exp.type := b.
 
   // (e1 || e2)
   typeOfExp(s, exp@Or(e1, e2)) = b :- {T1 T2}
     b == bool(s),
-    typeOfExp(s, e1) == T1, typeCompatible(T1, b) | error $[Wrong operand types for operator And: [e1] has type [T1]],
-    typeOfExp(s, e2) == T2, typeCompatible(T2, b) | error $[Wrong operand types for operator And: [e2] has type [T2]],
+    typeOfExp(s, e1) == T1, typeCompatible(T1, b) | error $[Wrong types for or: [e1] has type [T1], expected Bool],
+    typeOfExp(s, e2) == T2, typeCompatible(T2, b) | error $[Wrong types for or: [e2] has type [T2], expected Bool],
     @exp.type := b.
 
   // (e1 == e2)
@@ -109,7 +109,7 @@ rules // binary operators
     orB(
       typeCompatibleB(T1, T2),
       typeCompatibleB(T2, T1)
-    ) == TRUE() | error $[Wrong operand types for operator Eq: [e1] has type [T1], [e2] has type [T2]],
+    ) == TRUE() | error $[Wrong types for equality: [e1] has type [T1], [e2] has type [T2]],
     @exp.type := t.
 
   // (e1 != e2)
@@ -120,14 +120,14 @@ rules // binary operators
     orB(
       typeCompatibleB(T1, T2),
       typeCompatibleB(T2, T1)
-    ) == TRUE() | error $[Wrong operand types for operator NotEq: [e1] has type [T1], [e2] has type [T2]],
+    ) == TRUE() | error $[Wrong types for inequality: [e1] has type [T1], [e2] has type [T2]],
     @exp.type :=t.
 
   // e1 in e2
   typeOfExp(s, exp@InColl(e1, e2)) = bool(s) :- {T1 T2}
     typeOfExp(s, e1) == T1,
     stripGenericType(typeOfExp(s, e2)) == T2,
-    typeCompatible(T1, T2).
+    typeCompatible(T1, T2) | error $[Wrong types for in collection check: [e1] has type [T1], [e2] has type [T2]].
 
 rules // unary operators
 
@@ -135,7 +135,7 @@ rules // unary operators
   typeOfExp(s, exp@Not(e)) = t :- {T}
     t == bool(s),
     typeOfExp(s, e) == T,
-    T == t | error $[Wrong operand type for operator Not: [e] has type [T]],
+    T == t | error $[Wrong types for not: [e] has type [T], expected Bool],
     @exp.type := t.
 
 rules // utils

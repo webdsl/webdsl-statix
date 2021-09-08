@@ -20,6 +20,7 @@ rules // entity declaration
     new s_entity, s_entity -INHERIT-> s_super, s_entity -DEF-> s,
     noCircularInheritance(s_entity) | error $[Circular inhertitance detected] @e,
     declEntity(s, s_entity, x, bodydecs),
+    declareVar(s, x, STATICENTITY(s_entity)), // declare entity_name as global variable that refers to the static scope
     declareEntityAnnotation(s_entity, SUBENTITY()),
     @super.ref := super'.
 
@@ -27,12 +28,14 @@ rules // entity declaration
   defOk(s, EntityNoSuper(x, bodydecs)) :- {s_entity s_super}
     entity(s) == ENTITY(s_super),
     new s_entity, s_entity -INHERIT-> s_super, s_entity -DEF-> s,
-    declEntity(s, s_entity, x, bodydecs).
+    declEntity(s, s_entity, x, bodydecs),
+    declareVar(s, x, STATICENTITY(s_entity)). // declare entity_name as global variable that refers to the static scope
 
   // session x { ... }
   defOk(s, SessionEntity(x, bodydecs)) :- {s_entity}
     new s_entity, s_entity -DEF-> s,
     declEntity(s, s_entity, x, bodydecs),
+    declareVar(s, x, ENTITY(s_entity)), // session entities only have one instance and don't have a static scope
     declareEntityAnnotation(s_entity, SESSIONENTITY()).
 
   declEntity : scope * scope * string * list(EntityBodyDeclaration)
@@ -40,7 +43,6 @@ rules // entity declaration
     declareExtendEntity(s, entity_name, s_entity), // declare entity_scope to be linked to entity_name
     extendEntityScopes(resolveExtendEntity(s, entity_name), s_entity),
     declareType(s, entity_name, ENTITY(s_entity)),
-    declareVar(s, entity_name, STATICENTITY(s_entity)), // declare entity_name as global variable that refers to the static scope
     declThisVar(s_entity),
     declEntityBody(s_entity, bodydecs).
 
