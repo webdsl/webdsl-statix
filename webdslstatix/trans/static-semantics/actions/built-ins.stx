@@ -27,7 +27,7 @@ rules
 
     declareFunction(s, "cancel"  , [], VOID()),
     declareFunction(s, "rollback", [], VOID()),
-    delcareFunction(s, "flush"   , [], VOID()),
+    declareFunction(s, "flush"   , [], VOID()),
 
     declareFunction(s, "getValidationErrorsByName", [string(s)], LIST(string(s))),
 
