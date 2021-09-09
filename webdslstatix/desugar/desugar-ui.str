@@ -15,6 +15,7 @@ rules
   normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineTemplate(newMods, x, fargs, targs, telements)
     where
         <elem> (Template(), mods)
+      ; <not(fetch-elem(?Email()))> mods
       ; newMods := <filter(not(?Template()))> mods
 
   normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineTemplate(mods, x, fargs, targs, telements)
@@ -22,6 +23,11 @@ rules
         <elem> (AjaxTemplate(), mods)
 
   normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineEmail(newMods, x, fargs, targs, telements)
+    where
+        <elem> (Email(), mods)
+      ; newMods := <filter(not(?Email() <+ ?Template()))> mods
+
+  normalize-ui : DefineTemplate(mods, x, fargs, targs, telements) -> DefineEmail(newMods, x, fargs, targs, telements)
     where
         <elem> (Email(), mods)
       ; newMods := <filter(not(?Email()))> mods
