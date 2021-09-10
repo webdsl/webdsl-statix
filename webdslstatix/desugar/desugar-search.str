@@ -36,7 +36,9 @@ rules
         ; searcher_name := <concat-strings> [entity_name, "Searcher"]
         ; <not(fetch(?NativeClass(_, NCAlias(searcher_name), _, _)))> defs*
     with  searcher := <construct-searcher-class> (entity_name, searcher_name)
-        ; defs'* := [searcher | defs*]
+        ; function_name := <concat-strings> ["search", entity_name]
+        ; search_functions := <construct-search-functions> (entity_name, function_name)
+        ; defs'* := <conc> (defs*, [searcher | search_functions])
 
   construct-searcher-class : (entity_name, searcher_name) -> NativeClass(<concat-strings> ["webdsl.generated.search.", searcher_name], NCAlias(searcher_name), NCSuper("Searcher"),
       [ NCConstructor([])
@@ -449,3 +451,30 @@ rules
       , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "reset", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
       ]
     )
+
+  construct-search-functions : (entity_name, function_name) -> [
+      GlobalFunction(
+        Function(
+            function_name
+          , FormalArgs([Arg("query", SimpleSort("String"))])
+          , OptSortSome(GenericSort("List", [SimpleSort(entity_name)]))
+          , Block([])
+        )
+      )
+    , GlobalFunction(
+        Function(
+            function_name
+          , FormalArgs([Arg("query", SimpleSort("String")), Arg("limit", SimpleSort("Int"))])
+          , OptSortSome(GenericSort("List", [SimpleSort(entity_name)]))
+          , Block([])
+        )
+      )
+    , GlobalFunction(
+        Function(
+            function_name
+          , FormalArgs([Arg("query", SimpleSort("String")), Arg("limit", SimpleSort("Int")), Arg("offset", SimpleSort("Int"))])
+          , OptSortSome(GenericSort("List", [SimpleSort(entity_name)]))
+          , Block([])
+        )
+      )
+    ]

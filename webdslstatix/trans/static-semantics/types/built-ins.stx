@@ -190,7 +190,7 @@ rules // built-in functions specifically for lists of strings
   typeOfCall(s, LIST(BUILTINTYPE("String", _)), "concat", [arg]) = string :- { t }
     string == string(s),
     t == typeOfExp(s, arg),
-    typeCompatible(t, string) | error $[Concatenation separator type must be compatible with String, [t] given].
+    typeCompatible(t, string) | error $[Concatenation separator type must be compatible with String, [t] given] @arg.
 
 rules // built-in functions and properties for built-in generic type Set
 
