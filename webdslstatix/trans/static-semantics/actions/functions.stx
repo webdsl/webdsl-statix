@@ -227,10 +227,14 @@ rules  // rules and functions for function overloading
     z == inheritanceAmount_helper(argtl, sigtl),
     x #= y + z.
 
-  // in case of two built-in types, check if compatible but do not calculate inheritance edges
-  inheritanceAmount_helper([arg@BUILTINTYPE(_, _) | argtl], [sig@BUILTINTYPE(_, _) | sigtl]) = x :-
-    typeCompatible(arg, sig) | error $[Argument type [arg] is not compatible with signature type [sig]],
+  // in case of two built-in types, the same built-in type is +0, two compatible (but not equal) types is +1
+  inheritanceAmount_helper([arg@BUILTINTYPE(t, _) | argtl], [sig@BUILTINTYPE(t, _) | sigtl]) = x :-
     x == inheritanceAmount_helper(argtl, sigtl).
+
+  inheritanceAmount_helper([arg@BUILTINTYPE(_, _) | argtl], [sig@BUILTINTYPE(_, _) | sigtl]) = x :- { y }
+    typeCompatible(arg, sig) | error $[Argument type [arg] is not compatible with signature type [sig]],
+    y == inheritanceAmount_helper(argtl, sigtl),
+    x #= y + 1.
 
   scopeFromType : TYPE -> scope
   scopeFromType(REF(t)) = scopeFromType(t).
