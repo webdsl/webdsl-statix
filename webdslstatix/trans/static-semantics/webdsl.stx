@@ -18,6 +18,7 @@ imports
   static-semantics/webdsl-native
   static-semantics/webdsl-regex
   static-semantics/webdsl-search
+  static-semantics/webdsl-services
   static-semantics/webdsl-types
   static-semantics/webdsl-ui
 
@@ -321,8 +322,7 @@ rules // declare common rules and mappings
   sectionOk(s, Section(_, defs)) :- defsOk(s, defs).
 
   defOk : scope * Definition
-  defOk(_,_) :- // TO-DO
-    try { false } | warning $[This definition is not yet implemented].
+  defOk(_,_) :- try { false } | warning $[This definition is not yet implemented].
 
   defsOk maps defOk(*, list(*))
 

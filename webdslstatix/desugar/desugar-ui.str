@@ -38,7 +38,6 @@ rules
       ; <not(fetch-elem(?Template()))> mods
       ; <not(fetch-elem(?AjaxTemplate()))> mods
       ; <not(fetch-elem(?Email()))> mods
-      ; <not(fetch-elem(?WebService()))> mods
 
   normalize-ui : OptFormalArgsNone() -> FormalArgs([])
   normalize-ui : OptTemplateArgsNone() -> TemplateArgs([])

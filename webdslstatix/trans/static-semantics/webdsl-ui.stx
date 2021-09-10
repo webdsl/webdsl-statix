@@ -40,6 +40,7 @@ rules // page definitions
   pageModOk : scope * Modifier
   pageModOk(_, _) :- try { false } | warning $[This modifier is not yet implemented].
   pageModOk(s, AjaxTemplate()) :- false | error $[A page cannot be an ajax template].
+  pageModOk(_, WebService()) :- false | error $[To define a webservice, use "webservice myWebservice(...) { ... }"].
   pageModOk(s, TemplateModOverride()).
 
 rules // template definitions
@@ -49,7 +50,7 @@ rules // template definitions
   // last BOOL defines if the template is top-level (TRUE) or nested (FALSE)
   defineTemplateOk : scope * TemplateDefinition
   defineTemplateOk(s, DefineTemplate(mods, t, FormalArgs(fargs), TemplateArgs(targs), elements)) :- {fargTypes targTypes s_template s_pha s_body}
-    uiModsOk(s, mods),
+    templateModsOk(s, mods),
     new s_template, s_template -F-> s,
     fargTypes == typesOfArgs(s, fargs),
     targTypes == typesOfTemplateArgs(s, targs),
@@ -62,11 +63,12 @@ rules // template definitions
     templateElementOrderOk(elements, FALSE(), FALSE()),
     templateElementsOk(s_body, s_pha, elements).
 
-  uiModsOk maps uiModOk(*, list(*))
-  uiModOk : scope * Modifier
-  uiModOk(_, _) :- try { false } | warning $[This modifier is not yet implemented].
-  uiModOk(s, AjaxTemplate()).
-  uiModOk(s, TemplateModOverride()).
+  templateModsOk maps templateModOk(*, list(*))
+  templateModOk : scope * Modifier
+  templateModOk(_, _) :- try { false } | warning $[This modifier is not yet implemented].
+  templateModOk(_, WebService()) :- false | error $[To define a webservice, use "webservice myWebservice(...) { ... }"].
+  templateModOk(_, AjaxTemplate()).
+  templateModOk(_, TemplateModOverride()).
 
   nestedTemplateOk : scope * TemplateDefinition
   nestedTemplateOk(s, DefineTemplate(_, t, FormalArgs(fargs), TemplateArgs(targs), elements)) :- {fargTypes targTypes sigs s_template s_pha s_body}
