@@ -8,36 +8,51 @@ imports
 rules
 
   declareFunctionIns : scope
-  declareFunctionIns(s) :-
-    declareFunction(s, "now"     , [], datetime(s)),
-    declareFunction(s, "today"   , [], date(s)),
-    declareFunction(s, "Date"    , [string(s), string(s)], date(s)),
-    declareFunction(s, "Date"    , [string(s)], date(s)),
-    declareFunction(s, "Time"    , [string(s), string(s)], time(s)),
-    declareFunction(s, "Time"    , [string(s)], time(s)),
-    declareFunction(s, "DateTime", [string(s), datetime(s)], datetime(s)),
-    declareFunction(s, "DateTime", [string(s)], datetime(s)),
-    declareFunction(s, "random"  , [int(s), int(s)], int(s)),
-    declareFunction(s, "random"  , [int(s)], int(s)),
+  declareFunctionIns(s) :- { datetime date string time int float uuid void bool object url}
+    datetime  == datetime(s),
+    date      == date(s),
+    string    == string(s),
+    time      == time(s),
+    int       == int(s),
+    float     == float(s),
+    uuid      == uuid(s),
+    void      == VOID(),
+    bool      == bool(s),
+    object    == object(s),
+    url       == url(s),
 
-    declareFunction(s, "randomUUID", [], uuid(s)),
-    declareFunction(s, "UUIDFromString", [string(s)], uuid(s)),
+    declareFunction(s, "now"     , []                 , datetime),
+    declareFunction(s, "today"   , []                 , date),
+    declareFunction(s, "Date"    , [string, string]   , date),
+    declareFunction(s, "Date"    , [string]           , date),
+    declareFunction(s, "Time"    , [string, string]   , time),
+    declareFunction(s, "Time"    , [string]           , time),
+    declareFunction(s, "DateTime", [string, datetime] , datetime),
+    declareFunction(s, "DateTime", [string]           , datetime),
+    declareFunction(s, "random"  , [int, int]         , int),
+    declareFunction(s, "random"  , [int]              , int),
+    declareFunction(s, "random"  , []                 , float),
+    declareFunction(s, "url"     , [string]           , url),
+
+    declareFunction(s, "randomUUID"     , []      , uuid),
+    declareFunction(s, "UUIDFromString" , [string], uuid),
 
     declareFunction(s, "getSessionManager", [], definedTypeNoRef(s, "SessionManager")),
 
-    declareFunction(s, "cancel"  , [], VOID()),
-    declareFunction(s, "rollback", [], VOID()),
-    declareFunction(s, "flush"   , [], VOID()),
+    declareFunction(s, "cancel"  , [], void),
+    declareFunction(s, "rollback", [], void),
+    declareFunction(s, "flush"   , [], void),
 
-    declareFunction(s, "getValidationErrorsByName", [string(s)], LIST(string(s))),
+    declareFunction(s, "getValidationErrorsByName", [string], LIST(string)),
 
-    declareFunction(s, "getHttpMethod"          , []          , string(s)),
-    declareFunction(s, "getRequestParameter"    , [string(s)] , string(s)),
-    declareFunction(s, "getRequestParameterList", [string(s)] , LIST(string(s))),
-    declareFunction(s, "readRequestBody"        , []          , string(s)),
+    declareFunction(s, "getHttpMethod"          , []      , string),
+    declareFunction(s, "getRequestParameter"    , [string], string),
+    declareFunction(s, "getRequestParameterList", [string], LIST(string)),
+    declareFunction(s, "readRequestBody"        , []      , string),
 
-    declareFunction(s, "attribute", [string(s)], string(s)),
-    declareFunction(s, "attribute", [string(s), string(s)], string(s)),
-    declareFunction(s, "hasNotNullAttribute", [], bool(s)),
+    declareFunction(s, "attribute"          , [string]        , string),
+    declareFunction(s, "attribute"          , [string, string], string),
+    declareFunction(s, "hasNotNullAttribute", []              , bool),
 
-    declareFunction(s, "message", [string(s)], VOID()).
+    declareFunction(s, "message", [string], void),
+    declareFunction(s, "log"    , [object], void).

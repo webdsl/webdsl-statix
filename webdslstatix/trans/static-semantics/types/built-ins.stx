@@ -93,7 +93,7 @@ rules
     // string types
     declareBuiltInType(s, "String"),
     declareBuiltInType(s, "Secret"),
-    declareBuiltInType(s, "Email"),
+    declareBuiltInSubType(s, "Email", "String"),
     declareBuiltInType(s, "URL"),
     declareBuiltInType(s, "WikiText"),
     declareBuiltInType(s, "Text"),
@@ -112,9 +112,14 @@ rules
     declareBuiltInType(s, "Image").
 
   declareTypeBuiltInFunctions : scope
-  declareTypeBuiltInFunctions(s) :- {int string s_file s_image}
+  declareTypeBuiltInFunctions(s) :- {int string float s_int s_file s_image s_float}
     int == int(s),
     string == string(s),
+    float == float(s),
+
+    new s_int, declareExtendEntity(s, "Int", s_int),
+    declFunctionEntity(s_int, "floatValue", [], float, FALSE()),
+
     new s_file, declareExtendEntity(s, "File", s_file),
     declFunctionEntity(s_file, "download"           , []      , VOID(), FALSE()),
     declFunctionEntity(s_file, "download"           , [string], VOID(), FALSE()),
@@ -123,15 +128,18 @@ rules
 
     declareExtendEntity(s, "Image", s_file), // also expose file functions to image
     new s_image, declareExtendEntity(s, "Image", s_image),
-//    declFunctionEntity(s_image, "download"           , []                  , VOID()  , FALSE()),
-//    declFunctionEntity(s_image, "download"           , [string]            , VOID()  , FALSE()),
-//    declFunctionEntity(s_image, "fileName"           , []                  , string  , FALSE()),
-//    declFunctionEntity(s_image, "fileNameForDownload", []                  , string  , FALSE()),
     declFunctionEntity(s_image, "resize"   , [int, int]          , VOID()  , FALSE()),
     declFunctionEntity(s_image, "crop"     , [int, int, int, int], VOID()  , FALSE()),
     declFunctionEntity(s_image, "getWidth" , []                  , int     , FALSE()),
     declFunctionEntity(s_image, "getHeight", []                  , int     , FALSE()),
-    declFunctionEntity(s_image, "clone"    , []                  , image(s), FALSE()).
+    declFunctionEntity(s_image, "clone"    , []                  , image(s), FALSE()),
+
+    new s_float, declareExtendEntity(s, "Float", s_float),
+    declFunctionEntity(s_float, "round" , [], int, FALSE()),
+    declFunctionEntity(s_float, "floor" , [], int, FALSE()),
+    declFunctionEntity(s_float, "ceil"  , [], int, FALSE()),
+    declFunctionEntity(s_float, "log"   , [], float, FALSE()),
+    declFunctionEntity(s_float, "log2"  , [], float, FALSE()).
 
 rules // built-in functions and properties for built-in generic type List
 
@@ -174,6 +182,15 @@ rules // built-in functions and properties for built-in generic type List
   typeOfCall(s, lt@LIST(_), "subList", [arg1, arg2]) = lt :-
     typeCompatible(typeOfExp(s, arg1), int(s)),
     typeCompatible(typeOfExp(s, arg2), int(s)).
+
+rules // built-in functions specifically for lists of strings
+
+  typeOfCall(s, LIST(BUILTINTYPE("String", _)), "concat", []) = string(s).
+
+  typeOfCall(s, LIST(BUILTINTYPE("String", _)), "concat", [arg]) = string :- { t }
+    string == string(s),
+    t == typeOfExp(s, arg),
+    typeCompatible(t, string) | error $[Concatenation separator type must be compatible with String, [t] given].
 
 rules // built-in functions and properties for built-in generic type Set
 
