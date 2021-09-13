@@ -20,7 +20,7 @@ rules // attribute collection declaration and resolving
   resolveAttributeCollection : scope * string -> list((path * string))
   resolveAttributeCollection(s, c) = ps :-
     query attributeCollection
-      filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
+      filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT?))
       and { c' :- c' == c }
       in s |-> ps.
 

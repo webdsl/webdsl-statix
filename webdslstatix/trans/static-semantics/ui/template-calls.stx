@@ -109,6 +109,10 @@ rules // property assignments
   templatePropAssignmentOk(s, CommonAttribute2PropertyAssignment(ca)) = "_IGNORE" :-
     commonAttributeOk(s, ca).
 
+  templatePropAssignmentOk(s, AttributeSelection2PropertyAssignment(AttributeSelection(a))) = "_IGNORE" :- { a' }
+    resolveAttributeCollection(s, a) == [(_, a') | _] | error $[Attribute collection [a] is not defined],
+    @a.ref := a'.
+
 rules // mutability check for input templates
 
   inputTemplateCallOk : scope * string * list(TemplateArgExp) * list(TYPE)
