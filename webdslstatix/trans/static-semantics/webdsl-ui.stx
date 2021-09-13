@@ -39,9 +39,10 @@ rules // page definitions
   pageModsOk maps pageModOk(*, list(*))
   pageModOk : scope * Modifier
   pageModOk(_, _) :- try { false } | warning $[This modifier is not yet implemented].
-  pageModOk(s, AjaxTemplate()) :- false | error $[A page cannot be an ajax template].
+  pageModOk(_, AjaxTemplate()) :- false | error $[A page cannot be an ajax template].
   pageModOk(_, WebService()) :- false | error $[To define a webservice, use "webservice myWebservice(...) { ... }"].
-  pageModOk(s, TemplateModOverride()).
+  pageModOk(_, TemplateModOverride()).
+  pageModOk(_, IgnoreAccessControl()).
 
 rules // template definitions
 
@@ -69,6 +70,7 @@ rules // template definitions
   templateModOk(_, WebService()) :- false | error $[To define a webservice, use "webservice myWebservice(...) { ... }"].
   templateModOk(_, AjaxTemplate()).
   templateModOk(_, TemplateModOverride()).
+  templateModOk(_, IgnoreAccessControl()).
 
   nestedTemplateOk : scope * TemplateDefinition
   nestedTemplateOk(s, DefineTemplate(_, t, FormalArgs(fargs), TemplateArgs(targs), elements)) :- {fargTypes targTypes sigs s_template s_pha s_body}

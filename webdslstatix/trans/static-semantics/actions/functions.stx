@@ -203,7 +203,7 @@ rules  // rules and functions for function overloading
   matchingSigs : list(TYPE) * list((string * TYPE)) -> list((string * TYPE))
   matchingSigs(_, []) = [].
   matchingSigs(args, [(x, FUNCTION(params, rt, static)) | fs]) = matchingSigs_helper(args, (x, FUNCTION(stripRefTypes(params), rt, static)), fs).
-  matchingSigs(args, [(x, TEMPLATE(params, ajax))       | fs]) = matchingSigs_helper(args, (x, TEMPLATE(stripRefTypes(params), rt)), fs).
+  matchingSigs(args, [(x, TEMPLATE(params, ajax))       | fs]) = matchingSigs_helper(args, (x, TEMPLATE(stripRefTypes(params), ajax)), fs).
 
   // helper function for matchingSigs that compares the argument types after stripping the Ref<> sorts
   matchingSigs_helper : list(TYPE) * (string * TYPE) * list((string * TYPE)) -> list((string * TYPE))
