@@ -132,6 +132,21 @@ rules
     sortType == ENTITY(_) | error $[Cannot resolve sort [sort] to an entity],
     sortType == t | error $[Inverse entity must be the same as property type [t]].
 
+rules // validation
+
+  annotationOk(s, _, _, ValidateCreateAnno(validateExp, messageExp)) :- validateOk(s, validateExp, messageExp).
+  annotationOk(s, _, _, ValidateUpdateAnno(validateExp, messageExp)) :- validateOk(s, validateExp, messageExp).
+  annotationOk(s, _, _, ValidateDeleteAnno(validateExp, messageExp)) :- validateOk(s, validateExp, messageExp).
+  annotationOk(s, _, _, ValidateAnno(validateExp, messageExp)) :- validateOk(s, validateExp, messageExp).
+  annotationOk(s, _, _, NamedValidateAnno(_, validateExp, messageExp)) :- validateOk(s, validateExp, messageExp).
+
+  validateOk : scope * Exp * Exp
+  validateOk(s, validateExp, messageExp) :- { validateType messageType }
+    validateType == typeOfExp(s, validateExp),
+    messageType == typeOfExp(s, messageExp),
+    typeCompatible(validateType, bool(s)) | error $[The expression to be validated should be compatible with type Bool, [validateType] given],
+    typeCompatible(messageType, string(s)) | error $[The error message should be compatible with type String, [messageType] given].
+
 rules // predicates
 
   isTopLevelEntity : scope

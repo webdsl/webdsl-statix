@@ -51,12 +51,16 @@ rules // template calls
   typeOfTemplateArgExp(s, ExpEntityDerive(_, _))         = UNTYPED() :- // TO-DO
     try { false } | warning $[Derive expressions not implemented yet].
 
-rules // elements template call
+rules // pre-defined template calls
 
   // elements
   templateCallOk(_, _, TemplateCall(TemplateCallId("elements"), TCallArgs(targs), TCallPropAssigns(propAssigns), TemplateBody(body))) :-
     targs == [] | error $[Cannot pass arguments to passed template elements],
     body == []  | error $[Cannot pass template elements to passed template elements].
+
+  // validation
+  templateCallOk(s, _, ValidationErrors(_)).
+  templateCallOk(s, _, ValidationErrorsEmpty()).
 
 rules // navigate calls
 

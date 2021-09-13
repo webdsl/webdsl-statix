@@ -163,6 +163,9 @@ rules // entity body declaration
   isValidTypeForPropKind(AnyProp(), sort, sortType) :-
     isBuiltInType(sortType) | error $[Expected simple type or entity type or a collection of an entity type] @sort.
 
+  // validation
+  declEntityBodyDeclaration(s, ValidateEntity(validateExp, messageExp)) :- validateOk(s, validateExp, messageExp).
+
 rules // entity resolving
 
   typeOfExp(s, exp@ObjectCreation(x, prop_assignments)) = ENTITY(s_entity) :-

@@ -20,7 +20,7 @@ rules // definitions
     new s_init, s_init -DEF-> s,
     stmtsOk(s_init, stmts, VOID()).
 
-rules // statements
+rules // variable declaration and assignment
 
   stmtOk(s, _, Stat(exp), _) :-
     expOk(s, exp).
@@ -42,6 +42,35 @@ rules // statements
     inequalType(t, UNTYPED()) | error $[Unable to infer type of [exp]] @exp,
     declareVar(s_decl, x, t),
     @x.type := t.
+
+  defOk(s, GlobalVarDecl(x, sort)) :- {t}
+    t == typeOfSort(s, sort),
+    declareVar(s, x, t),
+    declareAnnotation(s, x, DERIVED()).
+
+  defOk(s, GlobalVarDeclInit(x, sort, exp)) :- {t}
+    t == typeOfSort(s, sort),
+    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [sort]] @exp,
+    declareVar(s, x, t),
+    declareAnnotation(s, x, DERIVED()).
+
+  defOk(s, GlobalVarDeclInitInferred(x, exp)) :- {t}
+    t == typeOfExp(s, exp),
+    inequalType(t, UNTYPED()) | error $[Cannot resolve type of expression [exp]],
+    declareVar(s, x, t),
+    declareAnnotation(s, x, DERIVED()).
+
+  noDuplicateVarDefs : scope * string
+  noDuplicateVarDefs(s, x) :-
+    query var filter P*
+              and { x' :- x' == (x, _) }
+              in s |-> [_].
+
+  noDuplicateVarDefsInSuper : scope * string
+  noDuplicateVarDefsInSuper(_, "this"). // allow "this" var to be redefined in sub
+  noDuplicateVarDefsInSuper(s_sub, x) :- {xs}
+    resolveProperty(s_sub, x) == xs,
+    withoutAnnotation(xs, OVERRIDABLE()) == [_].
 
   stmtOk(s, _, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a mutable variable].
   stmtOk(s, _, Assignment(v@Var(x), exp), _) :- {t}
@@ -161,7 +190,7 @@ rules // return statements
     inequalType(returnType, UNTYPED()) | error $[Return statement not allowed here] @r,
     equalType(returnType, VOID()) | error $[Must return an expression of type [returnType]] @r.
 
-rules // variables
+rules // variable references
 
   typeOfExp(s, exp@Var(x)) = t :-
     variableType(s, x) == t,
@@ -199,35 +228,6 @@ rules // variables
     propertyType(s, x) == t.
   typeOfProperty(_, NATIVECLASS(s), x) = t :-
     propertyType(s, x) == t.
-
-  defOk(s, GlobalVarDecl(x, sort)) :- {t}
-    t == typeOfSort(s, sort),
-    declareVar(s, x, t),
-    declareAnnotation(s, x, DERIVED()).
-
-  defOk(s, GlobalVarDeclInit(x, sort, exp)) :- {t}
-    t == typeOfSort(s, sort),
-    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [sort]] @exp,
-    declareVar(s, x, t),
-    declareAnnotation(s, x, DERIVED()).
-
-  defOk(s, GlobalVarDeclInitInferred(x, exp)) :- {t}
-    t == typeOfExp(s, exp),
-    inequalType(t, UNTYPED()) | error $[Cannot resolve type of expression [exp]],
-    declareVar(s, x, t),
-    declareAnnotation(s, x, DERIVED()).
-
-  noDuplicateVarDefs : scope * string
-  noDuplicateVarDefs(s, x) :-
-    query var filter P*
-              and { x' :- x' == (x, _) }
-              in s |-> [_].
-
-  noDuplicateVarDefsInSuper : scope * string
-  noDuplicateVarDefsInSuper(_, "this"). // allow "this" var to be redefined in sub
-  noDuplicateVarDefsInSuper(s_sub, x) :- {xs}
-    resolveProperty(s_sub, x) == xs,
-    withoutAnnotation(xs, OVERRIDABLE()) == [_].
 
 rules // lists and sets
 
@@ -285,3 +285,8 @@ rules // lists and sets
     declareVar(s_e1, x, varType),
     t == typeOfExp(s_e1, e1).
     // TO-DO: implement filter and group by typechecking
+
+rules // misc
+
+  stmtOk(s, _, ValidateStatement(validateExp, messageExp), _) :- validateOk(s, validateExp, messageExp).
+  stmtOk(s, _, NamedValidateStatement(_, validateExp, messageExp), _) :- validateOk(s, validateExp, messageExp).
