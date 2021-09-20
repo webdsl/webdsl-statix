@@ -27,16 +27,16 @@ rules
   typeElementOk(s, s_type, TypeFunctionFromStatic(NCFunctionFromStatic(_, function))) :-
     nativeClassFunctionOk(s, s_type, function).
 
-  typeElementOk(s, s_type, TypeProperty(p, exp)) :- {s_t s_dt s_d}
-    p                 == "format"  | error $[Only type property "format=<string>" is allowed for Time, Date and DateTime],
-    typeOfExp(s, exp) == string(s) | error $[Only type property "format=<string>" is allowed for Time, Date and DateTime],
-    time(s)           == BUILTINTYPE(_, s_t),
-    datetime(s)       == BUILTINTYPE(_, s_dt),
-    date(s)           == BUILTINTYPE(_, s_d),
-    or(orB(
-      extends(s_type, s_t),
-      extends(s_type, s_dt)),
-      extends(s_type, s_d))        | error $[Only type property "format=<string>" is allowed for Time, Date and DateTime].
+//  typeElementOk(s, s_type, TypeProperty(p, exp)) :- {s_t s_dt s_d}
+//    p                 == "format"  | error $[Only type property "format=<string>" is allowed for Time, Date and DateTime],
+//    typeOfExp(s, exp) == string(s) | error $[Only type property "format=<string>" is allowed for Time, Date and DateTime],
+//    time(s)           == BUILTINTYPE(_, s_t),
+//    datetime(s)       == BUILTINTYPE(_, s_dt),
+//    date(s)           == BUILTINTYPE(_, s_d),
+//    or(orB(
+//      extends(s_type, s_t),
+//      extends(s_type, s_dt)),
+//      extends(s_type, s_d))        | error $[Only type property "format=<string>" is allowed for Time, Date and DateTime].
 
 rules // typing of expressions
 
