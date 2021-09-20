@@ -44,18 +44,9 @@ context-free sorts
 
   Unit Section Definition EnumValue
 
-context-free syntax
+syntax
 
-  Section.Section = <
-    section <SectionName>
-      <Definition*>
-  >
-
-context-free restrictions
-
-  // TO-DO: this can still go wrong in case two or more spaces are given before the newline
-  "section" -/- [\ ] . [\r\n]
-  "section" -/- [\r\n]
+  Section-CF.Section = "section" SectionName-CF LAYOUT?-CF Definition*-CF
 
 context-free syntax
 
@@ -91,6 +82,8 @@ context-free syntax
     built-in
     <Section*>
   >
+
+  Unit.EmptyUnit = <>
 
   Definition.Imports = <
     imports <ImportName>

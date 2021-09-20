@@ -330,6 +330,7 @@ rules // variable declaration and resolving
 rules // declare common rules and mappings
 
   unitOk : scope * Unit
+  unitOk(_, EmptyUnit()).
   unitOk(_, _) :- try { false } | warning $[This unit is not yet implemented].
 
   sectionOk : scope * Section
