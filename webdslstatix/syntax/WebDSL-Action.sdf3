@@ -162,6 +162,18 @@ context-free syntax
     while ( <Exp> ) <Block>
   >
 
+lexical sorts
+
+  ThisLex
+
+lexical syntax
+
+  ThisLex = "this"
+
+lexical restrictions
+
+  ThisLex -/- [a-zA-Z0-9]
+
 context-free sorts
 
   ConstValue Exp PropAssignment ObjectPropertyAssignment Mapping ThisCall FAExp
@@ -178,7 +190,7 @@ context-free syntax
   Exp.Var = VarId
   Exp.FieldAccess = <<FAExp> . <PropertyId>>
   Exp.CollectionIndex = <<Exp> [ <Exp> ]>
-  Exp.This = <this>
+  Exp.This = <<ThisLex>>
 
   FAExp.FAExp = <<Exp>>
   FAExp.FAVar = <<FAVarId>>

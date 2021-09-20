@@ -476,10 +476,6 @@ context-free syntax
   ExpOrTemplateArg.ExpVarArgExp = <<Exp>>
   ExpOrTemplateArg.ExpVarArgElements = <{ <TemplateElement*> }>
 
-context-free priorities
-
-  ExpOrTemplateArg.ExpVarArgExp <0> .> Exp.SetCreation
-
 context-free sorts
 
   HTMLWrapper HTMLWrapperAssigns HTMLWrapperBody HTMLWrapperAssign
