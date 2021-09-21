@@ -17,7 +17,6 @@ context-free syntax
       <TypeElement*>
     }
   >
-//  TypeElement.TypeProperty = <<Id> = <Exp>>
   TypeElement.TypeAnno = Annotation
   TypeElement.TypeFunction = NCFunction
   TypeElement = <static> {reject}
