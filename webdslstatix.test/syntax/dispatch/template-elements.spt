@@ -57,9 +57,9 @@ test dispatch multiple elements and default [[
 
 
 // dispatch navigate
-test dispatch navigate [[
+test disallow dispatch navigate with single argument [[
   navigate(x) { }
-]] parse succeeds parse to DispatchNavigate([DispatchNavigateCallNoArg("x")], [])
+]] parse fails
 
 test dispatch navigate multiple calls [[
   navigate(x / y) { }
@@ -74,17 +74,17 @@ test dispatch navigate multiple calls with args [[
 ]] parse succeeds parse to DispatchNavigate([DispatchNavigateCall("x", [Const(Int("1")), Const(Int("2"))]), DispatchNavigateCall("y", [Const(Int("3")), Const(Int("4"))])], [])
 
 test dispatch navigate single template element [[
-  navigate(x) {
+  navigate(x / y) {
     "x"
   }
-]] parse succeeds parse to DispatchNavigate([DispatchNavigateCallNoArg("x")], [Text([StringValue("x")])])
+]] parse succeeds parse to DispatchNavigate([DispatchNavigateCallNoArg("x"), DispatchNavigateCallNoArg("y")], [Text([StringValue("x")])])
 
 test dispatch navigate multiple template elements [[
-  navigate(x) {
+  navigate(x / y) {
     "x"
     "y"
   }
-]] parse succeeds parse to DispatchNavigate([DispatchNavigateCallNoArg("x")], [Text([StringValue("x")]), Text([StringValue("y")])])
+]] parse succeeds parse to DispatchNavigate([DispatchNavigateCallNoArg("x"), DispatchNavigateCallNoArg("y")], [Text([StringValue("x")]), Text([StringValue("y")])])
 
 
 // dispatch navigate button
