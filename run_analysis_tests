@@ -44,9 +44,26 @@ function addResultSummary() {
     local resultFile="$1"
     local errors=$(cat "analysis-results/$resultFile.txt" | grep "ERROR in file" | grep -v "built-in.app" | wc -l | xargs)
     local summary="$errors error(s)\n\n\n"
+    local suffix=""
+
+    if [[ "$resultFile" == *"analysis-fails"* ]]; then
+        if [ ! "$errors" -eq "0" ]; then
+            suffix="PASSED"
+        else
+            suffix="FAILED"
+        fi
+    fi
+
+    if [[ "$resultFile" == *"analysis-succeeds"* ]]; then
+        if [ "$errors" -eq "0" ]; then
+            suffix="PASSED"
+        else
+            suffix="FAILED"
+        fi
+    fi
 
     printf "$summary\n\n\n"|cat - "analysis-results/$resultFile.txt" > tmp.txt && mv tmp.txt "analysis-results/$resultFile.txt"
-    mv -v "analysis-results/$resultFile.txt" "analysis-results/${resultFile#webdslstatix.test__}.txt"
+    mv -v "analysis-results/$resultFile.txt" "analysis-results/${resultFile#webdslstatix.test__}__${suffix}.txt"
 }
 
 function aggregateResultData() {
@@ -54,26 +71,12 @@ function aggregateResultData() {
     local passed="0"
     local failed="0"
 
-    for file in analysis-results/*$name*analysis-fails*.txt; do
-        if [ -f "$file" ]; then
-            local errors=$(head -n 1 $file | grep -Eo "[0-9]+")
-            if [ ! "$errors" -eq "0" ]; then
-                passed=$(($passed+1))
-            else
-                failed=$(($failed+1))
-            fi
-        fi
+    for file in analysis-results/*$name*PASSED.txt; do
+        passed=$(($passed+1))
     done
 
-    for file in analysis-results/*$name*analysis-succeeds*.txt; do
-        if [ -f "$file" ]; then
-            local errors=$(head -n 1 $file | grep -Eo "[0-9]+")
-            if [ "$errors" -eq "0" ]; then
-                passed=$(($passed+1))
-            else
-                failed=$(($failed+1))
-            fi
-        fi
+    for file in analysis-results/*$name*FAILED.txt; do
+        failed=$(($failed+1))
     done
 
     printf "Result:\n- passed: $passed\n- failed: $failed\n\n" > analysis-results/$name.txt
