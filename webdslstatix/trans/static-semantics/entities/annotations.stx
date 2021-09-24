@@ -111,7 +111,8 @@ rules
 
   annotationOk(_, _, _, NotNullAnno()).
   annotationOk(_, _, _, NotEmptyAnno()).
-  annotationOk(s, _, t, a@AllowedAnno(exp)) :- {t'}
+  annotationOk(s, _, propType, a@AllowedAnno(exp)) :- { t t' }
+    t == stripOptionalSetOrListType(propType),
     t' == typeOfExp(s, exp),
     or(
       typeCompatibleB(t', LIST(t)),

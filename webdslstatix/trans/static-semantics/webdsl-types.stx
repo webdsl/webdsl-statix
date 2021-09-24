@@ -259,6 +259,11 @@ rules // utils
   stripGenericType(LIST(t)) = t.
   stripGenericType(SET(t)) = t.
 
+  stripOptionalSetOrListType : TYPE -> TYPE
+  stripOptionalSetOrListType(t) = t.
+  stripOptionalSetOrListType(LIST(t)) = t.
+  stripOptionalSetOrListType(SET(t)) = t.
+
   stripRefTypes maps stripRefType(list(*)) = list(*)
   stripRefType : TYPE -> TYPE
   stripRefType(t) = t.

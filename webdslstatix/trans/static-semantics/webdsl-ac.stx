@@ -215,7 +215,7 @@ rules // pointcuts
   acPointcutElementDefined : scope * scope * AccessControlPointcutElement
   acPointcutElementDefined(_, _, AccessControlPointcutElement(_, MatchName(p, WildCardArg()), _, _)).
   acPointcutElementDefined(_, _, AccessControlPointcutElement(t, _, _, _)) :-
-    false | error $[Only pages, templates and ajaxtemplates are supported in pointcuts] @t.
+    false | error $[Only pages, templates, ajaxtemplates and actions are supported in pointcuts] @t.
 
   acPointcutElementDefined(s, s_pointcut, elem@AccessControlPointcutElement(ACTypePage(), MatchName(p, _), args, optWc)) :- { ts argTypes }
     argTypes == typesOfStrings(s_pointcut, args),
@@ -231,6 +231,8 @@ rules // pointcuts
     argTypes == typesOfStrings(s_pointcut, args),
     resolveTemplateNoAjax(s, t) == [(_, (_, TEMPLATE(ts, _)))] | error $[Ajax template [t] is not defined] @t,
     acPointcutElementArgsCompatible(argTypes, ts, optWc) | error $[Incompatible argument types for ajax template [t]] @elem.
+
+  acPointcutElementDefined(_, _, elem@AccessControlPointcutElement(ACTypeAction(), _, _, _)).
 
   acPointcutElementArgsCompatible : list(TYPE) * list(TYPE) * OptWildCardArg
   acPointcutElementArgsCompatible([], [], _).

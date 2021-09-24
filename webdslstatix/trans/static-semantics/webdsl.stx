@@ -280,8 +280,12 @@ rules // action and placeholder declaration and resolving
     noDuplicateVarDefs(s, ph) | error $[Variable [ph] is defined multiple times] @ph.
 
   resolvePlaceholder : scope * string -> list((path * (string * TYPE)))
-  resolvePlaceholder(s, ph) = filterPlaceholderResults(typesOf(phs)) :-
-    query var filter P* in s |-> phs.
+  resolvePlaceholder(s, ph) = result :- { ph_scopes phs }
+    query var filter P*
+              and { ph' :- ph' == (ph, _) }
+              in s |-> ph_scopes,
+    phs == typesOf(ph_scopes),
+    result == filterPlaceholderResults(phs).
 
   filterActionResults : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
   filterActionResults([]) = [].

@@ -83,6 +83,14 @@ rules // ajax statements
     typeCompatible(typeOfExp(s, e), string(s))
       | error $[Expression should be compatible with type string or a placeholder variable] @e.
 
-  ajaxPlaceholderExpressionOk(s, Var(ph)) :- { ph' }
-    resolvePlaceholder(s, ph) == [(_, (ph', _)) | _] | error $[Unable to find placeholder [ph]],
-    @ph.ref := ph'.
+  ajaxPlaceholderExpressionOk(s, e@Var(ph)) :- { s_next r }
+    resolvePlaceholder(s, ph) == r,
+    new s_next, s_next -P-> s,
+    ajaxPlaceholderExpressionResultOk(s_next, r, e).
+
+  ajaxPlaceholderExpressionResultOk : scope * list((path * (string * TYPE))) * Exp
+  ajaxPlaceholderExpressionResultOk(s, r, e) :- false | error $[Unexpected input? r: [r], e: [e]].
+  ajaxPlaceholderExpressionResultOk(s, [_ | _], _).
+
+  ajaxPlaceholderExpressionResultOk(s, [], e) :-
+    typeCompatible(typeOfExp(s, e), string(s)) | error $[Type of expression [e] is not compatible with String or Placeholder] @e.
