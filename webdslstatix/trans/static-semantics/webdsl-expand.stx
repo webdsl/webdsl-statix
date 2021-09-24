@@ -1,9 +1,12 @@
 module static-semantics/webdsl-expand
 
 imports
+  static-semantics/entities/annotations
+
   static-semantics/types/built-ins
 
   static-semantics/webdsl
+  static-semantics/webdsl-actions
   static-semantics/webdsl-types
   static-semantics/webdsl-ui
 
@@ -18,7 +21,7 @@ rules
     deriveStringOk(p),
     t == typeOfExp(s, exp),
     typeCompatible(t, entity(s)) | error $[Cannot derive for non-entity types] @exp,
-    derivePropertiesOk(props),
+    derivePropertiesOk(s, t, p, props),
     deriveBodyOk(s, s_pha, body).
 
   deriveStringOk : string
@@ -27,9 +30,15 @@ rules
   deriveStringOk("createPage").
   deriveStringOk("editPage").
 
-  derivePropertiesOk maps derivePropertyOk(list(*))
-  derivePropertyOk : DeriveProperty
-  derivePropertyOk(_) :- try { false } | warning $[This element is not yet supported].
+  derivePropertiesOk maps derivePropertyOk(*, *, *, list(*))
+  derivePropertyOk : scope * TYPE * string * DeriveProperty
+  derivePropertyOk(_, _, _, _) :- try { false } | warning $[This element is not yet supported].
+  derivePropertyOk(s, t_ent, _, DeriveDefault(prop)) :- { t }
+    t == typeOfProperty(s, t_ent, prop) | error $[Entity [t_ent] does not have a property named [prop]],
+    isMutableProperty(t_ent, prop) | error $[Property [prop] is not mutable].
+
+  derivePropertyOk(s, t_ent, "viewPage", DeriveDefault(prop)) :- { t }
+    t == typeOfProperty(s, t_ent, prop) | error $[Entity [t_ent] does not have a property named [prop]].
 
   deriveBodyOk : scope * scope * DeriveBody
   deriveBodyOk(s, s_pha, DeriveBody(elements)) :- deriveBodyElementsOk(s, s_pha, elements).
