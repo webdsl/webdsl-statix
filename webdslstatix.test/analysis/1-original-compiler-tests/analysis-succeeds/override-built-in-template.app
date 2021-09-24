@@ -1,10 +1,10 @@
 application test
 
-  define override body(){
+  define body(){
     "34"
   }
 
-  define override main(){
+  define main(){
     "12"
   }
   

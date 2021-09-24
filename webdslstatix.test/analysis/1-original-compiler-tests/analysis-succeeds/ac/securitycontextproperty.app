@@ -2,7 +2,7 @@ application test
 
 section principal
 
-  define override body() {
+  define body() {
     "default body"
   }
   
@@ -69,5 +69,5 @@ section somesection
     }
   }
   
-  define override main(){body()}
+  define main(){body()}
   

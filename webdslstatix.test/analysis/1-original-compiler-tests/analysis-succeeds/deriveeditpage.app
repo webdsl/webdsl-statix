@@ -2,7 +2,7 @@ application com.example.derive
 
 section templates
 
-  define override main() {
+  define main() {
     block("top") {
       top() }
     block("body") {
@@ -18,7 +18,7 @@ section templates
   
   define sidebar() { }
 
-  define override body() { }
+  define body() { }
 
 section data model
 

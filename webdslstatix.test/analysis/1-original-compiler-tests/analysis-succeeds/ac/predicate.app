@@ -5,21 +5,23 @@ section principal
   define body() {
     "default body"
   }
-  
+
   entity User{
     name :: String
   }
+
+  principal is User with credentials name
 
   predicate test(a:Int,b:Int)
   {
     a+b>5
   }
-  
-  define main() 
+
+  define main()
   {
     body()
   }
-  
+
   define page root(){
     main()
     define body()

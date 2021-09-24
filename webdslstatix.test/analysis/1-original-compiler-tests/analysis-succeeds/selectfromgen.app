@@ -2,7 +2,7 @@ application test
 
 section datamodel
 
-  define override body() {
+  define body() {
     "default body"
   }
   
@@ -16,7 +16,7 @@ section datamodel
     users -> Set<User>
   }
 
-  define override main(){body()}
+  define main(){body()}
   define page user(U:User){derive viewPage from u}
 
   var u:User := User{name := "bob" };
