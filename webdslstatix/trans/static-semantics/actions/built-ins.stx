@@ -55,4 +55,7 @@ rules
     declareFunction(s, "hasNotNullAttribute", []              , bool),
 
     declareFunction(s, "message", [string], void),
-    declareFunction(s, "log"    , [object], void).
+    declareFunction(s, "log"    , [object], void),
+
+    declareFunction(s, "assert", [bool], void),
+    declareFunction(s, "assert", [bool, string], void).

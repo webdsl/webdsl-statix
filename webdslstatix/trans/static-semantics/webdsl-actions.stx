@@ -286,6 +286,10 @@ rules // lists and sets
     t == typeOfExp(s_e1, e1).
     // TO-DO: implement filter and group by typechecking
 
+rules // test
+
+  defOk(s, Test(_, Block(stmts))) :- stmtsOk(s, stmts, UNTYPED()).
+
 rules // misc
 
   stmtOk(s, _, ValidateStatement(validateExp, messageExp), _) :- validateOk(s, validateExp, messageExp).

@@ -17,6 +17,7 @@ rules
   normalize = normalize-action
   normalize = normalize-core
   normalize = normalize-data
+  normalize = normalize-expand
   normalize = normalize-hql
   normalize = normalize-native
   normalize = normalize-search
