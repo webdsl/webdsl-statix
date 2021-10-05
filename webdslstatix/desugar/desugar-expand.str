@@ -8,17 +8,29 @@ rules
   normalize-expand : DeriveNoBody(p, exp, ps) -> Derive(p, exp, ps, DeriveBody([]))
   normalize-expand : DeriveNoForNoBody(p, exp) -> Derive(p, exp, [], DeriveBody([]))
   normalize-expand : DeriveNoFor(p, exp, body) -> Derive(p, exp, [], body)
-  normalize-expand : Section(s, defs*) -> Section(s, defs'*)
-    where <fetch(?DeriveCrud(entity_name))> defs*
+
+  normalize-expand : Section(s, defs) -> Section(s, defs')
+    where derives := <filter(derive-cruds-without-page-elems(|defs))> defs
+        ; <not(?0)> <length> derives
+    with  new-derive-page-elems := <concat> <map(construct-derive-page-elems)> derives
+        ; defs' := <conc> (defs, new-derive-page-elems)
+
+// helper rules to filter and construct expand definitions
+
+  derive-cruds-without-page-elems(|defs) : e -> e
+    where <?DeriveCrud(entity_name)> e
         ; (create, view, edit, manage) := <crud-page-names> entity_name
         ; (
-               <not(fetch(?TemplateDefinition(DefinePage(_, create, _, _, _))))> defs*
-            <+ <not(fetch(?TemplateDefinition(DefinePage(_, view, _, _, _))))> defs*
-            <+ <not(fetch(?TemplateDefinition(DefinePage(_, edit, _, _, _))))> defs*
-            <+ <not(fetch(?TemplateDefinition(DefinePage(_, manage, _, _, _))))> defs*
+               <not(fetch(?TemplateDefinition(DefinePage(_, create, _, _, _))))> defs
+            <+ <not(fetch(?TemplateDefinition(DefinePage(_, view, _, _, _))))> defs
+            <+ <not(fetch(?TemplateDefinition(DefinePage(_, edit, _, _, _))))> defs
+            <+ <not(fetch(?TemplateDefinition(DefinePage(_, manage, _, _, _))))> defs
           )
-    with  crud-pages := <construct-crud-pages> (entity_name, create, view, edit, manage)
-        ; defs'* := <conc> (defs*, crud-pages)
+
+  construct-derive-page-elems : e -> derive-page-elems
+    with <?DeriveCrud(entity_name)> e
+        ; (create, view, edit, manage) := <crud-page-names> entity_name
+        ; derive-page-elems := <construct-crud-pages> (entity_name, create, view, edit, manage)
 
   crud-page-names : entity_name -> (create, view, edit, manage)
     with

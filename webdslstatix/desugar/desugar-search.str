@@ -31,14 +31,22 @@ rules
 
   normalize-search : AllFacetResults(field, e_searcher) -> FacetResults(field, e_searcher)
 
-  normalize-search : Section(s, defs*) -> Section(s, defs'*)
-    where <fetch(?Entity(entity_name, _, _) <+ ?EntityNoSuper(entity_name, _))> defs*
-        ; searcher_name := <concat-strings> [entity_name, "Searcher"]
-        ; <not(fetch(?NativeClass(_, NCAlias(searcher_name), _, _)))> defs*
-    with  searcher := <construct-searcher-class> (entity_name, searcher_name)
-        ; function_name := <concat-strings> ["search", entity_name]
-        ; search_functions := <construct-search-functions> (entity_name, function_name)
-        ; defs'* := <conc> (defs*, [searcher | search_functions])
+  normalize-search : Section(s, defs) -> Section(s, defs')
+    where ents := <filter(entities-without-search-elems(|defs))> defs
+        ; <not(?0)> <length> ents
+    with  new-search-elems := <concat> <map(construct-search-elems)> ents
+        ; defs' := <conc> (defs, new-search-elems)
+
+// helper rules to filter and construct entity search definitions
+
+  entities-without-search-elems(|defs) : e -> e
+    where <?Entity(entity_name, _, _) <+ ?EntityNoSuper(entity_name, _)> e
+        ; <not(fetch(?NativeClass(_, NCAlias(<concat-strings> [entity_name, "Searcher"]), _, _)))> defs
+
+  construct-search-elems : e -> [searcher | search_functions]
+    with <?Entity(entity_name, _, _) <+ ?EntityNoSuper(entity_name, _)> e
+        ; searcher := <construct-searcher-class> (entity_name, <concat-strings> [entity_name, "Searcher"])
+        ; search_functions := <construct-search-functions> (entity_name, <concat-strings> ["search", entity_name])
 
   construct-searcher-class : (entity_name, searcher_name) -> NativeClass(<concat-strings> ["webdsl.generated.search.", searcher_name], NCAlias(searcher_name), NCSuper("Searcher"),
       [ NCConstructor([])
