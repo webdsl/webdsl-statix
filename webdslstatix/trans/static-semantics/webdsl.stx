@@ -397,7 +397,7 @@ rules // typing
   typesCompatible([_|_], []) = FALSE().
   typesCompatible([t1|t1s], [t2|t2s]) = andB(typeCompatibleB(t1, t2), typesCompatible(t1s, t2s)).
 
-  typesCompatibleWith maps typeCompatible(*, list(*))
+  typesCompatibleWith maps typeCompatible(list(*), *)
   typeCompatible : TYPE * TYPE
   typeCompatible(T1, T2) :- typeCompatibleB(T1, T2) == TRUE().
 

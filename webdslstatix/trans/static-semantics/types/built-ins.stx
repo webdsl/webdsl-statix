@@ -144,6 +144,8 @@ rules
 rules // built-in functions and properties for built-in generic type List
 
   typeOfProperty(s, LIST(t), "length") = int(s).
+  typeOfProperty(s, LIST(t), "first") = t.
+  typeOfProperty(s, LIST(t), "last") = t.
 
   typeOfCall(s, LIST(t), "add", [arg]) = VOID() :-
     typeCompatible(typeOfExp(s, arg), t).
@@ -153,7 +155,7 @@ rules // built-in functions and properties for built-in generic type List
 
   typeOfCall(s, LIST(_), "clear", []) = VOID().
 
-  typeOfCall(s, LIST(t), "addAll", [arg]) = VOID() :- {argType}
+  typeOfCall(s, rt@LIST(t), "addAll", [arg]) = rt :- {argType}
     argType == typeOfExp(s, arg),
     or(
       typeCompatibleB(argType, LIST(t)),
@@ -183,6 +185,8 @@ rules // built-in functions and properties for built-in generic type List
     typeCompatible(typeOfExp(s, arg1), int(s)),
     typeCompatible(typeOfExp(s, arg2), int(s)).
 
+  typeOfCall(s, LIST(t), "random", []) = t.
+
 rules // built-in functions specifically for lists of strings
 
   typeOfCall(s, LIST(BUILTINTYPE("String", _)), "concat", []) = string(s).
@@ -195,6 +199,11 @@ rules // built-in functions specifically for lists of strings
 rules // built-in functions and properties for built-in generic type Set
 
   typeOfProperty(s, SET(t), "length") = int(s).
+  typeOfProperty(s, SET(t), "first") = t.
+  typeOfProperty(s, SET(t), "last") = t.
+
+  typeOfCall(s, SET(t), "get", [arg]) = t :-
+    typeCompatible(typeOfExp(s, arg), int(s)).
 
   typeOfCall(s, SET(t), "add", [arg]) = VOID() :-
     typeCompatible(typeOfExp(s, arg), t).
@@ -204,7 +213,7 @@ rules // built-in functions and properties for built-in generic type Set
 
   typeOfCall(s, SET(_), "clear", []) = VOID().
 
-  typeOfCall(s, SET(t), "addAll", [arg]) = VOID() :- {argType}
+  typeOfCall(s, rt@SET(t), "addAll", [arg]) = rt :- {argType}
     argType == typeOfExp(s, arg),
     or(
       typeCompatibleB(argType, LIST(t)),
@@ -212,6 +221,8 @@ rules // built-in functions and properties for built-in generic type Set
     ).
 
   typeOfCall(s, SET(t), "list", []) = LIST(t).
+
+  typeOfCall(s, SET(t), "random", []) = t.
 
 rules // built-in properties for built-in generic type Ref
 
