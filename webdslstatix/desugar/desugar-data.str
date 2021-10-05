@@ -19,10 +19,24 @@ rules
   normalize-data : RequestVarDeclInitDepr(x, sort, exp) -> RequestVarDeclInit(x, sort, exp)
   normalize-data : RequestVarDeclInitInferredDepr(x, exp) -> RequestVarDeclInitInferred(x, exp)
 
-  normalize-data: Property(x, k, srt, PropAnnos(annos)) -> Property(x, k, srt, PropAnnos(annos'))
+  normalize-data : Property(x, k, srt, PropAnnos(annos)) -> Property(x, k, srt, PropAnnos(annos'))
     where   <not(fetch-elem(?NameAnno()))> annos
           ; <?"name"> x
     with  annos' := [NameAnno() | annos]
+
+  normalize-data : Entity(entity_name, super, defs) -> Entity(entity_name, super, defs')
+    where
+        all-function := StaticEntityFunction(Function("all", FormalArgs([]), OptSortSome(GenericSort("List", [SimpleSort(entity_name)])), Block([])))
+      ; <not(fetch(?all-function))> defs
+    with
+        defs' := [all-function | defs]
+
+  normalize-data : EntityNoSuper(entity_name, defs) -> EntityNoSuper(entity_name, defs')
+    where
+        all-function := StaticEntityFunction(Function("all", FormalArgs([]), OptSortSome(GenericSort("List", [SimpleSort(entity_name)])), Block([])))
+      ; <not(fetch(?all-function))> defs
+    with
+        defs' := [all-function | defs]
 
   // All rules and signatures below are copied directly from the WebDSL compiler.
   // Some concrete syntax transformations have been rewritten as abstract syntax transformations

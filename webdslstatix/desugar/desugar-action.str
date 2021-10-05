@@ -22,19 +22,23 @@ rules
   normalize-action : FilterNoWhere(obe, l)      -> Filter(True(), obe, l)
   normalize-action : FilterNoWhereNoOrderBy(l)  -> Filter(True(), [], l)
 
+  normalize-action : RequestVarDecl(x, sort)            -> GlobalVarDecl(x, sort)
+  normalize-action : RequestVarDeclInit(x, sort, exp)   -> GlobalVarDeclInit(x, sort, exp)
+  normalize-action : RequestVarDeclInitInferred(x, exp) -> GlobalVarDeclInitInferred(x, exp)
+
 // All rules and signatures below are copied directly from the WebDSL compiler.
 // Some concrete syntax transformations have been rewritten as abstract syntax transformations
 
   normalize-action : LimitNoLimit(e) -> Limit(Const(Int("-1")), e)
   normalize-action : LimitNoOffset(e) -> Limit(e, Const(Int("0")))
-  
+
   normalize-action : OrderNonSpecific(x) -> OrderAscending(x)
-  
+
   normalize-action : IfNoElse(e, bit) -> If(e, bit, Block([]))
   normalize-action : If(e, then, OptElseSome(else)) -> If(e, then, else)
-  
+
   normalize-action : IfWithElseIf(e, then, elseif*, else) -> If(e, then, else')
     with
       else' := <foldr(\ (ElseIf(c, t), rest) -> Block([If(c, t, rest)]) \ | else)> elseif*
-  
+
   foldr(s | init) = foldr(!init, s)
