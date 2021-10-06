@@ -2,6 +2,8 @@ module WebDSL-XML
 
 imports
   WebDSL-Action
+  WebDSL-UI
+  WebDSL-Attributes
 
 lexical sorts
 

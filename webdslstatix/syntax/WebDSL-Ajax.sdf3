@@ -4,6 +4,7 @@ imports
   WebDSL-Action
   WebDSL-Lexical
   WebDSL-UI
+  WebDSL-Core
 
 context-free sorts
 

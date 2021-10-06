@@ -3,6 +3,8 @@ module WebDSL-Attributes
 imports
   WebDSL-Action
   WebDSL-Lexical
+  WebDSL-Core
+  WebDSL-UI
 
 context-free sorts
 

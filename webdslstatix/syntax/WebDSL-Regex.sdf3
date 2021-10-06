@@ -3,6 +3,7 @@ module WebDSL-Regex
 imports
   WebDSL-Action
   WebDSL-Lexical
+  WebDSL-DataModel
 
 context-free sorts
 

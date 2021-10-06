@@ -3,6 +3,8 @@ module WebDSL-JavaScript
 imports
   WebDSL-Action
   WebDSL-Attributes
+  WebDSL-UI
+  WebDSL-XML
 
 context-free syntax
 
