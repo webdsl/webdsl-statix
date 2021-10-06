@@ -257,11 +257,15 @@ lexical syntax
 
 context-free sorts
 
-  RegexId RegexID
+  RegexId
 
 context-free syntax
 
   RegexId.RegexId = RegexID
+
+lexical sorts
+
+  RegexID
 
 lexical syntax
 
