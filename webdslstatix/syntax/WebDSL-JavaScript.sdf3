@@ -30,7 +30,7 @@ context-free syntax
 
 lexical sorts
 
-  JSChar JSString
+  JSChar JSString JSSmallerThan JSTilde
 
 lexical syntax
 
@@ -39,8 +39,8 @@ lexical syntax
 
   JSChar = ~[\<\~]
 
-  JSChar = SmallerThan
-  SmallerThan = [\<]
+  JSChar = JSSmallerThan
+  JSSmallerThan = [\<]
 
   JSChar = JSTilde
   JSTilde = "\\~"
@@ -50,6 +50,6 @@ lexical syntax
 
 lexical restrictions
 
-  SmallerThan -/- [\/]
+  JSSmallerThan -/- [\/]
   JSString -/- ~[\<\~]
   JSString -/- [\<] . ~[\/]
