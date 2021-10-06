@@ -264,7 +264,7 @@ lexical syntax
   VarId = "if" {reject}
   VarId = "else" {reject}
 
-syntax
+context-free syntax
 
   StringPart-CF.InterpExp = "~" "(" Exp-CF ")"
 

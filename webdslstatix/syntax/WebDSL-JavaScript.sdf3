@@ -23,7 +23,7 @@ context-free sorts
 
   JSPart
 
-syntax
+context-free syntax
 
   JSPart-CF.JSExp = "~" Exp-CF
   JSPart-CF.JSString = JSString-LEX

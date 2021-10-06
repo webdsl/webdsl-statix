@@ -398,7 +398,7 @@ lexical syntax
   PropertyAssignmentId = ExtendedId
   PropertyAssignmentId = SubmitProp {reject}
 
-syntax
+context-free syntax
 
   TemplateElement-CF.Text = "\"" StringPart-CF* "\""
 
