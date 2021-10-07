@@ -1,8 +1,8 @@
 module desugar/desugar-search
 
 imports
-
   src-gen/signatures/-
+  desugar/utils
 
 rules
 
@@ -491,9 +491,21 @@ rules
 
   construct-generated-functions : (entity_name, entity_body_defs) -> result
     with
-        load-or-find := GeneratedDefinition(Generated([
+        load_or_find := GeneratedDefinition(Generated([
             "loadOrFindEntity"
           , entity_name
           , <concat-strings> ["load", entity_name]
           , <concat-strings> ["find", entity_name]]))
-      ; result := [load-or-find]
+      ; find_by_property_functions := <filter(construct-find-entity-by-property-function(|entity_name))> entity_body_defs
+      ; result := [load_or_find | find_by_property_functions]
+
+  construct-find-entity-by-property-function(|entity_name) : Property(p, _, _, _) -> f
+    with
+        function_name := ""
+      ; f := GeneratedDefinition(Generated([
+            "findEntityByProperty"
+          , entity_name
+          , p
+          , <concat-strings> ["find", entity_name, "By", <capitalize-string> p]
+          , <concat-strings> ["find", entity_name, "By", <capitalize-string> p, "Like"]]
+        ))

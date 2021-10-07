@@ -1,7 +1,9 @@
 module desugar/desugar-expand
 
 imports
+
   src-gen/signatures/-
+  desugar/utils
 
 rules
 
@@ -45,8 +47,3 @@ rules
       ; view_page := TemplateDefinition(DefinePage([], view, FormalArgs([Arg("arg", SimpleSort(entity_name))]), TemplateArgs([]), []))
       ; edit_page := TemplateDefinition(DefinePage([], edit, FormalArgs([Arg("arg", SimpleSort(entity_name))]), TemplateArgs([]), []))
       ; manage_page := TemplateDefinition(DefinePage([], manage, FormalArgs([]), TemplateArgs([]), []))
-
-  decapitalize-string =
-    explode-string
-    ; [to-lower | id]
-    ; implode-string

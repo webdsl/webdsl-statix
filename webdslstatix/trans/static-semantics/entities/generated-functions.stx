@@ -29,3 +29,21 @@ rules
     resolveAnnotationByAnno(s_ent, ID()) == [(_, (idName, _))],
     idType == typeOfProperty(s, t, idName),
     declareFunction(s, findName, [idType], t).
+
+rules
+
+/*
+  declare findEntityByProperty and findEntityByPropertyLike if
+  the property is string-type compatible
+*/
+
+  defOk(s, GeneratedDefinition(Generated(["findEntityByProperty", entityName, propertyName, findByPropName, findByPropLikeName]))) :- { entType propType }
+    resolveType(s, entityName) == [(_, (_, entType@ENTITY(_)))],
+    propType == typeOfProperty(s, entType, propertyName),
+    declareFindEntityByProperty(s, findByPropName, findByPropLikeName, entType, propType, typeCompatibleB(propType, string(s))).
+
+  declareFindEntityByProperty : scope * string * string * TYPE * TYPE * BOOL
+  declareFindEntityByProperty(_, _, _, _, _, FALSE()).
+  declareFindEntityByProperty(s, findByPropName, findByPropLikeName, entType, propType, TRUE()) :-
+    declareFunction(s, findByPropName, [propType], LIST(entType)),
+    declareFunction(s, findByPropLikeName, [propType], LIST(entType)).
