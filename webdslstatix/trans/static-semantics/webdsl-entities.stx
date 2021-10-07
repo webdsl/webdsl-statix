@@ -5,6 +5,7 @@ imports
 
   static-semantics/entities/annotations
   static-semantics/entities/built-ins
+  static-semantics/entities/generated-functions
 
   static-semantics/types/built-ins
 

@@ -1,0 +1,28 @@
+module WebDSL-Generated
+
+imports
+  WebDSL-Core
+  WebDSL-Lexical
+
+/*
+  Add sort and constructors for elements that can be generated durig the desugaring phase.
+  This is a workaround for the lack of string manipulation in Statix at the time of writing.
+
+  The GeneratedElement is never supposed to be the result of parsing.
+*/
+
+context-free sorts
+
+  GeneratedElement
+
+context-free syntax
+
+  GeneratedElement.Generated = <<Id*>>
+
+  Definition.GeneratedDefinition = <<GeneratedElement>>
+  EntityBodyDeclaration.GeneratedEntityBodyDeclaration = <<GeneratedElement>>
+
+context-free priorities
+
+  Definition.GeneratedDefinition <0> .> GeneratedElement.Generated,
+  EntityBodyDeclaration.GeneratedEntityBodyDeclaration <0> .> GeneratedElement.Generated

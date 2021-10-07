@@ -44,6 +44,13 @@ rules // annotation declaration and resolving
                      min $ < P, $ < F, $ < EXTEND, P < F, P < EXTEND, F < EXTEND
                      in s |-> ps.
 
+  resolveAnnotationByAnno : scope * ANNOTATION -> list((path * (string * ANNOTATION)))
+  resolveAnnotationByAnno(s, a) = ps :-
+    query annotation filter P* F* EXTEND?
+                     and { x' :- x' == (_, a) }
+                     min $ < P, $ < F, $ < EXTEND, P < F, P < EXTEND, F < EXTEND
+                     in s |-> ps.
+
   // entity level
   declareEntityAnnotation : scope * ANNOTATION
   declareEntityAnnotation(s, a) :-
@@ -157,21 +164,18 @@ rules // predicates
   isNoSessionEntity(s) :- doesNotHaveAnnotation(resolveEntityAnnotation(s), SESSIONENTITY()).
 
   noDuplicateIdAnnotations : scope
-  noDuplicateIdAnnotations(s) :-
-    query annotation filter EXTEND?
-                     and { x' :- x' == (_, ID()) }
-                     in s |-> [_].
+  noDuplicateIdAnnotations(s) :- resolveAnnotationByAnno(s, ID()) == [_].
 
   noMultipleNameAnnotations : scope
-  noMultipleNameAnnotations(s) :-
-    query annotation filter EXTEND?
-                     and { x' :- x' == (_, NAME()) }
-                     in s |-> [_] | error $[Found multiple properties called "name" or with a name annotation].
+  noMultipleNameAnnotations(s) :- resolveAnnotationByAnno(s, NAME()) == [_] | error $[Found multiple properties called "name" or with a name annotation].
 
   noDoubleInverse : TYPE * string
   noDoubleInverse(ENTITY(s_ent), x) :-
     doesNotHaveAnnotation(resolveAnnotation(s_ent, x), INVERSE())
       | error $[Inverse annotations cannot be declared on both sides].
+
+  hasIdAnnotationB : scope -> BOOL
+  hasIdAnnotationB(s) = notB(emptyAnnotationResultB(resolveAnnotationByAnno(s, ID()))).
 
   isMutableB : scope * string -> BOOL
   isMutableB(s, x) = notB(hasAnnotationB(resolveAnnotation(s, x), DERIVED())).
@@ -214,3 +218,7 @@ rules // utils
   filterResultsWithBool([]) = [].
   filterResultsWithBool([(x, TRUE()) | xs]) = [x | filterResultsWithBool(xs)].
   filterResultsWithBool([(_, FALSE()) | xs]) = filterResultsWithBool(xs).
+
+  emptyAnnotationResultB : list((path * (string * ANNOTATION))) -> BOOL
+  emptyAnnotationResultB([]) = TRUE().
+  emptyAnnotationResultB(_) = FALSE().

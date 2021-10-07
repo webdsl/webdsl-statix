@@ -12,6 +12,7 @@ imports
   WebDSL-EntityDerive
   WebDSL-Exception
   WebDSL-Expand
+  WebDSL-Generated
   WebDSL-JavaScript
   WebDSL-Lexical
   WebDSL-Native

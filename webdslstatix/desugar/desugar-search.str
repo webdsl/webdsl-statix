@@ -43,10 +43,12 @@ rules
     where <?Entity(entity_name, _, _) <+ ?EntityNoSuper(entity_name, _)> e
         ; <not(fetch(?NativeClass(_, NCAlias(<concat-strings> [entity_name, "Searcher"]), _, _)))> defs
 
-  construct-search-elems : e -> [searcher | search_functions]
-    with <?Entity(entity_name, _, _) <+ ?EntityNoSuper(entity_name, _)> e
+  construct-search-elems : e -> elems
+    with <?Entity(entity_name, _, defs) <+ ?EntityNoSuper(entity_name, defs)> e
         ; searcher := <construct-searcher-class> (entity_name, <concat-strings> [entity_name, "Searcher"])
         ; search_functions := <construct-search-functions> (entity_name, <concat-strings> ["search", entity_name])
+        ; generated_functions := <construct-generated-functions> (entity_name, defs)
+        ; elems := [searcher | <conc> (search_functions, generated_functions)]
 
   construct-searcher-class : (entity_name, searcher_name) -> NativeClass(<concat-strings> ["webdsl.generated.search.", searcher_name], NCAlias(searcher_name), NCSuper("Searcher"),
       [ NCConstructor([])
@@ -486,3 +488,12 @@ rules
         )
       )
     ]
+
+  construct-generated-functions : (entity_name, entity_body_defs) -> result
+    with
+        load-or-find := GeneratedDefinition(Generated([
+            "loadOrFindEntity"
+          , entity_name
+          , <concat-strings> ["load", entity_name]
+          , <concat-strings> ["find", entity_name]]))
+      ; result := [load-or-find]

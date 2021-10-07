@@ -1,0 +1,31 @@
+module static-semantics/entities/generated-functions
+
+imports
+  static-semantics/entities/annotations
+
+  static-semantics/types/built-ins
+
+  static-semantics/webdsl
+  static-semantics/webdsl-actions
+  static-semantics/webdsl-types
+
+rules
+
+/*
+  declare findEntity(<idType>) or loadEntity(<uuid>) based
+  on presence of `(id)` annotation and type
+*/
+
+  defOk(s, GeneratedDefinition(Generated(["loadOrFindEntity", entityName, loadName, findName]))) :- { s_ent t }
+    resolveType(s, entityName) == [(_, (_, t@ENTITY(s_ent)))],
+    declareLoadOrFindEntity(s, loadName, findName, t, hasIdAnnotationB(s_ent)).
+
+  declareLoadOrFindEntity : scope * string * string * TYPE * BOOL
+  declareLoadOrFindEntity(s, loadName, _, t, FALSE()) :-
+    declareFunction(s, loadName, [uuid(s)], t).
+
+  declareLoadOrFindEntity(s, _, findName, t, TRUE()) :- { s_ent idName idType }
+    t == ENTITY(s_ent),
+    resolveAnnotationByAnno(s_ent, ID()) == [(_, (idName, _))],
+    idType == typeOfProperty(s, t, idName),
+    declareFunction(s, findName, [idType], t).
