@@ -268,16 +268,16 @@ rules // lists and sets
     typeCompatible(xt, int(s)) | error $[Index expression must be of type Int, [xt] given],
     t == stripGenericType(ct).
 
-  typeOfExp(s, ForExp2Exp(ForExp(e1, x, OptSortNone(), e2, _, _))) = LIST(t) :- {s_e1 collectionType varType}
+  typeOfExp(s, ForExp2Exp(ForExpInferred(e1, x, e2, _, _))) = LIST(t) :- { s_e1 collectionType varType }
     new s_e1, s_e1 -P-> s,
     collectionType == typeOfExp(s, e2),
     varType == stripGenericType(collectionType),
     declareVar(s_e1, x, varType),
     t == typeOfExp(s_e1, e1),
-    @x.type := varType, false | error $[Collection type: [collectionType], varType: [varType], final type: list of [t]].
+    @x.type := varType.
     // TO-DO: implement filter and group by typechecking
 
-  typeOfExp(s, ForExp2Exp(ForExp(e1, x, OptSortSome(sort), e2, _, _))) = LIST(t) :- {s_e1 collectionType varType}
+  typeOfExp(s, ForExp2Exp(ForExp(e1, x, sort, e2, _, _))) = LIST(t) :- { s_e1 collectionType varType }
     new s_e1, s_e1 -P-> s,
     collectionType == typeOfExp(s, e2),
     varType == stripGenericType(collectionType),

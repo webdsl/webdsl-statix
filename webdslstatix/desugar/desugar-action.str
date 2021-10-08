@@ -7,10 +7,15 @@ rules
 
   normalize-action : OptSortNone() -> OptSortSome(SimpleSort("Void"))
   normalize-action : OptElseNone() -> OptElseSome(Block([]))
-  normalize-action : ForExpShortSort(x, sort, exp) -> ForExp(Var(x), x, OptSortSome(sort), exp, OptFilterNone(), OptGroupByNone())
+
+  normalize-action : ForExpShort(x, sort, exp) -> ForExp(Var(x), x, sort, exp, OptFilterNone(), OptGroupByNone())
   normalize-action : ForExpShortFilter(x, sort, exp, filter) -> ForExp(Var(x), x, sort, exp, OptFilterSome(filter), OptGroupByNone())
+  normalize-action : ForExpShortFilterInferred(x, exp, filter) -> ForExpInferred(Var(x), x, exp, OptFilterSome(filter), OptGroupByNone())
   normalize-action : ForExpShortGroupBy(x, sort, exp, groupby) -> ForExp(Var(x), x, sort, exp, OptFilterNone(), OptGroupBySome(groupby))
-  normalize-action : ForExpShort(x, sort, exp, filter, groupby) -> ForExp(Var(x), x, sort, exp, OptFilterSome(filter), OptGroupBySome(groupby))
+  normalize-action : ForExpShortGroupByInferred(x, exp, groupby) -> ForExpInferred(Var(x), x, exp, OptFilterNone(), OptGroupBySome(groupby))
+  normalize-action : ForExpShortFilterGroupBy(x, sort, exp, filter, groupby) -> ForExp(Var(x), x, sort, exp, OptFilterSome(filter), OptGroupBySome(groupby))
+  normalize-action : ForExpShortFilterGroupByInferred(x, exp, filter, groupby) -> ForExpInferred(Var(x), x, exp, OptFilterSome(filter), OptGroupBySome(groupby))
+
   normalize-action : GoToAlt(pagecall) -> GoTo(pagecall)
   normalize-action : PropAssignmentComma(assignment) -> PropAssignment(assignment)
   normalize-action : EmailFunctionCallAlt(emailcall) -> EmailFunctionCall(emailcall)

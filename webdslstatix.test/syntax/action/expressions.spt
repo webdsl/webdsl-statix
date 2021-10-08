@@ -213,21 +213,21 @@ test substraction [[ 1 - 2 ]] parse succeeds parse to Sub(Const(Int("1")), Const
 test substraction assoc [[ 1 - 2 - 3 ]] parse succeeds parse to Sub(Sub(Const(Int("1")), Const(Int("2"))), Const(Int("3")))
 
 // for expressions
-test for expression [[ [ x | x in xs] ]] parse succeeds parse to ForExp(Var("x"), "x", OptSortNone(), Var("xs"), OptFilterNone(), OptGroupByNone())
-test for expression exp [[ [ x.y | x in xs] ]] parse succeeds parse to ForExp(FieldAccess(FAVar("x"), "y"), "x", OptSortNone(), Var("xs"), OptFilterNone(), OptGroupByNone())
-test for expression sort decl [[ [ x | x : Int in xs] ]] parse succeeds parse to ForExp(Var("x"), "x", OptSortSome(SimpleSort("Int")), Var("xs"), OptFilterNone(), OptGroupByNone())
-test for expression collection exp [[ [ x | x in y.ys] ]] parse succeeds parse to ForExp(Var("x"), "x", OptSortNone(), FieldAccess(FAVar("y"), "ys"), OptFilterNone(), OptGroupByNone())
-test for expression filter [[ [ x | x in xs where true] ]] parse succeeds parse to ForExp(Var("x"), "x", OptSortNone(), Var("xs"), OptFilterSome(FilterNoOrderByNoLimit(True())), OptGroupByNone())
-test for expression group by [[ [ x | x in xs group by x.y] ]] parse succeeds parse to ForExp(Var("x"), "x", OptSortNone(), Var("xs"), OptFilterNone(), OptGroupBySome(GroupBy(FieldAccess(FAVar("x"), "y"))))
+test for expression [[ [ x | x in xs] ]] parse succeeds parse to ForExpInferred(Var("x"), "x", Var("xs"), OptFilterNone(), OptGroupByNone())
+test for expression exp [[ [ x.y | x in xs] ]] parse succeeds parse to ForExpInferred(FieldAccess(FAVar("x"), "y"), "x", Var("xs"), OptFilterNone(), OptGroupByNone())
+test for expression sort decl [[ [ x | x : Int in xs] ]] parse succeeds parse to ForExp(Var("x"), "x", SimpleSort("Int"), Var("xs"), OptFilterNone(), OptGroupByNone())
+test for expression collection exp [[ [ x | x in y.ys] ]] parse succeeds parse to ForExpInferred(Var("x"), "x", FieldAccess(FAVar("y"), "ys"), OptFilterNone(), OptGroupByNone())
+test for expression filter [[ [ x | x in xs where true] ]] parse succeeds parse to ForExpInferred(Var("x"), "x", Var("xs"), OptFilterSome(FilterNoOrderByNoLimit(True())), OptGroupByNone())
+test for expression group by [[ [ x | x in xs group by x.y] ]] parse succeeds parse to ForExpInferred(Var("x"), "x", Var("xs"), OptFilterNone(), OptGroupBySome(GroupBy(FieldAccess(FAVar("x"), "y"))))
 
-test alternative for expression sort decl [[ [x : Int in xs] ]] parse succeeds parse to ForExpShortSort("x", SimpleSort("Int"), Var("xs"))
-test alternative for expression filter [[ [ x in xs where true] ]] parse succeeds parse to ForExpShortFilter("x", OptSortNone(), Var("xs"), FilterNoOrderByNoLimit(True()))
-test alternative for expression group by [[ [ x in xs group by x.y] ]] parse succeeds parse to ForExpShortGroupBy("x", OptSortNone(), Var("xs"), GroupBy(FieldAccess(FAVar("x"), "y")))
-test alternative for expression filter and group by [[ [ x in xs where true group by x.y] ]] parse succeeds parse to ForExpShort("x", OptSortNone(), Var("xs"), FilterNoOrderByNoLimit(True()), GroupBy(FieldAccess(FAVar("x"), "y")))
-test alternative for expression filter and group by and sort [[ [ x : Int in xs where true group by x.y] ]] parse succeeds parse to ForExpShort("x", OptSortSome(SimpleSort("Int")), Var("xs"), FilterNoOrderByNoLimit(True()), GroupBy(FieldAccess(FAVar("x"), "y")))
+test alternative for expression sort decl [[ [x : Int in xs] ]] parse succeeds parse to ForExpShort("x", SimpleSort("Int"), Var("xs"))
+test alternative for expression filter [[ [ x in xs where true] ]] parse succeeds parse to ForExpShortFilterInferred("x", Var("xs"), FilterNoOrderByNoLimit(True()))
+test alternative for expression group by [[ [ x in xs group by x.y] ]] parse succeeds parse to ForExpShortGroupByInferred("x", Var("xs"), GroupBy(FieldAccess(FAVar("x"), "y")))
+test alternative for expression filter and group by [[ [ x in xs where true group by x.y] ]] parse succeeds parse to ForExpShortFilterGroupByInferred("x", Var("xs"), FilterNoOrderByNoLimit(True()), GroupBy(FieldAccess(FAVar("x"), "y")))
+test alternative for expression filter and group by and sort [[ [ x : Int in xs where true group by x.y] ]] parse succeeds parse to ForExpShortFilterGroupBy("x", SimpleSort("Int"), Var("xs"), FilterNoOrderByNoLimit(True()), GroupBy(FieldAccess(FAVar("x"), "y")))
 
-test for expression conjunction [[ And [ x | x in xs] ]] parse succeeds parse to AndForExp(ForExp(Var("x"), "x", OptSortNone(), Var("xs"), OptFilterNone(), OptGroupByNone()))
-test for expression disjunction [[ Or [ x | x in xs] ]] parse succeeds parse to OrForExp(ForExp(Var("x"), "x", OptSortNone(), Var("xs"), OptFilterNone(), OptGroupByNone()))
+test for expression conjunction [[ And [ x | x in xs] ]] parse succeeds parse to AndForExp(ForExpInferred(Var("x"), "x", Var("xs"), OptFilterNone(), OptGroupByNone()))
+test for expression disjunction [[ Or [ x | x in xs] ]] parse succeeds parse to OrForExp(ForExpInferred(Var("x"), "x", Var("xs"), OptFilterNone(), OptGroupByNone()))
 
 // binary operations priority
 test exp bracket rule [[ (((1))) ]] parse succeeds parse to Const(Int("1"))
