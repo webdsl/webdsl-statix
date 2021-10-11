@@ -68,9 +68,15 @@ rules // variable declaration and assignment
 
   noDuplicateVarDefsInSuper : scope * string
   noDuplicateVarDefsInSuper(_, "this"). // allow "this" var to be redefined in sub
-  noDuplicateVarDefsInSuper(s_sub, x) :- {xs}
+  noDuplicateVarDefsInSuper(s_sub, x) :- { xs nonOverridable }
     resolveProperty(s_sub, x) == xs,
-    withoutAnnotation(xs, OVERRIDABLE()) == [_].
+    withoutAnnotation(xs, OVERRIDABLE()) == nonOverridable,
+    amountNonOverridableOk(nonOverridable).
+
+  amountNonOverridableOk : list((path * (string * TYPE)))
+  amountNonOverridableOk(_) :- false.
+  amountNonOverridableOk([]).
+  amountNonOverridableOk([_]).
 
   stmtOk(s, _, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a mutable variable].
   stmtOk(s, _, Assignment(v@Var(x), exp), _) :- {t}
