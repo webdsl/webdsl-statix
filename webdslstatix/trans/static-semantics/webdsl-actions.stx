@@ -25,36 +25,38 @@ rules // variable declaration and assignment
   stmtOk(s, _, Stat(exp), _) :-
     expOk(s, exp).
 
-  stmtOk(s, s_decl, VarDecl(x, sort), _) :- {t}
+  stmtOk(s, s_decl, VarDecl(x, sort), _) :- { t }
     t == typeOfSort(s, sort),
     inequalType(t, UNTYPED()) | error $[Unknown type [sort]] @sort,
     declareVar(s_decl, x, t),
     @x.type := t.
 
-  stmtOk(s, s_decl, VarDeclInit(x, sort, exp), _) :- {t}
+  stmtOk(s, s_decl, VarDeclInit(x, sort, exp), _) :- { t expType }
     t == typeOfSort(s, sort),
-    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [sort]] @exp,
+    expType == typeOfExp(s, exp),
+    typeCompatible(expType, t) | error $[Expression [exp] is not of type [sort], got type [expType]] @exp,
     declareVar(s_decl, x, t),
     @x.type := t.
 
-  stmtOk(s, s_decl, VarDeclInitInferred(x, exp), _) :- {t}
+  stmtOk(s, s_decl, VarDeclInitInferred(x, exp), _) :- { t }
     t == typeOfExp(s, exp),
     inequalType(t, UNTYPED()) | error $[Unable to infer type of [exp]] @exp,
     declareVar(s_decl, x, t),
     @x.type := t.
 
-  defOk(s, GlobalVarDecl(x, sort)) :- {t}
+  defOk(s, GlobalVarDecl(x, sort)) :- { t }
     t == typeOfSort(s, sort),
     declareVar(s, x, t),
     declareAnnotation(s, x, DERIVED()).
 
-  defOk(s, GlobalVarDeclInit(x, sort, exp)) :- {t}
+  defOk(s, GlobalVarDeclInit(x, sort, exp)) :- { t expType }
     t == typeOfSort(s, sort),
-    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [sort]] @exp,
+    expType == typeOfExp(s, exp),
+    typeCompatible(expType, t) | error $[Expression [exp] is not of type [sort], got type [expType]] @exp,
     declareVar(s, x, t),
     declareAnnotation(s, x, DERIVED()).
 
-  defOk(s, GlobalVarDeclInitInferred(x, exp)) :- {t}
+  defOk(s, GlobalVarDeclInitInferred(x, exp)) :- { t }
     t == typeOfExp(s, exp),
     inequalType(t, UNTYPED()) | error $[Cannot resolve type of expression [exp]],
     declareVar(s, x, t),
@@ -79,10 +81,11 @@ rules // variable declaration and assignment
   amountNonOverridableOk([_]).
 
   stmtOk(s, _, Assignment(_, exp), _) :- false | error $[Left-hand side of assignment should be a mutable variable].
-  stmtOk(s, _, Assignment(v@Var(x), exp), _) :- {t}
+  stmtOk(s, _, Assignment(v@Var(x), exp), _) :- { t expType }
     variableType(s, x) == t,
     isMutableOrRef(s, x, t),
-    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [t]],
+    expType == typeOfExp(s, exp),
+    typeCompatible(expType, t) | error $[Expression [exp] is not of type [t], got type [expType]],
     @v.type := t.
 
   isMutableOrRef : scope * string * TYPE
@@ -96,20 +99,22 @@ rules // variable declaration and assignment
   isRef(REF(_)) = TRUE().
   isRef(_) = FALSE().
 
-  stmtOk(s, _, Assignment(FieldAccess(v@FAVar(var), x), exp), _) :- {varType t}
+  stmtOk(s, _, Assignment(FieldAccess(v@FAVar(var), x), exp), _) :- { varType t expType }
     varType == variableType(s, var),
     @v.type := varType,
     t == typeOfProperty(s, varType, x),
     @x.type := t,
     isMutableProperty(varType, x),
-    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [t]].
+    expType == typeOfExp(s, exp),
+    typeCompatible(expType, t) | error $[Expression [exp] is not of type [t], got type [expType]].
 
-  stmtOk(s, _, Assignment(FieldAccess(FAExp(lhexp), x), rhexp), _) :- {expType t}
-    expType == typeOfExp(s, lhexp),
-    t == typeOfProperty(s, expType, x),
+  stmtOk(s, _, Assignment(FieldAccess(FAExp(lhexp), x), rhexp), _) :- { lhExpType t rhExpType }
+    lhExpType == typeOfExp(s, lhexp),
+    t == typeOfProperty(s, lhExpType, x),
     @x.type := t,
-    isMutableProperty(expType, x),
-    typeCompatible(typeOfExp(s, rhexp), t) | error $[Expression [rhexp] is not of type [t]].
+    isMutableProperty(lhExpType, x),
+    rhExpType == typeOfExp(s, rhexp),
+    typeCompatible(rhExpType, t) | error $[Expression [rhexp] is not of type [t], got type [rhExpType]].
 
   stmtOk(s, _, Assignment(ci@CollectionIndex(_, _), exp), _) :-
     typeCompatible(typeOfExp(s, exp), typeOfExp(s, ci)).

@@ -18,19 +18,20 @@ rules // var decls in templates and pages
   templateElementOk(s, s_decl, _, LocalScopeTemplate(varDecl))   :- templateVarDeclOk(s, s_decl, varDecl).
 
   templateVarDeclOk: scope * scope * VarDecl
-  templateVarDeclOk(s, s_decl, TemplateVarDecl(x, sort)) :- {t}
+  templateVarDeclOk(s, s_decl, TemplateVarDecl(x, sort)) :- { t }
     t == typeOfSort(s, sort),
     inequalType(t, UNTYPED()) | error $[Unknown type [sort]] @sort,
     declareVar(s_decl, x, t),
     @x.type := t.
 
-  templateVarDeclOk(s, s_decl, TemplateVarDeclInit(x, sort, exp)) :- {t}
+  templateVarDeclOk(s, s_decl, TemplateVarDeclInit(x, sort, exp)) :- { t expType }
     t == typeOfSort(s, sort),
-    typeCompatible(typeOfExp(s, exp), t) | error $[Expression [exp] is not of type [sort]] @exp,
+    expType == typeOfExp(s, exp),
+    typeCompatible(expType, t) | error $[Expression [exp] is not of type [sort], got type [expType]] @exp,
     declareVar(s_decl, x, t),
     @x.type := t.
 
-  templateVarDeclOk(s, s_decl, TemplateVarDeclInitInferred(x, exp)) :- {t}
+  templateVarDeclOk(s, s_decl, TemplateVarDeclInitInferred(x, exp)) :- { t }
     t == typeOfExp(s, exp),
     inequalType(t, UNTYPED()) | error $[Unable to infer type of [exp]] @exp,
     declareVar(s_decl, x, t),
