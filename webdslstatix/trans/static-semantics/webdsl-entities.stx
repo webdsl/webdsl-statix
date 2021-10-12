@@ -169,7 +169,7 @@ rules // entity body declaration
 
 rules // entity resolving
 
-  typeOfExp(s, exp@ObjectCreation(x, prop_assignments)) = e :- { e }
+  typeOfExp(s, exp@ObjectCreation(x, prop_assignments)) = e :-
     definedType(s, x) == e,
     e == ENTITY(_, _),
     @exp.type := e.

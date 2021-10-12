@@ -147,8 +147,15 @@ rules // utils
 
   equalNumericType : TYPE * TYPE -> TYPE
   equalNumericType(_, _) = UNTYPED().
-  equalNumericType(t@BUILTINTYPE("Int", _), BUILTINTYPE("Int", _)) = t.
-  equalNumericType(BUILTINTYPE("Int", _), t@BUILTINTYPE("Long", _)) = t.
-  equalNumericType(t@BUILTINTYPE("Long", _), BUILTINTYPE("Int", _)) = t.
-  equalNumericType(t@BUILTINTYPE("Long", _), BUILTINTYPE("Long", _)) = t.
-  equalNumericType(t@BUILTINTYPE("Float", _), BUILTINTYPE("Float", _)) = t.
+  equalNumericType(t@BUILTINTYPE("Int", _)    , BUILTINTYPE("Int", _))    = t.
+  equalNumericType(t@BUILTINTYPE("Long", _)   , BUILTINTYPE("Long", _))   = t.
+  equalNumericType(t@BUILTINTYPE("Float", _)  , BUILTINTYPE("Float", _))  = t.
+  equalNumericType(t@NATIVECLASS("Double", _) , NATIVECLASS("Double", _)) = t.
+
+  // implicit widening from int to long
+  equalNumericType(BUILTINTYPE("Int", _)      , t@BUILTINTYPE("Long", _))   = t.
+  equalNumericType(t@BUILTINTYPE("Long", _)   , BUILTINTYPE("Int", _))      = t.
+
+  // implicit widening from float to double
+  equalNumericType(t@NATIVECLASS("Double", _) , BUILTINTYPE("Float", _))    = t.
+  equalNumericType(BUILTINTYPE("Float", _)    , t@NATIVECLASS("Double", _)) = t.
