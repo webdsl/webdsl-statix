@@ -6,17 +6,89 @@ imports
   static-semantics/webdsl
   static-semantics/webdsl-types
 
-rules
+signature
+
+  relations
+    searcher : string * string
+
+rules // search retrieval expressions
 
   typeOfExp(s, RetrievalExp(exp)) = typeOfRetrievalExp(s, exp).
 
   typeOfRetrievalExp : scope * RetrievalExp -> TYPE
-  typeOfRetrievalExp(s, Highlight(_, _, _, _)) = string(s).
-  typeOfRetrievalExp(s, HighlightTags(_, _, _, _, _, _)) = string(s).
-  typeOfRetrievalExp(s, SearchResults(_)) = LIST(entity(s)). // TO-DO: return correct type according to searcher
-  typeOfRetrievalExp(s, FacetResults(_, _)) = LIST(definedTypeIfExists(s, "Facet")). // TO-DO: return native class Facet
-  typeOfRetrievalExp(s, SearchResultsSize(_)) = int(s).
-  typeOfRetrievalExp(s, SearchTimeString(_)) = string(s).
+  typeOfRetrievalExp(s, Highlight(_, _, _, searcherExp)) = string(s) :-
+    isEntitySearcher(s, typeOfExp(s, searcherExp)).
+
+  typeOfRetrievalExp(s, HighlightTags(_, _, _, searcherExp, _, _)) = string(s) :-
+    isEntitySearcher(s, typeOfExp(s, searcherExp)).
+
+  typeOfRetrievalExp(s, SearchResults(exp)) = LIST(t) :- { searcherType }
+    searcherType == typeOfExp(s, exp),
+    isEntitySearcher(s, searcherType) | error $[Expression must be an entity searcher, got [searcherType]],
+    t == entityOfSearcher(s, searcherType) | error $[Cannot resolve entity of searcher with type [searcherType]].
+
+  typeOfRetrievalExp(s, FacetResults(_, searcherExp)) = LIST(definedTypeIfExists(s, "Facet")) :-
+    isEntitySearcher(s, typeOfExp(s, searcherExp)).
+
+  typeOfRetrievalExp(s, SearchResultsSize(exp)) = int(s) :-
+    isEntitySearcher(s, typeOfExp(s, exp)).
+
+  typeOfRetrievalExp(s, SearchTimeString(exp)) = string(s) :- 
+    isEntitySearcher(s, typeOfExp(s, exp)).
+
   typeOfRetrievalExp(s, Suggest(_, _, _)) = LIST(string(s)).
-  typeOfRetrievalExp(_, _) = UNTYPED() :- // TO-DO
-    try { false } | warning $[This expression is not implemented yet].
+
+rules // search initialization expressions
+
+  typeOfExp(s, SearcherDef(def)) = typeOfSearcherDef(s, def).
+
+  typeOfSearcherDef : scope * SearcherDef -> TYPE
+  typeOfSearcherDef(s, SearcherInit(e, parts)) = t :- { ent }
+    ent == definedType(s, e) | error $[Cannot resolve entity [e]] @e,
+    t == searcherOfEntity(s, ent) | error $[Cannot resolve entity searcher for type [e]] @e,
+    searcherPartsOk(s, parts).
+
+  typeOfSearcherDef(s, SearcherRefMod(exp, parts)) = t :-
+    t == typeOfExp(s, exp),
+    isEntitySearcher(s, t) | error $[Expression must be an entity searcher, got type [t]] @exp,
+    searcherPartsOk(s, parts).
+
+rules // searcher parts
+
+  searcherPartsOk maps searcherPartOk(*, list(*))
+  searcherPartOk : scope * SearcherPart
+  searcherPartOk(_, part) :- try { false } | warning $[Searcher part [part] is not yet implemented].
+
+rules // entity name to searcher name mapping
+
+  isEntitySearcher : scope * TYPE
+  isEntitySearcher(s, t) :- false.
+  isEntitySearcher(s, NATIVECLASS(name, _)) :-
+    resolveSearcherMappingInverse(s, name) == [_].
+
+  resolveSearcherMapping : scope * string -> list((path * (string * string)))
+  resolveSearcherMapping(s, entity) = ps :-
+    query searcher filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT? GLOBAL?))
+           and { e' :- e' == (entity, _) }
+           in s |-> ps.
+
+  resolveSearcherMappingInverse : scope * string -> list((path * (string * string)))
+  resolveSearcherMappingInverse(s, searcher) = ps :-
+    query searcher filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT? GLOBAL?))
+           and { e' :- e' == (_, searcher) }
+           in s |-> ps.
+
+  defOk(s, GeneratedDefinition(Generated(["entitySearcherMapping", entity, searcher]))) :-
+    !searcher[entity, searcher] in s.
+
+  searcherOfEntity : scope * TYPE -> TYPE
+  searcherOfEntity(_, _) = UNTYPED() :- false.
+  searcherOfEntity(s, ENTITY(e, _)) = t :- { searcher }
+    resolveSearcherMapping(s, e) == [(_, (_, searcher))],
+    t == definedTypeNoRef(s, searcher).
+
+  entityOfSearcher : scope * TYPE -> TYPE
+  entityOfSearcher(_, _) = UNTYPED() :- false.
+  entityOfSearcher(s, NATIVECLASS(searcher, _)) = t :- { entity }
+    resolveSearcherMappingInverse(s, searcher) == [(_, (entity, _))],
+    t == definedTypeNoRef(s, entity).

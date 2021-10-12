@@ -48,7 +48,8 @@ rules
         ; searcher := <construct-searcher-class> (entity_name, <concat-strings> [entity_name, "Searcher"])
         ; search_functions := <construct-search-functions> (entity_name, <concat-strings> ["search", entity_name])
         ; generated_functions := <construct-generated-functions> (entity_name, defs)
-        ; elems := [searcher | <conc> (search_functions, generated_functions)]
+        ; searcher_mapping := <construct-entity-to-searcher-mapping> entity_name
+        ; elems := [searcher | [searcher_mapping | <conc> (search_functions, generated_functions)]]
 
   construct-searcher-class : (entity_name, searcher_name) -> NativeClass(<concat-strings> ["webdsl.generated.search.", searcher_name], NCAlias(searcher_name), NCSuper("Searcher"),
       [ NCConstructor([])
@@ -488,6 +489,14 @@ rules
         )
       )
     ]
+
+  construct-entity-to-searcher-mapping : entity_name -> result
+    with
+        result := GeneratedDefinition(Generated([
+            "entitySearcherMapping"
+          , entity_name
+          , <concat-strings> [entity_name, "Searcher"]
+        ]))
 
   construct-generated-functions : (entity_name, entity_body_defs) -> result
     with
