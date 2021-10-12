@@ -230,9 +230,9 @@ rules // variable references
   typeOfProperty : scope * TYPE * string -> TYPE
   typeOfProperty(_, t, _) = UNTYPED() :- false | error $[Field access is only allowed on native classes and entities, [t] given].
   typeOfProperty(s, REF(t), x) = typeOfProperty(s, t, x).
-  typeOfProperty(_, ENTITY(s), x) = t :-
+  typeOfProperty(_, ENTITY(_, s), x) = t :-
     propertyType(s, x) == t.
-  typeOfProperty(_, NATIVECLASS(s), x) = t :-
+  typeOfProperty(_, NATIVECLASS(_, s), x) = t :-
     propertyType(s, x) == t.
 
 rules // lists and sets

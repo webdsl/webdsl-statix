@@ -14,19 +14,19 @@ signature
 
     // list of argument types, return type
     // and BOOL that indicates if function is static or not
-    FUNCTION : list(TYPE) * TYPE * BOOL -> TYPE
-    ACTION   : list(TYPE) -> TYPE
+    FUNCTION : string * list(TYPE) * TYPE * BOOL -> TYPE
+    ACTION   : string * list(TYPE) -> TYPE
 
-    ENTITY       : scope -> TYPE
-    STATICENTITY : scope -> TYPE
+    ENTITY       : string * scope -> TYPE
+    STATICENTITY : string * scope -> TYPE
 
-    NATIVECLASS       : scope -> TYPE
-    STATICNATIVECLASS : scope -> TYPE
+    NATIVECLASS       : string * scope -> TYPE
+    STATICNATIVECLASS : string * scope -> TYPE
 
-    PAGE     : list(TYPE) -> TYPE
+    PAGE     : string * list(TYPE) -> TYPE
 
     // BOOL indicates if template is ajax-enabled or not
-    TEMPLATE : list(TYPE) * BOOL -> TYPE
+    TEMPLATE : string * list(TYPE) * BOOL -> TYPE
 
     // access control
     POINTCUT  : string * list(TYPE) -> TYPE
@@ -248,7 +248,7 @@ rules // resolve reference types
 
   pageType : scope * string -> TYPE
   pageType(s, p) = t :- {p'}
-    resolvePage(s, p) == [(_, (p', t@PAGE(_)))|_] | error $[Page [p] not defined],
+    resolvePage(s, p) == [(_, (p', t@PAGE(_, _)))|_] | error $[Page [p] not defined],
     @p.ref := p'.
 
 rules // utils

@@ -17,7 +17,7 @@ rules
 */
 
   defOk(s, GeneratedDefinition(Generated(["loadOrFindEntity", entityName, loadName, findName]))) :- { s_ent t }
-    resolveType(s, entityName) == [(_, (_, t@ENTITY(s_ent)))],
+    resolveType(s, entityName) == [(_, (_, t@ENTITY(_, s_ent)))],
     declareLoadOrFindEntity(s, loadName, findName, t, hasIdAnnotationB(s_ent)).
 
   declareLoadOrFindEntity : scope * string * string * TYPE * BOOL
@@ -25,7 +25,7 @@ rules
     declareFunction(s, loadName, [uuid(s)], t).
 
   declareLoadOrFindEntity(s, _, findName, t, TRUE()) :- { s_ent idName idType }
-    t == ENTITY(s_ent),
+    t == ENTITY(_, s_ent),
     resolveAnnotationByAnno(s_ent, ID()) == [(_, (idName, _))],
     idType == typeOfProperty(s, t, idName),
     declareFunction(s, findName, [idType], t).
@@ -38,7 +38,7 @@ rules
 */
 
   defOk(s, GeneratedDefinition(Generated(["findEntityByProperty", entityName, propertyName, findByPropName, findByPropLikeName]))) :- { entType propType }
-    resolveType(s, entityName) == [(_, (_, entType@ENTITY(_)))],
+    resolveType(s, entityName) == [(_, (_, entType@ENTITY(_, _)))],
     propType == typeOfProperty(s, entType, propertyName),
     declareFindEntityByProperty(s, findByPropName, findByPropLikeName, entType, propType, typeCompatibleB(propType, string(s))).
 

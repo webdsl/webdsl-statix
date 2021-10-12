@@ -33,7 +33,7 @@ rules
   typeOfHqlFromRange : scope * HQLFromRange -> TYPE
   typeOfHqlFromRange(s, FromClassOrOuterQueryPath(Path([ent]), _, _)) = LIST(t) :-
     t == definedType(s, ent),
-    t == ENTITY(_) | error $[[ent] is not an entity] @ent.
+    t == ENTITY(_, _) | error $[[ent] is not an entity] @ent.
 
   typeOfHqlAliasedExpression : scope * HQLAliasedExpression -> TYPE
   typeOfHqlAliasedExpression(s, AliasedExpression(hqlExp, AsAliasNone())) = typeOfHqlExpression(s, hqlExp).

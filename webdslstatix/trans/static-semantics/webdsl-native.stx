@@ -14,11 +14,11 @@ rules // native class declaration and resolving
 
   declareNativeClass : scope * string * scope
   declareNativeClass(s, c, s_class) :-
-    declareType(s, c, NATIVECLASS(s_class)).
+    declareType(s, c, NATIVECLASS(c, s_class)).
 
 rules // subtype compatiblity
 
-  typeCompatibleB(NATIVECLASS(s_sub), NATIVECLASS(s_super)) = inherits(s_sub, s_super).
+  typeCompatibleB(NATIVECLASS(_, s_sub), NATIVECLASS(_, s_super)) = inherits(s_sub, s_super).
 
 rules // declarations
 
@@ -27,7 +27,7 @@ rules // declarations
     nativeClassOk(s, c, alias, s_super, elems).
 
   defOk(s, NativeClass(c, NCAlias(alias), NCSuper(super), elems)) :- {super' s_super}
-    resolveType(s, super) == [(_, (super', NATIVECLASS(s_super)))] | error $[Native class [super] is not defined] @c,
+    resolveType(s, super) == [(_, (super', NATIVECLASS(_, s_super)))] | error $[Native class [super] is not defined] @c,
     nativeClassOk(s, c, alias, s_super, elems),
     @super.ref := super'.
 
@@ -36,7 +36,7 @@ rules // declarations
     new s_class, s_class -INHERIT-> s_super, s_class -DEF-> s,
     noCircularInheritance(s_class) | error $[Circular inhertitance detected] @c,
     declareNativeClass(s, alias, s_class),
-    declareVar(s, alias, STATICNATIVECLASS(s_class)), // declare class name as global variable that refers to the static scope
+    declareVar(s, alias, STATICNATIVECLASS(alias, s_class)), // declare class name as global variable that refers to the static scope
     declareNativeClassConstructors(s, s_class, alias, elems),
     nativeClassElementsOk(s, s_class, elems).
 
@@ -80,18 +80,18 @@ rules // constructors
   declareNativeClassConstructor(_, _, _, _).
   declareNativeClassConstructor(s, s_class, name, NCConstructor(args)) :- {argTypes}
     argTypes == typesOfNativeTypes(s, args),
-    declFunctionGlobal(s, name, argTypes, NATIVECLASS(s_class)).
+    declFunctionGlobal(s, name, argTypes, NATIVECLASS(name, s_class)).
 
   declareNativeClassConstructor(s, s_class, name, NCConstructorFromStatic(_, args)) :- {argTypes}
     argTypes == typesOfNativeTypes(s, args),
-    declFunctionGlobal(s, name, argTypes, NATIVECLASS(s_class)).
+    declFunctionGlobal(s, name, argTypes, NATIVECLASS(name, s_class)).
 
 rules // typing of expressions
 
-  typeOfCall(s, NATIVECLASS(s_class), f, args) = typeOfFunctionCallInternal(s, f, args, funSigs) :-
+  typeOfCall(s, NATIVECLASS(_, s_class), f, args) = typeOfFunctionCallInternal(s, f, args, funSigs) :-
     funSigs == resolveEntityFunction(s_class, f).
 
-  typeOfCall(s, STATICNATIVECLASS(s_class), f, args) = typeOfFunctionCallInternal(s, f, args, funSigs) :-
+  typeOfCall(s, STATICNATIVECLASS(_, s_class), f, args) = typeOfFunctionCallInternal(s, f, args, funSigs) :-
     funSigs == resolveStaticEntityFunction(s_class, f).
 
 rules // typing of native types

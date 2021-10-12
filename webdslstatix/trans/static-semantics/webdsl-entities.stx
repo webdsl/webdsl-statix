@@ -17,33 +17,33 @@ rules // entity declaration
 
   // entity x : super { ... }
   defOk(s, e@Entity(x, super, bodydecs)) :- {s_entity super' s_super}
-    resolveType(s, super) == [(_, (super', ENTITY(s_super)))] | error $[Entity [super] is not defined] @super,
+    resolveType(s, super) == [(_, (super', ENTITY(_, s_super)))] | error $[Entity [super] is not defined] @super,
     new s_entity, s_entity -INHERIT-> s_super, s_entity -DEF-> s,
     noCircularInheritance(s_entity) | error $[Circular inhertitance detected] @e,
     declEntity(s, s_entity, x, bodydecs),
-    declareVar(s, x, STATICENTITY(s_entity)), // declare entity_name as global variable that refers to the static scope
+    declareVar(s, x, STATICENTITY(x, s_entity)), // declare entity_name as global variable that refers to the static scope
     declareEntityAnnotation(s_entity, SUBENTITY()),
     @super.ref := super'.
 
   // entity x { ... }
   defOk(s, EntityNoSuper(x, bodydecs)) :- {s_entity s_super}
-    entity(s) == ENTITY(s_super),
+    entity(s) == ENTITY(_, s_super),
     new s_entity, s_entity -INHERIT-> s_super, s_entity -DEF-> s,
     declEntity(s, s_entity, x, bodydecs),
-    declareVar(s, x, STATICENTITY(s_entity)). // declare entity_name as global variable that refers to the static scope
+    declareVar(s, x, STATICENTITY(x, s_entity)). // declare entity_name as global variable that refers to the static scope
 
   // session x { ... }
   defOk(s, SessionEntity(x, bodydecs)) :- {s_entity}
     new s_entity, s_entity -DEF-> s,
     declEntity(s, s_entity, x, bodydecs),
-    declareVar(s, x, ENTITY(s_entity)), // session entities only have one instance and don't have a static scope
+    declareVar(s, x, ENTITY(x, s_entity)), // session entities only have one instance and don't have a static scope
     declareEntityAnnotation(s_entity, SESSIONENTITY()).
 
   declEntity : scope * scope * string * list(EntityBodyDeclaration)
   declEntity(s, s_entity, entity_name, bodydecs) :-
     declareExtendEntity(s, entity_name, s_entity), // declare entity_scope to be linked to entity_name
     extendEntityScopes(resolveExtendEntity(s, entity_name), s_entity),
-    declareType(s, entity_name, ENTITY(s_entity)),
+    declareType(s, entity_name, ENTITY(entity_name, s_entity)),
     declThisVar(s_entity),
     declEntityBody(s_entity, bodydecs).
 
@@ -61,7 +61,7 @@ rules // entity declaration
 
   declExtendEntity : scope * string * list(EntityBodyDeclaration)
   declExtendEntity(s, entity_name, bodydecs) :- {s_extend_entity entity_scopes}
-    resolveType(s, entity_name) == [(_, (_, ENTITY(_)))] | error $[Entity [entity_name] is not defined],
+    resolveType(s, entity_name) == [(_, (_, ENTITY(_, _)))] | error $[Entity [entity_name] is not defined],
     new s_extend_entity, s_extend_entity -DEF-> s,
     declareExtendEntityIfDefined(s, entity_name, s_extend_entity, entityDeclaredB(resolveType(s, entity_name))),
     declEntityBody(s_extend_entity, bodydecs).
@@ -74,7 +74,7 @@ rules // entity declaration
 
   entityDeclaredB : list((path * (string * TYPE))) -> BOOL
   entityDeclaredB(_) = FALSE().
-  entityDeclaredB([(_, (_, ENTITY(_)))]) = TRUE().
+  entityDeclaredB([(_, (_, ENTITY(_, _)))]) = TRUE().
 
   noCircularInheritance : scope
   noCircularInheritance(s_ent) :- {res}
@@ -85,13 +85,13 @@ rules // entity declaration
 
   declThisVar : scope
   declThisVar(s_ent) :-
-    declareVar(s_ent, "this", ENTITY(s_ent)),
+    declareVar(s_ent, "this", ENTITY(_, s_ent)),
     declareAnnotation(s_ent, "this", DERIVED()). // prevent mutability of this var
 
   defOk(s, Enum(e, values)) :- { s_entity t }
     new s_entity, s_entity -DEF-> s,
     declareVar(s_entity, "name", string(s)),
-    t == ENTITY(s_entity),
+    t == ENTITY(_, s_entity),
     declareType(s, e, t),
     declareEnumValues(s, values, t).
 
@@ -146,21 +146,21 @@ rules // entity body declaration
   isValidTypeForPropKind(Simple(), sort, sortType) :-
     isBuiltInType(sortType) | error $[Expected simple type] @sort.
 
-  isValidTypeForPropKind(Ref(), _, ENTITY(_)).
-  isValidTypeForPropKind(Ref(), _, LIST(ENTITY(_))).
-  isValidTypeForPropKind(Ref(), _, SET(ENTITY(_))).
+  isValidTypeForPropKind(Ref(), _, ENTITY(_, _)).
+  isValidTypeForPropKind(Ref(), _, LIST(ENTITY(_, _))).
+  isValidTypeForPropKind(Ref(), _, SET(ENTITY(_, _))).
   isValidTypeForPropKind(Ref(), sort, _) :-
     false | error $[Expected entity type or collection of an entity type] @sort.
 
-  isValidTypeForPropKind(Comp(), _, ENTITY(_)).
-  isValidTypeForPropKind(Comp(), _, LIST(ENTITY(_))).
-  isValidTypeForPropKind(Comp(), _, SET(ENTITY(_))).
+  isValidTypeForPropKind(Comp(), _, ENTITY(_, _)).
+  isValidTypeForPropKind(Comp(), _, LIST(ENTITY(_, _))).
+  isValidTypeForPropKind(Comp(), _, SET(ENTITY(_, _))).
   isValidTypeForPropKind(Comp(), sort, _) :-
     false | error $[Expected entity type or collection of an entity type] @sort.
 
-  isValidTypeForPropKind(AnyProp(), _, ENTITY(_)).
-  isValidTypeForPropKind(AnyProp(), _, LIST(ENTITY(_))).
-  isValidTypeForPropKind(AnyProp(), _, SET(ENTITY(_))).
+  isValidTypeForPropKind(AnyProp(), _, ENTITY(_, _)).
+  isValidTypeForPropKind(AnyProp(), _, LIST(ENTITY(_, _))).
+  isValidTypeForPropKind(AnyProp(), _, SET(ENTITY(_, _))).
   isValidTypeForPropKind(AnyProp(), sort, sortType) :-
     isBuiltInType(sortType) | error $[Expected simple type or entity type or a collection of an entity type] @sort.
 
@@ -169,9 +169,10 @@ rules // entity body declaration
 
 rules // entity resolving
 
-  typeOfExp(s, exp@ObjectCreation(x, prop_assignments)) = ENTITY(s_entity) :-
-    definedType(s, x) == ENTITY(s_entity),
-    @exp.type := ENTITY(s_entity).
+  typeOfExp(s, exp@ObjectCreation(x, prop_assignments)) = e :- { e }
+    definedType(s, x) == e,
+    e == ENTITY(_, _),
+    @exp.type := e.
     // TO-DO: check prop assignments
 
   typeOfThis : scope -> TYPE
@@ -185,7 +186,7 @@ rules // entity resolving
 
 rules // subtyping
 
-  typeCompatibleB(ENTITY(s_sub), ENTITY(s_super)) = inherits(s_sub, s_super).
+  typeCompatibleB(ENTITY(_, s_sub), ENTITY(_, s_super)) = inherits(s_sub, s_super).
 
   inherits : scope * scope -> BOOL
   inherits(s_sub, s_super) = nonEmptyPathScopeList(ps) :-

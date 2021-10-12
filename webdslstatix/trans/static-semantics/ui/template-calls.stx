@@ -40,7 +40,7 @@ rules // template calls
     inputTemplateCallOk(s, t, targs, argTypes),
     nameCompatibleSigs == resolveTemplate_internal(s, t, ajax),
     mostSpecificSigs == mostSpecificSigs(argTypes, typeCompatibleSigs(nameCompatibleSigs, argTypes)),
-    mostSpecificSigs == [(t', TEMPLATE(_, _)) | _] | error $[Cannot resolve template [t] with compatible argument types] @t,
+    mostSpecificSigs == [(t', TEMPLATE(_, _, _)) | _] | error $[Cannot resolve template [t] with compatible argument types] @t,
     singleSignature(mostSpecificSigs, "template", t) | error $[Cannot resolve template [t] with compatible argument types] @t,
     @t.ref := t'.
 
@@ -75,7 +75,7 @@ rules // navigate calls
 
   pageCallOk_internal : scope * string * list(Exp)
   pageCallOk_internal(s, p, args) :- {argTypes ts}
-    pageType(s, p) == PAGE(ts) | error $[Unable to resolve page [p]] @p,
+    pageType(s, p) == PAGE(_, ts) | error $[Unable to resolve page [p]] @p,
     argTypes == typesOfExps(s, args),
     typesCompatible(argTypes, ts) == TRUE() | error $[Given argument types not compatible with page definition. Got [argTypes] but expected [ts]] @args.
 

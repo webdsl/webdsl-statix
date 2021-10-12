@@ -138,7 +138,7 @@ rules // ui declaration and resolving
 
   declareTemplate_internal : scope * string * list(TYPE) * BOOL
   declareTemplate_internal(s, t, ts, ajax) :-
-    !template[t, withType(TEMPLATE(ts, ajax))] in s,
+    !template[t, withType(TEMPLATE(t, ts, ajax))] in s,
     noClashingPageDefinitions(s, ts, t),
     filterTemplateResultsArgs(resolveTemplate(s, t), ts) == [_] | error $[Template [t] with argument types [ts] is already defined] @t.
 
@@ -149,7 +149,7 @@ rules // ui declaration and resolving
 
   declarePage : scope * string * list(TYPE)
   declarePage(s, p, ts) :-
-    !page[p, withType(PAGE(ts))] in s,
+    !page[p, withType(PAGE(p, ts))] in s,
     noClashingTemplateDefinitions(s, p),
     resolvePage(s, p) == [_] | error $[Page [p] is already defined] @p.
 
@@ -158,7 +158,7 @@ rules // ui declaration and resolving
     noClashingTemplateDefinitions_internal : string * (path * (string * TYPE))
 
   noClashingTemplateDefinitions(s, p) :- noClashingTemplateDefinitions_helper(p, resolveTemplate(s, p)).
-    noClashingTemplateDefinitions_internal(p, (_, (_, TEMPLATE([], _)))) :- false | error $[A template with name [p] is defined, this is only allowed when that template has at least one argument] @p.
+    noClashingTemplateDefinitions_internal(p, (_, (_, TEMPLATE(_, [], _)))) :- false | error $[A template with name [p] is defined, this is only allowed when that template has at least one argument] @p.
     noClashingTemplateDefinitions_internal(_, _).
 
   resolveTemplate : scope * string -> list((path * (string * TYPE)))
@@ -180,12 +180,12 @@ rules // ui declaration and resolving
 
   filterTemplateResultsAjax : list((path * (string * TYPE))) * BOOL -> list((path * (string * TYPE)))
   filterTemplateResultsAjax([], _) = [].
-  filterTemplateResultsAjax([t@(_, (_, TEMPLATE(_, b))) | ts], b) = [t | filterTemplateResultsAjax(ts, b)].
+  filterTemplateResultsAjax([t@(_, (_, TEMPLATE(_, _, b))) | ts], b) = [t | filterTemplateResultsAjax(ts, b)].
   filterTemplateResultsAjax([_ | ts], b) = filterTemplateResultsAjax(ts, b).
 
   filterTemplateResultsArgs : list((path * (string * TYPE))) * list(TYPE) -> list((path * (string * TYPE)))
   filterTemplateResultsArgs([], _) = [].
-  filterTemplateResultsArgs([t@(_, (_, TEMPLATE(args, _))) | ts], args) = [t | filterTemplateResultsArgs(ts, args)].
+  filterTemplateResultsArgs([t@(_, (_, TEMPLATE(_, args, _))) | ts], args) = [t | filterTemplateResultsArgs(ts, args)].
   filterTemplateResultsArgs([_ | ts], args) = filterTemplateResultsArgs(ts, args).
 
   resolvePage : scope * string -> list((path * (string * TYPE)))
@@ -217,7 +217,7 @@ rules // function declaration and resolving
 
   declareFunction_internal : scope * string * list(TYPE) * TYPE * BOOL
   declareFunction_internal(s, f, args, return, static) :- { s_type }
-    s_type == withType(FUNCTION(args, return, static)),
+    s_type == withType(FUNCTION(f, args, return, static)),
     !function[f, s_type] in s.
 
   resolveFunction : scope * string -> list((path * (string * TYPE)))
@@ -241,8 +241,8 @@ rules // function declaration and resolving
   // last BOOL arg indiciates if only static function should be returned (TRUE()) or all functions (FALSE())
   filterFunctionResults : list((path * (string * TYPE))) * BOOL -> list((path * (string * TYPE)))
   filterFunctionResults([], _) = [].
-  filterFunctionResults([f@(_, (_, FUNCTION(_, _, TRUE()))) | fs], b@TRUE()) = [f | filterFunctionResults(fs, b)].
-  filterFunctionResults([f@(_, (_, FUNCTION(_, _, _))) | fs], b@FALSE()) = [f | filterFunctionResults(fs, b)].
+  filterFunctionResults([f@(_, (_, FUNCTION(_, _, _, TRUE()))) | fs], b@TRUE()) = [f | filterFunctionResults(fs, b)].
+  filterFunctionResults([f@(_, (_, FUNCTION(_, _, _, _))) | fs], b@FALSE()) = [f | filterFunctionResults(fs, b)].
   filterFunctionResults([_ | fs], b) = filterFunctionResults(fs, b).
 
   filterDuplicateTypeResults : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
@@ -266,8 +266,8 @@ rules // action and placeholder declaration and resolving
 
   declareAction : scope * string * list(TYPE)
   declareAction(s, a, ts) :-
-    !function[a, withType(ACTION(ts))] in s,
-    resolveAction(s, a) == [(_, (_, ACTION(ts)))] | error $[Action [a] is defined multiple times] @a.
+    !function[a, withType(ACTION(a, ts))] in s,
+    resolveAction(s, a) == [(_, (_, ACTION(a, ts)))] | error $[Action [a] is defined multiple times] @a.
 
   resolveAction : scope * string -> list((path * (string * TYPE)))
   resolveAction(s, a) = filterActionResults(typesOf(as)) :-
@@ -290,7 +290,7 @@ rules // action and placeholder declaration and resolving
 
   filterActionResults : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
   filterActionResults([]) = [].
-  filterActionResults([a@(_, (_, ACTION(_))) | as]) = [a | filterActionResults(as)].
+  filterActionResults([a@(_, (_, ACTION(_, _))) | as]) = [a | filterActionResults(as)].
   filterActionResults([_ | as]) = filterActionResults(as).
 
   filterPlaceholderResults : list((path * (string * TYPE))) -> list((path * (string * TYPE)))

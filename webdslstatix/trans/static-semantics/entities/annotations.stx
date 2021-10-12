@@ -135,9 +135,9 @@ rules
 
   typeOfInverseSort : scope * string * TYPE -> TYPE
   typeOfInverseSort(s, sort, t) = sortType :-
-    t == ENTITY(_) | error $[Inverse annotation only allowed on (collections of) entity types],
+    t == ENTITY(_, _) | error $[Inverse annotation only allowed on (collections of) entity types],
     resolveType(s, sort) == [(_, (_, sortType))] | error $[Cannot resolve sort [sort] to an entity],
-    sortType == ENTITY(_) | error $[Cannot resolve sort [sort] to an entity],
+    sortType == ENTITY(_, _) | error $[Cannot resolve sort [sort] to an entity],
     sortType == t | error $[Inverse entity must be the same as property type [t]].
 
 rules // validation
@@ -170,7 +170,7 @@ rules // predicates
   noMultipleNameAnnotations(s) :- resolveAnnotationByAnno(s, NAME()) == [_] | error $[Found multiple properties called "name" or with a name annotation].
 
   noDoubleInverse : TYPE * string
-  noDoubleInverse(ENTITY(s_ent), x) :-
+  noDoubleInverse(ENTITY(_, s_ent), x) :-
     doesNotHaveAnnotation(resolveAnnotation(s_ent, x), INVERSE())
       | error $[Inverse annotations cannot be declared on both sides].
 
@@ -182,8 +182,8 @@ rules // predicates
 
   isMutableProperty : TYPE * string
   isMutableProperty(_, _) :- false | error $[Can only check mutability of native class and entity properties].
-  isMutableProperty(NATIVECLASS(_), _). // all native class properties are mutable
-  isMutableProperty(ENTITY(s_entity), x) :- {annotations}
+  isMutableProperty(NATIVECLASS(_, _), _). // all native class properties are mutable
+  isMutableProperty(ENTITY(_, s_entity), x) :- {annotations}
     annotations == resolveAnnotation(s_entity, x),
     doesNotHaveAnnotation(annotations, DERIVED()) | error $[Derived property [x] is not mutable].
 

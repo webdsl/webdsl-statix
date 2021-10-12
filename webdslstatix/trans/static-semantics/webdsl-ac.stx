@@ -19,8 +19,8 @@ rules // built-ins
     new s_class,
     declareExtendEntity(s, "securityContext", s_class), // declare s_type to be linked to type name
     extendEntityScopes(resolveExtendEntity(s, "securityContext"), s_class),
-    declareType(s, "securityContext", NATIVECLASS(s_class)),
-    declareVar(s, "securityContext", NATIVECLASS(s_class)),
+    declareType(s, "securityContext", NATIVECLASS("securityContext", s_class)),
+    declareVar(s, "securityContext", NATIVECLASS("securityContext", s_class)),
 
     declareFunction(s, "loggedIn", [], bool(s)),
     declareFunction(s, "logout", [], entity(s)),
@@ -59,7 +59,7 @@ rules // securitycontext and principal
   principalDefOk : scope * string * list(string)
   principalDefOk(s, ent, properties) :- {s_ent credentialTypes t}
     // TO-DO: only give principal access to the credential properties instead of all
-    definedType(s, ent) == t@ENTITY(s_ent),
+    definedType(s, ent) == t@ENTITY(_, s_ent),
     propertyTypes(s_ent, properties) == credentialTypes,
     compatibleCredentialTypes(properties, credentialTypes),
     declSecurityContext(s, t, credentialTypes).
@@ -131,10 +131,10 @@ rules // access control rules
   acRuleSignatureOk(_, _, MatchName(_, WildCardArg()), _).
 
   acRuleSignatureOk(s, ACTypePage(), MatchName(p, OptWildCardArgNone()), MatchArgs(_, WildCardArg())) :-
-    pageType(s, p) == PAGE(_) | error $[No page named [p] exists] @p.
+    pageType(s, p) == PAGE(_, _) | error $[No page named [p] exists] @p.
 
   acRuleSignatureOk(s, ACTypePage(), MatchName(p, OptWildCardArgNone()), MatchArgs(args, OptWildCardArgNone())) :- { argTypes sigTypes }
-    pageType(s, p) == PAGE(sigTypes) | error $[No page named [p] exists] @p,
+    pageType(s, p) == PAGE(_, sigTypes) | error $[No page named [p] exists] @p,
     typesOfArgs(s, args) == argTypes,
     argTypes == sigTypes | error $[Argument types [argTypes] are not equal to the page signature types [sigTypes]] @args.
 
@@ -169,7 +169,7 @@ rules // access control rules
 
   acRuleSignatureArgsMatching : list(TYPE) * list(TYPE)
   acRuleSignatureArgsMatching(_, []) :- false.
-  acRuleSignatureArgsMatching(args, [TEMPLATE(args, _) | _]).
+  acRuleSignatureArgsMatching(args, [TEMPLATE(_, args, _) | _]).
   acRuleSignatureArgsMatching(args, [POINTCUT(_, args) | _]).
   acRuleSignatureArgsMatching(args, [_ | ts]) :- acRuleSignatureArgsMatching(args, ts).
 
@@ -219,17 +219,17 @@ rules // pointcuts
 
   acPointcutElementDefined(s, s_pointcut, elem@AccessControlPointcutElement(ACTypePage(), MatchName(p, _), args, optWc)) :- { ts argTypes }
     argTypes == typesOfStrings(s_pointcut, args),
-    resolvePage(s, p) == [(_, (_, PAGE(ts)))] | error $[Page [p] is not defined] @p,
+    resolvePage(s, p) == [(_, (_, PAGE(_, ts)))] | error $[Page [p] is not defined] @p,
     acPointcutElementArgsCompatible(argTypes, ts, optWc) | error $[Incompatible argument types for page [p]] @elem.
 
   acPointcutElementDefined(s, s_pointcut, elem@AccessControlPointcutElement(ACTypeTemplate(), MatchName(t, _), args, optWc)) :- { ts argTypes }
     argTypes == typesOfStrings(s_pointcut, args),
-    resolveTemplateNoAjax(s, t) == [(_, (_, TEMPLATE(ts, _)))] | error $[Template [t] is not defined] @t,
+    resolveTemplateNoAjax(s, t) == [(_, (_, TEMPLATE(_, ts, _)))] | error $[Template [t] is not defined] @t,
     acPointcutElementArgsCompatible(argTypes, ts, optWc) | error $[Incompatible argument types for template [t]] @elem.
 
   acPointcutElementDefined(s, s_pointcut, elem@AccessControlPointcutElement(ACTypeAjaxTemplate(), MatchName(t, _), args, optWc)) :- { ts argTypes }
     argTypes == typesOfStrings(s_pointcut, args),
-    resolveTemplateNoAjax(s, t) == [(_, (_, TEMPLATE(ts, _)))] | error $[Ajax template [t] is not defined] @t,
+    resolveTemplateNoAjax(s, t) == [(_, (_, TEMPLATE(_, ts, _)))] | error $[Ajax template [t] is not defined] @t,
     acPointcutElementArgsCompatible(argTypes, ts, optWc) | error $[Incompatible argument types for ajax template [t]] @elem.
 
   acPointcutElementDefined(_, _, elem@AccessControlPointcutElement(ACTypeAction(), _, _, _)).
@@ -251,11 +251,11 @@ rules // utils
 
   principalType : scope -> TYPE
   principalType(s) = t :- { s_securityContext }
-    resolveType(s, "securityContext") == [(_, (_, NATIVECLASS(s_securityContext)))] | error $[securityContext not defined],
+    resolveType(s, "securityContext") == [(_, (_, NATIVECLASS(_, s_securityContext)))] | error $[securityContext not defined],
     resolveProperty(s_securityContext, "principal") == [(_, (_, t))] | error $[Principal is not defined].
 
   credentialTypes : scope -> list(TYPE)
   credentialTypes(s) = ts :- { s_securityContext }
-    resolveType(s, "securityContext") == [(_, (_, NATIVECLASS(s_securityContext)))] | error $[securityContext not defined],
+    resolveType(s, "securityContext") == [(_, (_, NATIVECLASS(_, s_securityContext)))] | error $[securityContext not defined],
     queryResultTypes(resolveProperty(s_securityContext, "credentials")) == ts,
     ts == [_ | _] | error $[No credentials have been defined].

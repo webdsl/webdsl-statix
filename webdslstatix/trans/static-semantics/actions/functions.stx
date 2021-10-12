@@ -39,10 +39,10 @@ rules // functions calls
     funSigs == resolveFunction(s, f).
 
   typeOfCall : scope * TYPE * string * list(Exp)-> TYPE
-  typeOfCall(s, ENTITY(s_ent), f, args) = typeOfFunctionCallInternal(s, f, args, funSigs) :-
+  typeOfCall(s, ENTITY(_, s_ent), f, args) = typeOfFunctionCallInternal(s, f, args, funSigs) :-
     funSigs == resolveEntityFunction(s_ent, f).
 
-  typeOfCall(s, STATICENTITY(s_ent), f, args) = typeOfFunctionCallInternal(s, f, args, funSigs) :-
+  typeOfCall(s, STATICENTITY(_, s_ent), f, args) = typeOfFunctionCallInternal(s, f, args, funSigs) :-
     funSigs == resolveStaticEntityFunction(s_ent, f).
 
   typeOfCall(s, REF(t), f, args) = typeOfCall(s, t, f, args).
@@ -53,7 +53,7 @@ rules // functions calls
     argTypes == typesOfExps(s, args),
     result == mostSpecificSigs(argTypes, typeCompatibleSigs(funSigs, argTypes)),
     singleSignature(result, "function", f) | error $[Cannot resolve function [f] with compatible argument types] @f,
-    [(f', FUNCTION(_, t, _)) | _] == result | error $[Cannot resolve function [f] with compatible argument types] @f,
+    [(f', FUNCTION(_, _, t, _)) | _] == result | error $[Cannot resolve function [f] with compatible argument types] @f,
     @f.ref := f',
     @f.type := t.
 
@@ -159,7 +159,7 @@ rules // function definitions
   // helper function for noDuplicateFunDefs that counts the amount of function with a given name and argument types
   amountOfFunDeclsWithArgs : list((path * (string * TYPE))) * list(TYPE) * int -> int
   amountOfFunDeclsWithArgs([], _, n) = n.
-  amountOfFunDeclsWithArgs([(_, (_, FUNCTION(types, _, _))) | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, i) :- i #= n + 1.
+  amountOfFunDeclsWithArgs([(_, (_, FUNCTION(_, types, _, _))) | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, i) :- i #= n + 1.
   amountOfFunDeclsWithArgs([_ | tail], types, n) = amountOfFunDeclsWithArgs(tail, types, n).
 
 rules  // rules and functions for function overloading
@@ -181,8 +181,8 @@ rules  // rules and functions for function overloading
   // signatures with whether the types are compatible with given argument types
   zipSigsWithTypesCompatible maps zipSigWithTypesCompatible(*, list(*)) = list(*)
   zipSigWithTypesCompatible : list(TYPE) * (string * TYPE) -> (BOOL * (string * TYPE))
-  zipSigWithTypesCompatible(args, f@(_, FUNCTION(funArgs, _, _))) = (typesCompatible(args, funArgs), f).
-  zipSigWithTypesCompatible(args, f@(_, TEMPLATE(templArgs, _))) = (typesCompatible(args, templArgs), f).
+  zipSigWithTypesCompatible(args, f@(_, FUNCTION(_, funArgs, _, _))) = (typesCompatible(args, funArgs), f).
+  zipSigWithTypesCompatible(args, f@(_, TEMPLATE(_, templArgs, _))) = (typesCompatible(args, templArgs), f).
 
   // function that prunes the list of compatible signatures
   // to a list of most specific signatures
@@ -202,20 +202,20 @@ rules  // rules and functions for function overloading
   // helper function for mostSpecificFunSigs that returns the exactly matching signatures
   matchingSigs : list(TYPE) * list((string * TYPE)) -> list((string * TYPE))
   matchingSigs(_, []) = [].
-  matchingSigs(args, [(x, FUNCTION(params, rt, static)) | fs]) = matchingSigs_helper(args, (x, FUNCTION(stripRefTypes(params), rt, static)), fs).
-  matchingSigs(args, [(x, TEMPLATE(params, ajax))       | fs]) = matchingSigs_helper(args, (x, TEMPLATE(stripRefTypes(params), ajax)), fs).
+  matchingSigs(args, [(x, FUNCTION(f, params, rt, static)) | fs]) = matchingSigs_helper(args, (x, FUNCTION(f, stripRefTypes(params), rt, static)), fs).
+  matchingSigs(args, [(x, TEMPLATE(t, params, ajax))       | fs]) = matchingSigs_helper(args, (x, TEMPLATE(t, stripRefTypes(params), ajax)), fs).
 
   // helper function for matchingSigs that compares the argument types after stripping the Ref<> sorts
   matchingSigs_helper : list(TYPE) * (string * TYPE) * list((string * TYPE)) -> list((string * TYPE))
-  matchingSigs_helper(args, f@(_, FUNCTION(args, _, _)), fs) = [f | matchingSigs(args, fs)].
-  matchingSigs_helper(args, f@(_, TEMPLATE(args, _))   , fs) = [f | matchingSigs(args, fs)].
+  matchingSigs_helper(args, f@(_, FUNCTION(_, args, _, _)), fs) = [f | matchingSigs(args, fs)].
+  matchingSigs_helper(args, f@(_, TEMPLATE(_, args, _))   , fs) = [f | matchingSigs(args, fs)].
   matchingSigs_helper(args, _, fs) = matchingSigs(args, fs).
 
   // function that computes the total amount of inheritance edges from caller arguments to defined arguments
   inheritanceAmounts maps inheritanceAmount(*, list(*)) = list(*)
   inheritanceAmount : list(TYPE) * (string * TYPE) -> int
-  inheritanceAmount(args, (_, FUNCTION(sigTypes, _, _))) = inheritanceAmount_helper(args, sigTypes).
-  inheritanceAmount(args, (_, TEMPLATE(sigTypes, _)))    = inheritanceAmount_helper(args, sigTypes).
+  inheritanceAmount(args, (_, FUNCTION(_, sigTypes, _, _))) = inheritanceAmount_helper(args, sigTypes).
+  inheritanceAmount(args, (_, TEMPLATE(_, sigTypes, _)))    = inheritanceAmount_helper(args, sigTypes).
 
   // helper function for getInheritanceAmount that computers the total amount of inheritance edges
   inheritanceAmount_helper : list(TYPE) * list(TYPE) -> int
@@ -240,8 +240,8 @@ rules  // rules and functions for function overloading
   scopeFromType(REF(t)) = scopeFromType(t).
   scopeFromType(LIST(t)) = scopeFromType(t).
   scopeFromType(SET(t)) = scopeFromType(t).
-  scopeFromType(ENTITY(s)) = s.
-  scopeFromType(NATIVECLASS(s)) = s.
+  scopeFromType(ENTITY(_, s)) = s.
+  scopeFromType(NATIVECLASS(_, s)) = s.
   scopeFromType(BUILTINTYPE(_, s)) = s.
 
   // function that zips the inheritance amount with the signature

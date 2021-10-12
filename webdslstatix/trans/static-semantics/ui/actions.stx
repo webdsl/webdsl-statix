@@ -45,7 +45,7 @@ rules // action definitions
     declareParameters(s_fun, zipArgTypes(args, argTypes)),
     new s_fun_body, s_fun_body -P-> s_fun,
     optionallyDeclareAction(s_pha, a, argTypes, declare),
-    stmtsOk(s_fun_body, stmts, PAGE(_)).
+    stmtsOk(s_fun_body, stmts, PAGE(_, _)).
 
   optionallyDeclareAction : scope * string * list(TYPE) * BOOL
   optionallyDeclareAction(_, _, _, FALSE()).
@@ -66,7 +66,7 @@ rules // action calls
   actionCallOrInlineOk : scope * ActionCallOrInline
   actionCallOrInlineOk(s, ActionCall(ThisCall(a, args))) :- {argTypes a' ts}
     argTypes == typesOfExps(s, args),
-    resolveAction(s, a) == [(_, (a', ACTION(ts))) | _] | error $[Action [a] not defined] @a,
+    resolveAction(s, a) == [(_, (a', ACTION(_, ts))) | _] | error $[Action [a] not defined] @a,
     typesCompatible(argTypes, ts) == TRUE() | error $[Given argument types not compatible with action definition. Got [argTypes] but expected [ts]] @args,
     @a.ref := a'.
 
@@ -76,7 +76,7 @@ rules // action calls
 rules // action blocks in templates
 
   templateElementOk(s, _, _, Init(Block(stmts))) :-
-    stmtsOk(s, stmts, PAGE(_)).
+    stmtsOk(s, stmts, PAGE(_, _)).
 
   templateElementOk(s, _, _, DataBindAction(Block(stmts))) :-
     stmtsOk(s, stmts, UNTYPED()).
@@ -92,8 +92,8 @@ rules // action blocks in templates
 
 rules // statements
 
-  stmtOk(s, _, r@Return(_), PAGE(_)) :- false | error $[Expected page call in return statement].
-  stmtOk(s, _, r@Return(ThisCall2Exp(ThisCall(p, exps))), PAGE(_)) :-
+  stmtOk(s, _, r@Return(_), PAGE(_, _)) :- false | error $[Expected page call in return statement].
+  stmtOk(s, _, r@Return(ThisCall2Exp(ThisCall(p, exps))), PAGE(_, _)) :-
     pageCallOk_internal(s, p, exps).
 
 rules // expressions
