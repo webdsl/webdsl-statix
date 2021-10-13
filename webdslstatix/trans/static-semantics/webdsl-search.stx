@@ -68,13 +68,13 @@ rules // entity name to searcher name mapping
 
   resolveSearcherMapping : scope * string -> list((path * (string * string)))
   resolveSearcherMapping(s, entity) = ps :-
-    query searcher filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT? GLOBAL?))
+    query searcher filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT?))
            and { e' :- e' == (entity, _) }
            in s |-> ps.
 
   resolveSearcherMappingInverse : scope * string -> list((path * (string * string)))
   resolveSearcherMappingInverse(s, searcher) = ps :-
-    query searcher filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT? GLOBAL?))
+    query searcher filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT?))
            and { e' :- e' == (_, searcher) }
            in s |-> ps.
 
