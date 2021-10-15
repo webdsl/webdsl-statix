@@ -22,14 +22,20 @@ rules // subtype compatiblity
 
 rules // declarations
 
-  defOk(s, NativeClass(c, NCAlias(alias), NCSuperNone(), elems)) :- {s_super}
+  defOk(s, NativeClass(c, NCAlias(alias), NCSuperNone(), elems)) :- { s_super }
     object(s) == BUILTINTYPE(_, s_super),
     nativeClassOk(s, c, alias, s_super, elems).
 
-  defOk(s, NativeClass(c, NCAlias(alias), NCSuper(super), elems)) :- {super' s_super}
-    resolveType(s, super) == [(_, (super', NATIVECLASS(_, s_super)))] | error $[Native class [super] is not defined] @c,
+  defOk(s, NativeClass(c, NCAlias(alias), NCSuper(super), elems)) :- { super' superType s_super }
+    resolveType(s, super) == [(_, (super', superType))] | error $[Native class [super] is not defined] @c,
+    s_super == scopeOfNativeClassSuper(superType),
     nativeClassOk(s, c, alias, s_super, elems),
     @super.ref := super'.
+
+  scopeOfNativeClassSuper : TYPE -> scope
+  scopeOfNativeClassSuper(t) = new :- false | error $[Native classes cannot extend something of type [t]].
+  scopeOfNativeClassSuper(NATIVECLASS(_, s)) = s.
+  scopeOfNativeClassSuper(BUILTINTYPE(_, s)) = s.
 
   nativeClassOk : scope * string * string * scope * list(NCElement)
   nativeClassOk(s, c, alias, s_super, elems) :- {s_class}

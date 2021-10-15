@@ -122,6 +122,7 @@ rules // mutability check for input templates
   isMutableExp : scope * Exp * TYPE
   isMutableExp(_, e, t) :- false | error $[Cannot verify mutability of expression [e]] @e.
   isMutableExp(s, Var(x), t) :- isMutableOrRef(s, x, t).
+  isMutableExp(s, Cast(_, sort), t) :- typeOfSort(s, sort) == REF(_).
   isMutableExp(s, FieldAccess(FAVar(var), x), t) :- {varType}
     varType == variableType(s, var),
     isMutableProperty(varType, x).

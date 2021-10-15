@@ -13,7 +13,6 @@ rules
   declareUIBuiltIns : scope
   declareUIBuiltIns(s) :-
     declareTemplate(s, "title", []),
-    declareTemplate(s, "rawoutput", [string(s)]),
     declareTemplate(s, "text", [object(s)]),
     declareTemplate(s, "image", [url(s)]),
     declareTemplate(s, "header", []),
