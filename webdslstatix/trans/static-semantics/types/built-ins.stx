@@ -92,13 +92,13 @@ rules
 
     // string types
     declareBuiltInType(s, "String"),
-    declareBuiltInType(s, "Secret"),
+    declareBuiltInSubType(s, "Secret", "String"),
     declareBuiltInSubType(s, "Email", "String"),
-    declareBuiltInType(s, "URL"),
-    declareBuiltInType(s, "WikiText"),
-    declareBuiltInType(s, "Text"),
-    declareBuiltInType(s, "Patch"),
-    declareBuiltInType(s, "Placeholder"),
+    declareBuiltInSubType(s, "URL", "String"),
+    declareBuiltInSubType(s, "WikiText", "String"),
+    declareBuiltInSubType(s, "Text", "String"),
+    declareBuiltInSubType(s, "Patch", "String"),
+    declareBuiltInSubType(s, "Placeholder", "String"),
 
     // date types
     declareBuiltInType(s, "DateTime"),
