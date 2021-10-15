@@ -27,8 +27,11 @@ rules
   deriveStringOk : string
   deriveStringOk(_) :- false | error $[Can only derive "viewPage", "createPage" or "editPage"].
   deriveStringOk("viewPage").
+  deriveStringOk("viewRows").
   deriveStringOk("createPage").
   deriveStringOk("editPage").
+  deriveStringOk("editRows").
+  deriveStringOk("editRowsInline").
 
   derivePropertiesOk maps derivePropertyOk(*, *, *, list(*))
   derivePropertyOk : scope * TYPE * string * DeriveProperty
@@ -38,6 +41,9 @@ rules
     isMutableProperty(t_ent, prop) | error $[Property [prop] is not mutable].
 
   derivePropertyOk(s, t_ent, "viewPage", DeriveDefault(prop)) :- { t }
+    t == typeOfProperty(s, t_ent, prop) | error $[Entity [t_ent] does not have a property named [prop]].
+
+  derivePropertyOk(s, t_ent, "viewRows", DeriveDefault(prop)) :- { t }
     t == typeOfProperty(s, t_ent, prop) | error $[Entity [t_ent] does not have a property named [prop]].
 
   deriveBodyOk : scope * scope * DeriveBody
