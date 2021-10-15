@@ -257,6 +257,17 @@ context-free syntax
   SuggestionPart = NamespaceConstraint
   SuggestionPart = MaxResults
 
+context-free priorities
+
+  RetrievalExp.SearchResultsSize <2> .> Exp.Eq,
+  RetrievalExp.SearchResultsSize <2> .> Exp.NotEq,
+  RetrievalExp.SearchResultsSize <2> .> Exp.LargerThan,
+  RetrievalExp.SearchResultsSize <2> .> Exp.LargerThanOrEqual,
+  RetrievalExp.SearchResultsSize <2> .> Exp.SmallerThan,
+  RetrievalExp.SearchResultsSize <2> .> Exp.SmallerThanOrEqual
+
+context-free syntax
+
   QueryTerm = SearcherKW {reject}
   QueryTerm = <<SearcherKW> ( <Exp> )> {reject}
   QueryTerm = <[ <{Exp ","}*> ]> {reject}

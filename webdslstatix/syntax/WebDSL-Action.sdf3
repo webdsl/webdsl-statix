@@ -371,6 +371,7 @@ context-free priorities
     Exp.Add
     Exp.Sub
   } >
+  {left : Exp.RetrievalExp } >
   {left :
     Exp.Eq
     Exp.NotEq
@@ -379,7 +380,6 @@ context-free priorities
     Exp.SmallerThan
     Exp.SmallerThanOrEqual
   } >
-  { Exp.RetrievalExp } >
   {left : Exp.And } >
   {left : Exp.Or } >
   { Exp.HqlExp } >
