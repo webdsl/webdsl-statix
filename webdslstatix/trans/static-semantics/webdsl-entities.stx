@@ -40,11 +40,12 @@ rules // entity declaration
     declareEntityAnnotation(s_entity, SESSIONENTITY()).
 
   declEntity : scope * scope * string * list(EntityBodyDeclaration)
-  declEntity(s, s_entity, entity_name, bodydecs) :-
+  declEntity(s, s_entity, entity_name, bodydecs) :- { entityType }
     declareExtendEntity(s, entity_name, s_entity), // declare entity_scope to be linked to entity_name
     extendEntityScopes(resolveExtendEntity(s, entity_name), s_entity),
-    declareType(s, entity_name, ENTITY(entity_name, s_entity)),
-    declThisVar(s_entity),
+    entityType == ENTITY(entity_name, s_entity),
+    declareType(s, entity_name, entityType),
+    declThisVar(s_entity, entityType),
     declEntityBody(s_entity, bodydecs).
 
   extendEntityScopes maps extendEntityScope(list(*), *)
@@ -83,9 +84,9 @@ rules // entity declaration
              in s_ent |-> res,
     res == [].
 
-  declThisVar : scope
-  declThisVar(s_ent) :-
-    declareVar(s_ent, "this", ENTITY(_, s_ent)),
+  declThisVar : scope * TYPE
+  declThisVar(s_ent, t) :-
+    declareVar(s_ent, "this", t),
     declareAnnotation(s_ent, "this", DERIVED()). // prevent mutability of this var
 
   defOk(s, Enum(e, values)) :- { s_entity t }

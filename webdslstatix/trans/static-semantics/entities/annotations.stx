@@ -84,28 +84,36 @@ rules
     hasAnnotation(resolveAnnotation(s, p), DERIVED()) | error $[cached annotation can only be set on derived properties] @a.
 
   // inverse property on List<t>
-  annotationOk(s, p, LIST(t), InverseAnno(sort, prop)) :- {sortType s_sort}
-    sortType == typeOfInverseSort(s, sort, t),
+  annotationOk(s, p, LIST(t), InverseAnno(sort, prop)) :- { sortType s_eval thisType propType }
     declareAnnotation(s, p, INVERSE()),
+    new s_eval, s_eval -P-> s,
+    sortType == typeOfInverseSort(s_eval, sort, t),
     noDoubleInverse(sortType, prop),
-    typeOfProperty(s, sortType, prop) == typeOfThis(s)
-      | error $[Inverse property must be the same type as this entity] @prop.
+    thisType == typeOfThis(s),
+    propType == typeOfProperty(s_eval, sortType, prop),
+    equalType(propType, thisType) | error $[Inverse property must be the same type as this entity] @prop.
 
   // inverse property on Set<t>
-  annotationOk(s, p, SET(t), InverseAnno(sort, prop)) :- {sortType}
-    sortType == typeOfInverseSort(s, sort, t),
+  annotationOk(s, p, SET(t), InverseAnno(sort, prop)) :- { sortType s_eval thisType propType }
     declareAnnotation(s, p, INVERSE()),
+    new s_eval, s_eval -P-> s,
+    sortType == typeOfInverseSort(s_eval, sort, t),
     noDoubleInverse(sortType, prop),
-    typeOfProperty(s, sortType, prop) == typeOfThis(s)
-      | error $[Inverse property must be the same type as this entity] @prop.
+    thisType == typeOfThis(s),
+    propType == typeOfProperty(s_eval, sortType, prop),
+    or(
+      equalTypeB(propType, thisType),
+      equalTypeB(propType, SET(thisType))
+    ) | error $[Inverse property must be the same type as this entity] @prop.
 
   // inverse property non-collection
-  annotationOk(s, p, t, InverseAnno(sort, prop)) :- {sortType propType thisType}
-    sortType == typeOfInverseSort(s, sort, t),
+  annotationOk(s, p, t, InverseAnno(sort, prop)) :- { sortType s_eval propType thisType }
     declareAnnotation(s, p, INVERSE()),
+    new s_eval, s_eval -P-> s,
+    sortType == typeOfInverseSort(s_eval, sort, t),
     noDoubleInverse(sortType, prop),
-    propType == typeOfProperty(s, sortType, prop),
     thisType == typeOfThis(s),
+    propType == typeOfProperty(s_eval, sortType, prop),
     or(orB(
       equalTypeB(propType, thisType),
       equalTypeB(propType, LIST(thisType))),
