@@ -5,6 +5,7 @@ imports
   WebDSL-Core
   WebDSL-Lexical
   WebDSL-UI
+  WebDSL-DataModel
 
 context-free sorts
 

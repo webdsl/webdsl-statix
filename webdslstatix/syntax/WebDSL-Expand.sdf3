@@ -3,7 +3,10 @@ module WebDSL-Expand
 imports
   WebDSL-Action
   WebDSL-Lexical
+  WebDSL-Core
   WebDSL-UI
+  WebDSL-DataModel
+  WebDSL-Attributes
 
 context-free sorts
 

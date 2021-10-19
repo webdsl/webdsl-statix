@@ -4,6 +4,8 @@ imports
   WebDSL-Action
   WebDSL-Lexical
   WebDSL-UI
+  WebDSL-DataModel
+  WebDSL-Core
 
 context-free syntax
 

@@ -2,6 +2,7 @@ module WebDSL-TimeInterval
 
 imports
   WebDSL-Action
+  WebDSL-Core
 
 context-free sorts
 

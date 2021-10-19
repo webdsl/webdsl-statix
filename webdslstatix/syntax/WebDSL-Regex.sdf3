@@ -3,6 +3,7 @@ module WebDSL-Regex
 imports
   WebDSL-Action
   WebDSL-Lexical
+  WebDSL-DataModel
 
 context-free sorts
 
@@ -133,7 +134,7 @@ lexical syntax
 
 context-free sorts
 
-  BracketCharacter AtomCharacter DoubleQuote OctalChar HexHexChar DecHexChar Tab Newline Return Formfeed Alarm Escape
+  BracketCharacter AtomCharacter DoubleQuote OctalChar HexHexChar DecHexChar Tab Newline ReturnAtom Formfeed Alarm Escape
   WordChar NonWordChar WhiteSpaceChar DigitChar NonDigitChar ControlCharacter WordBoundry NonWordBoundry InputBeginBoundry
   PrevMatchEndBoundry EndInputBoundry EndInputFinalBoundry Space NonWhiteSpaceChar BackReference
 
@@ -145,7 +146,7 @@ context-free syntax
   DecHexChar.DecHexChar = <\\u <FourHexValue>>
   Tab.Tab = <\\t>
   Newline.Newline = <\\n>
-  Return.Return = <\\r>
+  ReturnAtom.ReturnAtom = <\\r>
   Formfeed.Formfeed = <\\f>
   Alarm.Alarm = <\\a>
   Escape.Escape = <\\e>
@@ -170,7 +171,7 @@ context-free syntax
   BracketCharacter = DecHexChar
   BracketCharacter = Tab
   BracketCharacter = Newline
-  BracketCharacter = Return
+  BracketCharacter = ReturnAtom
   BracketCharacter = Formfeed
   BracketCharacter = Alarm
   BracketCharacter = Escape
@@ -195,7 +196,7 @@ context-free syntax
   AtomCharacter = DecHexChar
   AtomCharacter = Tab
   AtomCharacter = Newline
-  AtomCharacter = Return
+  AtomCharacter = ReturnAtom
   AtomCharacter = Formfeed
   AtomCharacter = Alarm
   AtomCharacter = Escape
@@ -256,11 +257,15 @@ lexical syntax
 
 context-free sorts
 
-  RegexId RegexID
+  RegexId
 
 context-free syntax
 
   RegexId.RegexId = RegexID
+
+lexical sorts
+
+  RegexID
 
 lexical syntax
 
