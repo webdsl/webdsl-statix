@@ -8,7 +8,7 @@ imports
 
 context-free sorts
 
-  AjaxStatement Placeholder PlaceholderWithAjaxCall PlaceholderVar AjaxVisibility
+  AjaxStatement Placeholder PlaceholderWithAjaxCall PlaceholderVar AjaxVisibility AjaxReplaceTemplateCall
 
 context-free syntax
 
@@ -16,7 +16,7 @@ context-free syntax
     <AjaxStatement> ;
   >
 
-  AjaxStatement.AjaxReplace = <replace ( <Exp> , <TemplateCall> )>
+  AjaxStatement.AjaxReplace = <replace ( <Exp> , <AjaxReplaceTemplateCall> )>
   AjaxStatement.AjaxAppend = <append ( <Exp> , <TemplateCall> )>
   AjaxStatement.AjaxVisibility = <visibility ( <Exp> , <AjaxVisibility> )>
   AjaxVisibility.Show = <show>
@@ -30,7 +30,20 @@ context-free syntax
 
 context-free syntax
 
-  ThisCall = <replace ( <Exp> , <TemplateCall> )> {reject}
+  AjaxReplaceTemplateCall.AjaxReplaceTemplateCall = <<TemplateCall>>
+  AjaxReplaceTemplateCall.AjaxReplaceEmpty = <<EmptyLex>>
+
+lexical sorts
+
+  EmptyLex
+
+lexical syntax
+
+  EmptyLex = "empty"
+
+context-free syntax
+
+  ThisCall = <replace ( <Exp> , <AjaxReplaceTemplateCall> )> {reject}
   ThisCall = <append ( <Exp> , <TemplateCall> )> {reject}
   ThisCall = <visibility ( <Exp> , <AjaxVisibility> )> {reject}
   ThisCall = <relocate ( <PageCall> )> {reject}

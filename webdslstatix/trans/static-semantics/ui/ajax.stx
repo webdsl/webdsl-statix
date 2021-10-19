@@ -50,7 +50,7 @@ rules // ajax statements
   ajaxStmtOk(_, _) :-
     try { false } | warning $[This ajax statement is not yet implemented].
 
-  ajaxStmtOk(s, AjaxReplace(ph, tc)) :-
+  ajaxStmtOk(s, AjaxReplace(ph, AjaxReplaceTemplateCall(tc))) :-
     ajaxPlaceholderExpressionOk(s, ph),
     ajaxTemplateCallOk(s, s, tc)
       | error $[Unable to find an ajax enabled template with a compatible signature] @tc.

@@ -1,0 +1,8 @@
+module desugar/desugar-ajax
+
+imports
+  src-gen/signatures/-
+
+rules
+
+  normalize-ajax : AjaxReplaceEmpty(e){a*} -> AjaxReplaceTemplateCall(TemplateCall(TemplateCallId(e), TCallArgs([]), TCallPropAssigns([]), TemplateBody([]))){a*}

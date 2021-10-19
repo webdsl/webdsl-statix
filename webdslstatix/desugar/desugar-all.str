@@ -15,6 +15,7 @@ rules
 
   normalize = normalize-accesscontrol
   normalize = normalize-action
+  normalize = normalize-ajax
   normalize = normalize-core
   normalize = normalize-data
   normalize = normalize-expand
