@@ -5,4 +5,4 @@ imports
 
 rules
 
-  normalize-ajax : AjaxReplaceEmpty(e){a*} -> AjaxReplaceTemplateCall(TemplateCall(TemplateCallId(e), TCallArgs([]), TCallPropAssigns([]), TemplateBody([]))){a*}
+  normalize-ajax : AjaxReplaceEmpty(e) -> AjaxReplaceTemplateCall(TemplateCall(TemplateCallId(e), TCallArgs([]), TCallPropAssigns([]), TemplateBody([])))

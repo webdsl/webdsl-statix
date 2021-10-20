@@ -303,7 +303,7 @@ rules // variable declaration and resolving
   declareVar : scope * string * TYPE
   declareVar(s, x, t) :-
     !var[x, withType(t)] in s,
-    noDuplicateVarDefs(s, x).
+    noDuplicateVarDefs(s, x) | error $[A variable named [x] already exists in this scope].
 
   resolveVar : scope * string -> list((path * (string * TYPE)))
   resolveVar(s, x) = typesOf(ps) :-

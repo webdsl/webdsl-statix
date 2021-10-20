@@ -8,7 +8,7 @@ imports
 rules
 
   declareFunctionIns : scope
-  declareFunctionIns(s) :- { datetime date string time int float uuid void bool object url}
+  declareFunctionIns(s) :- { datetime date string time int float uuid void bool object url entity }
     datetime  == datetime(s),
     date      == date(s),
     string    == string(s),
@@ -20,6 +20,7 @@ rules
     bool      == bool(s),
     object    == object(s),
     url       == url(s),
+    entity    == entity(s),
 
     declareFunction(s, "now"     , []               , datetime),
     declareFunction(s, "today"   , []               , date),
@@ -58,4 +59,6 @@ rules
     declareFunction(s, "log"    , [object], void),
 
     declareFunction(s, "assert", [bool], void),
-    declareFunction(s, "assert", [bool, string], void).
+    declareFunction(s, "assert", [bool, string], void),
+
+    declareFunction(s, "loadEntity", [string, uuid], entity).
