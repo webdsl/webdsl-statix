@@ -3,8 +3,9 @@ module static-semantics/webdsl-hql
 imports
   static-semantics/types/built-ins
 
-  static-semantics/webdsl-types
   static-semantics/webdsl
+  static-semantics/webdsl-actions
+  static-semantics/webdsl-types
 
 rules
 
@@ -12,20 +13,30 @@ rules
 
   typeOfHqlExp : scope * HqlExp -> TYPE
   typeOfHqlExp(s, HqlQuery(queryRule)) = typeOfHqlQueryRule(s, queryRule).
-  typeOfHqlExp(s, HqlQueryLimit(queryRule, _)) = typeOfHqlQueryRule(s, queryRule).
-  typeOfHqlExp(s, HqlQueryLimitOffset(queryRule, _, _)) = typeOfHqlQueryRule(s, queryRule).
+  typeOfHqlExp(s, HqlQueryLimit(queryRule, limitExp)) = typeOfHqlQueryRule(s, queryRule) :-
+    limitValueExpOk(s, limitExp).
+
+  typeOfHqlExp(s, HqlQueryLimitOffset(queryRule, limitExp, offsetExp)) = typeOfHqlQueryRule(s, queryRule) :-
+    limitValueExpOk(s, limitExp),
+    limitValueExpOk(s, offsetExp).
 
   typeOfHqlQueryRule : scope * HQLQueryRule -> TYPE
-  typeOfHqlQueryRule(s, QueryRule(SelectFrom(select, from), where, groupBy, orderBy)) = typeOfHqlSelectFrom(s, select, from).
+  typeOfHqlQueryRule(s, QueryRule(SelectFrom(select, from), where, groupBy, orderBy)) = t :- { s_query }
+    new s_query,
+    t == typeOfHqlSelectFrom(s, s_query, select, from),
+    hqlWhereClauseOk(s, s_query, where),
+    hqlGroupByClauseOk(s, s_query, groupBy),
+    hqlOrderByClauseOk(s, s_query, orderBy).
 
-  typeOfHqlSelectFrom : scope * HQLSelectClauseOpt * HQLFromClause -> TYPE
-  typeOfHqlSelectFrom(s, Select(_, selection), _)    = typeOfHqlSelect(s, selection).
-  typeOfHqlSelectFrom(s, SelectNone()        , from) = typeOfHqlFrom(s, from).
+  typeOfHqlSelectFrom : scope * scope * HQLSelectClauseOpt * HQLFromClause -> TYPE
+  typeOfHqlSelectFrom(s, _      , SelectNone()        , from) = typeOfHqlFrom(s, from).
+  typeOfHqlSelectFrom(s, s_query, Select(_, selection), from) = t :-
+    hqlFromClauseOk(s, s_query, from),
+    t == typeOfHqlSelect(s_query, selection).
 
   typeOfHqlSelect : scope * HQLSelection -> TYPE
   typeOfHqlSelect(s, SelectedProperties([aliasedExp])) = typeOfHqlAliasedExpression(s, aliasedExp).
-  typeOfHqlSelect(_, ps@SelectedProperties([_ | [_]])) = t :-
-    try { false } | warning $[Selection of multiple properties not yet implemented] @ps.
+  typeOfHqlSelect(_, ps@SelectedProperties([_ | [_]])) = t :- false | error $[Selecting multiple properties is not allowed] @ps.
 
   typeOfHqlFrom : scope * HQLFromClause -> TYPE
   typeOfHqlFrom(s, FromClause([FromRangeJoin(fromRange, _) | _])) = typeOfHqlFromRange(s, fromRange).
@@ -41,10 +52,92 @@ rules
     try { false } | warning $[Aliased expressions not yet implemented] @a.
 
   typeOfHqlExpression : scope * HQLExpression -> TYPE
-  typeOfHqlExpression(s, e) = t :- try { false } | warning $[HQL Expression [e] not yet implemented] @e.
+  typeOfHqlExpression(s, e) = UNTYPED() :- try { false } | warning $[HQL Expression [e] not yet implemented] @e.
   typeOfHqlExpression(s, HQLAvg(e)) = float(s) :- { t } t == typeOfHqlExpression(s, e).
   typeOfHqlExpression(s, HQLSum(e)) = int(s) :- { t } t == typeOfHqlExpression(s, e). // TO-DO: possibly return float instead of int, based on selection
   typeOfHqlExpression(s, HQLMin(e)) = int(s) :- { t } t == typeOfHqlExpression(s, e). // TO-DO: possibly return float instead of int, based on selection
   typeOfHqlExpression(s, HQLMax(e)) = int(s) :- { t } t == typeOfHqlExpression(s, e). // TO-DO: possibly return float instead of int, based on selection
   typeOfHqlExpression(s, HQLCountStar()) = int(s).
   typeOfHqlExpression(s, HQLCount(e)) = int(s) :- { t } t == typeOfHqlExpression(s, e).
+  typeOfHqlExpression(s, HQLPath(Path([p]))) = LIST(t) :- { p' }
+    resolveVar(s, p) == [(_, (p', t))] | error $[Cannot resolve [p]],
+    @p.type := t,
+    @p.ref := p'.
+
+  typeOfHqlExpression(s, HQLPath(Path([ent, prop]))) = LIST(t) :- { ent' entityType }
+    resolveVar(s, ent) == [(_, (ent', entityType))] | error $[Cannot resolve [ent]] @ent,
+    t == typeOfProperty(s, entityType, prop),
+    @ent.type := entityType,
+    @ent.ref := ent'.
+
+rules // fill scope graph using HQL From clause
+
+  hqlFromClauseOk : scope * scope * HQLFromClause
+  hqlFromClauseOk(s, s_query, FromClause(fromRangeJoins)) :- hqlFromRangeJoinsOk(s, s_query, fromRangeJoins).
+
+  hqlFromRangeJoinsOk maps hqlFromRangeJoinOk(*, *, list(*))
+  hqlFromRangeJoinOk : scope * scope * HQLFromRangeJoin
+  hqlFromRangeJoinOk(s, s_query, FromRangeJoin(fromRange, joins)) :-
+    hqlFromRangeOk(s, s_query, fromRange),
+    hqlFromJoinsOk(s, s_query, joins).
+
+  hqlFromRangeOk : scope * scope * HQLFromRange
+  hqlFromRangeOk(s, s_query, FromClassOrOuterQueryPath(path, alias, _)) :- { t }
+    t == typeOfHqlFromPath(s, s_query, path),
+    declAlias(s_query, t, alias).
+
+  hqlFromJoinsOk maps hqlFromJoinOk(*, *, list(*))
+  hqlFromJoinOk : scope * scope * HQLFromJoin
+  hqlFromJoinOk(s, s_query, FromJoin(_, _, path, alias, _, _)) :- { t }
+    t == typeOfHqlFromPath(s, s_query, path),
+    declAlias(s_query, t, alias).
+
+rules // where, group by and order by analysis
+
+  hqlWhereClauseOk : scope * scope * HQLWhereClauseOpt
+  hqlWhereClauseOk(_, _, WhereClauseNone()).
+  hqlWhereClauseOk(_, _, w@WhereClause(_)) :- try { false } | warning $[HQL Where clause is not yet implemented] @w.
+
+  hqlGroupByClauseOk : scope * scope * HQLGroupByClauseOpt
+  hqlGroupByClauseOk(_, _, HQLGroupByNone()).
+  hqlGroupByClauseOk(_, _, gb@HQLGroupBy(_, _)) :- try { false } | warning $[HQL Group By clause is not yet implemented] @gb.
+
+  hqlOrderByClauseOk : scope * scope * HQLOrderByClauseOpt
+  hqlOrderByClauseOk(_, _, OrderByClauseNone()).
+  hqlOrderByClauseOk(_, _, ob@OrderByClause(_)) :- try { false } | warning $[HQL Order By clause is not yet implemented] @ob.
+
+rules // misc
+
+  limitValueExpOk : scope * LimitValueExp
+  limitValueExpOk(s, LimitValueExp(exp)) :-
+    typeCompatible(typeOfExp(s, exp), int(s)) | error $[Expression [exp] should be compatible with type Int].
+
+  limitValueExpOk(s, LimitValueDslExp(DslExp(exp))) :-
+    typeCompatible(typeOfExp(s, exp), int(s)) | error $[Expression [exp] should be compatible with type Int].
+
+rules // utils
+
+  declAlias : scope * TYPE * HQLAsAliasOpt
+  declAlias(_, _, AsAliasNone()).
+  declAlias(s_query, t, AsAlias(Alias(a))) :- declareVar(s_query, a, t).
+
+  typeOfHqlFromPath : scope * scope * HQLPath -> TYPE
+  typeOfHqlFromPath(s, _, Path([x])) = t :-
+    t == definedType(s, x)| error $[Cannot resolve [x]] @x,
+    t == ENTITY(_, _) | error $[[x] is not an entity] @x.
+
+  typeOfHqlFromPath(s, s_query, Path([x | tail])) = t :- { x' xType }
+    resolveVar(s_query, x) == [(_, (x', xType))] | error $[Cannot resolve [x]] @x,
+    t == typeOfHqlFromPathTail(s, xType, tail),
+    @x.type := xType,
+    @x.ref := x'.
+
+  typeOfHqlFromPathTail : scope * TYPE * list(string) -> TYPE
+  typeOfHqlFromPathTail(s, entityType, [x]) = t :-
+    t == stripOptionalSetOrListType(typeOfProperty(s, entityType, x)),
+    t == ENTITY(_, _) | error $[Property [x] is not an entity] @x.
+
+  typeOfHqlFromPathTail(s, entityType, [x | tail]) = t :- { xType }
+    xType == stripOptionalSetOrListType(typeOfProperty(s, entityType, x)),
+    xType == ENTITY(_, _) | error $[Property [x] is not an entity] @x,
+    t == typeOfHqlFromPathTail(s, xType, tail).
