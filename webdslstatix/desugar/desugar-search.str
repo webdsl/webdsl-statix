@@ -40,8 +40,10 @@ rules
 // helper rules to filter and construct entity search definitions
 
   entities-without-search-elems(|defs) : e -> e
-    where <?Entity(entity_name, _, _) <+ ?EntityNoSuper(entity_name, _)> e
-        ; <not(fetch(?NativeClass(_, NCAlias(<concat-strings> [entity_name, "Searcher"]), _, _)))> defs
+    where
+          <?Entity(entity_name, _, _) <+ ?EntityNoSuper(entity_name, _)> e
+        ; searcher_name := <concat-strings> [entity_name, "Searcher"]
+        ; <not(fetch(?NativeClass(_, NCAlias(searcher_name), _, _)))> defs
 
   construct-search-elems : e -> elems
     with <?Entity(entity_name, _, defs) <+ ?EntityNoSuper(entity_name, defs)> e
