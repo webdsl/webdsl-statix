@@ -319,6 +319,12 @@ rules // variable declaration and resolving
               and { x' :- x' == (x, _) }
               in s_entity |-> ps.
 
+  resolveLocalProperty : scope * string -> list((path * (string * TYPE)))
+  resolveLocalProperty(s_entity, x) = typesOf(ps) :-
+    query var filter EXTEND?
+              and { x' :- x' == (x, _) }
+              in s_entity |-> ps.
+
   resolveMutableProperty : scope * string -> list((path * (string * TYPE)))
   resolveMutableProperty(s_entity, x) = typesOf(ps) :-
     query var filter EXTEND? (INHERIT EXTEND?)*

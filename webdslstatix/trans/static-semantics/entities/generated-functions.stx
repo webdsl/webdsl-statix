@@ -27,7 +27,7 @@ rules
   declareLoadOrFindEntity(s, _, findName, t, TRUE()) :- { s_ent idName idType }
     t == ENTITY(_, s_ent),
     resolveAnnotationByAnno(s_ent, ID()) == [(_, (idName, _))],
-    idType == typeOfProperty(s, t, idName),
+    idType == propertyType(s_ent, idName),
     declareFunction(s, findName, [idType], t).
 
 rules
@@ -37,9 +37,9 @@ rules
   the property is string-type compatible
 */
 
-  defOk(s, GeneratedDefinition(Generated(["findEntityByProperty", entityName, propertyName, findByPropName, findByPropLikeName]))) :- { entType propType }
-    resolveType(s, entityName) == [(_, (_, entType@ENTITY(_, _)))],
-    propType == typeOfProperty(s, entType, propertyName),
+  defOk(s, GeneratedDefinition(Generated(["findEntityByProperty", entityName, propertyName, findByPropName, findByPropLikeName]))) :- { entType s_ent propType }
+    resolveType(s, entityName) == [(_, (_, entType@ENTITY(_, s_ent)))],
+    propType == propertyType(s_ent, propertyName),
     declareFindEntityByProperty(s, findByPropName, findByPropLikeName, entType, propType, typeCompatibleB(propType, string(s))).
 
   declareFindEntityByProperty : scope * string * string * TYPE * TYPE * BOOL
