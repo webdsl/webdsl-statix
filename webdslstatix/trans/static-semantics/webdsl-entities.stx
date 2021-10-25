@@ -89,10 +89,11 @@ rules // entity declaration
     declareVar(s_ent, "this", t),
     declareAnnotation(s_ent, "this", DERIVED()). // prevent mutability of this var
 
-  defOk(s, Enum(e, values)) :- { s_entity t }
-    new s_entity, s_entity -DEF-> s,
+  defOk(s, Enum(e, values)) :- { s_entity s_super t }
+    entity(s) == ENTITY(_, s_super),
+    new s_entity, s_entity -INHERIT-> s_super, s_entity -DEF-> s,
     declareVar(s_entity, "name", string(s)),
-    t == ENTITY(_, s_entity),
+    t == ENTITY(e, s_entity),
     declareType(s, e, t),
     declareEnumValues(s, values, t).
 
