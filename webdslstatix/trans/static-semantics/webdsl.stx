@@ -227,13 +227,13 @@ rules // function declaration and resolving
                    in s |-> ps.
 
   resolveEntityFunction : scope * string -> list((path * (string * TYPE)))
-  resolveEntityFunction(s, x) = filterDuplicateTypeResults(filterFunctionResults(typesOf(ps), FALSE())) :-
+  resolveEntityFunction(s, x) = filterShadowedFunctionResults(filterFunctionResults(typesOf(ps), FALSE())) :-
     query function filter EXTEND? (INHERIT EXTEND?)*
                    and { x' :- x' == (x, _) }
                    in s |-> ps.
 
   resolveStaticEntityFunction : scope * string -> list((path * (string * TYPE)))
-  resolveStaticEntityFunction(s, x) = filterDuplicateTypeResults(filterFunctionResults(typesOf(ps), TRUE())) :-
+  resolveStaticEntityFunction(s, x) = filterShadowedFunctionResults(filterFunctionResults(typesOf(ps), TRUE())) :-
     query function filter EXTEND? (INHERIT EXTEND?)*
                    and { x' :- x' == (x, _) }
                    in s |-> ps.
@@ -245,22 +245,22 @@ rules // function declaration and resolving
   filterFunctionResults([f@(_, (_, FUNCTION(_, _, _, _))) | fs], b@FALSE()) = [f | filterFunctionResults(fs, b)].
   filterFunctionResults([_ | fs], b) = filterFunctionResults(fs, b).
 
-  filterDuplicateTypeResults : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
-  filterDuplicateTypeResults(rs) = filterDistinctTypeResultsZipped(zipTypeResultsWithDistinctBool(rs, [])).
+  filterShadowedFunctionResults : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
+  filterShadowedFunctionResults(rs) = filterShadowedFunctionResultsZipped(zipFunctionResultsWithShadowedBool(rs, [])).
 
-  zipTypeResultsWithDistinctBool : list((path * (string * TYPE))) * list(TYPE) -> list(((path * (string * TYPE)) * BOOL))
-  zipTypeResultsWithDistinctBool([], _) = [].
-  zipTypeResultsWithDistinctBool([r@(_, (_, t)) | rs], ts) = [(r, notB(typeInTypeListB(t, ts))) | zipTypeResultsWithDistinctBool(rs, [t | ts])].
+  zipFunctionResultsWithShadowedBool : list((path * (string * TYPE))) * list(TYPE) -> list(((path * (string * TYPE)) * BOOL))
+  zipFunctionResultsWithShadowedBool([], _) = [].
+  zipFunctionResultsWithShadowedBool([r@(_, (_, t)) | rs], ts) = [(r, functionShadowedB(t, ts)) | zipFunctionResultsWithShadowedBool(rs, [t | ts])].
 
-  typeInTypeListB : TYPE * list(TYPE) -> BOOL
-  typeInTypeListB(_, []) = FALSE().
-  typeInTypeListB(t, [t | _]) = TRUE().
-  typeInTypeListB(t, [_ | ts]) = typeInTypeListB(t, ts).
+  functionShadowedB : TYPE * list(TYPE) -> BOOL
+  functionShadowedB(_, []) = FALSE().
+  functionShadowedB(FUNCTION(f, args, _, _), [FUNCTION(f, args, _, _) | _]) = TRUE().
+  functionShadowedB(t, [_ | ts]) = functionShadowedB(t, ts).
 
-  filterDistinctTypeResultsZipped : list(((path * (string * TYPE)) * BOOL)) -> list((path * (string * TYPE)))
-  filterDistinctTypeResultsZipped([]) = [].
-  filterDistinctTypeResultsZipped([(r, TRUE()) | rs]) = [r | filterDistinctTypeResultsZipped(rs)].
-  filterDistinctTypeResultsZipped([_ | rs]) = filterDistinctTypeResultsZipped(rs).
+  filterShadowedFunctionResultsZipped : list(((path * (string * TYPE)) * BOOL)) -> list((path * (string * TYPE)))
+  filterShadowedFunctionResultsZipped([]) = [].
+  filterShadowedFunctionResultsZipped([(r, FALSE()) | rs]) = [r | filterShadowedFunctionResultsZipped(rs)].
+  filterShadowedFunctionResultsZipped([_ | rs]) = filterShadowedFunctionResultsZipped(rs).
 
 rules // action and placeholder declaration and resolving
 
