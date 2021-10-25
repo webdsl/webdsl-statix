@@ -51,6 +51,17 @@ rules // annotation declaration and resolving
                      min $ < P, $ < F, $ < EXTEND, P < F, P < EXTEND, F < EXTEND
                      in s |-> ps.
 
+  resolveClosestAnnotationByAnno : scope * ANNOTATION -> list((path * (string * ANNOTATION)))
+  resolveClosestAnnotationByAnno(s, a) = ps :-
+    query annotation filter P* F* EXTEND? INHERIT* EXTEND?
+                     and { x' :- x' == (_, a) }
+                     min $ < P, $ < F, $ < EXTEND, $ < INHERIT,
+                         P < F, P < EXTEND, P < INHERIT,
+                         F < EXTEND, F < INHERIT,
+                         EXTEND < INHERIT
+                     and true
+                     in s |-> ps.
+
   // entity level
   declareEntityAnnotation : scope * ANNOTATION
   declareEntityAnnotation(s, a) :-
@@ -59,7 +70,7 @@ rules // annotation declaration and resolving
   resolveEntityAnnotation : scope -> list((path * (string * ANNOTATION)))
   resolveEntityAnnotation(s) = resolveAnnotation(s, "_ENTITY").
 
-rules
+rules // annotations
 
   annotationsOk maps annotationOk(*, *, *, list(*))
   annotationOk : scope * string * TYPE * Annotation
@@ -147,6 +158,14 @@ rules
     resolveType(s, sort) == [(_, (_, sortType))] | error $[Cannot resolve sort [sort] to an entity],
     sortType == ENTITY(_, _) | error $[Cannot resolve sort [sort] to an entity],
     sortType == t | error $[Inverse entity must be the same as property type [t]].
+
+rules // resolving entity.name
+
+  typeOfProperty(_, ENTITY(_, s_ent), n@"name") = t :- { nameProp n' }
+    resolveClosestAnnotationByAnno(s_ent, NAME()) == [(_, (nameProp, _))],
+    resolveProperty(s_ent, nameProp) == [(_, (n', t))],
+    @n.type := t,
+    @n.ref := n'.
 
 rules // validation
 
