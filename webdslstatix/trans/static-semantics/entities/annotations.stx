@@ -165,7 +165,6 @@ rules // resolving entity.name
     resolveClosestAnnotationByAnno(s_ent, NAME()) == [(path, (nameProp, _))],
     s_name == scopeFromPath(path),
     resolveLocalProperty(s_name, nameProp) == [(_, (n', t))],
-    @n.type := t,
     @n.ref := n'.
 
 rules // validation
