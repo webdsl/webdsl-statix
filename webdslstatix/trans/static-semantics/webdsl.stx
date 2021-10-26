@@ -109,6 +109,10 @@ rules // type declaration and resolving
   typeOf((p, (x, s))) = (p, (x, t)) :-
     query typeOf filter e in s |-> [(_, t)].
 
+  simpleTypeOf : scope -> TYPE
+  simpleTypeOf(s) = t :-
+    query typeOf filter e in s |-> [(_, t)].
+
 rules // extend entity declaration
 
   declareExtendEntity : scope * string * scope
@@ -227,15 +231,25 @@ rules // function declaration and resolving
                    in s |-> ps.
 
   resolveEntityFunction : scope * string -> list((path * (string * TYPE)))
-  resolveEntityFunction(s, x) = filterShadowedFunctionResults(filterFunctionResults(typesOf(ps), FALSE())) :-
+  resolveEntityFunction(s, x) = filterFunctionResults(typesOf(ps), FALSE()) :-
     query function filter EXTEND? (INHERIT EXTEND?)*
                    and { x' :- x' == (x, _) }
+                   min $ < INHERIT, EXTEND < INHERIT // do not shadow EXTEND with $
+                   and { (f, T1), (f, T2) :- {args}
+                     simpleTypeOf(T1) == FUNCTION(f, args, _, _),
+                     simpleTypeOf(T2) == FUNCTION(f, args, _, _)
+                   } // only shadow when function has the same name and argument types
                    in s |-> ps.
 
   resolveStaticEntityFunction : scope * string -> list((path * (string * TYPE)))
-  resolveStaticEntityFunction(s, x) = filterShadowedFunctionResults(filterFunctionResults(typesOf(ps), TRUE())) :-
+  resolveStaticEntityFunction(s, x) = filterFunctionResults(typesOf(ps), TRUE()) :-
     query function filter EXTEND? (INHERIT EXTEND?)*
                    and { x' :- x' == (x, _) }
+                   min $ < INHERIT, EXTEND < INHERIT // do not shadow EXTEND with $
+                   and { (f, T1), (f, T2) :- {args}
+                     simpleTypeOf(T1) == FUNCTION(f, args, _, _),
+                     simpleTypeOf(T2) == FUNCTION(f, args, _, _)
+                   } // only shadow when function has the same name and argument types
                    in s |-> ps.
 
   // last BOOL arg indiciates if only static function should be returned (TRUE()) or all functions (FALSE())
@@ -244,23 +258,6 @@ rules // function declaration and resolving
   filterFunctionResults([f@(_, (_, FUNCTION(_, _, _, TRUE()))) | fs], b@TRUE()) = [f | filterFunctionResults(fs, b)].
   filterFunctionResults([f@(_, (_, FUNCTION(_, _, _, _))) | fs], b@FALSE()) = [f | filterFunctionResults(fs, b)].
   filterFunctionResults([_ | fs], b) = filterFunctionResults(fs, b).
-
-  filterShadowedFunctionResults : list((path * (string * TYPE))) -> list((path * (string * TYPE)))
-  filterShadowedFunctionResults(rs) = filterShadowedFunctionResultsZipped(zipFunctionResultsWithShadowedBool(rs, [])).
-
-  zipFunctionResultsWithShadowedBool : list((path * (string * TYPE))) * list(TYPE) -> list(((path * (string * TYPE)) * BOOL))
-  zipFunctionResultsWithShadowedBool([], _) = [].
-  zipFunctionResultsWithShadowedBool([r@(_, (_, t)) | rs], ts) = [(r, functionShadowedB(t, ts)) | zipFunctionResultsWithShadowedBool(rs, [t | ts])].
-
-  functionShadowedB : TYPE * list(TYPE) -> BOOL
-  functionShadowedB(_, []) = FALSE().
-  functionShadowedB(FUNCTION(f, args, _, _), [FUNCTION(f, args, _, _) | _]) = TRUE().
-  functionShadowedB(t, [_ | ts]) = functionShadowedB(t, ts).
-
-  filterShadowedFunctionResultsZipped : list(((path * (string * TYPE)) * BOOL)) -> list((path * (string * TYPE)))
-  filterShadowedFunctionResultsZipped([]) = [].
-  filterShadowedFunctionResultsZipped([(r, FALSE()) | rs]) = [r | filterShadowedFunctionResultsZipped(rs)].
-  filterShadowedFunctionResultsZipped([_ | rs]) = filterShadowedFunctionResultsZipped(rs).
 
 rules // action and placeholder declaration and resolving
 
