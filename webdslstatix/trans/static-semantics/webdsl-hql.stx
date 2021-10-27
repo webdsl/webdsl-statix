@@ -32,11 +32,11 @@ rules
   typeOfHqlSelectFrom(s, _      , SelectNone()        , from) = typeOfHqlFrom(s, from).
   typeOfHqlSelectFrom(s, s_query, Select(_, selection), from) = t :-
     hqlFromClauseOk(s, s_query, from),
-    t == typeOfHqlSelect(s_query, selection).
+    t == typeOfHqlSelect(s, s_query, selection).
 
-  typeOfHqlSelect : scope * HQLSelection -> TYPE
-  typeOfHqlSelect(s, SelectedProperties([aliasedExp])) = typeOfHqlAliasedExpression(s, aliasedExp).
-  typeOfHqlSelect(_, ps@SelectedProperties([_ | [_]])) = t :- false | error $[Selecting multiple properties is not allowed] @ps.
+  typeOfHqlSelect : scope * scope * HQLSelection -> TYPE
+  typeOfHqlSelect(s, s_query, SelectedProperties([aliasedExp])) = typeOfHqlAliasedExpression(s, s_query, aliasedExp).
+  typeOfHqlSelect(_, _, ps@SelectedProperties([_ | [_]])) = t :- false | error $[Selecting multiple properties is not allowed] @ps.
 
   typeOfHqlFrom : scope * HQLFromClause -> TYPE
   typeOfHqlFrom(s, FromClause([FromRangeJoin(fromRange, _) | _])) = typeOfHqlFromRange(s, fromRange).
@@ -46,26 +46,25 @@ rules
     t == definedType(s, ent),
     t == ENTITY(_, _) | error $[[ent] is not an entity] @ent.
 
-  typeOfHqlAliasedExpression : scope * HQLAliasedExpression -> TYPE
-  typeOfHqlAliasedExpression(s, AliasedExpression(hqlExp, AsAliasNone())) = typeOfHqlExpression(s, hqlExp).
-  typeOfHqlAliasedExpression(_, AliasedExpression(_, a@AsAlias(_))) = t :-
-    try { false } | warning $[Aliased expressions not yet implemented] @a.
+  typeOfHqlAliasedExpression : scope * scope * HQLAliasedExpression -> TYPE
+  typeOfHqlAliasedExpression(s, s_query, AliasedExpression(hqlExp, AsAliasNone())) = typeOfHqlExpression(s, s_query, hqlExp).
+  typeOfHqlAliasedExpression(_, _, AliasedExpression(_, a@AsAlias(_))) = t :- try { false } | warning $[Aliased expressions not yet implemented] @a.
 
-  typeOfHqlExpression : scope * HQLExpression -> TYPE
-  typeOfHqlExpression(s, e) = UNTYPED() :- try { false } | warning $[HQL Expression [e] not yet implemented] @e.
-  typeOfHqlExpression(s, HQLAvg(e)) = float(s) :- { t } t == typeOfHqlExpression(s, e).
-  typeOfHqlExpression(s, HQLSum(e)) = int(s) :- { t } t == typeOfHqlExpression(s, e). // TO-DO: possibly return float instead of int, based on selection
-  typeOfHqlExpression(s, HQLMin(e)) = int(s) :- { t } t == typeOfHqlExpression(s, e). // TO-DO: possibly return float instead of int, based on selection
-  typeOfHqlExpression(s, HQLMax(e)) = int(s) :- { t } t == typeOfHqlExpression(s, e). // TO-DO: possibly return float instead of int, based on selection
-  typeOfHqlExpression(s, HQLCountStar()) = int(s).
-  typeOfHqlExpression(s, HQLCount(e)) = int(s) :- { t } t == typeOfHqlExpression(s, e).
-  typeOfHqlExpression(s, HQLPath(Path([p]))) = LIST(t) :- { p' }
-    resolveVar(s, p) == [(_, (p', t))] | error $[Cannot resolve [p]],
+  typeOfHqlExpression : scope * scope * HQLExpression -> TYPE
+  typeOfHqlExpression(_, _, e) = UNTYPED() :- try { false } | warning $[HQL Expression [e] not yet implemented] @e.
+  typeOfHqlExpression(s, s_query, HQLAvg(e)) = float(s) :- { t } t == typeOfHqlExpression(s, s_query, e).
+  typeOfHqlExpression(s, s_query, HQLSum(e)) = int(s) :- { t } t == typeOfHqlExpression(s, s_query, e). // TO-DO: possibly return float instead of int, based on selection
+  typeOfHqlExpression(s, s_query, HQLMin(e)) = int(s) :- { t } t == typeOfHqlExpression(s, s_query, e). // TO-DO: possibly return float instead of int, based on selection
+  typeOfHqlExpression(s, s_query, HQLMax(e)) = int(s) :- { t } t == typeOfHqlExpression(s, s_query, e). // TO-DO: possibly return float instead of int, based on selection
+  typeOfHqlExpression(s, s_query, HQLCountStar()) = int(s).
+  typeOfHqlExpression(s, s_query, HQLCount(e)) = int(s) :- { t } t == typeOfHqlExpression(s, s_query, e).
+  typeOfHqlExpression(_, s_query, HQLPath(Path([p]))) = LIST(t) :- { p' }
+    resolveVar(s_query, p) == [(_, (p', t))] | error $[Cannot resolve [p]],
     @p.type := t,
     @p.ref := p'.
 
-  typeOfHqlExpression(s, HQLPath(Path([ent, prop]))) = LIST(t) :- { ent' entityType }
-    resolveVar(s, ent) == [(_, (ent', entityType))] | error $[Cannot resolve [ent]] @ent,
+  typeOfHqlExpression(s, s_query, HQLPath(Path([ent, prop]))) = LIST(t) :- { ent' entityType }
+    resolveVar(s_query, ent) == [(_, (ent', entityType))] | error $[Cannot resolve [ent]] @ent,
     t == typeOfProperty(s, entityType, prop),
     @ent.type := entityType,
     @ent.ref := ent'.
