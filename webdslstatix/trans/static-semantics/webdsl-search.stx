@@ -92,3 +92,9 @@ rules // entity name to searcher name mapping
   entityOfSearcher(s, NATIVECLASS(searcher, _)) = t :- { entity }
     resolveSearcherMappingInverse(s, searcher) == [(_, (entity, _))],
     t == definedTypeNoRef(s, entity).
+
+rules // built in
+
+  declareSearchBuiltIns : scope
+  declareSearchBuiltIns(s) :-
+    !searcher["Entity", "Searcher"] in s. // abstract searcher results in entity type

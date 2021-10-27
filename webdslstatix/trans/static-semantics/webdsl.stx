@@ -373,6 +373,7 @@ rules // declare common rules and mappings
     declareACBuiltIns(s),
     declareFunctionIns(s),
     declareEntityBuiltIns(s),
+    declareSearchBuiltIns(s),
     declareTypeBuiltIns(s),
     declareTypeBuiltInFunctions(s),
     declareUIBuiltIns(s).
