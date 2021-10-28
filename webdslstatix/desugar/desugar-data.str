@@ -3,6 +3,8 @@ module desugar/desugar-data
 imports
   src-gen/signatures/-
 
+  desugar/utils
+
 rules
 
   normalize-data : OptPropAnnosNone() -> PropAnnos([])
@@ -27,19 +29,34 @@ rules
   normalize-data : Entity(entity_name, super, defs) -> Entity(entity_name, super, defs')
     where
         all-function := StaticEntityFunction(Function("all", FormalArgs([]), OptSortSome(GenericSort("List", [SimpleSort(entity_name)])), Block([])))
+      ; validate-save-function := EntityFunction(Function("validateSave", FormalArgs([]), OptSortSome(SimpleSort("ValidationExceptionMultiple")), Block([])))
       ; <not(fetch(?all-function))> defs
     with
-        defs' := [all-function | defs]
+        defs' := [all-function | [validate-save-function | defs]]
 
   normalize-data : EntityNoSuper(entity_name, defs) -> EntityNoSuper(entity_name, defs')
     where
         all-function := StaticEntityFunction(Function("all", FormalArgs([]), OptSortSome(GenericSort("List", [SimpleSort(entity_name)])), Block([])))
+      ; validate-save-function := EntityFunction(Function("validateSave", FormalArgs([]), OptSortSome(SimpleSort("ValidationExceptionMultiple")), Block([])))
       ; <not(fetch(?all-function))> defs
     with
-        defs' := [all-function | defs]
+        defs' := [all-function | [validate-save-function | defs]]
 
-  // All rules and signatures below are copied directly from the WebDSL compiler.
-  // Some concrete syntax transformations have been rewritten as abstract syntax transformations
+  normalize-data : Entity(e, super, defs) -> Entity(e, super, defs')
+    where
+          props := <filter(properties-without-validate-elems(|defs))> defs
+        ; <not(?0)> <length> props
+    with
+          new-validate-elems := <map(construct-prop-validate-elems)> props
+        ; defs' := <conc> (defs, new-validate-elems)
+
+  normalize-data : EntityNoSuper(e, defs) -> EntityNoSuper(e, defs')
+    where
+          props := <filter(properties-without-validate-elems(|defs))> defs
+        ; <not(?0)> <length> props
+    with
+          new-validate-elems := <map(construct-prop-validate-elems)> props
+        ; defs' := <conc> (defs, new-validate-elems)
 
   normalize-data : ExtendSessionEntity(ident, entbodydecs){anno*} -> ExtendEntity(ident, entbodydecs){anno*}
 
@@ -47,3 +64,18 @@ rules
     where <fetch-elem(?IncompleteInverseAnno(prop))> annos
     with  ent := <try(?GenericSort(_,[<id>])); ?SimpleSort(<id>)> srt
         ; annos' := <map(try(\IncompleteInverseAnno(prop) -> InverseAnno(ent, prop)\))> annos
+
+rules // utils
+
+  properties-without-validate-elems(|defs) : e@Property(x, _, _, _) -> e
+    where
+          f := <validate-function-for-name> x
+        ; <not(fetch(?f))> defs
+
+  construct-prop-validate-elems : Property(x, _, _, _) -> f
+    with
+        f := <validate-function-for-name> x
+
+  validate-function-for-name : x -> EntityFunction(Function(validate-name, FormalArgs([]), OptSortSome(SimpleSort("ValidationExceptionMultiple")), Block([])))
+    with
+        validate-name := <concat-strings> ["validate", <capitalize-string> x]
