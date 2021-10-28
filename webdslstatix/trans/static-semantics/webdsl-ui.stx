@@ -267,6 +267,32 @@ rules // enforce correct order of template elements
     initDone == FALSE() | error $[Init block must be between variable declarations and the rest of the page or template] @i,
     templateElementOrderOk(xs, TRUE(), initDone).
 
+rules // template var args
+
+  typeOfArg(s, Arg(x, TemplateVarArgSort(props))) = LIST(TEMPLATEVARARG(x, s_arg)) :-
+    new s_arg,
+    declTemplateVarArgProps(s, s_arg, props).
+
+  declTemplateVarArgProps maps declTemplateVarArgProp(*, *, list(*))
+  declTemplateVarArgProp : scope * scope * FormalVarArg
+  declTemplateVarArgProp(s, s_arg, FormalVarArg(x, srt)) :- { t }
+    t == typeOfSort(s, srt),
+    declareVar(s_arg, x, t),
+    optionallyDeclareTemplateElements(s_arg, x, t).
+
+  optionallyDeclareTemplateElements : scope * string * TYPE
+  optionallyDeclareTemplateElements(_, _, _).
+  optionallyDeclareTemplateElements(s_arg, x, TEMPLATEELEMENTS()) :-
+    declareTemplate(s_arg, x, []).
+
+  typeOfProperty(s, TEMPLATEVARARG(_, s_arg), x) = t :-
+    propertyType(s_arg, x) == t.
+
+  templateCallOk_internal(s, s_pha, MemberTemplateCall(x, tc), ajax) :- { s_arg s_resolve }
+    variableType(s, x) == TEMPLATEVARARG(_, s_arg) | error $[Variable [x] is not a template variable argument],
+    new s_resolve, s_resolve -P-> s_arg,
+    templateCallOk_internal(s_resolve, s_pha, tc, ajax).
+
 rules // utils
 
   rootPageDefined : scope * string

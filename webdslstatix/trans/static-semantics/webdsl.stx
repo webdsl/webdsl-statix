@@ -335,6 +335,12 @@ rules // variable declaration and resolving
     declareAnnotation(s, x, DERIVED()), // abuse derived annotation to declare immutability of parameters
     declareParameters(s, tail).
 
+  declareParameters(s, [(x, t@TEMPLATEELEMENTS()) | tail]) :-
+    declareVar(s, x, t),
+    declareAnnotation(s, x, DERIVED()), // abuse derived annotation to declare immutability of parameters
+    declareTemplate(s, x, []),
+    declareParameters(s, tail).
+
 rules // declare common rules and mappings
 
   unitOk : scope * Unit
