@@ -3,6 +3,8 @@ module static-semantics/webdsl-ac
 imports
   static-semantics/actions/functions
 
+  static-semantics/entities/annotations
+
   static-semantics/types/built-ins
 
   static-semantics/ui/template-calls
@@ -15,12 +17,13 @@ imports
 rules // built-ins
 
   declareACBuiltIns : scope
-  declareACBuiltIns(s) :- {s_class}
-    new s_class,
-    declareExtendEntity(s, "securityContext", s_class), // declare s_type to be linked to type name
-    extendEntityScopes(resolveExtendEntity(s, "securityContext"), s_class),
-    declareType(s, "securityContext", NATIVECLASS("securityContext", s_class)),
-    declareVar(s, "securityContext", NATIVECLASS("securityContext", s_class)),
+  declareACBuiltIns(s) :- { s_securityContext }
+    new s_securityContext,
+    declareEntityAnnotation(s_securityContext, SESSIONENTITY()),
+    declareExtendEntity(s, "securityContext", s_securityContext), // declare s_type to be linked to type name
+    extendEntityScopes(resolveExtendEntity(s, "securityContext"), s_securityContext),
+    declareType(s, "securityContext", ENTITY("securityContext", s_securityContext)),
+    declareVar(s, "securityContext", ENTITY("securityContext", s_securityContext)),
 
     declareFunction(s, "loggedIn", [], bool(s)),
     declareFunction(s, "logout", [], entity(s)),
@@ -251,11 +254,11 @@ rules // utils
 
   principalType : scope -> TYPE
   principalType(s) = t :- { s_securityContext }
-    resolveType(s, "securityContext") == [(_, (_, NATIVECLASS(_, s_securityContext)))] | error $[securityContext not defined],
+    resolveType(s, "securityContext") == [(_, (_, ENTITY(_, s_securityContext)))] | error $[securityContext not defined],
     resolveProperty(s_securityContext, "principal") == [(_, (_, t))] | error $[Principal is not defined].
 
   credentialTypes : scope -> list(TYPE)
   credentialTypes(s) = ts :- { s_securityContext }
-    resolveType(s, "securityContext") == [(_, (_, NATIVECLASS(_, s_securityContext)))] | error $[securityContext not defined],
+    resolveType(s, "securityContext") == [(_, (_, ENTITY(_, s_securityContext)))] | error $[securityContext not defined],
     queryResultTypes(resolveProperty(s_securityContext, "credentials")) == ts,
     ts == [_ | _] | error $[No credentials have been defined].
