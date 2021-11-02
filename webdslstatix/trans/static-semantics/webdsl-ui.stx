@@ -296,8 +296,13 @@ rules // template var args
 rules // utils
 
   rootPageDefined : scope * string
-  rootPageDefined(s, errorLoc) :-
-    resolvePage(s, "root") == [(_, (_, PAGE(_, _)))|_] | error $[No root page defined] @errorLoc.
+  rootPageDefined(s, errorLoc) :- { p ts }
+    resolvePage(s, "root") == [(_, (_, PAGE(p, ts)))|_] | error $[No root page defined] @errorLoc,
+    noRootPageArguments(p, ts).
+
+  noRootPageArguments : string * list(TYPE)
+  noRootPageArguments(_, []).
+  noRootPageArguments(p, [_ | _]) :- false | error $[Root page is not allowed to have parameters] @p.
 
   typesOfTemplateArgs maps typeOfTemplateArg(*, list(*)) = list(*)
   typeOfTemplateArg : scope * TemplateArg -> (string * list(TYPE))

@@ -79,6 +79,8 @@ rules // navigate calls
     argTypes == typesOfExps(s, args),
     typesCompatible(argTypes, ts) == TRUE() | error $[Given argument types not compatible with page definition. Got [argTypes] but expected [ts]] @args.
 
+  pageCallOk_internal(_, "root", []). // root page is always accessible from all locations
+
 rules // property assignments
 
   templatePropAssignmentsOk : scope * list(PropertyAssignment)
