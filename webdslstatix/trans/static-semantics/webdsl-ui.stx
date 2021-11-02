@@ -269,13 +269,13 @@ rules // enforce correct order of template elements
 
 rules // template var args
 
-  typeOfArg(s, Arg(x, TemplateVarArgSort(props))) = LIST(TEMPLATEVARARG(x, s_arg)) :-
+  typeOfArg(s, Arg(_, TemplateVarArgSort(props))) = LIST(TEMPLATEVARARG(ts, s_arg)) :-
     new s_arg,
-    declTemplateVarArgProps(s, s_arg, props).
+    ts == typesOfTemplateVarArgProps(s, s_arg, props).
 
-  declTemplateVarArgProps maps declTemplateVarArgProp(*, *, list(*))
-  declTemplateVarArgProp : scope * scope * FormalVarArg
-  declTemplateVarArgProp(s, s_arg, FormalVarArg(x, srt)) :- { t }
+  typesOfTemplateVarArgProps maps typeOfTemplateVarArgProp(*, *, list(*)) = list(*)
+  typeOfTemplateVarArgProp : scope * scope * FormalVarArg -> TYPE
+  typeOfTemplateVarArgProp(s, s_arg, FormalVarArg(x, srt)) = t :-
     t == typeOfSort(s, srt),
     declareVar(s_arg, x, t),
     optionallyDeclareTemplateElements(s_arg, x, t).
@@ -292,6 +292,9 @@ rules // template var args
     variableType(s, x) == TEMPLATEVARARG(_, s_arg) | error $[Variable [x] is not a template variable argument],
     new s_resolve, s_resolve -P-> s_arg,
     templateCallOk_internal(s_resolve, s_pha, tc, ajax).
+
+  typeCompatibleB(TEMPLATEVARARG(ts1, _), TEMPLATEVARARG(ts2, _)) = b :-
+    b == typesCompatible(ts1, ts2).
 
 rules // utils
 

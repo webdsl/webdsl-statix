@@ -236,6 +236,15 @@ rules  // rules and functions for function overloading
     y == inheritanceAmount_helper(argtl, sigtl),
     x #= y + 1.
 
+  // in case of two template variable arguments, +0 for exactly the same types, +1 for different types
+  inheritanceAmount_helper([arg@TEMPLATEVARARG(ts, _) | argtl], [sig@TEMPLATEVARARG(ts, _) | sigtl]) = x :-
+    x == inheritanceAmount_helper(argtl, sigtl).
+
+  inheritanceAmount_helper([arg@TEMPLATEVARARG(_, _) | argtl], [sig@TEMPLATEVARARG(_, _) | sigtl]) = x :- { y }
+    typeCompatible(arg, sig) | error $[Argument type [arg] is not compatible with signature type [sig]],
+    y == inheritanceAmount_helper(argtl, sigtl),
+    x #= y + 1.
+
   scopeFromType : TYPE -> scope
   scopeFromType(REF(t)) = scopeFromType(t).
   scopeFromType(LIST(t)) = scopeFromType(t).

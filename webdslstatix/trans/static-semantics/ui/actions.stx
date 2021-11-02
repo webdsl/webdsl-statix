@@ -3,10 +3,13 @@ module static-semantics/ui/actions
 imports
   static-semantics/actions/functions
 
+  static-semantics/entities/annotations
+
   static-semantics/types/built-ins
 
   static-semantics/ui/template-calls
 
+  static-semantics/webdsl-actions
   static-semantics/webdsl-types
   static-semantics/webdsl-ui
   static-semantics/webdsl
@@ -110,3 +113,61 @@ rules // expressions
 
   typeOfExp(s, ValidateTemplateFunctionCall(tc)) = string(s) :-
     templateCallOk(s, new, tc).
+
+rules // template var arg exp
+
+  typeOfExp(s, e@TemplateVarArgExp(expVarArgs)) = LIST(t) :-
+    t == typeOfExpVarArgList(s, expVarArgs),
+    @e.type := t.
+
+  typeOfExpVarArgList : scope * list(ExpVarArg) -> TYPE
+  typeOfExpVarArgList(s, []) = UNTYPED() :- false | error $[Cannot infer the type of an empty list of ExpVarArgs].
+  typeOfExpVarArgList(s, [hd | tl]) = t :-
+    t == typeOfExpVarArg(s, hd),
+    expVarArgsCompatible(s, tl, t).
+
+  expVarArgsCompatible : scope * list(ExpVarArg) * TYPE
+  expVarArgsCompatible(_, [], _).
+  expVarArgsCompatible(s, [hd | tl], T1) :- { T2 }
+    T2 == typeOfExpVarArg(s, hd),
+    typeCompatible(T2, T1) | error $[Type of [hd] must be compatible [T1], [T2] given]@hd,
+    expVarArgsCompatible(s, tl, T1).
+
+  typeOfExpVarArg : scope * ExpVarArg -> TYPE
+  typeOfExpVarArg(s, ExpVarArg(expsOrTemplateArgs)) = TEMPLATEVARARG(ts, new) :-
+    ts == typesOfExpOrTemplateArgs(s, expsOrTemplateArgs).
+
+  typeOfExpVarArg(s, ExpVarArgFor(x, srt, exp, OptFilterSome(f), expVarArgs)) = t :- { s_for typeOfSort typeOfExp }
+    typeOfSort == typeOfSort(s, srt),
+    typeOfExp == typeOfExp(s, exp),
+    or(
+      equalTypeB(LIST(typeOfSort), typeOfExp),
+      equalTypeB(SET(typeOfSort), typeOfExp)
+    ) | error $[Must be a list or set of type [typeOfSort], [typeOfExp] given] @exp,
+    new s_for, s_for -P-> s,
+    forLoopFilterOk(s_for, f),
+    declareVar(s_for, x, typeOfSort),
+    declareAnnotation(s_for, x, DERIVED()), // abuse derived annotation to declare immutability of x
+    t == typeOfExpVarArgList(s_for, expVarArgs),
+    @x.type := typeOfSort.
+
+  typeOfExpVarArg(s, ExpVarArgForInferred(x, exp, OptFilterSome(f), expVarArgs)) = t :- { s_for typeOfExp typeOfSort }
+    typeOfExp == typeOfExp(s, exp),
+    typeOfSort == stripGenericType(typeOfExp),
+    new s_for, s_for -P-> s,
+    forLoopFilterOk(s_for, f),
+    declareVar(s_for, x, typeOfSort),
+    declareAnnotation(s_for, x, DERIVED()), // abuse derived annotation to declare immutability of x
+    t == typeOfExpVarArgList(s_for, expVarArgs),
+    @x.type := typeOfSort.
+
+rules // exp or template arg
+
+  typesOfExpOrTemplateArgs maps typeOfExpOrTemplateArg(*, list(*)) = list(*)
+  typeOfExpOrTemplateArg : scope * ExpOrTemplateArg -> TYPE
+  typeOfExpOrTemplateArg(s, ExpVarArgExp(exp)) = t :-
+    t == typeOfExp(s, exp).
+
+  typeOfExpOrTemplateArg(s, ExpVarArgElements(elems)) = TEMPLATEELEMENTS() :- { s_eval }
+    new s_eval, s_eval -P-> s,
+    templateElementsOk(s_eval, new, elems).

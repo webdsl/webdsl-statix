@@ -39,7 +39,7 @@ signature
     BUILTINTYPE : string * scope -> TYPE
     STATICBUILTINTYPE : string * scope -> TYPE
 
-    TEMPLATEVARARG : string * scope -> TYPE
+    TEMPLATEVARARG : list(TYPE) * scope -> TYPE
 
     REGEX            : TYPE
     VOID             : TYPE
