@@ -161,6 +161,25 @@ rules // template var arg exp
     t == typeOfExpVarArgList(s_for, expVarArgs),
     @x.type := typeOfSort.
 
+  typeOfExpVarArg(s, ExpVarArgForAll(x, srt, OptFilterSome(f), expVarArgs)) = t :- { s_for typeOfSort }
+    typeOfSort == typeOfSort(s, srt),
+    new s_for, s_for -P-> s,
+    forLoopFilterOk(s_for, f),
+    declareVar(s_for, x, typeOfSort),
+    declareAnnotation(s_for, x, DERIVED()), // abuse derived annotation to declare immutability of x
+    t == typeOfExpVarArgList(s_for, expVarArgs),
+    @x.type := typeOfSort.
+
+  typeOfExpVarArg(s, ExpVarArgForCount(x, e1, e2, expVarArgs)) = t :- { s_for int t1 t2 }
+    int == int(s),
+    typeCompatible(typeOfExp(s, e1), int) | error $[Expression must be compatible with type Int] @e1,
+    typeCompatible(typeOfExp(s, e2), int) | error $[Expression must be compatible with type Int] @e2,
+    new s_for, s_for -P-> s,
+    declareVar(s_for, x, int),
+    declareAnnotation(s_for, x, DERIVED()), // abuse derived annotation to declare immutability of x
+    t == typeOfExpVarArgList(s_for, expVarArgs),
+    @x.type := int.
+
 rules // exp or template arg
 
   typesOfExpOrTemplateArgs maps typeOfExpOrTemplateArg(*, list(*)) = list(*)
