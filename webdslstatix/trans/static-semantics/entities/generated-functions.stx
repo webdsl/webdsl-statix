@@ -16,19 +16,24 @@ rules
   on presence of `(id)` annotation and type
 */
 
-  defOk(s, GeneratedDefinition(Generated(["loadOrFindEntity", entityName, loadName, findName]))) :- { s_ent t }
+  defOk(s, GeneratedDefinition(Generated(["loadOrFindEntity", entityName, loadName, findName, getUniqueName, isUniqueName, isUniqueIdName]))) :- { s_ent t }
     resolveType(s, entityName) == [(_, (_, t@ENTITY(_, s_ent)))],
-    declareLoadOrFindEntity(s, loadName, findName, t, hasIdAnnotationB(s_ent)).
+    declareLoadOrFindEntity(s, loadName, findName, getUniqueName, isUniqueName, isUniqueIdName, t, hasIdAnnotationB(s_ent)).
 
-  declareLoadOrFindEntity : scope * string * string * TYPE * BOOL
-  declareLoadOrFindEntity(s, loadName, _, t, FALSE()) :-
+  declareLoadOrFindEntity : scope * string * string * string * string * string * TYPE * BOOL
+  declareLoadOrFindEntity(s, loadName, _, _, _, _, t, FALSE()) :-
     declareFunction(s, loadName, [uuid(s)], t).
 
-  declareLoadOrFindEntity(s, _, findName, t, TRUE()) :- { s_ent idName idType }
+  declareLoadOrFindEntity(s, _, findName, getUniqueName, isUniqueName, isUniqueIdName, t, TRUE()) :- { s_ent idName idType bool }
+    bool == bool(s),
     t == ENTITY(_, s_ent),
     resolveAnnotationByAnno(s_ent, ID()) == [(_, (idName, _))],
     idType == propertyType(s_ent, idName),
-    declareFunction(s, findName, [idType], t).
+    declareFunction(s, findName, [idType], t),
+    declareFunction(s, getUniqueName, [idType], t),
+    declareFunction(s, isUniqueName, [t], bool),
+    declareFunction(s, isUniqueIdName, [idType], bool),
+    declareFunction(s, isUniqueIdName, [idType, t], bool).
 
 rules
 

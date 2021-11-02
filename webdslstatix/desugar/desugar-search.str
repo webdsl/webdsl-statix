@@ -506,7 +506,10 @@ rules
             "loadOrFindEntity"
           , entity_name
           , <concat-strings> ["load", entity_name]
-          , <concat-strings> ["find", entity_name]]))
+          , <concat-strings> ["find", entity_name]
+          , <concat-strings> ["getUnique", entity_name]
+          , <concat-strings> ["isUnique", entity_name]
+          , <concat-strings> ["isUnique", entity_name, "Id"]]))
       ; find_by_property_functions := <filter(construct-find-entity-by-property-function(|entity_name))> entity_body_defs
       ; result := [load_or_find | find_by_property_functions]
 
