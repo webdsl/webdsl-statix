@@ -23,6 +23,7 @@ rules // unit rules
 
   unitOk(s_global, BuiltIn(sections)) :- { s_mod }
     new s_mod, s_mod -IMPORT-> s_global, s_global -GLOBAL-> s_mod,
+    declareBuiltIns(s_mod),
     declareMod(s_global, ["_BUILTIN"], s_mod),
     importModules(s_global, s_mod, sections),
     sectionsOk(s_mod, sections).

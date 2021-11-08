@@ -16,8 +16,7 @@ rules // single-file entry point
 rules // multi-file entry point
 
   projectOk : scope
-  projectOk(s_global) :-
-    declareBuiltIns(s_global).
+  projectOk(s_global).
 
   fileOk : scope * Unit
   fileOk(s_global, u) :-
