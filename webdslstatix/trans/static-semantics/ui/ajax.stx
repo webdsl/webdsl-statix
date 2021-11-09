@@ -47,8 +47,6 @@ rules // ajax statements
   stmtOk(s, _, AjaxStatement(stmt), _) :- ajaxStmtOk(s, stmt).
 
   ajaxStmtOk : scope * AjaxStatement
-  ajaxStmtOk(_, _) :-
-    try { false } | warning $[This ajax statement is not yet implemented].
 
   ajaxStmtOk(s, AjaxReplace(ph, AjaxReplaceTemplateCall(tc))) :-
     ajaxPlaceholderExpressionOk(s, ph),

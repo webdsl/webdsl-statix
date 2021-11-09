@@ -74,8 +74,19 @@ rules // annotations
 
   annotationsOk maps annotationOk(*, *, *, list(*))
   annotationOk : scope * string * TYPE * Annotation
-  annotationOk(_, _, _, a) :-
-    try { false } | warning $[Static analysis not implemented for this annotation] @a.
+  annotationOk(_, _, _, a@SimpleAnno(_)) :- try { false } | warning $[Static analysis not implemented for this annotation] @a.
+  annotationOk(_, _, _, a@InverseSlaveAnno(_, _)) :- try { false } | warning $[Static analysis not implemented for this annotation] @a.
+  annotationOk(_, _, _, a@InlineAnno(_)) :- try { false } | warning $[Static analysis not implemented for this annotation] @a.
+  annotationOk(_, _, _, a@SelectAnno(_)) :- try { false } | warning $[Static analysis not implemented for this annotation] @a.
+  annotationOk(_, _, _, a@IndexEmptyAnno()) :- try { false } | warning $[Static analysis not implemented for this annotation] @a.
+  annotationOk(_, _, _, a@IndexAnno(_)) :- try { false } | warning $[Static analysis not implemented for this annotation] @a.
+  annotationOk(_, _, _, a@CollationAnno(_)) :- try { false } | warning $[Static analysis not implemented for this annotation] @a.
+  annotationOk(_, _, _, a@IdErrorAnno(_)) :- try { false } | warning $[Static analysis not implemented for this annotation] @a.
+  annotationOk(_, _, _, a@IdEmptyErrorAnno(_)) :- try { false } | warning $[Static analysis not implemented for this annotation] @a.
+
+  annotationOk(_, _, _, a@SearchableAnnoBoost(_, _)) :- try { false } | warning $[Static analysis not implemented for this annotation] @a.
+  annotationOk(_, _, _, a@SearchableAnno2Annotation(_)) :- try { false } | warning $[Static analysis not implemented for this annotation] @a.
+  annotationOk(_, _, _, a@SearchNamespaceAnno2Annotation(_)) :- try { false } | warning $[Static analysis not implemented for this annotation] @a.
 
   annotationOk(s, p, _, TransientAnno()) :-
     declareAnnotation(s, p, TRANSIENT()).
