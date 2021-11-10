@@ -9,6 +9,8 @@ imports
 
 rules
 
+  defOk(_, DeriveWebServices(_, _)) :- try { false } | warning $[This definition is not yet implemented].
+
   defOk(s, ServiceFunction(mods, p, args, Block(stmts))) :- { s_webservice s_body ts}
     new s_webservice, s_webservice -F-> s,
     ts == typesOfArgs(s, args),

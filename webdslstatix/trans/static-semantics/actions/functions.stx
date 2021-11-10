@@ -85,7 +85,7 @@ rules // function definitions
     canBeCached(s, f),
     globalFunctionOk(s, f).
 
-  // defOk(s, ExtendGlobalFunction(f)) :- functionOk(s, f). TO-DO: support function extensions
+  defOk(s, ExtendGlobalFunction(_)) :- try { false } | warning $[This definition is not yet implemented].
 
   // analyze a function:
   // - argument types and return type must be defined

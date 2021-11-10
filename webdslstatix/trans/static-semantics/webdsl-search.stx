@@ -11,6 +11,11 @@ signature
   relations
     searcher : string * string
 
+rules // definition
+
+  defOk(_, FullTextAnalyzer(_, _, _)) :- try { false } | warning $[This definition is not yet implemented].
+  defOk(_, SearchMapping(_, _)) :- try { false } | warning $[This definition is not yet implemented].
+
 rules // search retrieval expressions
 
   typeOfExp(s, RetrievalExp(exp)) = typeOfRetrievalExp(s, exp).

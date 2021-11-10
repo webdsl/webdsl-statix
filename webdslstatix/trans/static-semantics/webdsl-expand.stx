@@ -58,3 +58,6 @@ rules
   defOk(s, DeriveCrud(ent)) :- { t }
     t == typeOfSort(s, SimpleSort(ent)) | error $[The entity [ent] does not exist],
     typeCompatible(t, entity(s)) | error $[The entity [ent] does not exist].
+
+  defOk(_, ExpandTemplateCall(_, _)) :- try { false } | warning $[This definition is not yet implemented].
+  defOk(_, ExpandTemplateDefinition(_, _, _)) :- try { false } | warning $[This definition is not yet implemented].

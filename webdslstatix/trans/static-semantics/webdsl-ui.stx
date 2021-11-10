@@ -17,6 +17,15 @@ imports
   static-semantics/webdsl-types
   static-semantics/webdsl
 
+rules // unimplemented definitions
+
+  defOk(_, TemplateDefinition(Define(_, t, _, _, _))) :- false | error $[Could not desugar define to an email, template or page definition] @t.
+  defOk(_, TemplateDefinition(LocalRedefine(_, t, _, _, _))) :- try { false } | warning $[This definition is not yet implemented] @t.
+  defOk(_, TemplateDefinition(DefineEmail(_, e, _, _, _))) :- try { false } | warning $[Email definitions are not yet implemented] @e.
+
+  defOk(_, TemplateDefinition(HTMLWrapper2TemplateDefinition(_))) :- false | error $[Could not desugar to template definitions].
+  defOk(_, TemplateDefinition(HTMLWrapperMultiple(_))) :- false | error $[Could not desugar to template definitions].
+
 rules // page definitions
 
   defOk(s, TemplateDefinition(DefinePage(mods, x, FormalArgs(fargs), TemplateArgs(targs), elements))) :- {fargTypes s_page s_pha s_body}
