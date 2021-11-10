@@ -355,11 +355,9 @@ rules // declare common rules and mappings
   defOk : scope * Definition
   defOk(_, Description(_)) :- try { false } | warning $[This definition is not yet implemented].
   defOk(_, Note(_)) :- try { false } | warning $[This definition is not yet implemented].
-  defOk(_, GeneratedDefinition(_)) :- try { false } | warning $[This definition is not yet implemented].
   defOk(_, Routing(_)) :- try { false } | warning $[This definition is not yet implemented].
 
   stmtOk : scope * scope * Statement * TYPE // TYPE argument is the return type in a function
-  stmtOk(_, _, stmt, _) :- try { false } | warning $[This statement is not yet implemented] @stmt.
 
   stmtsOk : scope * list(Statement) * TYPE
   stmtsOk(_, [], _).

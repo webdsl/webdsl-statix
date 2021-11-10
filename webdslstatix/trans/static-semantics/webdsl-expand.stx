@@ -10,6 +10,13 @@ imports
   static-semantics/webdsl-types
   static-semantics/webdsl-ui
 
+rules  // unimplemented
+
+  defOk(_, ExpandTemplateCall(_, _)) :- try { false } | warning $[This definition is not yet implemented].
+  defOk(_, ExpandTemplateDefinition(_, _, _)) :- try { false } | warning $[This definition is not yet implemented].
+
+  stmtOk(_, _, StatementExpandLocal(_, _, _), _) :- try { false } | warning $[This statement is not yet implemented].
+
 rules
 
   templateElementOk(s, _, s_pha, DeriveNoFromNoFor(p, body)) :-
@@ -58,6 +65,3 @@ rules
   defOk(s, DeriveCrud(ent)) :- { t }
     t == typeOfSort(s, SimpleSort(ent)) | error $[The entity [ent] does not exist],
     typeCompatible(t, entity(s)) | error $[The entity [ent] does not exist].
-
-  defOk(_, ExpandTemplateCall(_, _)) :- try { false } | warning $[This definition is not yet implemented].
-  defOk(_, ExpandTemplateDefinition(_, _, _)) :- try { false } | warning $[This definition is not yet implemented].

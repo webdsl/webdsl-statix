@@ -7,6 +7,10 @@ imports
   static-semantics/webdsl-actions
   static-semantics/webdsl-types
 
+rules // unimplemented
+
+  stmtOk(_, _, HqlStatement(_), _) :- try { false } | warning $[This statement is not yet implemented].
+
 rules
 
   typeOfExp(s, HqlExp(hqlExp)) = typeOfHqlExp(s, hqlExp).

@@ -100,6 +100,8 @@ rules // statements
   stmtOk(s, _, r@Return(ThisCall2Exp(ThisCall(p, exps))), PAGE(_, _)) :-
     pageCallOk_internal(s, p, exps).
 
+  stmtOk(_, _, GoTo(pc), _) :- try { false } | warning $[This statement is not yet implemented].
+
 rules // expressions
 
   // pass new scope as placeholder and action scope because passing `s`

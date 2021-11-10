@@ -20,10 +20,23 @@ rules // definitions
     new s_init, s_init -DEF-> s,
     stmtsOk(s_init, stmts, VOID()).
 
+rules // unimplemented
+
+  stmtOk(_, _, CaseStmt(_, _), _) :- try { false } | warning $[This statement is not yet implemented].
+  stmtOk(_, _, TypeCaseStmt(_, _, _), _) :- try { false } | warning $[This statement is not yet implemented].
+  stmtOk(_, _, ThrowStatement(_), _) :- try { false } | warning $[This statement is not yet implemented].
+  stmtOk(_, _, TryStatement(_, _), _) :- try { false } | warning $[This statement is not yet implemented].
+
+  stmtOk(_, _, PrefetchForStmt(_, _, _, _), _) :- try { false } | warning $[This statement is not yet implemented].
+
 rules // variable declaration and assignment
 
   stmtOk(s, _, Stat(exp), _) :-
     expOk(s, exp).
+
+  stmtOk(s, _, Block2Statement(Block(stmts)), rt) :- { s_new }
+    new s_new, s_new -P-> s,
+    stmtsOk(s_new, stmts, rt).
 
   stmtOk(s, s_decl, VarDecl(x, sort), _) :- { t }
     t == typeOfSort(s, sort),

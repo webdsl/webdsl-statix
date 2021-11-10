@@ -13,6 +13,10 @@ imports
   static-semantics/webdsl-types
   static-semantics/webdsl
 
+rules // unimplemented
+
+  stmtOk(_, _, ForeachStatementEntityDerive(_, _), _) :- try { false } | warning $[This statement is not yet implemented].
+
 rules // entity declaration
 
   // entity x : super { ... }
