@@ -28,11 +28,8 @@ rules // attributes
 
   attributesOk maps attributeOk(*, list(*))
   attributeOk : scope * Attribute
-  attributeOk(s, _) :- // TO-DO: :- false | error $[This UI attribute is not implemented yet].
-    try { false } | warning $[This UI attribute is not implemented yet].
-
-  attributeOk(s, AttributeExpandLocal(_, _, _)) :- // TO-DO
-    try { false } | warning $[Expand attributes not implemented yet].
+  attributeOk(s, a@AttributeSelection2Attribute(_)) :- try { false } | warning $[This UI attribute is not implemented yet] @a.
+  attributeOk(s, AttributeExpandLocal(_, _, _)) :- try { false } | warning $[This UI attribute is not implemented yet].
 
   attributeOk(s, Attribute(_, exp)) :- typed(s, exp).
   attributeOk(s, XMLAttributesIf(c, attributes)) :-

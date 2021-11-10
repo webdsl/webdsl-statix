@@ -345,12 +345,10 @@ rules // declare common rules and mappings
 
   unitOk : scope * Unit
   unitOk(_, EmptyUnit()).
-  unitOk(_, _) :- try { false } | warning $[This unit is not yet implemented].
 
-  sectionOk : scope * Section
-  sectionOk(s, _) :- try { false } | warning $[This sections is not yet implemented].
   sectionsOk maps sectionOk(*, list(*))
-
+  sectionOk : scope * Section
+  sectionOk(_, ACPolicy(_)) :- try { false } | warning $[This section is not yet implemented].
   sectionOk(s, Section(_, defs)) :- defsOk(s, defs).
 
   defOk : scope * Definition
