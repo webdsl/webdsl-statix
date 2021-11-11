@@ -7,6 +7,10 @@ imports
 
 rules
 
+  typeOfExp(s, RegexCall(_, f, args)) = UNTYPED() :- { argTypes }
+    false | error $[Cannot resolve Regex Call [f]],
+    argTypes == typesOfExps(s, args).
+
   typeOfExp(s, RegexCall(_, "find", args)) = bool(s) :- {argTypes ts}
     ts == [string(s)],
     argTypes == typesOfExps(s, args),

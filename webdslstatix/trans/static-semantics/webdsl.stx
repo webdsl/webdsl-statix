@@ -385,7 +385,6 @@ rules // typing
 
   typesOfExps maps typeOfExp(*, list(*)) = list(*)
   typeOfExp : scope * Exp -> TYPE
-  typeOfExp(s, exp) = UNTYPED() :- try { false } | warning $[typing of expression [exp] is not yet implemented].
 
   typeOfExpTyped : scope * Exp -> TYPE
   typeOfExpTyped(s, exp) = t :-

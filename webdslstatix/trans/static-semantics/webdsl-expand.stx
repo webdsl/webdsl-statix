@@ -17,6 +17,8 @@ rules  // unimplemented
 
   stmtOk(_, _, StatementExpandLocal(_, _, _), _) :- try { false } | warning $[This statement is not yet implemented].
 
+  typeOfExp(_, exp@ExpExpandLocal(_, _, _)) = UNTYPED() :- try { false } | warning $[Typing of expression [exp] is not yet implemented].
+
 rules
 
   templateElementOk(s, _, s_pha, DeriveNoFromNoFor(p, body)) :-

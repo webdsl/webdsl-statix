@@ -26,8 +26,16 @@ rules // unimplemented
   stmtOk(_, _, TypeCaseStmt(_, _, _), _) :- try { false } | warning $[This statement is not yet implemented].
   stmtOk(_, _, ThrowStatement(_), _) :- try { false } | warning $[This statement is not yet implemented].
   stmtOk(_, _, TryStatement(_, _), _) :- try { false } | warning $[This statement is not yet implemented].
-
   stmtOk(_, _, PrefetchForStmt(_, _, _, _), _) :- try { false } | warning $[This statement is not yet implemented].
+
+  typeOfExp(_, exp@FunctionExp(_, _, _)) = UNTYPED() :- try { false } | warning $[Typing of expression [exp] is not yet implemented].
+  typeOfExp(_, exp@FunctionRef(_, _, _)) = UNTYPED() :- try { false } | warning $[Typing of expression [exp] is not yet implemented].
+  typeOfExp(_, exp@FunctionRefCall(_, _, _, _)) = UNTYPED() :- try { false } | warning $[Typing of expression [exp] is not yet implemented].
+  typeOfExp(_, exp@FunctionRefCallPartial(_, _, _, _)) = UNTYPED() :- try { false } | warning $[Typing of expression [exp] is not yet implemented].
+  typeOfExp(_, exp@MapCreation(_)) = UNTYPED() :- try { false } | warning $[Typing of expression [exp] is not yet implemented].
+  typeOfExp(_, exp@RenderEmailFunctionCall(_)) = UNTYPED() :- try { false } | warning $[Typing of expression [exp] is not yet implemented].
+  typeOfExp(_, exp@EmailFunctionCall(_)) = UNTYPED() :- try { false } | warning $[Typing of expression [exp] is not yet implemented].
+
 
 rules // variable declaration and assignment
 
@@ -216,17 +224,20 @@ rules // return statements
 
 rules // variable references
 
-  typeOfExp(s, exp@Var(x)) = t :-
+  typeOfExp(s, Var(x)) = t :-
     variableType(s, x) == t,
-    @exp.type := t.
+    @x.type := t.
 
-  typeOfSimpleExp(s, exp@SimpleVar(x)) = t :-
+  typeOfSimpleExp(s, SimpleVar(x)) = t :-
     variableType(s, x) == t,
-    @exp.type := t.
+    @x.type := t.
 
-  typeOfExp(s, FieldAccess(exp@FAVar(var), x)) = propertyType :- {varType}
+  typeOfExp(s, FieldAccess(FAGlobal(), _)) = UNTYPED() :- try { false } | warning $[Typing of global field access not yet implemented].
+  typeOfExp(s, FieldAccess(FASession(), _)) = UNTYPED() :- try { false } | warning $[Typing of global field access not yet implemented].
+
+  typeOfExp(s, FieldAccess(FAVar(var), x)) = propertyType :- {varType}
     variableType(s, var) == varType,
-    @exp.type := varType,
+    @var.type := varType,
     typeOfProperty(s, varType, x) == propertyType,
     @x.type := propertyType.
 
