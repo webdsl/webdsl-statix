@@ -9,6 +9,7 @@ rules
   normalize-core : ApplicationDefs(x, defs, sections) -> Application(x, [Section("s", defs) | sections])
   normalize-core : ModuleDefs(x, defs, sections)      -> Module(x, [Section("s", defs) | sections])
   normalize-core : BuiltInDefs(defs, sections)        -> BuiltIn([Section("s", defs) | sections])
+  normalize-core : BuiltInLibraryDefs(defs, sections) -> BuiltInLibrary([Section("s", defs) | sections])
 
   normalize-core : Module(ModuleName([ModulePart(".servletapp"), ModulePart("src-webdsl-template"), ModulePart("built-in")]), sections) -> BuiltIn(sections)
 

@@ -21,7 +21,17 @@ rules // unit rules
     importModule(s_global, s_mod, ["_BUILTIN"]),
     sectionsOk(s_mod, sections).
 
-  unitOk(s_global, BuiltIn(sections)) :- { s_mod }
+  unitOk(s_global, BuiltIn(sections)) :-
+    // only analyze built-in if no library is present
+    builtInOk(s_global, sections, notB(modDeclaredB(resolveMod(s_global, ["_BUILTIN_LIBRARY"])))).
+
+  unitOk(s_global, BuiltInLibrary(sections)) :-
+    declareMod(s_global, ["_BUILTIN_LIBRARY"], new),
+    builtInOk(s_global, sections, TRUE()).
+
+  builtInOk : scope * list(Section) * BOOL
+  builtInOk(s_global, sections, FALSE()).
+  builtInOk(s_global, sections, TRUE()) :- { s_mod }
     new s_mod, s_mod -IMPORT-> s_global, s_global -GLOBAL-> s_mod,
     declareBuiltIns(s_mod),
     declareMod(s_global, ["_BUILTIN"], s_mod),

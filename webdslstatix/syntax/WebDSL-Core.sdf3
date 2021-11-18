@@ -83,6 +83,17 @@ context-free syntax
     <Section*>
   >
 
+  Unit.BuiltInLibraryDefs = <
+    built-in-library
+      <Definition+>
+    <Section*>
+  >
+
+  Unit.BuiltInLibrary = <
+    built-in-library
+    <Section*>
+  >
+
   Unit.EmptyUnit = <>
 
   Definition.Imports = <
