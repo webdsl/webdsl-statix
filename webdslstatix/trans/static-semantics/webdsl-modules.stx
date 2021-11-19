@@ -4,6 +4,12 @@ imports
   static-semantics/webdsl-ui
   static-semantics/webdsl
 
+signature
+
+  relations
+
+    library : list(string) * scope
+
 rules // unit rules
 
   unitOk(s_global, Application(app, sections)) :- { s_mod }
@@ -21,12 +27,16 @@ rules // unit rules
     importModule(s_global, s_mod, ["_BUILTIN"]),
     sectionsOk(s_mod, sections).
 
-  unitOk(s_global, BuiltIn(sections)) :-
+  unitOk(s_global, BuiltIn(sections)) :- { libs noLibraryPresent }
     // only analyze built-in if no library is present
-    builtInOk(s_global, sections, notB(modDeclaredB(resolveMod(s_global, ["_BUILTIN_LIBRARY"])))).
+    query library filter e
+          and { m' :- m' == (["_BUILTIN_LIBRARY"], _) }
+          in s_global |-> libs,
+    noLibraryPresent == notB(modDeclaredB(libs)),
+    builtInOk(s_global, sections, noLibraryPresent).
 
   unitOk(s_global, BuiltInLibrary(sections)) :-
-    declareMod(s_global, ["_BUILTIN_LIBRARY"], new),
+    !library[["_BUILTIN_LIBRARY"], new] in s_global,
     builtInOk(s_global, sections, TRUE()).
 
   builtInOk : scope * list(Section) * BOOL
