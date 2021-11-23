@@ -1,4 +1,4 @@
-built-in
+built-in-library
 
 // overridable attributes for generator built-in templates and library input templates
 
