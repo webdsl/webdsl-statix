@@ -16,22 +16,25 @@ imports
 
 rules // built-ins
 
-  declareACBuiltIns : scope
-  declareACBuiltIns(s) :- { s_securityContext }
+  declareACBuiltIns : scope * scope
+  declareACBuiltIns(s_decl, s_resolve) :- { s_securityContext bool entity }
+    bool == bool(s_resolve),
+    entity == entity(s_resolve),
+
     new s_securityContext,
     declareEntityAnnotation(s_securityContext, SESSIONENTITY()),
-    declareExtendEntity(s, "securityContext", s_securityContext), // declare s_type to be linked to type name
-    extendEntityScopes(resolveExtendEntity(s, "securityContext"), s_securityContext),
-    declareType(s, "securityContext", ENTITY("securityContext", s_securityContext)),
-    declareVar(s, "securityContext", ENTITY("securityContext", s_securityContext)),
+    declareExtendEntity(s_decl, "securityContext", s_securityContext), // declare s_type to be linked to type name
+    extendEntityScopes(resolveExtendEntity(s_decl, "securityContext"), s_securityContext),
+    declareType(s_decl, "securityContext", ENTITY("securityContext", s_securityContext)),
+    declareVar(s_decl, "securityContext", ENTITY("securityContext", s_securityContext)),
 
-    declareFunction(s, "loggedIn", [], bool(s)),
-    declareFunction(s, "logout", [], entity(s)),
-    declareFunction(s, "principalAsEntity", [], entity(s)),
+    declareFunction(s_decl, "loggedIn", [], bool),
+    declareFunction(s_decl, "logout", [], entity),
+    declareFunction(s_decl, "principalAsEntity", [], entity),
 
-    declareTemplate(s, "login", []),
-    declareTemplate(s, "logout", []),
-    declareTemplate(s, "authentication", []).
+    declareTemplate(s_decl, "login", []),
+    declareTemplate(s_decl, "logout", []),
+    declareTemplate(s_decl, "authentication", []).
 
   typeOfFunctionCall(s, "loggedIn", []) = bool(s) :- principalDefined(s).
   typeOfFunctionCall(s, "logout", []) = VOID() :- principalDefined(s).

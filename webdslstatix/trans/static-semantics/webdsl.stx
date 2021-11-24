@@ -373,7 +373,7 @@ rules // declare common rules and mappings
 
   declareBuiltIns : scope
   declareBuiltIns(s) :-
-    declareACBuiltIns(s),
+//    declareACBuiltIns(s), do this separately in Application instead of built-in
     declareFunctionIns(s),
     declareEntityBuiltIns(s),
     declareSearchBuiltIns(s),

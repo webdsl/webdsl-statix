@@ -1,6 +1,7 @@
 module static-semantics/webdsl-modules
 
 imports
+  static-semantics/webdsl-ac
   static-semantics/webdsl-ui
   static-semantics/webdsl
 
@@ -14,6 +15,7 @@ rules // unit rules
 
   unitOk(s_global, Application(app, sections)) :- { s_mod }
     new s_mod, s_mod -IMPORT-> s_global, s_global -GLOBAL-> s_mod,
+    declareACBuiltIns(s_global, s_mod),
     declareMod(s_global, [app], s_mod),
     importModules(s_global, s_mod, sections),
     importModule(s_global, s_mod, ["_BUILTIN"]),
