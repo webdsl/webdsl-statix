@@ -35,13 +35,14 @@ signature
 
   name-resolution
     labels
-      P       // parent edge label for consecutive statements
-      F       // function edge label for embedding functions, templates and pages in a scope
-      EXTEND  // extend edge label for extending entities
-      INHERIT // inherit edge label for subclasses
-      DEF     // definition edge label for embedding top-level definitions in the global scope
-      IMPORT  // import edge label for importing another module
-      GLOBAL  // global edge label for edges from global scope to other modules
+      P         // parent edge label for consecutive statements
+      F         // function edge label for embedding functions, templates and pages in a scope
+      EXTEND    // extend edge label for extending entities
+      INHERIT   // inherit edge label for subclasses
+      DEF       // definition edge label for embedding top-level definitions in the global scope
+      IMPORT    // import edge label for importing another module
+      IMPORTLIB // import edge label for importing statix libraries such as the built-in.app library
+      GLOBAL    // global edge label for edges from global scope to other modules
 
   relations
     mod : list(string) * scope
@@ -96,7 +97,7 @@ rules // type declaration and resolving
 
   resolveType : scope * string -> list((path * (string * TYPE)))
   resolveType(s, name) = typesOf(ts) :-
-    query type filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT?))
+    query type filter P* F* ((EXTEND? INHERIT*) | (DEF? (IMPORT | IMPORTLIB)?))
                and { e' :- e' == (name, _) }
                in s |-> ts.
 
@@ -121,14 +122,14 @@ rules // extend entity declaration
 
   resolveExtendScope : scope * string -> list((path * (string * scope)))
   resolveExtendScope(s, x) = ps :-
-    query extendscope filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT? GLOBAL?))
+    query extendscope filter P* F* ((EXTEND? INHERIT*) | (DEF? (IMPORT | IMPORTLIB)? GLOBAL?))
                       and { e' :- e' == (x, _) }
-                      min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < DEF, $ < IMPORT, $ < GLOBAL,
-                          P < F, P < EXTEND, P < INHERIT, P < DEF, P < IMPORT, P < GLOBAL,
-                          F < EXTEND, F < INHERIT, F < DEF, F < IMPORT, F < GLOBAL,
+                      min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < DEF, $ < IMPORT, $ < IMPORTLIB, $ < GLOBAL,
+                          P < F, P < EXTEND, P < INHERIT, P < DEF, P < IMPORT, P < IMPORTLIB, P < GLOBAL,
+                          F < EXTEND, F < INHERIT, F < DEF, F < IMPORT, F < IMPORTLIB, F < GLOBAL,
                           EXTEND < INHERIT,
-                          DEF < IMPORT, DEF < GLOBAL,
-                          IMPORT < GLOBAL
+                          DEF < IMPORT, DEF < IMPORTLIB, DEF < GLOBAL,
+                          IMPORT < GLOBAL, IMPORTLIB < GLOBAL
                       and { (entity, entity_scope), (entity, entity_scope) }
                       in s |-> ps.
 
@@ -173,7 +174,7 @@ rules // ui declaration and resolving
 
   resolveTemplate_internal : scope * string * BOOL -> list((path * (string * TYPE)))
   resolveTemplate_internal(s, t, FALSE()) = typesOf(ps) :-
-    query template filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
+    query template filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? (IMPORT | IMPORTLIB)?))
                    and { t' :- t' == (t, _) }
                    in s |-> ps.
 
@@ -194,7 +195,7 @@ rules // ui declaration and resolving
 
   resolvePage : scope * string -> list((path * (string * TYPE)))
   resolvePage(s, p) = typesOf(ps) :-
-    query page filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
+    query page filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? (IMPORT | IMPORTLIB)?))
                and { p' :- p' == (p, _) }
                in s |-> ps.
 
@@ -207,7 +208,7 @@ rules // ac rules
 
   resolvePointcut : scope * string -> list((path * (string * TYPE)))
   resolvePointcut(s, p) = typesOf(ps) :-
-    query ac filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
+    query ac filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? (IMPORT | IMPORTLIB)?))
              and { p' :- p' == (p, _) }
              in s |-> ps.
 
@@ -226,7 +227,7 @@ rules // function declaration and resolving
 
   resolveFunction : scope * string -> list((path * (string * TYPE)))
   resolveFunction(s, f) = filterFunctionResults(typesOf(ps), FALSE()) :-
-    query function filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
+    query function filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? (IMPORT | IMPORTLIB)?))
                    and { f' :- f' == (f, _) }
                    in s |-> ps.
 
@@ -304,9 +305,9 @@ rules // variable declaration and resolving
 
   resolveVar : scope * string -> list((path * (string * TYPE)))
   resolveVar(s, x) = typesOf(ps) :-
-    query var filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? IMPORT?))
+    query var filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? (IMPORT | IMPORTLIB)?))
               and { x' :- x' == (x, _) }
-              min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < DEF, DEF < IMPORT
+              min $ < P, P < F, F < EXTEND, EXTEND < INHERIT, INHERIT < DEF, DEF < IMPORT, IMPORT < IMPORTLIB
               and true
               in s |-> ps.
 

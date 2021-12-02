@@ -18,7 +18,7 @@ rules // unit rules
     declareACBuiltIns(s_global, s_mod),
     declareMod(s_global, [app], s_mod),
     importModules(s_global, s_mod, sections),
-    importModule(s_global, s_mod, ["_BUILTIN"]),
+    importPossibleLibrary(s_global, s_mod, ["_BUILTIN"], usesBuiltInLibraryB(s_global)),
     sectionsOk(s_mod, sections),
     rootPageDefined(s_mod, app).
 
@@ -26,16 +26,12 @@ rules // unit rules
     new s_mod, s_mod -IMPORT-> s_global, s_global -GLOBAL-> s_mod,
     declareMod(s_global, modulePartsToStrings(mps), s_mod),
     importModules(s_global, s_mod, sections),
-    importModule(s_global, s_mod, ["_BUILTIN"]),
+    importPossibleLibrary(s_global, s_mod, ["_BUILTIN"], usesBuiltInLibraryB(s_global)),
     sectionsOk(s_mod, sections).
 
-  unitOk(s_global, BuiltIn(sections)) :- { libs noLibraryPresent }
+  unitOk(s_global, BuiltIn(sections)) :-
     // only analyze built-in if no library is present
-    query library filter e
-          and { m' :- m' == (["_BUILTIN_LIBRARY"], _) }
-          in s_global |-> libs,
-    noLibraryPresent == notB(modDeclaredB(libs)),
-    builtInOk(s_global, sections, noLibraryPresent).
+    builtInOk(s_global, sections, notB(usesBuiltInLibraryB(s_global))).
 
   unitOk(s_global, BuiltInLibrary(sections)) :-
     !library[["_BUILTIN_LIBRARY"], new] in s_global,
@@ -98,7 +94,30 @@ rules // import definition rules
   importModuleWildcard_internal(s_mod, (_, (_, s_y))) :- s_mod -IMPORT-> s_y.
   importModuleWildcard_internal(s_mod, (_, (_, s_mod))). // restrict self import
 
+  importPossibleLibrary : scope * scope * list(string) * BOOL
+  importPossibleLibrary(s_global, s_mod, lib, FALSE()) :-
+    importModule(s_global, s_mod, lib).
+
+  importPossibleLibrary(s_global, s_mod, lib, TRUE()) :- { s_lib }
+    resolveMod(s_global, lib) == [(_, (_, s_lib))] | error $[Cannot resolve module [lib]],
+    importLibraryScopeIfDeclared(s_mod, s_lib, modDeclaredB(resolveMod(s_global, lib))).
+
+  importLibraryScopeIfDeclared : scope * scope * BOOL
+  importLibraryScopeIfDeclared(s_mod, s_lib, TRUE()) :- s_mod -IMPORTLIB-> s_lib.
+  importLibraryScopeIfDeclared(s_mod, s_mod, TRUE()). // restrict self import
+  importLibraryScopeIfDeclared(_, _, FALSE()).
+
 rules // utils
+
+  usesBuiltInLibraryB : scope -> BOOL
+  usesBuiltInLibraryB(s_global) = usesLibraryB_internal(ps) :-
+        query library filter e
+          and { m' :- m' == (["_BUILTIN_LIBRARY"], _) }
+          in s_global |-> ps.
+
+  usesLibraryB_internal : list((path * (list(string) * scope))) -> BOOL
+  usesLibraryB_internal([]) = FALSE().
+  usesLibraryB_internal([_ | _]) = TRUE().
 
   modulePartsToStrings maps modulePartToString(list(*)) = list(*)
   modulePartToString : ModulePart -> string
