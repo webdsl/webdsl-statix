@@ -15,6 +15,13 @@ context-free syntax
       <NCElement*>
     }
   >
+
+  Definition.ExtendNativeClass = <
+    extend native class <QId> <NCAlias> {
+      <NCElement*>
+    }
+  >
+
   NCAlias.NCAlias = <as <Id>>
   NCAlias.NCAliasNone = <>
   NCSuper.NCSuper = <: <Id>>

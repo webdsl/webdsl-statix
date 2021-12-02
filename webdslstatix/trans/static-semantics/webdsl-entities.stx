@@ -45,17 +45,17 @@ rules // entity declaration
 
   declEntity : scope * scope * string * list(EntityBodyDeclaration)
   declEntity(s, s_entity, entity_name, bodydecs) :- { entityType }
-    declareExtendEntity(s, entity_name, s_entity), // declare entity_scope to be linked to entity_name
-    extendEntityScopes(resolveExtendEntity(s, entity_name), s_entity),
+    declareExtendScope(s, entity_name, s_entity), // declare entity_scope to be linked to entity_name
+    extendScopes(resolveExtendScope(s, entity_name), s_entity),
     entityType == ENTITY(entity_name, s_entity),
     declareType(s, entity_name, entityType),
     declThisVar(s_entity, entityType),
     declEntityBody(s_entity, bodydecs).
 
-  extendEntityScopes maps extendEntityScope(list(*), *)
-  extendEntityScope : (path * (string * scope)) * scope
-  extendEntityScope((_, (_, s)), s). // Do not inherit own scope
-  extendEntityScope((_, (_, s')), s) :-
+  extendScopes maps extendScope(list(*), *)
+  extendScope : (path * (string * scope)) * scope
+  extendScope((_, (_, s)), s). // Do not inherit own scope
+  extendScope((_, (_, s')), s) :-
     s -EXTEND-> s'.
 
   // extend entity x { ... }
@@ -68,14 +68,14 @@ rules // entity declaration
   declExtendEntity(s, entity_name, bodydecs) :- {s_extend_entity entity_scopes}
     resolveType(s, entity_name) == [(_, (_, ENTITY(_, _)))] | error $[Entity [entity_name] is not defined],
     new s_extend_entity, s_extend_entity -DEF-> s,
-    declareExtendEntityIfDefined(s, entity_name, s_extend_entity, entityDeclaredB(resolveType(s, entity_name))),
+    declareExtendScopeIfDefined(s, entity_name, s_extend_entity, entityDeclaredB(resolveType(s, entity_name))),
     declEntityBody(s_extend_entity, bodydecs).
 
-  declareExtendEntityIfDefined : scope * string * scope * BOOL
-  declareExtendEntityIfDefined(_, _, _, FALSE()).
-  declareExtendEntityIfDefined(s, entity_name, s_extend_entity, TRUE()) :-
-    declareExtendEntity(s, entity_name, s_extend_entity), // declare entity_scope to be linked to entity_name
-    extendEntityScopes(resolveExtendEntity(s, entity_name), s_extend_entity).
+  declareExtendScopeIfDefined : scope * string * scope * BOOL
+  declareExtendScopeIfDefined(_, _, _, FALSE()).
+  declareExtendScopeIfDefined(s, name, s_extend, TRUE()) :-
+    declareExtendScope(s, name, s_extend), // declare entity_scope to be linked to entity_name
+    extendScopes(resolveExtendScope(s, name), s_extend).
 
   entityDeclaredB : list((path * (string * TYPE))) -> BOOL
   entityDeclaredB(_) = FALSE().

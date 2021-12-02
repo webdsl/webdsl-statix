@@ -15,8 +15,8 @@ rules
   declareBuiltInType(s, name) :- {s_type s_object}
     object(s) == BUILTINTYPE(_, s_object),
     new s_type, s_type -INHERIT-> s_object, s_type -DEF-> s,
-    declareExtendEntity(s, name, s_type), // declare s_type to be linked to type name
-    extendEntityScopes(resolveExtendEntity(s, name), s_type),
+    declareExtendScope(s, name, s_type), // declare s_type to be linked to type name
+    extendScopes(resolveExtendScope(s, name), s_type),
     declareType(s, name, BUILTINTYPE(name, s_type)),
     declareVar(s, name, STATICBUILTINTYPE(name, s_type)). // declare class name as global variable that refers to the static scope
 
@@ -25,8 +25,8 @@ rules
     builtInType(s, super) == BUILTINTYPE(super, s_super),
     new s_sub, s_sub -INHERIT-> s_super, s_sub -DEF-> s,
     noCircularInheritance(s_sub) | error $[Circular inheritance detected in built-in type [sub]],
-    declareExtendEntity(s, sub, s_sub), // declare s_type to be linked to type name
-    extendEntityScopes(resolveExtendEntity(s, sub), s_sub),
+    declareExtendScope(s, sub, s_sub), // declare s_type to be linked to type name
+    extendScopes(resolveExtendScope(s, sub), s_sub),
     declareType(s, sub, BUILTINTYPE(sub, s_sub)),
     declareVar(s, sub, STATICBUILTINTYPE(sub, s_sub)).
 
@@ -117,24 +117,24 @@ rules
     string == string(s),
     float == float(s),
 
-    new s_int, declareExtendEntity(s, "Int", s_int),
+    new s_int, declareExtendScope(s, "Int", s_int),
     declFunctionEntity(s_int, "floatValue", [], float, FALSE()),
 
-    new s_file, declareExtendEntity(s, "File", s_file),
+    new s_file, declareExtendScope(s, "File", s_file),
     declFunctionEntity(s_file, "download"           , []      , VOID(), FALSE()),
     declFunctionEntity(s_file, "download"           , [string], VOID(), FALSE()),
     declFunctionEntity(s_file, "fileName"           , []      , string, FALSE()),
     declFunctionEntity(s_file, "fileNameForDownload", []      , string, FALSE()),
 
-    declareExtendEntity(s, "Image", s_file), // also expose file functions to image
-    new s_image, declareExtendEntity(s, "Image", s_image),
+    declareExtendScope(s, "Image", s_file), // also expose file functions to image
+    new s_image, declareExtendScope(s, "Image", s_image),
     declFunctionEntity(s_image, "resize"   , [int, int]          , VOID()  , FALSE()),
     declFunctionEntity(s_image, "crop"     , [int, int, int, int], VOID()  , FALSE()),
     declFunctionEntity(s_image, "getWidth" , []                  , int     , FALSE()),
     declFunctionEntity(s_image, "getHeight", []                  , int     , FALSE()),
     declFunctionEntity(s_image, "clone"    , []                  , image(s), FALSE()),
 
-    new s_float, declareExtendEntity(s, "Float", s_float),
+    new s_float, declareExtendScope(s, "Float", s_float),
     declFunctionEntity(s_float, "round" , [], int, FALSE()),
     declFunctionEntity(s_float, "floor" , [], int, FALSE()),
     declFunctionEntity(s_float, "ceil"  , [], int, FALSE()),

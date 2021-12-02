@@ -48,7 +48,7 @@ signature
 
     type : string * scope
 
-    extendentity : string * scope
+    extendscope : string * scope
 
     page     : string * scope
     template : string * scope
@@ -115,22 +115,22 @@ rules // type declaration and resolving
 
 rules // extend entity declaration
 
-  declareExtendEntity : scope * string * scope
-  declareExtendEntity(s, e, s_extend) :-
-    !extendentity[e, s_extend] in s.
+  declareExtendScope : scope * string * scope
+  declareExtendScope(s, e, s_extend) :-
+    !extendscope[e, s_extend] in s.
 
-  resolveExtendEntity : scope * string -> list((path * (string * scope)))
-  resolveExtendEntity(s, e) = ps :-
-    query extendentity filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT? GLOBAL?))
-                       and { e' :- e' == (e, _) }
-                       min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < DEF, $ < IMPORT, $ < GLOBAL,
-                           P < F, P < EXTEND, P < INHERIT, P < DEF, P < IMPORT, P < GLOBAL,
-                           F < EXTEND, F < INHERIT, F < DEF, F < IMPORT, F < GLOBAL,
-                           EXTEND < INHERIT,
-                           DEF < IMPORT, DEF < GLOBAL,
-                           IMPORT < GLOBAL
-                       and { (entity, entity_scope), (entity, entity_scope) }
-                       in s |-> ps.
+  resolveExtendScope : scope * string -> list((path * (string * scope)))
+  resolveExtendScope(s, x) = ps :-
+    query extendscope filter P* F* ((EXTEND? INHERIT*) | (DEF? IMPORT? GLOBAL?))
+                      and { e' :- e' == (x, _) }
+                      min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < DEF, $ < IMPORT, $ < GLOBAL,
+                          P < F, P < EXTEND, P < INHERIT, P < DEF, P < IMPORT, P < GLOBAL,
+                          F < EXTEND, F < INHERIT, F < DEF, F < IMPORT, F < GLOBAL,
+                          EXTEND < INHERIT,
+                          DEF < IMPORT, DEF < GLOBAL,
+                          IMPORT < GLOBAL
+                      and { (entity, entity_scope), (entity, entity_scope) }
+                      in s |-> ps.
 
 rules // ui declaration and resolving
 

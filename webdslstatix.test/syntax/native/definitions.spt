@@ -43,3 +43,17 @@ test native class no qualified super allowed [[
 test native class alias and super [[
   native class JavaClass as OtherJavaClass : SuperClass { }
 ]] parse succeeds parse to NativeClass("JavaClass", NCAlias("OtherJavaClass"), NCSuper("SuperClass"), [])
+
+
+// extend
+test extend native class with double qualified id [[
+  extend native class My.Java.Class { }
+]] parse succeeds parse to ExtendNativeClass("My.Java.Class", NCAliasNone(), [])
+
+test extend native class with alias [[
+  extend native class JavaClass as OtherJavaClass { }
+]] parse succeeds parse to ExtendNativeClass("JavaClass", NCAlias("OtherJavaClass"), [])
+
+test extend native class super not allowed [[
+  extend native class JavaClass as OtherJavaClass : SuperClass { }
+]] parse fails

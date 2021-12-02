@@ -10,12 +10,6 @@ imports
   static-semantics/webdsl-types
   static-semantics/webdsl
 
-rules // native class declaration and resolving
-
-  declareNativeClass : scope * string * scope
-  declareNativeClass(s, c, s_class) :-
-    declareType(s, c, NATIVECLASS(c, s_class)).
-
 rules // subtype compatiblity
 
   typeCompatibleB(NATIVECLASS(_, s_sub), NATIVECLASS(_, s_super)) = inherits(s_sub, s_super).
@@ -38,13 +32,27 @@ rules // declarations
   scopeOfNativeClassSuper(BUILTINTYPE(_, s)) = s.
 
   nativeClassOk : scope * string * string * scope * list(NCElement)
-  nativeClassOk(s, c, alias, s_super, elems) :- {s_class}
+  nativeClassOk(s, c, alias, s_super, elems) :- { s_class }
     new s_class, s_class -INHERIT-> s_super, s_class -DEF-> s,
-    noCircularInheritance(s_class) | error $[Circular inhertitance detected] @c,
-    declareNativeClass(s, alias, s_class),
+    declareExtendScope(s, alias, s_class),
+    extendScopes(resolveExtendScope(s, alias), s_class),
+    declareType(s, alias, NATIVECLASS(alias, s_class)),
     declareVar(s, alias, STATICNATIVECLASS(alias, s_class)), // declare class name as global variable that refers to the static scope
+    noCircularInheritance(s_class) | error $[Circular inhertitance detected] @c,
     declareNativeClassConstructors(s, s_class, alias, elems),
     nativeClassElementsOk(s, s_class, elems).
+
+rules // native class extending
+
+  defOk(s, ExtendNativeClass(c, NCAlias(alias), elems)) :- { s_extend_class class_scopes }
+    resolveType(s, alias) == [(_, (_, NATIVECLASS(_, _)))] | error $[Native class [alias] is not defined],
+    new s_extend_class, s_extend_class -DEF-> s,
+    declareExtendScopeIfDefined(s, alias, s_extend_class, nativeClassDeclaredB(resolveType(s, alias))),
+    nativeClassElementsOk(s, s_extend_class, elems).
+
+  nativeClassDeclaredB : list((path * (string * TYPE))) -> BOOL
+  nativeClassDeclaredB(_) = FALSE().
+  nativeClassDeclaredB([(_, (_, NATIVECLASS(_, _)))]) = TRUE().
 
 rules // native class elements
 

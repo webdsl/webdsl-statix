@@ -11,3 +11,4 @@ rules
   normalize-native : NCFunctionReturnNone() -> NCFunctionReturn(NativeSimpleType("Void"))
 
   normalize-native : NativeClass(c, NCAliasNone(), s, elems) -> NativeClass(c, NCAlias(c), s, elems)
+  normalize-native : ExtendNativeClass(c, NCAliasNone(), elems) -> ExtendNativeClass(c, NCAlias(c), elems)

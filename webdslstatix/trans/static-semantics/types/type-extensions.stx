@@ -15,8 +15,8 @@ rules
   defOk(s, TypeDef(name, defs)) :- {s_type}
     builtInType(s, name) == BUILTINTYPE(name, _) | error $[Type [name] is not a built-in type],
     new s_type, s_type -DEF-> s,
-    declareExtendEntity(s, name, s_type), // declare s_type to be linked to other scopes from type name
-    extendEntityScopes(resolveExtendEntity(s, name), s_type),
+    declareExtendScope(s, name, s_type), // declare s_type to be linked to other scopes from type name
+    extendScopes(resolveExtendScope(s, name), s_type),
     typeElementsOk(s, s_type, defs).
 
   typeElementsOk maps typeElementOk(*, *, list(*))

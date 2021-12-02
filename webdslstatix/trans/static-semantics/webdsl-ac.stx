@@ -23,8 +23,8 @@ rules // built-ins
 
     new s_securityContext,
     declareEntityAnnotation(s_securityContext, SESSIONENTITY()),
-    declareExtendEntity(s_decl, "securityContext", s_securityContext), // declare s_type to be linked to type name
-    extendEntityScopes(resolveExtendEntity(s_decl, "securityContext"), s_securityContext),
+    declareExtendScope(s_decl, "securityContext", s_securityContext), // declare s_type to be linked to type name
+    extendScopes(resolveExtendScope(s_decl, "securityContext"), s_securityContext),
     declareType(s_decl, "securityContext", ENTITY("securityContext", s_securityContext)),
     declareVar(s_decl, "securityContext", ENTITY("securityContext", s_securityContext)),
 
@@ -81,8 +81,8 @@ rules // securitycontext and principal
     declProperty(s_extend_security_context, "principal", principalType),
     declProperty(s_extend_security_context, "loggedIn", bool(s)),
     declareCredentials(s_extend_security_context, credentialTypes),
-    declareExtendEntity(s, "securityContext", s_extend_security_context),
-    extendEntityScopes(resolveExtendEntity(s, "securityContext"), s_extend_security_context).
+    declareExtendScope(s, "securityContext", s_extend_security_context),
+    extendScopes(resolveExtendScope(s, "securityContext"), s_extend_security_context).
 
   declareCredentials maps declareCredential(*, list(*))
   declareCredential : scope * TYPE
