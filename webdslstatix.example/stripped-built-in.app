@@ -387,8 +387,8 @@ native class utils.DateType as DateType{ //@TODO static functions not yet suppor
 }
 
 type WikiText{
-  org.webdsl.tools.WikiFormatter.wikiFormat as format(): String
-  org.webdsl.tools.WikiFormatter.wikiFormatNoTagFiltering as formatNoTagFiltering(): String
+  org.webdsl.tools.WikiFormatter.wikiFormat as format(String): String
+  org.webdsl.tools.WikiFormatter.wikiFormatNoTagFiltering as formatNoTagFiltering(String): String
 }
 
 type Email{

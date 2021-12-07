@@ -456,8 +456,8 @@ native class utils.DateType as DateType{ //@TODO static functions not yet suppor
 }
 
 type WikiText{
-  org.webdsl.tools.WikiFormatter.wikiFormat as format(): String
-  org.webdsl.tools.WikiFormatter.wikiFormatNoTagFiltering as formatNoTagFiltering(): String
+  org.webdsl.tools.WikiFormatter.wikiFormat as format(String/*hardwraps attribute value*/): String
+  org.webdsl.tools.WikiFormatter.wikiFormatNoTagFiltering as formatNoTagFiltering(String/*hardwraps attribute value*/): String
 }
 
 type Email{
@@ -1800,12 +1800,12 @@ template inputListInternal( list: ref [Entity], selectfrom: [Entity], tname: Str
       $('#~sortableid').disableSelection();
       $('#~sortableid').sortable({
             stop: function(event, ui){
-              $('#~hiddenid').attr('value', $('#~sortableid').sortable('toArray'));
+              $('#~hiddenid').attr('value', $('#~sortableid').sortable('toArray')).trigger('change');
               ~onchange
             }
         });
         //initial values
-        $('#~hiddenid').attr('value', $('#~sortableid').sortable('toArray'));
+        $('#~hiddenid').attr('value', $('#~sortableid').sortable('toArray')).trigger('change');
         //optional stuff
         //constrain dragging to list
         //$('#~sortableid').sortable( "option", "containment", 'parent' );
@@ -2386,11 +2386,11 @@ template inputURLInternal( s: ref URL, tname: String ){
 //input/output WikiText
 
 template output( s: WikiText ){
-  rawoutput( s.format() )
+  rawoutput( s.format( attribute("hardwraps") ) )
 }
 
 template rawoutput( t: WikiText ){
-  rawoutput( t.formatNoTagFiltering() )
+  rawoutput( t.formatNoTagFiltering( attribute("hardwraps") ) )
 }
 
 template input( s: ref WikiText ){
