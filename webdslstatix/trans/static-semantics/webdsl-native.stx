@@ -14,6 +14,9 @@ rules // subtype compatiblity
 
   typeCompatibleB(NATIVECLASS(_, s_sub), NATIVECLASS(_, s_super)) = inherits(s_sub, s_super).
 
+  // two native classes with identical names are compatible due to redefinitions of built-in native classes
+  typeCompatibleB(NATIVECLASS(nc, _), NATIVECLASS(nc, _)) = TRUE().
+
 rules // declarations
 
   defOk(s, NativeClass(c, NCAlias(alias), NCSuperNone(), elems)) :- { s_super }

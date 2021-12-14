@@ -99,6 +99,8 @@ rules // type declaration and resolving
   resolveType(s, name) = typesOf(ts) :-
     query type filter P* F* ((EXTEND? INHERIT*) | (DEF? (IMPORT | IMPORTLIB)?))
                and { e' :- e' == (name, _) }
+               min $ < IMPORTLIB, P < IMPORTLIB, F < IMPORTLIB, EXTEND < IMPORTLIB, INHERIT < IMPORTLIB, DEF < IMPORTLIB, IMPORT < IMPORTLIB
+               and true
                in s |-> ts.
 
   withType : TYPE -> scope
@@ -113,6 +115,12 @@ rules // type declaration and resolving
   simpleTypeOf : scope -> TYPE
   simpleTypeOf(s) = t :-
     query typeOf filter e in s |-> [(_, t)].
+
+  typeDeclaredInLibB : scope * string -> BOOL
+  typeDeclaredInLibB(s, t) = notB(emtpyQueryResultB(typesOf(ts))) :-
+    query type filter P* F* DEF? IMPORTLIB
+               and { t' :- t' == (t, _) }
+               in s |-> ts.
 
 rules // extend entity declaration
 
@@ -432,6 +440,10 @@ rules // utils
   notB : BOOL -> BOOL
   notB(TRUE()) = FALSE().
   notB(FALSE()) = TRUE().
+
+  emtpyQueryResultB : list((path * (string * TYPE))) -> BOOL
+  emtpyQueryResultB([]) = TRUE().
+  emtpyQueryResultB([_ | _]) = FALSE().
 
   minOfList : list(int) -> int
   minOfList([]) = 100000.
