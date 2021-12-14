@@ -87,6 +87,10 @@ function main() {
     mkdir -p analysis-results
     mkdir -p test-environment/.servletapp/src-webdsl-template
     cp webdslstatix.test/stripped-built-in.app test-environment/.servletapp/src-webdsl-template/built-in.app
+    mkdir -p test-environment/lib
+    touch test-environment/lib/stxlibs
+    echo '["webdsl-built-in"]' > test-environment/lib/stxlibs
+    cp webdslstatix.example/webdsl-built-in.stxlib test-environment/lib/webdsl-built-in.stxlib
     runTests "webdslstatix.test/analysis/1-original-compiler-tests" "$jarFile"
     aggregateResultData "1-original-compiler-tests"
     echo "DONE!"
