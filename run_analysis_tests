@@ -28,30 +28,77 @@ function runTest() {
     local jarFile="$2"
     local testName=${test%.app}
     local testReplaced=$(echo $testName | sed -e 's/\//__/g')
+    local resultFile="analysis-results/$testReplaced.txt"
 
     rm test-environment/*
     cp "$test" test-environment/
 
+    # cat "$test" >> "$resultFile"
+
     java -Xmx4G -Xms4G -Xss64m -jar "$jarFile" build \
         -l webdslstatix \
         -p test-environment \
-        2>&1 | tee "analysis-results/$testReplaced.txt"
+        2>&1 | tee -a "$resultFile"
 
-    addResultSummary "$testReplaced"
+    addResultSummary "$testReplaced" "$test"
 }
 
 function addResultSummary() {
     local resultFile="$1"
+    local testFile="$2"
     local errors=$(cat "analysis-results/$resultFile.txt" | grep "ERROR in file" | grep -v "built-in.app" | wc -l | xargs)
-    local summary="$errors error(s)\n\n\n"
+    local summary="$errors error(s)\n\n"
     local suffix=""
+    local pattern=""
 
     if [[ "$resultFile" == *"analysis-fails"* ]]; then
-        if [ ! "$errors" -eq "0" ]; then
-            suffix="PASSED"
-        else
-            suffix="FAILED"
-        fi
+        suffix="PASSED"
+
+        while read line; do
+            if echo "$line" | grep -q "^//"; then
+                pattern=`echo "$line" | sed 's/^[/]*//'`
+                echo $pattern | grep -q "^\^"
+                negate=$?
+                echo $pattern | grep -q "^#"
+                count=$?
+                if [[ $negate == 0 ]]; then
+                    summary="$summary\nError must not be shown: ${pattern:1}"
+                    if grep -q "${pattern:1}" "analysis-results/$resultFile.txt"; then
+                        summary="$summary\nTEST DID NOT PASS: The error was present in analysis:"
+                        errorInFile=$(grep "${pattern:1}" "analysis-results/$resultFile.txt")
+                        summary="$summary\n$errorInFile"
+                        suffix="FAILED"
+                    else
+                        summary="$summary\nTEST PASSED: Error was not present in analysis"
+                    fi
+                elif [[ $count == 0 ]]; then
+                    occurrences=`echo $pattern | perl -pe 's/^#([0-9]+) .*$/\1/'`
+                    pattern=`echo $pattern | perl -pe 's/^#[0-9]+ (.*)$/\1/'`
+                    summary="$summary\nError must be shown $occurrences times: $pattern"
+                    foundlines=`grep "$pattern" "analysis-results/$resultFile.txt" | wc -l`
+                    echo "found X = $foundlines"
+                    summary="$summary\nError was found $foundlines times"
+                    if [ $foundlines -ne $occurrences ]; then
+                        summary="$summary\TEST DID NOT PASS"
+                        suffix="FAILED"
+                    else
+                        summary="$summary\TEST PASSED"
+                    fi
+                else
+                    summary="$summary\nError must be shown: $pattern"
+                    if ! grep -q "$pattern" "analysis-results/$resultFile.txt"; then
+                        summary="$summary\nTEST FAILED: Error was not present in analysis"
+                        suffix="FAILED"
+                    else
+                        errorInFile=$(grep "$pattern" "analysis-results/$resultFile.txt")
+                        summary="$summary\nTEST PASSED: Error was present in analysis:"
+                        summary="$summary\n$errorInFile"
+                    fi
+                fi
+            else
+                break
+            fi
+        done <"$testFile"
     fi
 
     if [[ "$resultFile" == *"analysis-succeeds"* ]]; then
@@ -62,7 +109,10 @@ function addResultSummary() {
         fi
     fi
 
-    printf "$summary\n\n\n"|cat - "analysis-results/$resultFile.txt" > tmp.txt && mv tmp.txt "analysis-results/$resultFile.txt"
+    testFileContent=$(cat "$testFile")
+    summary="$summary\n\n---TEST-FILE-BEGIN---\n$testFileContent\n---TEST-FILE-END---\n\n\n"
+
+    echo -e "$summary\n\n\n" | cat - "analysis-results/$resultFile.txt" > tmp.txt && mv tmp.txt "analysis-results/$resultFile.txt"
     mv -v "analysis-results/$resultFile.txt" "analysis-results/${resultFile#webdslstatix.test__}__${suffix}.txt"
 }
 
