@@ -1,10 +1,10 @@
-//#1 Variable name 'x' is already defined in this context
-//#1 Variable name 'y' is already defined in this context
-//#1 Variable name 'z' is already defined in this context
-//#1 For loop variable name 'dup1' is already defined in this context.
-//#1 For loop variable name 'dup2' is already defined in this context.
-//#1 For loop variable name 'dup3' is already defined in this context.
-//#1 For loop variable name 'dup4' is already defined in this context.
+//#1 Variable name "x" is already defined in this context
+//#1 Variable name "y" is already defined in this context
+//#1 Variable name "z" is already defined in this context
+//#1 For loop variable name "dup1" is already defined in this context.
+//#1 For loop variable name "dup2" is already defined in this context.
+//#1 For loop variable name "dup3" is already defined in this context.
+//#1 For loop variable name "dup4" is already defined in this context.
 
 application test
 

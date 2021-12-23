@@ -1,4 +1,4 @@
-//Entity 'User' is defined multiple times
+//Entity "User" is defined multiple times
 
 application test
 

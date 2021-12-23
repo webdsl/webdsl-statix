@@ -1,4 +1,4 @@
-//#2 'for' without 'in' can only iterate over a defined entity type
+//#2 "for" without "in" can only iterate over a defined entity type
 
 application test
 

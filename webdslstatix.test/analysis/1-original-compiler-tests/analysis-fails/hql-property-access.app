@@ -1,16 +1,16 @@
-//error: Entity type 'Stdent' not defined
-//error: Variable 'z' not defined
-//error: Entity type 'Student' not defined
-//error: Entity type 'Project' not defined
-//#3 error: No property 'str' defined for entity type 'TestEnt'
-//warning: No property 'question' defined for entity type 'Assignment'. However, it is defined for subtype 'BasicAssignment' which is supported in HQL because they map to the same table
-//warning: No property 'b' defined for entity type 'A'. However, it is defined for subtype 'B' which is supported in HQL because they map to the same table
-//warning: No property 'c' defined for entity type 'A'. However, it is defined for subtype 'C' which is supported in HQL because they map to the same table
-//warning: No property 'd' defined for entity type 'A'. However, it is defined for subtype 'D' which is supported in HQL because they map to the same table
-//warning: No property 'e' defined for entity type 'A'. However, it is defined for subtype 'E' which is supported in HQL because they map to the same table
-//warning: No property 'f' defined for entity type 'A'. However, it is defined for subtype 'F' which is supported in HQL because they map to the same table
-//warning: No property 'g' defined for entity type 'A'. However, it is defined for subtype 'G' which is supported in HQL because they map to the same table
-//Derived property 'TestEnt.derived' not allowed in query
+//error: Entity type "Stdent" not defined
+//error: Variable "z" not defined
+//error: Entity type "Student" not defined
+//error: Entity type "Project" not defined
+//#3 error: No property "str" defined for entity type "TestEnt"
+//warning: No property "question" defined for entity type "Assignment". However, it is defined for subtype "BasicAssignment" which is supported in HQL because they map to the same table
+//warning: No property "b" defined for entity type "A". However, it is defined for subtype "B" which is supported in HQL because they map to the same table
+//warning: No property "c" defined for entity type "A". However, it is defined for subtype "C" which is supported in HQL because they map to the same table
+//warning: No property "d" defined for entity type "A". However, it is defined for subtype "D" which is supported in HQL because they map to the same table
+//warning: No property "e" defined for entity type "A". However, it is defined for subtype "E" which is supported in HQL because they map to the same table
+//warning: No property "f" defined for entity type "A". However, it is defined for subtype "F" which is supported in HQL because they map to the same table
+//warning: No property "g" defined for entity type "A". However, it is defined for subtype "G" which is supported in HQL because they map to the same table
+//Derived property "TestEnt.derived" not allowed in query
 
 application test
 

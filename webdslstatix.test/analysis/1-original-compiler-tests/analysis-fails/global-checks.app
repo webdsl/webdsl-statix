@@ -1,10 +1,10 @@
-//#1 Global variable 'globalVarNoInit' must be initialized
-//#2 Global variable with name 'globalVarDouble' is defined multiple times
-//#2 Global variable with name 'globalVarRequest' is defined multiple times
-//Entity 'EntityDouble' is defined multiple times
-//Property 'prop' of entity 'EntityPropDouble' is defined multiple times
-//Property 'prop' of entity 'EntityPropDouble2' is defined multiple times
-//Function with signature test(Int) of entity 'EntityFuncDouble' is defined multiple times.
+//#1 Global variable "globalVarNoInit" must be initialized
+//#2 Global variable with name "globalVarDouble" is defined multiple times
+//#2 Global variable with name "globalVarRequest" is defined multiple times
+//Entity "EntityDouble" is defined multiple times
+//Property "prop" of entity "EntityPropDouble" is defined multiple times
+//Property "prop" of entity "EntityPropDouble2" is defined multiple times
+//Function with signature test(Int) of entity "EntityFuncDouble" is defined multiple times.
 //^EntityNoDoubleFunction
 //^noMatch
 //^EntityOverrideFunction
@@ -14,10 +14,10 @@
 //Extend function with signature InEntityFunctionExtendNothing() in EntityWithFunctionExtendNothing extends a non-existing function
 //^globalFunctionAndEntity
 //#2 Multiple template definitions with signature templateDouble(Int)
-//#2 Multiple page/template definitions with name 'templateDoubleNoArgs'
-//#2 Multiple page/template definitions with name 'templatePageClash'
-//Email 'emailNameClash' is defined multiple times
-//Email 'emailCannotBeOverloaded' is defined multiple times
+//#2 Multiple page/template definitions with name "templateDoubleNoArgs"
+//#2 Multiple page/template definitions with name "templatePageClash"
+//Email "emailNameClash" is defined multiple times
+//Email "emailCannotBeOverloaded" is defined multiple times
 application test
 
 define page root () { }

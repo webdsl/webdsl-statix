@@ -1,9 +1,9 @@
-//error: Principal credential 'J4L' is not a property of entity 'xHi69N4'.
+//error: Principal credential "J4L" is not a property of entity "xHi69N4".
 //error: Only one access control principal can be defined.
 //error: Entity name: "xHi69N4" should start with a Capital
 //#3 error: Entity may not inherit from itself.
-//error: Entity 'S_5sqX6W_S1' does not exist, and cannot be used as principal for access control.
-//error: Principal credential 'S_gGS_2Mvn5' is not a property of entity 'S_5sqX6W_S1'.
+//error: Entity "S_5sqX6W_S1" does not exist, and cannot be used as principal for access control.
+//error: Principal credential "S_gGS_2Mvn5" is not a property of entity "S_5sqX6W_S1".
 //error: Only one access control principal can be defined.
 //error: Super entity Q_ for NV_P3__0_GU does not exist.
 

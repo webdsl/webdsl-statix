@@ -1,4 +1,4 @@
-//Assignment to global variable 'one' is not allowed
+//Assignment to global variable "one" is not allowed
 
 application test
 

@@ -1,4 +1,4 @@
-// Cannot instantiate built-in type 'Date'
+// Cannot instantiate built-in type "Date"
 
 application test
 

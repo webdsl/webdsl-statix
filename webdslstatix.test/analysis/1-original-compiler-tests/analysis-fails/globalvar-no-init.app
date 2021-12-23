@@ -1,4 +1,4 @@
-//Global variable 'one' must be initialized
+//Global variable "one" must be initialized
 
 application test
 

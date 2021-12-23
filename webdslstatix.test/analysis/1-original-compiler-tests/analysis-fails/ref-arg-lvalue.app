@@ -1,5 +1,5 @@
-//'true' is not assignable
-//'2' is not assignable
+//"true" is not assignable
+//"2" is not assignable
 
 application test
 

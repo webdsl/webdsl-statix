@@ -1,4 +1,4 @@
-//Principal credential type 'User' does not have a 'name' property, a property with 'name' annotation is not sufficient for use as credential.
+//Principal credential type "User" does not have a "name" property, a property with "name" annotation is not sufficient for use as credential.
 
 application test
 

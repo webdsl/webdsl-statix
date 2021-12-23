@@ -1,25 +1,25 @@
-//Variable name 'a1' is never used
-//Variable name 'a2' is never used
-//Variable name 'a3' is never used
-//Variable name 'a4' is never used
-//Variable name 'a5' is never used
-//Variable name 'a6' is never used
-//Variable name 'a7' is never used
-//Placeholder name 'a8' is never used
-//Placeholder name 'a9' is never used
-//Placeholder name 'a10' is never used
-//Placeholder name 'a11' is never used
-//For loop variable name 'a12' is never used
-//For loop variable name 'a13' is never used
-//For loop variable name 'a14' is never used
-//For loop variable name 'a15' is never used
-//For loop variable name 'a16' is never used
-//For loop variable name 'a17' is never used
-//For loop variable name 'a18' is never used
-//For loop variable name 'a19' is never used
-//List comprehension variable name 'a20' is never used
-//Typecase variable name 'a21' is not used in this block
-//Typecase variable name 'a22' is not used in this block
+//Variable name "a1" is never used
+//Variable name "a2" is never used
+//Variable name "a3" is never used
+//Variable name "a4" is never used
+//Variable name "a5" is never used
+//Variable name "a6" is never used
+//Variable name "a7" is never used
+//Placeholder name "a8" is never used
+//Placeholder name "a9" is never used
+//Placeholder name "a10" is never used
+//Placeholder name "a11" is never used
+//For loop variable name "a12" is never used
+//For loop variable name "a13" is never used
+//For loop variable name "a14" is never used
+//For loop variable name "a15" is never used
+//For loop variable name "a16" is never used
+//For loop variable name "a17" is never used
+//For loop variable name "a18" is never used
+//For loop variable name "a19" is never used
+//List comprehension variable name "a20" is never used
+//Typecase variable name "a21" is not used in this block
+//Typecase variable name "a22" is not used in this block
 
 application shadowing
 

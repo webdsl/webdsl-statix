@@ -1,7 +1,7 @@
-// Property name is not allowed to overlap with entity name 'A'
-// Property name is not allowed to overlap with entity name 'B'
-// Property name is not allowed to overlap with entity name 'C'
-// Property name is not allowed to overlap with entity name 'D'
+// Property name is not allowed to overlap with entity name "A"
+// Property name is not allowed to overlap with entity name "B"
+// Property name is not allowed to overlap with entity name "C"
+// Property name is not allowed to overlap with entity name "D"
 
 application test
 

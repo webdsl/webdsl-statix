@@ -1,5 +1,5 @@
-//#2 Variable 'bookz' not defined
-//#2 Variable 'bo' not defined
+//#2 Variable "bookz" not defined
+//#2 Variable "bo" not defined
 
 application test
 

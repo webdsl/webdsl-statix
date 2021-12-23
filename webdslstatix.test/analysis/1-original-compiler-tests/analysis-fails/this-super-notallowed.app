@@ -1,5 +1,5 @@
-//#3 Variable 'this' not defined
-//#3 Variable 'super' not defined
+//#3 Variable "this" not defined
+//#3 Variable "super" not defined
 application test
 
 define page root() { 

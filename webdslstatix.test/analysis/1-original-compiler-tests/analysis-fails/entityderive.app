@@ -1,6 +1,6 @@
 //Must derive from an entity type
-//Entity 'User' does not have a property 'name1'
-//Entity 'User' does not have a property 'pass1'
+//Entity "User" does not have a property "name1"
+//Entity "User" does not have a property "pass1"
 
 application test
 

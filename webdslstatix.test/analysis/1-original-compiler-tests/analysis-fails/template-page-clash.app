@@ -1,4 +1,4 @@
-//#2 Multiple page/template definitions with name 'theName'
+//#2 Multiple page/template definitions with name "theName"
 application test
 
 define page root() { }

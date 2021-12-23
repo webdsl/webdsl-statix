@@ -1,4 +1,4 @@
-//#8 Name 'in' is not allowed
+//#8 Name "in" is not allowed
 
 application test
 

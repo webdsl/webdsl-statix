@@ -1,17 +1,17 @@
 //with signature anFunctionNoReturn() is defined multiple times
 //with signature anFunctionReturn() is defined multiple times
 //with signature anFunction() is defined multiple times
-//#1 Multiple page/template definitions with name 'aPage'
-//#1 Multiple page/template definitions with name 'APage'
-//#1 Multiple page/template definitions with name 'aTemplate'
-//#1 Multiple page/template definitions with name 'ATemplate'
-//#1 Multiple page/template definitions with name 'aDefine'
-//#1 Multiple page/template definitions with name 'ADefine'
-//#2 Multiple page/template definitions with name 'pageArgsAndTemplateNoArgs'
-//'AnentityNoSuper' is defined multiple times
-//'Anentity' is defined multiple times
-//'ASessionEntity' is defined multiple times
-//'ADoubleEntity' is defined multiple times
+//#1 Multiple page/template definitions with name "aPage"
+//#1 Multiple page/template definitions with name "APage"
+//#1 Multiple page/template definitions with name "aTemplate"
+//#1 Multiple page/template definitions with name "ATemplate"
+//#1 Multiple page/template definitions with name "aDefine"
+//#1 Multiple page/template definitions with name "ADefine"
+//#2 Multiple page/template definitions with name "pageArgsAndTemplateNoArgs"
+//"AnentityNoSuper" is defined multiple times
+//"Anentity" is defined multiple times
+//"ASessionEntity" is defined multiple times
+//"ADoubleEntity" is defined multiple times
 
 application test
 

@@ -1,4 +1,4 @@
-//#31 Variable name 'id' is not allowed
+//#31 Variable name "id" is not allowed
 
 application test
 

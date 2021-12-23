@@ -1,4 +1,4 @@
-//Variable 'a' not defined
+//Variable "a" not defined
 application test
 
   page root { }

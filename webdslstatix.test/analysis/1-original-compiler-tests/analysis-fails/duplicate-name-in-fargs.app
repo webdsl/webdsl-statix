@@ -1,4 +1,4 @@
-//#14 Duplicate name 'i' in argument list.
+//#14 Duplicate name "i" in argument list.
 
 application test 
 

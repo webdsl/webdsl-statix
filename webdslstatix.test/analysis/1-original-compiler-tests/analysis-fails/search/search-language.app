@@ -1,4 +1,4 @@
-//A boost value should be type of 'Float', but is: String
+//A boost value should be type of "Float", but is: String
 application test
 
 entity A {

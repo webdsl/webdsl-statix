@@ -1,5 +1,5 @@
 //No function
-//No function 'test2' for 'super' with signature test2()
+//No function "test2" for "super" with signature test2()
 application test
 
 section functions

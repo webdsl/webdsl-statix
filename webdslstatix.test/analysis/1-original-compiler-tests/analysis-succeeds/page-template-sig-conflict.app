@@ -1,4 +1,4 @@
-//don't want to see the 'Cannot use page as template' error here
+//don't want to see the "Cannot use page as template" error here
 
 application bla
 

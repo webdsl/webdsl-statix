@@ -1,8 +1,8 @@
-//#2 typecase alternative type 'String' is incompatible with type in typecase expression 'Ent'
-//#2 typecase alternative type 'Int' is incompatible with type in typecase expression 'Ent'
-//#2 typecase alternative type 'Tmp' is incompatible with type in typecase expression 'Ent'
-//#2 typecase alternative should check subclass type 'Sub1' before super type 'Ent'
-//#2 typecase alternative should check subclass type 'Sub2' before super type 'Sub1'
+//#2 typecase alternative type "String" is incompatible with type in typecase expression "Ent"
+//#2 typecase alternative type "Int" is incompatible with type in typecase expression "Ent"
+//#2 typecase alternative type "Tmp" is incompatible with type in typecase expression "Ent"
+//#2 typecase alternative should check subclass type "Sub1" before super type "Ent"
+//#2 typecase alternative should check subclass type "Sub2" before super type "Sub1"
 
 application test
 

@@ -1,6 +1,6 @@
-//#2 Multiple page/template definitions with name 'root'
-//#3 Multiple page/template definitions with name 'home2'
-//#2 Multiple page/template definitions with name 'test'
+//#2 Multiple page/template definitions with name "root"
+//#3 Multiple page/template definitions with name "home2"
+//#2 Multiple page/template definitions with name "test"
 
 application test
 

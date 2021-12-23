@@ -1,7 +1,7 @@
-//Variable 'e' not defined
+//Variable "e" not defined
 //No property title1
-//TemplateElements argument 'c.elemz' not defined
-//TemplateElements argument 'd.elems' not defined
+//TemplateElements argument "c.elemz" not defined
+//TemplateElements argument "d.elems" not defined
 application test
 
 page root(){}

@@ -1,8 +1,8 @@
-//#6 Variable name 'a' is already defined in this context
-//#4 Placeholder name 'a' is already defined in this context
-//#8 For loop variable name 'a' is already defined in this context
-//#1 List comprehension variable name 'a' is already defined in this context
-//#1 Formal argument name 's' is already defined in this context
+//#6 Variable name "a" is already defined in this context
+//#4 Placeholder name "a" is already defined in this context
+//#8 For loop variable name "a" is already defined in this context
+//#1 List comprehension variable name "a" is already defined in this context
+//#1 Formal argument name "s" is already defined in this context
 
 application shadowing
 

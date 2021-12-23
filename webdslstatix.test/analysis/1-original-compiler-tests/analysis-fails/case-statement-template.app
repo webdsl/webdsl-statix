@@ -1,8 +1,8 @@
-//#2 case alternative with type 'Bool' should be compatible with type in case expression 'String'
-//#2 case alternative with type 'Int' should be compatible with type in case expression 'String'
-//#2 case alternative with type 'Tmp' should be compatible with type in case expression 'String'
-//case alternative with type 'String, String, Float, Tmp' should be compatible with type in case expression 'String, Int, Float, Tmp'
-//case alternative with type 'String, String, String' should be compatible with type in case expression 'String, Int, Tmp'
+//#2 case alternative with type "Bool" should be compatible with type in case expression "String"
+//#2 case alternative with type "Int" should be compatible with type in case expression "String"
+//#2 case alternative with type "Tmp" should be compatible with type in case expression "String"
+//case alternative with type "String, String, Float, Tmp" should be compatible with type in case expression "String, Int, Float, Tmp"
+//case alternative with type "String, String, String" should be compatible with type in case expression "String, Int, Tmp"
 
 application test
 

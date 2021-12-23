@@ -1,4 +1,4 @@
-//action with name 'send' defined multiple times
+//action with name "send" defined multiple times
 application rename
 
 define page root() {

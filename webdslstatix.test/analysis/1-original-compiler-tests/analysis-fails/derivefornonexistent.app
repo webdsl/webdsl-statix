@@ -1,4 +1,4 @@
-// entity 'NewsItem' has no property 'dude'
+// entity "NewsItem" has no property "dude"
 
 application com.example.derive
 

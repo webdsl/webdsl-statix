@@ -1,6 +1,6 @@
 //#16 Assignment to this variable is not allowed.
-//#5 This variable is not allowed in 'input'
-//#1 Derived property is not allowed in 'input'
+//#5 This variable is not allowed in "input"
+//#1 Derived property is not allowed in "input"
 //#1 Global variable b1 is not allowed in inputs
 
 application test

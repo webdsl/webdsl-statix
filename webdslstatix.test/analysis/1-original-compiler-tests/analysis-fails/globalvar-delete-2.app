@@ -1,4 +1,4 @@
-//Global variable 'one' may not be deleted
+//Global variable "one" may not be deleted
 
 application test
 

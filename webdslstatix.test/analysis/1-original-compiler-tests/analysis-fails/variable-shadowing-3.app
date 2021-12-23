@@ -1,23 +1,23 @@
-//#6 Variable name 'rvar1' is already defined in this context
-//#4 Placeholder name 'rvar1' is already defined in this context
-//#8 For loop variable name 'rvar1' is already defined in this context
-//#1 List comprehension variable name 'rvar1' is already defined in this context
-//#6 Variable name 'rvar2' is already defined in this context
-//#4 Placeholder name 'rvar2' is already defined in this context
-//#8 For loop variable name 'rvar2' is already defined in this context
-//#1 List comprehension variable name 'rvar2' is already defined in this context
-//#6 Variable name 'gvar1' is already defined in this context
-//#4 Placeholder name 'gvar1' is already defined in this context
-//#8 For loop variable name 'gvar1' is already defined in this context
-//#1 List comprehension variable name 'gvar1' is already defined in this context
-//#6 Variable name 'gvar2' is already defined in this context
-//#4 Placeholder name 'gvar2' is already defined in this context
-//#8 For loop variable name 'gvar2' is already defined in this context
-//#1 List comprehension variable name 'gvar2' is already defined in this context
-//#6 Variable name 'svar' is already defined in this context
-//#4 Placeholder name 'svar' is already defined in this context
-//#8 For loop variable name 'svar' is already defined in this context
-//#1 List comprehension variable name 'svar' is already defined in this context
+//#6 Variable name "rvar1" is already defined in this context
+//#4 Placeholder name "rvar1" is already defined in this context
+//#8 For loop variable name "rvar1" is already defined in this context
+//#1 List comprehension variable name "rvar1" is already defined in this context
+//#6 Variable name "rvar2" is already defined in this context
+//#4 Placeholder name "rvar2" is already defined in this context
+//#8 For loop variable name "rvar2" is already defined in this context
+//#1 List comprehension variable name "rvar2" is already defined in this context
+//#6 Variable name "gvar1" is already defined in this context
+//#4 Placeholder name "gvar1" is already defined in this context
+//#8 For loop variable name "gvar1" is already defined in this context
+//#1 List comprehension variable name "gvar1" is already defined in this context
+//#6 Variable name "gvar2" is already defined in this context
+//#4 Placeholder name "gvar2" is already defined in this context
+//#8 For loop variable name "gvar2" is already defined in this context
+//#1 List comprehension variable name "gvar2" is already defined in this context
+//#6 Variable name "svar" is already defined in this context
+//#4 Placeholder name "svar" is already defined in this context
+//#8 For loop variable name "svar" is already defined in this context
+//#1 List comprehension variable name "svar" is already defined in this context
 
 application shadowing
 

@@ -1,9 +1,9 @@
-//'fo0' not defined
-//'fo1' not defined
-//'fo2' not defined
-//'fo3' not defined
-//'fo4' not defined
-//'fo5' not defined
+//"fo0" not defined
+//"fo1" not defined
+//"fo2" not defined
+//"fo3" not defined
+//"fo4" not defined
+//"fo5" not defined
 
 application test
 

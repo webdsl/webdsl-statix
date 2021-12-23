@@ -1,6 +1,6 @@
 //function getA has no return type but tries to return a variable
 //Return statement missing in function
-//No function 'getA' for 'TestEntity2' with signature getA(String)
+//No function "getA" for "TestEntity2" with signature getA(String)
 // The return statement in function f should have type String
 
 application test

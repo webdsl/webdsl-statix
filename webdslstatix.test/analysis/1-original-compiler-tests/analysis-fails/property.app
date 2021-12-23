@@ -1,15 +1,15 @@
-//#2 Cannot override the builtin property 'id'
-//#2 Cannot override the builtin property 'version'
-//#2 Cannot use the reserved property name 'class'
-//#2 Cannot override the builtin property 'created'
-//#2 Cannot override the builtin property 'modified'
+//#2 Cannot override the builtin property "id"
+//#2 Cannot override the builtin property "version"
+//#2 Cannot use the reserved property name "class"
+//#2 Cannot override the builtin property "created"
+//#2 Cannot override the builtin property "modified"
 //#2 Property name is not allowed to overlap with entity name
 //#12 is defined multiple times
 //Reference type is not allowed
 //#15 Expected: collection of Entity
-//Type 'Null' is not allowed
-//Type 'Void' is not allowed
-//Type 'Entity' is not allowed
+//Type "Null" is not allowed
+//Type "Void" is not allowed
+//Type "Entity" is not allowed
 //#2 Expected: primitive or Entity type
 //#1 Type not defined
 
