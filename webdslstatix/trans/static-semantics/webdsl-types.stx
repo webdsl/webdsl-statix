@@ -216,12 +216,12 @@ rules // resolve reference types
 
   definedType : scope * string -> TYPE
   definedType(s, name) = t :- {name'}
-    resolveType(s, name) == [(_, (name', t))|_] | error $[Type [name] is not defined],
+    resolveType(s, name) == [(_, (name', t))|_] | error $[Type [name] does not exist],
     @name.ref := name'.
 
   definedTypeNoRef : scope * string -> TYPE
   definedTypeNoRef(s, name) = t :-
-    resolveType(s, name) == [(_, (_, t))|_] | error $[Type [name] is not defined].
+    resolveType(s, name) == [(_, (_, t))|_] | error $[Type [name] does not exist].
 
   definedTypeIfExists : scope * string -> TYPE
   definedTypeIfExists(s, name) = definedTypeIfExists_internal(s, resolveType(s, name)).
@@ -232,7 +232,7 @@ rules // resolve reference types
 
   variableType : scope * string -> TYPE
   variableType(s, x) = t :- {x'}
-    resolveVar(s, x) == [(_, (x', t))|_] | error $[Variable [x] is not defined],
+    resolveVar(s, x) == [(_, (x', t))|_] | error $[Variable [x] not defined],
     @x.ref := x'.
 
   propertyTypes maps propertyType(*, list(*)) = list(*)
@@ -250,7 +250,7 @@ rules // resolve reference types
 
   pageType : scope * string -> TYPE
   pageType(s, p) = t :- {p'}
-    resolvePage(s, p) == [(_, (p', t@PAGE(_, _)))|_] | error $[Page [p] not defined],
+    resolvePage(s, p) == [(_, (p', t@PAGE(_, _)))|_],
     @p.ref := p'.
 
 rules // utils

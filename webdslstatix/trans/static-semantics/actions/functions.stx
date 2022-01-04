@@ -146,7 +146,7 @@ rules // function definitions
   noDuplicateFunDefsGlobal(s, f, ts) :- {ps}
     resolveFunction(s, f) == ps,
     amountOfFunDeclsWithArgs(ps, ts, 0) == 1
-        | error $[Duplicate definition of function [f] with argument types [ts]] @f.
+        | error $[Function with name [f] and argument types [ts] is already defined] @f.
 
   noDuplicateFunDefsEntity : scope * string * list(TYPE)
   noDuplicateFunDefsEntity(s, f, types) :- {ps}
@@ -154,7 +154,7 @@ rules // function definitions
                    and { f' :- f' == (f, _) }
                    in s |-> ps,
     amountOfFunDeclsWithArgs(filterFunctionResults(typesOf(ps), FALSE()), types, 0) == 1
-        | error $[Duplicate definition of function [f] with argument types [types]] @f.
+        | error $[Function with name [f] and argument types [types] is already defined] @f.
 
   // helper function for noDuplicateFunDefs that counts the amount of function with a given name and argument types
   amountOfFunDeclsWithArgs : list((path * (string * TYPE))) * list(TYPE) * int -> int

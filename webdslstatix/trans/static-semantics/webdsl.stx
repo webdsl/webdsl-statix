@@ -153,25 +153,25 @@ rules // ui declaration and resolving
   declareTemplate_internal(s, t, ts, ajax) :-
     !template[t, withType(TEMPLATE(t, ts, ajax))] in s,
     noClashingPageDefinitions(s, ts, t),
-    filterTemplateResultsArgs(resolveTemplate(s, t), ts) == [_] | error $[Template [t] with argument types [ts] is already defined] @t.
+    filterTemplateResultsArgs(resolveTemplate(s, t), ts) == [_] | error $[Multiple page/template definitions with name [t] and argument types [ts]] @t.
 
   // in the compiler, templates without arguments can clash with page definitions
   noClashingPageDefinitions : scope * list(TYPE) * string
   noClashingPageDefinitions(_, _, _).
-  noClashingPageDefinitions(s, [], t) :- resolvePage(s, t) == [] | error $[A page with name [t] is defined, this is only allowed when this template has at least one argument] @t.
+  noClashingPageDefinitions(s, [], t) :- resolvePage(s, t) == [] | error $[Multiple page/template definitions with name [t]] @t.
 
   declarePage : scope * string * list(TYPE)
   declarePage(s, p, ts) :-
     !page[p, withType(PAGE(p, ts))] in s,
     noClashingTemplateDefinitions(s, p),
-    resolvePage(s, p) == [_] | error $[Page [p] is already defined] @p.
+    resolvePage(s, p) == [_] | error $[Multiple page/template definitions with name [p]] @p.
 
   noClashingTemplateDefinitions : scope * string
     noClashingTemplateDefinitions_helper maps noClashingTemplateDefinitions_internal(*, list(*))
     noClashingTemplateDefinitions_internal : string * (path * (string * TYPE))
 
   noClashingTemplateDefinitions(s, p) :- noClashingTemplateDefinitions_helper(p, resolveTemplate(s, p)).
-    noClashingTemplateDefinitions_internal(p, (_, (_, TEMPLATE(_, [], _)))) :- false | error $[A template with name [p] is defined, this is only allowed when that template has at least one argument] @p.
+    noClashingTemplateDefinitions_internal(p, (_, (_, TEMPLATE(_, [], _)))) :- false | error $[Multiple page/template definitions with name [p]] @p.
     noClashingTemplateDefinitions_internal(_, _).
 
   resolveTemplate : scope * string -> list((path * (string * TYPE)))

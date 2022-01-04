@@ -51,12 +51,12 @@ rules // ajax statements
   ajaxStmtOk(s, AjaxReplace(ph, AjaxReplaceTemplateCall(tc))) :-
     ajaxPlaceholderExpressionOk(s, ph),
     ajaxTemplateCallOk(s, s, tc)
-      | error $[Unable to find an ajax enabled template with a compatible signature] @tc.
+      | error $[An ajax-enabled template must be called here] @tc.
 
   ajaxStmtOk(s, AjaxAppend(ph, tc)) :-
     ajaxPlaceholderExpressionOk(s, ph),
     ajaxTemplateCallOk(s, s, tc)
-      | error $[Unable to find an ajax enabled template with a compatible signature] @tc.
+      | error $[An ajax-enabled template must be called here] @tc.
 
   ajaxStmtOk(s, AjaxVisibility(ph, _)) :-
     ajaxPlaceholderExpressionOk(s, ph).

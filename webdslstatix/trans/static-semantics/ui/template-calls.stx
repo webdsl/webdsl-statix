@@ -75,7 +75,7 @@ rules // navigate calls
 
   pageCallOk_internal : scope * string * list(Exp)
   pageCallOk_internal(s, p, args) :- {argTypes ts}
-    pageType(s, p) == PAGE(_, ts) | error $[Unable to resolve page [p]] @p,
+    pageType(s, p) == PAGE(_, ts) | error $[There is no page with signature [p]] @p,
     argTypes == typesOfExps(s, args),
     typesCompatible(argTypes, ts) == TRUE() | error $[Given argument types not compatible with page definition. Got [argTypes] but expected [ts]] @args.
 
@@ -90,7 +90,7 @@ rules // property assignments
   templatePropAssignmentsOkNoDuplicates(_, [], _).
   templatePropAssignmentsOkNoDuplicates(s, [pa | pas], xs) :- {x}
     x == templatePropAssignmentOk(s, pa),
-    noDuplicatesString(x, xs) | error $[Property [x] is defined multiple times] @x,
+    noDuplicatesString(x, xs) | error $[Properties are defined multiple times: [x]] @x,
     templatePropAssignmentsOkNoDuplicates(s, pas, [x | xs]).
 
   templatePropAssignmentOk : scope * PropertyAssignment -> string // return name of property for duplicate check

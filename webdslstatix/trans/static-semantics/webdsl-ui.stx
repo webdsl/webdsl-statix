@@ -120,7 +120,7 @@ rules // template definitions
     declareTemplate_internal(s, t, fargTypes, ajax),
     resolveTemplate(s, t) == result,
     amountOfTemplateDeclsWithArgs(result, fargTypes, 0) == 1
-      | error $[Duplicate definition of template [t] with argument types [fargTypes]] @t.
+      | error $[Multiple page/template definitions with name [t] and argument types [fargTypes]] @t.
 
   declTArgs maps declTArg(*, list(*))
   declTArg : scope * (string * list(TYPE))

@@ -1,4 +1,4 @@
-// property dinges is a derived property and hence cannot be edited
+// property "dinges" is a derived property and hence cannot be edited
 
 application com.example.derive
 

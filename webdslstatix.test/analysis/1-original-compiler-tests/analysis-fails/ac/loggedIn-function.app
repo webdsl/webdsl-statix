@@ -1,4 +1,4 @@
-//Function with name "loggedIn" and 0 argument
+//Function with name "loggedIn" and argument types
 
 application test
 
