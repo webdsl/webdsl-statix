@@ -171,7 +171,7 @@ rules // access control rules
     argTypes == typesOfArgs(s, args),
     queryResult@[_ | _] == resolvePointcut(s, p) | error $[No pointcut named [p] exists] @p,
     ts == queryResultTypes(queryResult),
-    acRuleSignatureArgsMatching(argTypes, ts) | error $[Template rule refers to non-existing template [t] with argumnent types [argTypes]] @args.
+    acRuleSignatureArgsMatching(argTypes, ts) | error $[Pointcut rule refers to non-existing pointcut [p] with argumnent types [argTypes]] @args.
 
   acRuleSignatureArgsMatching : list(TYPE) * list(TYPE)
   acRuleSignatureArgsMatching(_, []) :- false.
