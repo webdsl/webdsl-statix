@@ -1,7 +1,10 @@
 //Property "name" of entity "XYZ" is defined multiple times
 application test
 
-imports module/entity-constraint-in-module
+  entity XYZ {
+    name :: String
+    name :: Int
+  }
 
  define page root() {
     "default body"

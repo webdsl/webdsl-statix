@@ -1,4 +1,4 @@
-// Expected: Reference type or Composite type
+//Expected: Reference type or Composite type
 
 application test
 

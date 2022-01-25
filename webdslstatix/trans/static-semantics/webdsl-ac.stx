@@ -78,8 +78,8 @@ rules // securitycontext and principal
   declSecurityContext : scope * TYPE * list(TYPE)
   declSecurityContext(s, principalType, credentialTypes) :- { s_extend_security_context }
     new s_extend_security_context,
-    declProperty(s_extend_security_context, "principal", principalType),
-    declProperty(s_extend_security_context, "loggedIn", bool(s)),
+    declProperty(s_extend_security_context, "securityContext", "principal", principalType),
+    declProperty(s_extend_security_context, "securityContext", "loggedIn", bool(s)),
     declareCredentials(s_extend_security_context, credentialTypes),
     declareExtendScope(s, "securityContext", s_extend_security_context),
     extendScopes(resolveExtendScope(s, "securityContext"), s_extend_security_context).
@@ -183,7 +183,7 @@ rules // predicates
 
   defOk(s, Predicate(p, args, exp)) :- predicateOk(s, p, args, exp, TRUE()).
   acDefOk(s, PredicateAc(p, args, exp)) :- predicateOk(s, p, args, exp, TRUE()).
-  declEntityBodyDeclaration(s, PredicateInEntity(p, args, exp)) :- predicateOk(s, p, args, exp, FALSE()).
+  declEntityBodyDeclaration(s, _, PredicateInEntity(p, args, exp)) :- predicateOk(s, p, args, exp, FALSE()).
 
   // last bool denotes if predicate is declared in global scope
   predicateOk : scope * string * OptFormalArgs * Exp * BOOL
