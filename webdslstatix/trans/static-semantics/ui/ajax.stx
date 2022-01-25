@@ -51,12 +51,12 @@ rules // ajax statements
   ajaxStmtOk(s, AjaxReplace(ph, AjaxReplaceTemplateCall(tc))) :-
     ajaxPlaceholderExpressionOk(s, ph),
     ajaxTemplateCallOk(s, s, tc)
-      | error $[An ajax-enabled template must be called here] @tc.
+      | error $[An ajax-enabled template must be called here] @tc. // correct error message for tests
 
   ajaxStmtOk(s, AjaxAppend(ph, tc)) :-
     ajaxPlaceholderExpressionOk(s, ph),
     ajaxTemplateCallOk(s, s, tc)
-      | error $[An ajax-enabled template must be called here] @tc.
+      | error $[An ajax-enabled template must be called here] @tc. // correct error message for tests
 
   ajaxStmtOk(s, AjaxVisibility(ph, _)) :-
     ajaxPlaceholderExpressionOk(s, ph).

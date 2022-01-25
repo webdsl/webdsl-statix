@@ -47,16 +47,16 @@ rules
   derivePropertyOk(_, _, _, _) :- try { false } | warning $[This element is not yet supported].
   derivePropertyOk(s, t_ent, _, DeriveDefault(prop)) :- { entityName t }
     t_ent == ENTITY(entityName, _),
-    t == typeOfProperty(s, t_ent, prop) | error $[Entity [entityName] has no property [prop]],
+    t == typeOfProperty(s, t_ent, prop) | error $[Entity [entityName] has no property [prop]], // correct error message for tests
     isMutableProperty(t_ent, prop) | error $[Property [prop] is not mutable].
 
   derivePropertyOk(s, t_ent, "viewPage", DeriveDefault(prop)) :- { entityName t }
     t_ent == ENTITY(entityName, _),
-    t == typeOfProperty(s, t_ent, prop) | error $[Entity [entityName] has no property [prop]].
+    t == typeOfProperty(s, t_ent, prop) | error $[Entity [entityName] has no property [prop]]. // correct error message for tests
 
   derivePropertyOk(s, t_ent, "viewRows", DeriveDefault(prop)) :- { entityName t }
     t_ent == ENTITY(entityName, _),
-    t == typeOfProperty(s, t_ent, prop) | error $[Entity [entityName] has no property [prop]].
+    t == typeOfProperty(s, t_ent, prop) | error $[Entity [entityName] has no property [prop]]. // correct error message for tests
 
   deriveBodyOk : scope * scope * DeriveBody
   deriveBodyOk(s, s_pha, DeriveBody(elements)) :- deriveBodyElementsOk(s, s_pha, elements).

@@ -93,7 +93,7 @@ rules // function definitions
   // - analyze function body
   // - declare function in given scope
   globalFunctionOk : scope * Function
-  globalFunctionOk(s_outer, Function(name, FormalArgs(args), OptSortSome(returnSort), Block(stmts))) :- {argTypes returnType s_function s_body}
+  globalFunctionOk(s_outer, Function(name, FormalArgs(args), OptSortSome(returnSort), Block(stmts))) :- { argTypes returnType s_function s_body }
     returnType == typeOfSort(s_outer, returnSort),
     new s_function, s_function -F-> s_outer,
     argTypes == typesOfArgs(s_outer, args),
@@ -103,7 +103,7 @@ rules // function definitions
     declFunctionGlobal(s_outer, name, argTypes, returnType).
 
   entityFunctionOk : scope * Function * BOOL
-  entityFunctionOk(s_ent, Function(name, FormalArgs(args), OptSortSome(returnSort), Block(stmts)), static) :- {argTypes returnType s_function s_body}
+  entityFunctionOk(s_ent, Function(name, FormalArgs(args), OptSortSome(returnSort), Block(stmts)), static) :- { argTypes returnType s_function s_body }
     returnType == typeOfSort(s_ent, returnSort),
     new s_function, s_function -F-> s_ent,
     argTypes == typesOfArgs(s_ent, args),
@@ -143,18 +143,18 @@ rules // function definitions
 
   // predicate that defines when there are overlapping function signatures
   noDuplicateFunDefsGlobal : scope * string * list(TYPE)
-  noDuplicateFunDefsGlobal(s, f, ts) :- {ps}
+  noDuplicateFunDefsGlobal(s, f, ts) :- { ps }
     resolveFunction(s, f) == ps,
     amountOfFunDeclsWithArgs(ps, ts, 0) == 1
-        | error $[Function with name [f] and argument types [ts] is already defined] @f.
+        | error $[Function with name [f] and argument types [ts] is already defined] @f. // correct error message for tests
 
   noDuplicateFunDefsEntity : scope * string * list(TYPE)
-  noDuplicateFunDefsEntity(s, f, types) :- {ps}
+  noDuplicateFunDefsEntity(s, f, types) :- { ps }
     query function filter EXTEND?
                    and { f' :- f' == (f, _) }
                    in s |-> ps,
     amountOfFunDeclsWithArgs(filterFunctionResults(typesOf(ps), FALSE()), types, 0) == 1
-        | error $[Function with name [f] and argument types [types] is already defined] @f.
+        | error $[Function with name [f] and argument types [types] is already defined] @f. // correct error message for tests
 
   // helper function for noDuplicateFunDefs that counts the amount of function with a given name and argument types
   amountOfFunDeclsWithArgs : list((path * (string * TYPE))) * list(TYPE) * int -> int

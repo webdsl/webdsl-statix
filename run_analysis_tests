@@ -78,10 +78,10 @@ function addResultSummary() {
                     foundlines=`grep -i "$pattern" "analysis-results/$resultFile.txt" | wc -l`
                     summary="$summary\nError was found $foundlines times"
                     if [ $foundlines -ne $occurrences ]; then
-                        summary="$summary\TEST DID NOT PASS"
+                        summary="$summary\nTEST DID NOT PASS"
                         suffix="FAILED"
                     else
-                        summary="$summary\TEST PASSED"
+                        summary="$summary\nTEST PASSED"
                     fi
                 else
                     summary="$summary\n\nError must be shown: $pattern"

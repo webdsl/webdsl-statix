@@ -223,7 +223,7 @@ rules // predicates
   isMutableProperty(NATIVECLASS(_, _), _). // all native class properties are mutable
   isMutableProperty(ENTITY(_, s_entity), x) :- {annotations}
     annotations == resolveAnnotation(s_entity, x),
-    doesNotHaveAnnotation(annotations, DERIVED()) | error $[Property [x] is a derived property and hence cannot be edited].
+    doesNotHaveAnnotation(annotations, DERIVED()) | error $[Property [x] is a derived property and hence cannot be edited]. // correct error message for tests
 
 rules // utils
 

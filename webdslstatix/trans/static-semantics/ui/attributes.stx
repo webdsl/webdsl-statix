@@ -15,7 +15,7 @@ rules // attribute collection declaration and resolving
   declareAttributeCollection : scope * string
   declareAttributeCollection(s, c) :-
     !attributeCollection[c] in s,
-    resolveAttributeCollection(s, c) == [_] | error $[Attribute collection with name [c] is defined multiple times. Use "override" modifier to replace existing attribute collections].
+    resolveAttributeCollection(s, c) == [_] | error $[Attribute collection with name [c] is defined multiple times. Use "override" modifier to replace existing attribute collections]. // correct error message for tests
 
   resolveAttributeCollection : scope * string -> list((path * string))
   resolveAttributeCollection(s, c) = ps :-
@@ -72,5 +72,5 @@ rules // attribute collections
     declareAttributeCollection(s, c).
 
   defOk(s, AttributeCollection(AttributeCollectionOverride(), c, attrs)) :- {c'}
-    resolveAttributeCollection(s, c) == [(_, c')] | error $[Attribute collection with name [c] not defined] @c,
+    resolveAttributeCollection(s, c) == [(_, c')] | error $[Attribute collection with name [c] not defined] @c, // correct error message for tests
     @c.ref := c'.

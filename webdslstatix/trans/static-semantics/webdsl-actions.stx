@@ -101,7 +101,7 @@ rules // variable declaration and assignment
   amountNonOverridableOk([]).
   amountNonOverridableOk([_]).
 
-  stmtOk(s, _, Assignment(_, exp), _) :- false | error $[Can only assign to fields or vars (except global or session vars)].
+  stmtOk(s, _, Assignment(_, exp), _) :- false | error $[Can only assign to fields or vars (except global or session vars)]. // correct error message for tests
   stmtOk(s, _, Assignment(v@Var(x), exp), _) :- { t expType }
     variableType(s, x) == t,
     isMutableOrRef(s, x, t),
@@ -135,10 +135,10 @@ rules // variable declaration and assignment
     @x.type := t,
     isMutableProperty(lhExpType, x),
     rhExpType == typeOfExp(s, rhexp),
-    typeCompatible(rhExpType, t) | error $[Expression [rhexp] is incompatible with type in left-hand side [t], got type [rhExpType]].
+    typeCompatible(rhExpType, t) | error $[Expression [rhexp] is incompatible with type in left-hand side [t], got type [rhExpType]]. // correct error message for tests
 
   stmtOk(s, _, Assignment(ci@CollectionIndex(_, _), exp), _) :-
-    typeCompatible(typeOfExp(s, exp), typeOfExp(s, ci)) | error $[Expression [exp] is incompatible with type in left-hand side].
+    typeCompatible(typeOfExp(s, exp), typeOfExp(s, ci)) | error $[Expression [exp] is incompatible with type in left-hand side]. // correct error message for tests
 
   stmtOk(s, _, Assignment(c@Cast(_, _), exp), _) :-
     typeCompatible(typeOfExp(s, exp), typeOfExp(s, c)).
@@ -300,7 +300,7 @@ rules // lists and sets
   typeOfCollectionIndex(s, c, x) = t :- {ct xt}
     ct == typeOfExp(s, c),
     xt == typeOfExp(s, x),
-    typeCompatible(xt, int(s)) | error $[Index must be of type Int, [xt] given],
+    typeCompatible(xt, int(s)) | error $[Index must be of type Int, [xt] given], // correct error message for tests
     t == stripGenericType(ct).
 
   typeOfExp(s, ForExp2Exp(forExp)) = typeOfForExp(s, forExp).

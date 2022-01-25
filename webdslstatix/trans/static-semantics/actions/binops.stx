@@ -17,125 +17,125 @@ rules // binary operators
     @exp.type := T.
 
   typeOfAdd : scope * Exp * Exp -> TYPE
-  typeOfAdd(s, e1, e2) = t :- {t1 t2}
-    typeOfExp(s, e1) == t1,
-    typeOfExp(s, e2) == t2,
-    lubForAdd(t1, t2) == t,
-    inequalType(t, UNTYPED()) | error $[Wrong operand types for operator +: [e1] has type [t1], [e2] has type [t2]].
+  typeOfAdd(s, e1, e2) = T :- { T1 T2 }
+    typeOfExp(s, e1) == T1,
+    typeOfExp(s, e2) == T2,
+    lubForAdd(T1, T2) == T,
+    inequalType(t, UNTYPED()) | error $[Wrong operand types for operator +: [e1] has type [t1], [e2] has type [t2]]. // correct error message for tests
 
   // (e1 - e2)
-  typeOfExp(s, exp@Sub(e1, e2)) = T :- {T1 T2}
+  typeOfExp(s, exp@Sub(e1, e2)) = T :- { T1 T2 }
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     equalNumericType(T1, T2) == T,
-    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator -: [e1] has type [T1], [e2] has type [T2]],
+    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator -: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := T.
 
   // (e1 * e2)
-  typeOfExp(s, exp@Mul(e1, e2)) = T :- {T1 T2}
+  typeOfExp(s, exp@Mul(e1, e2)) = T :- { T1 T2 }
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     equalNumericType(T1, T2) == T,
-    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator *: [e1] has type [T1], [e2] has type [T2]],
+    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator *: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := T.
 
   // (e1 / e2)
-  typeOfExp(s, exp@Div(e1, e2)) = T :- {T1 T2}
+  typeOfExp(s, exp@Div(e1, e2)) = T :- { T1 T2 }
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     equalNumericType(T1, T2) == T,
-    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator /: [e1] has type [T1], [e2] has type [T2]],
+    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator /: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := T.
 
   // (e1 % e2)
-  typeOfExp(s, exp@Mod(e1, e2)) = T :- {T1 T2}
+  typeOfExp(s, exp@Mod(e1, e2)) = T :- { T1 T2 }
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     equalNumericType(T1, T2) == T,
-    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator %: [e1] has type [T1], [e2] has type [T2]],
+    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator %: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := T.
 
   // (e1 > e2)
-  typeOfExp(s, exp@LargerThan(e1, e2)) = t :- {T1 T2}
+  typeOfExp(s, exp@LargerThan(e1, e2)) = t :- { T1 T2 }
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator >: [e1] has type [T1], [e2] has type [T2]],
+    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator >: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 >= e2)
-  typeOfExp(s, exp@LargerThanOrEqual(e1, e2)) = t :- {T1 T2}
+  typeOfExp(s, exp@LargerThanOrEqual(e1, e2)) = t :- { T1 T2 }
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator >=: [e1] has type [T1], [e2] has type [T2]],
+    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator >=: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 < e2)
-  typeOfExp(s, exp@SmallerThan(e1, e2)) = t :- {T1 T2}
+  typeOfExp(s, exp@SmallerThan(e1, e2)) = t :- { T1 T2 }
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator <: [e1] has type [T1], [e2] has type [T2]],
+    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator <: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 <= e2)
-  typeOfExp(s, exp@SmallerThanOrEqual(e1, e2)) = t :- {T1 T2}
+  typeOfExp(s, exp@SmallerThanOrEqual(e1, e2)) = t :- { T1 T2 }
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator <=: [e1] has type [T1], [e2] has type [T2]],
+    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator <=: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 && e2)
-  typeOfExp(s, exp@And(e1, e2)) = b :- {T1 T2}
+  typeOfExp(s, exp@And(e1, e2)) = b :- { T1 T2 }
     b == bool(s),
-    typeOfExp(s, e1) == T1, typeCompatible(T1, b) | error $[Wrong operand types for operator And: [e1] has type [T1], expected Bool],
-    typeOfExp(s, e2) == T2, typeCompatible(T2, b) | error $[Wrong operand types for operator And: [e2] has type [T2], expected Bool],
+    typeOfExp(s, e1) == T1, typeCompatible(T1, b) | error $[Wrong operand types for operator And: [e1] has type [T1], expected Bool], // correct error message for tests
+    typeOfExp(s, e2) == T2, typeCompatible(T2, b) | error $[Wrong operand types for operator And: [e2] has type [T2], expected Bool], // correct error message for tests
     @exp.type := b.
 
   // (e1 || e2)
-  typeOfExp(s, exp@Or(e1, e2)) = b :- {T1 T2}
+  typeOfExp(s, exp@Or(e1, e2)) = b :- { T1 T2 }
     b == bool(s),
-    typeOfExp(s, e1) == T1, typeCompatible(T1, b) | error $[Wrong operand types for operator Or: [e1] has type [T1], expected Bool],
-    typeOfExp(s, e2) == T2, typeCompatible(T2, b) | error $[Wrong operand types for operator Or: [e2] has type [T2], expected Bool],
+    typeOfExp(s, e1) == T1, typeCompatible(T1, b) | error $[Wrong operand types for operator Or: [e1] has type [T1], expected Bool], // correct error message for tests
+    typeOfExp(s, e2) == T2, typeCompatible(T2, b) | error $[Wrong operand types for operator Or: [e2] has type [T2], expected Bool], // correct error message for tests
     @exp.type := b.
 
   // (e1 == e2)
-  typeOfExp(s, exp@Eq(e1, e2)) = t :- {T1 T2}
+  typeOfExp(s, exp@Eq(e1, e2)) = t :- { T1 T2 }
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     orB(
       typeCompatibleB(T1, T2),
       typeCompatibleB(T2, T1)
-    ) == TRUE() | error $[Wrong operand types for operator ==: [e1] has type [T1], [e2] has type [T2]],
+    ) == TRUE() | error $[Wrong operand types for operator ==: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 != e2)
-  typeOfExp(s, exp@NotEq(e1, e2)) = t :- {T1 T2}
+  typeOfExp(s, exp@NotEq(e1, e2)) = t :- { T1 T2 }
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     orB(
       typeCompatibleB(T1, T2),
       typeCompatibleB(T2, T1)
-    ) == TRUE() | error $[Wrong operand types for operator !=: [e1] has type [T1], [e2] has type [T2]],
+    ) == TRUE() | error $[Wrong operand types for operator !=: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type :=t.
 
   // e1 in e2
-  typeOfExp(s, exp@InColl(e1, e2)) = bool(s) :- {T1 T2}
+  typeOfExp(s, exp@InColl(e1, e2)) = bool(s) :- { T1 T2 }
     typeOfExp(s, e1) == T1,
     stripGenericType(typeOfExp(s, e2)) == T2,
-    typeCompatible(T1, T2) | error $[Wrong operand types for operator in: [e1] has type [T1], [e2] has type [T2]].
+    typeCompatible(T1, T2) | error $[Wrong operand types for operator in: [e1] has type [T1], [e2] has type [T2]]. // correct error message for tests
 
 rules // unary operators
 
   // (!e)
-  typeOfExp(s, exp@Not(e)) = t :- {T}
+  typeOfExp(s, exp@Not(e)) = t :- { T }
     t == bool(s),
     typeOfExp(s, e) == T,
-    T == t | error $[Wrong operand types for operator !: [e] has type [T], expected Bool],
+    T == t | error $[Wrong operand types for operator !: [e] has type [T], expected Bool], // correct error message for tests
     @exp.type := t.
 
 rules // utils
