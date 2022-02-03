@@ -65,8 +65,8 @@ rules // securitycontext and principal
   principalDefOk : scope * string * list(string)
   principalDefOk(s, ent, properties) :- { s_ent entityName credentialTypes t }
     // TO-DO: only give principal access to the credential properties instead of all
-    definedType(s, ent) == t@ENTITY(entityName, s_ent) | error $[Entity [entityName] does not exist, and cannot be used as principal for access control], // correct error message for tests
-    propertyTypes(s_ent, properties) == credentialTypes,
+    definedTypeCustomError(s, ent) == t@ENTITY(entityName, s_ent) | error $[Entity [ent] does not exist, and cannot be used as principal for access control], // correct error message for tests
+    principalPropertyTypes(s_ent, properties, ent) == credentialTypes,
     compatibleCredentialTypes(properties, credentialTypes),
     declSecurityContext(s, t, credentialTypes).
 
@@ -162,14 +162,14 @@ rules // access control rules
     argTypes == typesOfArgs(s, args),
     queryResult@[_ | _] == resolveAjaxTemplate(s, t) | error $[Template rule refers to non-existing template [t]. For non-ajax templates, use 'rule template'] @t, // correct error message for tests
     ts == queryResultTypes(queryResult),
-    acRuleSignatureArgsMatching(argTypes, ts) | error $[Argument types [argTypes] do not match any existing ajax template signature types [ts]] @args.
+    acRuleSignatureArgsMatching(argTypes, ts) | error $[Template rule refers to non-existing template [t] with argument types [argTypes]] @args. // correct error message for tests
 
   acRuleSignatureOk(s, ACTypePointcut(), MatchName(p, OptWildCardArgNone()), MatchArgs(_, WildCardArg())) :-
-    resolvePointcut(s, p) == [_ | _] | error $[No pointcut named [p] exists] @p.
+    resolvePointcut(s, p) == [_ | _] | error $[pointcut [p] does not exist] @p. // correct error message for tests
 
   acRuleSignatureOk(s, ACTypePointcut(), MatchName(p, OptWildCardArgNone()), MatchArgs(args, OptWildCardArgNone())) :- { argTypes queryResult ts }
     argTypes == typesOfArgs(s, args),
-    queryResult@[_ | _] == resolvePointcut(s, p) | error $[No pointcut named [p] exists] @p,
+    queryResult@[_ | _] == resolvePointcut(s, p) | error $[pointcut [p] does not exist] @p, // correct error message for tests
     ts == queryResultTypes(queryResult),
     acRuleSignatureArgsMatching(argTypes, ts) | error $[Pointcut rule refers to non-existing pointcut [p] with argumnent types [argTypes]] @args. // correct error message for tests
 
@@ -216,7 +216,8 @@ rules // pointcuts
   acPointcutElemOk : scope * scope * list(string) * list(TYPE) * AccessControlPointcutElement
   acPointcutElemOk(s, s_pointcut, pointcutArgNames, ts, elem@AccessControlPointcutElement(_, _, args, _)) :-
     acPointcutElementDefined(s, s_pointcut, elem),
-    sameElements(pointcutArgNames, args) | error $[Pointcut element must use all pointcut arguments: [pointcutArgNames]] @elem.
+    pointcutArgsUsed(pointcutArgNames, args, elem).
+//    sameElements(pointcutArgNames, args) | error $[Pointcut element must use all pointcut arguments: [pointcutArgNames]] @elem.
 
   acPointcutElementDefined : scope * scope * AccessControlPointcutElement
   acPointcutElementDefined(_, _, AccessControlPointcutElement(_, MatchName(p, WildCardArg()), _, _)).
@@ -224,17 +225,17 @@ rules // pointcuts
     false | error $[Only pages, templates, ajaxtemplates and actions are supported in pointcuts] @t.
 
   acPointcutElementDefined(s, s_pointcut, elem@AccessControlPointcutElement(ACTypePage(), MatchName(p, _), args, optWc)) :- { ts argTypes }
-    argTypes == typesOfStrings(s_pointcut, args),
+    argTypes == typesOfPointcutIdentifiers(s_pointcut, args),
     resolvePage(s, p) == [(_, (_, PAGE(_, ts)))] | error $[Page rule refers to non-existing page [p]] @p, // correct error message for tests
     acPointcutElementArgsCompatible(argTypes, ts, optWc) | error $[Incompatible argument types for page [p]] @elem.
 
   acPointcutElementDefined(s, s_pointcut, elem@AccessControlPointcutElement(ACTypeTemplate(), MatchName(t, _), args, optWc)) :- { ts argTypes }
-    argTypes == typesOfStrings(s_pointcut, args),
+    argTypes == typesOfPointcutIdentifiers(s_pointcut, args),
     resolveTemplateNoAjax(s, t) == [(_, (_, TEMPLATE(_, ts, _)))] | error $[Template rule refers to non-existing template [t]] @t, // correct error message for tests
     acPointcutElementArgsCompatible(argTypes, ts, optWc) | error $[Template rule refers to non-existing template [t] for the given argument types] @elem. // correct error message for tests
 
   acPointcutElementDefined(s, s_pointcut, elem@AccessControlPointcutElement(ACTypeAjaxTemplate(), MatchName(t, _), args, optWc)) :- { ts argTypes }
-    argTypes == typesOfStrings(s_pointcut, args),
+    argTypes == typesOfPointcutIdentifiers(s_pointcut, args),
     resolveAjaxTemplate(s, t) == [(_, (_, TEMPLATE(_, ts, _)))] | error $[Ajax template rule refers to non-existing template [t]] @t, // correct error message for tests
     acPointcutElementArgsCompatible(argTypes, ts, optWc) | error $[Ajax template rule refers to non-existing template [t] for the given argument types] @elem. // correct error message for tests
 
@@ -251,6 +252,13 @@ rules // pointcuts
 
 rules // utils
 
+  principalPropertyTypes maps principalPropertyType(*, list(*), *) = list(*)
+  principalPropertyType : scope * string * string -> TYPE
+  principalPropertyType(s, x, ent) = t :-
+    t == propertyType(s, x) | error $[[x] is not a property of entity [ent]]. // correct error message for tests
+  principalPropertyType(s, x@"name", ent) = t :-
+    t == propertyType(s, x) | error $[Principal credential type [ent] does not have a [x] property, a property with [x] annotation is not sufficient for use as credential]. // correct error message for tests
+
   principalDefined : scope
   principalDefined(s) :- { t }
     principalType(s) == t | error $[Principal is not defined].
@@ -265,3 +273,14 @@ rules // utils
     resolveType(s, "securityContext") == [(_, (_, ENTITY(_, s_securityContext)))] | error $[securityContext not defined],
     queryResultTypes(resolveProperty(s_securityContext, "credentials")) == ts,
     ts == [_ | _] | error $[No credentials have been defined].
+
+  typesOfPointcutIdentifiers maps typesOfPointcutIdentifier(*, list(*)) = list(*)
+  typesOfPointcutIdentifier : scope * string -> TYPE
+  typesOfPointcutIdentifier(s, x) = t :-
+    resolveVar(s, x) == [(_, (_, t))] | error $[Pointcut element uses unknown identifier [x]]. // correct error message for tests
+
+  pointcutArgsUsed maps pointcutArgUsed(list(*), *, *)
+  pointcutArgUsed : string * list(string) * AccessControlPointcutElement
+  pointcutArgUsed(x, [], loc) :- false | error $[Pointcut element must use pointcut argument [x]] @loc. // correct error message for tests
+  pointcutArgUsed(x, [x | _], _).
+  pointcutArgUsed(x, [_ | ys], loc) :- pointcutArgUsed(x, ys, loc).

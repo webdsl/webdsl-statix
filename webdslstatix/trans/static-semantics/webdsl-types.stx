@@ -219,6 +219,11 @@ rules // resolve reference types
     resolveType(s, name) == [(_, (name', t))|_] | error $[Type [name] does not exist], // correct error message for tests
     @name.ref := name'.
 
+  definedTypeCustomError : scope * string -> TYPE
+  definedTypeCustomError(s, name) = t :- {name'}
+    resolveType(s, name) == [(_, (name', t))|_],
+    @name.ref := name'.
+
   definedTypeNoRef : scope * string -> TYPE
   definedTypeNoRef(s, name) = t :-
     resolveType(s, name) == [(_, (_, t))|_] | error $[Type [name] does not exist]. // correct error message for tests
@@ -235,12 +240,10 @@ rules // resolve reference types
     resolveVar(s, x) == [(_, (x', t))|_] | error $[Variable [x] not defined], // correct error message for tests
     @x.ref := x'.
 
-  propertyTypes maps propertyType(*, list(*)) = list(*)
   propertyType : scope * string -> TYPE
   propertyType(s, x) = t :- { ps x' }
     ps == withoutAnnotation(resolveProperty(s, x), OVERRIDABLE()),
-    ps == [(_, (x', t)) | _] | error $[Property [x] is not defined] @x,
-    singleResult(ps, "Property", x),
+    ps == [(_, (x', t))],
     @x.ref := x'.
 
   singleResult : list((path * (string * TYPE))) * string * string

@@ -499,20 +499,3 @@ rules // utils
   argNames maps argName(list(*)) = list(*)
   argName : FormalArg -> string
   argName(Arg(x, _)) = x.
-
-  sameElements : list(string) * list(string)
-    sameElements1 : list(string) * list(string) * list(string)
-
-  sameElements(l1, l2) :-
-    sameElements1(l1, l2, l2),
-    sameElements1(l2, l1, l1).
-
-    sameElements1([], _, _) :- true.
-    sameElements1([x | xs], [x | ys], completeYs) :- sameElements1(xs, completeYs, completeYs).
-    sameElements1([x | xs], [y | ys], completeYs) :- sameElements1([x | xs], ys, completeYs).
-    sameElements1([x | xs], []      , completeYs) :- false.
-
-  typesOfStrings maps typeOfString(*, list(*)) = list(*)
-  typeOfString : scope * string -> TYPE
-  typeOfString(s, x) = t :-
-    resolveVar(s, x) == [(_, (_, t))] | error $[Unable to find variable [x]].
