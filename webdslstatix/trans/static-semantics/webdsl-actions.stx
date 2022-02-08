@@ -300,8 +300,13 @@ rules // lists and sets
   typeOfCollectionIndex(s, c, x) = t :- {ct xt}
     ct == typeOfExp(s, c),
     xt == typeOfExp(s, x),
+    indexedAccessAllowed(ct),
     typeCompatible(xt, int(s)) | error $[Index must be of type Int, [xt] given], // correct error message for tests
     t == stripGenericType(ct).
+
+  indexedAccessAllowed : TYPE
+  indexedAccessAllowed(_).
+  indexedAccessAllowed(SET(_)) :- false | error $[Indexed access \[\] is only allowed for List<type> and Set<type>].
 
   typeOfExp(s, ForExp2Exp(forExp)) = typeOfForExp(s, forExp).
 

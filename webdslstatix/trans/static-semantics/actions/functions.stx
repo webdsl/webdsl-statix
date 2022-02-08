@@ -52,8 +52,7 @@ rules // functions calls
   typeOfFunctionCallInternal(s, f, args, funSigs) = t :- { argTypes f' result }
     argTypes == typesOfExps(s, args),
     result == mostSpecificSigs(argTypes, typeCompatibleSigs(funSigs, argTypes)),
-    singleSignature(result, "function", f) | error $[Cannot resolve function [f] with compatible argument types] @f,
-    [(f', FUNCTION(_, _, t, _)) | _] == result | error $[Cannot resolve function [f] with compatible argument types] @f,
+    [(f', FUNCTION(_, _, t, _))] == result | error $[Cannot resolve function [f] with compatible argument types] @f,
     @f.ref := f',
     @f.type := t.
 
@@ -112,6 +111,12 @@ rules // function definitions
     stmtsOk(s_body, stmts, returnType),
     declFunctionEntity(s_ent, name, argTypes, returnType, static),
     noDuplicateFunDefsEntity(s_ent, name, argTypes).
+
+  entityFunctionOk(s_ent, Function(name@"save", FormalArgs([]), _, _), _) :-
+    false | error $[Entity function with name [name] collides with a built-in function that you are not allowed to overwrite] @name.
+
+  entityFunctionOk(s_ent, Function(name@"delete", FormalArgs([]), _, _), _) :-
+    false | error $[Entity function with name [name] collides with a built-in function that you are not allowed to overwrite] @name.
 
   // predicate that defines when a function can be cached
   canBeCached : scope * Function

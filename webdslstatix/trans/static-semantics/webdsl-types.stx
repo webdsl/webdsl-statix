@@ -286,3 +286,20 @@ rules // utils
   equalTypeB : TYPE * TYPE -> BOOL
   equalTypeB(T, T) = TRUE().
   equalTypeB(_, _) = FALSE().
+
+rules
+
+  ppType : TYPE -> string
+  ppType(t) = "<unknown pretty print type>" :- try { false } | warning $[Couldn't pretty-print type [t]].
+  ppType(ENTITY(e, _)) = e.
+  ppType(STATICENTITY(e, _)) = e.
+  ppType(NATIVECLASS(nc, _)) = nc.
+  ppType(STATICNATIVECLASS(nc, _)) = nc.
+  ppType(BUILTINTYPE(t, _)) = t.
+  ppType(STATICBUILTINTYPE(t, _)) = t.
+
+  ppType(REGEX()) = "Regex".
+  ppType(VOID()) = "Void".
+  ppType(TEMPLATEELEMENTS()) = "TemplateElements".
+  ppType(NULL()) = "Null".
+  ppType(UNTYPED()) = "UNTYPED".
