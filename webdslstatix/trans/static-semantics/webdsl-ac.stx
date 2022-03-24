@@ -84,9 +84,8 @@ rules // securitycontext and principal
     declareExtendScope(s, "securityContext", s_extend_security_context),
     extendScopes(resolveExtendScope(s, "securityContext"), s_extend_security_context).
 
-  declareCredentials maps declareCredential(*, list(*))
-  declareCredential : scope * TYPE
-  declareCredential(s, t) :- !var["credentials", withType(t)] in s.
+  declareCredentials : scope * list(TYPE)
+  declareCredentials(s, ts) :- !var["_credentials", withType(CREDENTIALS(ts))] in s.
 
 rules // access control rules
 
@@ -269,10 +268,10 @@ rules // utils
     resolveProperty(s_securityContext, "principal") == [(_, (_, t))]. // no fixed error message here to allow more specific error messages on higher predicates
 
   credentialTypes : scope -> list(TYPE)
-  credentialTypes(s) = ts :- { s_securityContext }
+  credentialTypes(s) = ts :- { s_securityContext result }
     resolveType(s, "securityContext") == [(_, (_, ENTITY(_, s_securityContext)))] | error $[securityContext not defined],
-    queryResultTypes(resolveProperty(s_securityContext, "credentials")) == ts,
-    ts == [_ | _] | error $[No credentials have been defined].
+    queryResultTypes(resolveProperty(s_securityContext, "_credentials")) == result,
+    result == [CREDENTIALS(ts) | _] | error $[No credentials have been defined].
 
   typesOfPointcutIdentifiers maps typesOfPointcutIdentifier(*, list(*)) = list(*)
   typesOfPointcutIdentifier : scope * string -> TYPE

@@ -29,7 +29,8 @@ signature
     TEMPLATE : string * list(TYPE) * BOOL -> TYPE
 
     // access control
-    POINTCUT  : string * list(TYPE) -> TYPE
+    POINTCUT    : string * list(TYPE) -> TYPE
+    CREDENTIALS : list(TYPE)          -> TYPE
 
     LIST : TYPE -> TYPE
     SET  : TYPE -> TYPE
