@@ -4,6 +4,7 @@ imports
   static-semantics/actions/functions
 
   static-semantics/webdsl-actions
+  static-semantics/webdsl-built-ins
   static-semantics/webdsl-entities
   static-semantics/webdsl-native
   static-semantics/webdsl-types
@@ -118,28 +119,28 @@ rules
     float == float(s),
 
     new s_int, declareExtendScope(s, "Int", s_int),
-    declFunctionEntity(s_int, "floatValue", [], float, FALSE()),
+    declBuiltInFunctionEntity(s_int, "floatValue", [], float, FALSE()),
 
     new s_file, declareExtendScope(s, "File", s_file),
-    declFunctionEntity(s_file, "download"           , []      , VOID(), FALSE()),
-    declFunctionEntity(s_file, "download"           , [string], VOID(), FALSE()),
-    declFunctionEntity(s_file, "fileName"           , []      , string, FALSE()),
-    declFunctionEntity(s_file, "fileNameForDownload", []      , string, FALSE()),
+    declBuiltInFunctionEntity(s_file, "download"           , []      , VOID(), FALSE()),
+    declBuiltInFunctionEntity(s_file, "download"           , [string], VOID(), FALSE()),
+    declBuiltInFunctionEntity(s_file, "fileName"           , []      , string, FALSE()),
+    declBuiltInFunctionEntity(s_file, "fileNameForDownload", []      , string, FALSE()),
 
     declareExtendScope(s, "Image", s_file), // also expose file functions to image
     new s_image, declareExtendScope(s, "Image", s_image),
-    declFunctionEntity(s_image, "resize"   , [int, int]          , VOID()  , FALSE()),
-    declFunctionEntity(s_image, "crop"     , [int, int, int, int], VOID()  , FALSE()),
-    declFunctionEntity(s_image, "getWidth" , []                  , int     , FALSE()),
-    declFunctionEntity(s_image, "getHeight", []                  , int     , FALSE()),
-    declFunctionEntity(s_image, "clone"    , []                  , image(s), FALSE()),
+    declBuiltInFunctionEntity(s_image, "resize"   , [int, int]          , VOID()  , FALSE()),
+    declBuiltInFunctionEntity(s_image, "crop"     , [int, int, int, int], VOID()  , FALSE()),
+    declBuiltInFunctionEntity(s_image, "getWidth" , []                  , int     , FALSE()),
+    declBuiltInFunctionEntity(s_image, "getHeight", []                  , int     , FALSE()),
+    declBuiltInFunctionEntity(s_image, "clone"    , []                  , image(s), FALSE()),
 
     new s_float, declareExtendScope(s, "Float", s_float),
-    declFunctionEntity(s_float, "round" , [], int, FALSE()),
-    declFunctionEntity(s_float, "floor" , [], int, FALSE()),
-    declFunctionEntity(s_float, "ceil"  , [], int, FALSE()),
-    declFunctionEntity(s_float, "log"   , [], float, FALSE()),
-    declFunctionEntity(s_float, "log2"  , [], float, FALSE()).
+    declBuiltInFunctionEntity(s_float, "round" , [], int, FALSE()),
+    declBuiltInFunctionEntity(s_float, "floor" , [], int, FALSE()),
+    declBuiltInFunctionEntity(s_float, "ceil"  , [], int, FALSE()),
+    declBuiltInFunctionEntity(s_float, "log"   , [], float, FALSE()),
+    declBuiltInFunctionEntity(s_float, "log2"  , [], float, FALSE()).
 
 rules // built-in functions and properties for built-in generic type List
 

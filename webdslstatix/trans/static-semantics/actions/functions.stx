@@ -99,7 +99,7 @@ rules // function definitions
     declareParameters(s_function, zipArgTypes(args, argTypes)),
     new s_body, s_body -P-> s_function,
     stmtsOk(s_body, stmts, returnType),
-    declFunctionGlobal(s_outer, name, argTypes, returnType).
+    declFunctionGlobal(s_outer, name, FUNCTION_ORIGIN(args), argTypes, returnType).
 
   entityFunctionOk : scope * Function * BOOL
   entityFunctionOk(s_ent, Function(name, FormalArgs(args), OptSortSome(returnSort), Block(stmts)), static) :- { argTypes returnType s_function s_body }
@@ -109,7 +109,7 @@ rules // function definitions
     declareParameters(s_function, zipArgTypes(args, argTypes)),
     new s_body, s_body -P-> s_function,
     stmtsOk(s_body, stmts, returnType),
-    declFunctionEntity(s_ent, name, argTypes, returnType, static),
+    declFunctionEntity(s_ent, name, FUNCTION_ORIGIN(args), argTypes, returnType, static),
     noDuplicateFunDefsEntity(s_ent, name, argTypes).
 
   entityFunctionOk(s_ent, Function(name@"save", FormalArgs([]), _, _), _) :-
@@ -125,14 +125,14 @@ rules // function definitions
 
   // declare a function in a given scope
   // and define the relation typeOfFunDecl with signature (argument types  * return type)
-  declFunctionGlobal : scope * string * list(TYPE) * TYPE
-  declFunctionGlobal(s, f, args, return) :-
-    declareFunction(s, f, args, return),
+  declFunctionGlobal : scope * string * ORIGIN * list(TYPE) * TYPE
+  declFunctionGlobal(s, f, origin, args, return) :-
+    declareFunction(s, f, origin, args, return),
     noDuplicateFunDefsGlobal(s, f, args).
 
-  declFunctionEntity : scope * string * list(TYPE) * TYPE * BOOL
-  declFunctionEntity(s, f, args, return, TRUE()) :- declareStaticFunction(s, f, args, return).
-  declFunctionEntity(s, f, args, return, FALSE()) :- declareFunction(s, f, args, return).
+  declFunctionEntity : scope * string * ORIGIN * list(TYPE) * TYPE * BOOL
+  declFunctionEntity(s, f, origin, args, return, TRUE()) :- declareStaticFunction(s, f, origin, args, return).
+  declFunctionEntity(s, f, origin, args, return, FALSE()) :- declareFunction(s, f, origin, args, return).
 
   // map syntactic types to semantic types
   typesOfArgs maps typeOfArg(*, list(*)) = list(*)
@@ -156,9 +156,9 @@ rules // function definitions
   noDuplicateFunDefsEntity : scope * string * list(TYPE)
   noDuplicateFunDefsEntity(s, f, types) :- { ps }
     query function filter EXTEND?
-                   and { f' :- f' == (f, _) }
+                   and { f' :- f' == (f, _, _) }
                    in s |-> ps,
-    amountOfFunDeclsWithArgs(filterFunctionResults(typesOf(ps), FALSE()), types, 0) == 1
+    amountOfFunDeclsWithArgs(filterFunctionResults(typesOfStripOrigin(ps), FALSE()), types, 0) == 1
         | error $[Function with name [f] and argument types [types] is already defined] @f. // correct error message for tests
 
   // helper function for noDuplicateFunDefs that counts the amount of function with a given name and argument types

@@ -10,6 +10,7 @@ imports
   static-semantics/ui/template-calls
 
   static-semantics/webdsl-actions
+  static-semantics/webdsl-built-ins
   static-semantics/webdsl-entities
   static-semantics/webdsl-types
   static-semantics/webdsl
@@ -28,9 +29,9 @@ rules // built-ins
     declareType(s_decl, "securityContext", ENTITY("securityContext", s_securityContext)),
     declareVar(s_decl, "securityContext", ENTITY("securityContext", s_securityContext)),
 
-    declareFunction(s_decl, "loggedIn", [], bool),
-    declareFunction(s_decl, "logout", [], entity),
-    declareFunction(s_decl, "principalAsEntity", [], entity),
+    declareBuiltInFunction(s_decl, "loggedIn", [], bool),
+    declareBuiltInFunction(s_decl, "logout", [], entity),
+    declareBuiltInFunction(s_decl, "principalAsEntity", [], entity),
 
     declareTemplate(s_decl, "login", []),
     declareTemplate(s_decl, "logout", []),
@@ -195,12 +196,12 @@ rules // predicates
     declareVar(s_predicate, "principal", principalType),
     declareVar(s_predicate, "loggedIn", bool),
     equalType(typeOfExp(s_predicate, exp), bool) | error $[Predicate should contain a Bool expression] @exp, // correct error message for tests
-    declPredicate(s, p, argTypes, bool, global).
+    declPredicate(s, p, FUNCTION_ORIGIN(args), argTypes, bool, global).
 
   // last bool arg denotes if the scope is global
-  declPredicate : scope * string * list(TYPE) * TYPE * BOOL
-  declPredicate(s, p, argTypes, return, TRUE()) :- declFunctionGlobal(s, p, argTypes, return).
-  declPredicate(s, p, argTypes, return, FALSE()) :- declFunctionEntity(s, p, argTypes, return, FALSE()).
+  declPredicate : scope * string * ORIGIN * list(TYPE) * TYPE * BOOL
+  declPredicate(s, p, origin, argTypes, return, TRUE()) :- declFunctionGlobal(s, p, origin, argTypes, return).
+  declPredicate(s, p, origin, argTypes, return, FALSE()) :- declFunctionEntity(s, p, origin, argTypes, return, FALSE()).
 
 rules // pointcuts
 

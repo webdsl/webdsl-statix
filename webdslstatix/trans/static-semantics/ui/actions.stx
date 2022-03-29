@@ -48,12 +48,12 @@ rules // action definitions
     argTypes == typesOfArgs(s, args),
     declareParameters(s_fun, zipArgTypes(args, argTypes)),
     new s_fun_body, s_fun_body -P-> s_fun,
-    optionallyDeclareAction(s_pha, a, argTypes, declare),
+    optionallyDeclareAction(s_pha, a, args, argTypes, declare),
     stmtsOk(s_fun_body, stmts, PAGE(_, _)).
 
-  optionallyDeclareAction : scope * string * list(TYPE) * BOOL
-  optionallyDeclareAction(_, _, _, FALSE()).
-  optionallyDeclareAction(s, a, ts, TRUE()) :- declareAction(s, a, ts).
+  optionallyDeclareAction : scope * string * list(FormalArg) * list(TYPE) * BOOL
+  optionallyDeclareAction(_, _, _, _, FALSE()).
+  optionallyDeclareAction(s, a, args, ts, TRUE()) :- declareAction(s, a, FUNCTION_ORIGIN(args), ts).
 
   defOk(_, Action2Definition(Action(_, a, _, _))) :- false | error $[Actions are only allowed in pages and templates] @a.
 

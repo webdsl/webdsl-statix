@@ -83,12 +83,12 @@ rules // native class functions
   nativeClassFunctionOk(s, s_class, NCFunction(NCFunctionStatic(), f, args, NCFunctionReturn(return))) :- {argTypes returnType}
     argTypes   == typesOfNativeTypes(s, args),
     returnType == typeOfNativeType(s, return),
-    declareStaticFunction(s_class, f, argTypes, returnType).
+    declareStaticFunction(s_class, f, NATIVE_FUNCTION_ORIGIN(args), argTypes, returnType).
 
   nativeClassFunctionOk(s, s_class, NCFunction(NCFunctionStaticNone(), f, args, NCFunctionReturn(return))) :- {argTypes returnType}
     argTypes   == typesOfNativeTypes(s, args),
     returnType == typeOfNativeType(s, return),
-    declareFunction(s_class, f, argTypes, returnType).
+    declareFunction(s_class, f, NATIVE_FUNCTION_ORIGIN(args), argTypes, returnType).
 
 rules // constructors
 
@@ -97,11 +97,11 @@ rules // constructors
   declareNativeClassConstructor(_, _, _, _).
   declareNativeClassConstructor(s, s_class, name, NCConstructor(args)) :- {argTypes}
     argTypes == typesOfNativeTypes(s, args),
-    declFunctionGlobal(s, name, argTypes, NATIVECLASS(name, s_class)).
+    declFunctionGlobal(s, name, NATIVE_FUNCTION_ORIGIN(args), argTypes, NATIVECLASS(name, s_class)).
 
   declareNativeClassConstructor(s, s_class, name, NCConstructorFromStatic(_, args)) :- {argTypes}
     argTypes == typesOfNativeTypes(s, args),
-    declFunctionGlobal(s, name, argTypes, NATIVECLASS(name, s_class)).
+    declFunctionGlobal(s, name, NATIVE_FUNCTION_ORIGIN(args), argTypes, NATIVECLASS(name, s_class)).
 
 rules // typing of expressions
 
