@@ -130,12 +130,11 @@ rules // extend entity declaration
 
   resolveExtendScope : scope * string -> list((path * (string * scope)))
   resolveExtendScope(s, x) = ps :-
-    query extendscope filter P* F* ((EXTEND? INHERIT*) | (DEF? (IMPORT | IMPORTLIB)? GLOBAL?))
+    query extendscope filter P* F* DEF? (IMPORT | IMPORTLIB)? GLOBAL?
                       and { e' :- e' == (x, _) }
-                      min $ < P, $ < F, $ < EXTEND, $ < INHERIT, $ < DEF, $ < IMPORT, $ < IMPORTLIB, $ < GLOBAL,
-                          P < F, P < EXTEND, P < INHERIT, P < DEF, P < IMPORT, P < IMPORTLIB, P < GLOBAL,
-                          F < EXTEND, F < INHERIT, F < DEF, F < IMPORT, F < IMPORTLIB, F < GLOBAL,
-                          EXTEND < INHERIT,
+                      min $ < P, $ < F, $ < DEF, $ < IMPORT, $ < IMPORTLIB, $ < GLOBAL,
+                          P < F, P < DEF, P < IMPORT, P < IMPORTLIB, P < GLOBAL,
+                          F < DEF, F < IMPORT, F < IMPORTLIB, F < GLOBAL,
                           DEF < IMPORT, DEF < IMPORTLIB, DEF < GLOBAL,
                           IMPORT < GLOBAL, IMPORTLIB < GLOBAL
                       and { (entity, entity_scope), (entity, entity_scope) }
