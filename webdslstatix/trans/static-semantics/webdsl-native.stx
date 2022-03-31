@@ -50,7 +50,8 @@ rules // native class extending
   defOk(s, ExtendNativeClass(c, NCAlias(alias), elems)) :- { s_extend_class class_scopes }
     resolveType(s, alias) == [(_, (_, NATIVECLASS(_, _)))] | error $[Native class [alias] is not defined],
     new s_extend_class, s_extend_class -DEF-> s,
-    declareExtendScopeIfDefined(s, alias, s_extend_class, nativeClassDeclaredB(resolveType(s, alias))),
+    declareExtendScope(s, alias, s_extend_class), // declare entity_scope to be linked to entity_name
+    extendScopes(resolveExtendScope(s, alias), s_extend_class),
     nativeClassElementsOk(s, s_extend_class, elems).
 
   nativeClassDeclaredB : list((path * (string * TYPE))) -> BOOL
