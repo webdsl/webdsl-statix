@@ -162,16 +162,8 @@ rules // ui declaration and resolving
   declarePage : scope * string * list(TYPE)
   declarePage(s, p, ts) :-
     !page[p, withType(PAGE(p, ts))] in s,
-    noClashingTemplateDefinitions(s, p),
+    resolveTemplate(s, p) == [] | error $[Multiple page/template definitions with name [p]] @p,
     resolvePage(s, p) == [_] | error $[Multiple page/template definitions with name [p]] @p. // correct error message for tests
-
-  noClashingTemplateDefinitions : scope * string
-    noClashingTemplateDefinitions_helper maps noClashingTemplateDefinitions_internal(*, list(*))
-    noClashingTemplateDefinitions_internal : string * (path * (string * TYPE))
-
-  noClashingTemplateDefinitions(s, p) :- noClashingTemplateDefinitions_helper(p, resolveTemplate(s, p)).
-    noClashingTemplateDefinitions_internal(p, (_, (_, TEMPLATE(_, [], _)))) :- false | error $[Multiple page/template definitions with name [p]] @p. // correct error message for tests
-    noClashingTemplateDefinitions_internal(_, _).
 
   resolveTemplate : scope * string -> list((path * (string * TYPE)))
   resolveTemplate(s, t) = resolveTemplate_internal(s, t, FALSE()).
