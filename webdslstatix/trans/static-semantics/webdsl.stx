@@ -151,18 +151,13 @@ rules // ui declaration and resolving
   declareTemplate_internal : scope * string * list(TYPE) * BOOL
   declareTemplate_internal(s, t, ts, ajax) :-
     !template[t, withType(TEMPLATE(t, ts, ajax))] in s,
-    noClashingPageDefinitions(s, ts, t),
+    resolvePage(s, t) == [] | error $[Multiple page/template definitions with name [t]] @t,
     filterTemplateResultsArgs(resolveTemplate(s, t), ts) == [_] | error $[Multiple page/template definitions with name [t] and argument types [ts]] @t. // correct error message for tests
-
-  // in the compiler, templates without arguments can clash with page definitions
-  noClashingPageDefinitions : scope * list(TYPE) * string
-  noClashingPageDefinitions(_, _, _).
-  noClashingPageDefinitions(s, [], t) :- resolvePage(s, t) == [] | error $[Multiple page/template definitions with name [t]] @t. // correct error message for tests
 
   declarePage : scope * string * list(TYPE)
   declarePage(s, p, ts) :-
     !page[p, withType(PAGE(p, ts))] in s,
-    resolveTemplate(s, p) == [] | error $[Multiple page/template definitions with name [p]] @p,
+    resolveTemplate(s, p) == [] | error $[Multiple page/template definitions with name [p]] @p, // correct error message for tests
     resolvePage(s, p) == [_] | error $[Multiple page/template definitions with name [p]] @p. // correct error message for tests
 
   resolveTemplate : scope * string -> list((path * (string * TYPE)))
