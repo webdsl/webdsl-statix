@@ -3,33 +3,35 @@ module desugar/desugar-ui
 imports
   src-gen/signatures/-
 
+  desugar/utils
+
 rules
 
   normalize-ui : Define(mods, x, fargs, targs, telements) -> DefinePage(newMods, x, fargs, targs, telements)
     where
-        <elem> (Page(), mods)
+        <elem(raw-eq)> (Page(), mods)
       ; newMods := <filter(not(?Page()))> mods
 
 //  normalize-ui : Define([], x, fargs, targs, telements) -> DefineTemplate([], x, fargs, targs, telements)
 
   normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineTemplate(newMods, x, fargs, targs, telements)
     where
-        <elem> (Template(), mods)
+        <elem(raw-eq)> (Template(), mods)
       ; <not(fetch-elem(?Email()))> mods
       ; newMods := <filter(not(?Template()))> mods
 
   normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineTemplate(mods, x, fargs, targs, telements)
     where
-        <elem> (AjaxTemplate(), mods)
+        <elem(raw-eq)> (AjaxTemplate(), mods)
 
   normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineEmail(newMods, x, fargs, targs, telements)
     where
-        <elem> (Email(), mods)
+        <elem(raw-eq)> (Email(), mods)
       ; newMods := <filter(not(?Email() <+ ?Template()))> mods
 
   normalize-ui : DefineTemplate(mods, x, fargs, targs, telements) -> DefineEmail(newMods, x, fargs, targs, telements)
     where
-        <elem> (Email(), mods)
+        <elem(raw-eq)> (Email(), mods)
       ; newMods := <filter(not(?Email()))> mods
 
   normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineTemplate(mods, x, fargs, targs, telements)
