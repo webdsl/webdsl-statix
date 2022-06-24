@@ -6,6 +6,7 @@ imports
   static-semantics/entities/annotations
 
   static-semantics/webdsl-entities
+  static-semantics/webdsl-built-ins
   static-semantics/webdsl
 
 rules
@@ -22,9 +23,9 @@ rules
     declareVar(s_ent, "name"     , string(s)), declareAnnotations(s_ent, "name", [OVERRIDABLE(), NAME(), DERIVED()]),
     declareVar(s_ent, "created"  , datetime(s)),
     declareVar(s_ent, "modified" , datetime(s)),
-    declareFunction(s_ent, "save"  , [], VOID()),
-    declareFunction(s_ent, "delete", [], VOID()), // TO-DO: not allowed on session entities and global vars
-    declareFunction(s_object, "toString", [], string(s)),
+    declareBuiltInFunction(s_ent, "save"  , [], VOID()),
+    declareBuiltInFunction(s_ent, "delete", [], VOID()), // TO-DO: not allowed on session entities and global vars
+    declareBuiltInFunction(s_object, "toString", [], string(s)),
 
     new s_sessionmessage, s_sessionmessage -INHERIT-> s_ent,
     declareType(s, "SessionMessage", ENTITY("SessionMessage", s_sessionmessage)),

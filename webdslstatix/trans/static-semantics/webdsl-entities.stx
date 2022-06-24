@@ -68,18 +68,9 @@ rules // entity declaration
   declExtendEntity(s, entity_name, bodydecs) :- {s_extend_entity entity_scopes}
     resolveType(s, entity_name) == [(_, (_, ENTITY(_, _)))] | error $[Entity [entity_name] is not defined],
     new s_extend_entity, s_extend_entity -DEF-> s,
-    declareExtendScopeIfDefined(s, entity_name, s_extend_entity, entityDeclaredB(resolveType(s, entity_name))),
+    declareExtendScope(s, entity_name, s_extend_entity), // declare entity_scope to be linked to entity_name
+    extendScopes(resolveExtendScope(s, entity_name), s_extend_entity),
     declEntityBody(s_extend_entity, entity_name, bodydecs).
-
-  declareExtendScopeIfDefined : scope * string * scope * BOOL
-  declareExtendScopeIfDefined(_, _, _, FALSE()).
-  declareExtendScopeIfDefined(s, name, s_extend, TRUE()) :-
-    declareExtendScope(s, name, s_extend), // declare entity_scope to be linked to entity_name
-    extendScopes(resolveExtendScope(s, name), s_extend).
-
-  entityDeclaredB : list((path * (string * TYPE))) -> BOOL
-  entityDeclaredB(_) = FALSE().
-  entityDeclaredB([(_, (_, ENTITY(_, _)))]) = TRUE().
 
   noCircularInheritance : scope
   noCircularInheritance(s_ent) :- {res}

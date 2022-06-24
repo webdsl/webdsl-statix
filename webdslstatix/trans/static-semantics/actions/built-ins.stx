@@ -2,6 +2,7 @@ module static-semantics/actions/built-ins
 
 imports
   static-semantics/types/built-ins
+  static-semantics/webdsl-built-ins
   static-semantics/webdsl-types
   static-semantics/webdsl
 
@@ -22,43 +23,43 @@ rules
     url       == url(s),
     entity    == entity(s),
 
-    declareFunction(s, "now"     , []               , datetime),
-    declareFunction(s, "today"   , []               , date),
-    declareFunction(s, "Date"    , [string, string] , date),
-    declareFunction(s, "Date"    , [string]         , date),
-    declareFunction(s, "Time"    , [string, string] , time),
-    declareFunction(s, "Time"    , [string]         , time),
-    declareFunction(s, "DateTime", [string, string] , datetime),
-    declareFunction(s, "DateTime", [string]         , datetime),
-    declareFunction(s, "random"  , [int, int]       , int),
-    declareFunction(s, "random"  , [int]            , int),
-    declareFunction(s, "random"  , []               , float),
-    declareFunction(s, "url"     , [string]         , url),
+    declareBuiltInFunction(s, "now"     , []               , datetime),
+    declareBuiltInFunction(s, "today"   , []               , date),
+    declareBuiltInFunction(s, "Date"    , [string, string] , date),
+    declareBuiltInFunction(s, "Date"    , [string]         , date),
+    declareBuiltInFunction(s, "Time"    , [string, string] , time),
+    declareBuiltInFunction(s, "Time"    , [string]         , time),
+    declareBuiltInFunction(s, "DateTime", [string, string] , datetime),
+    declareBuiltInFunction(s, "DateTime", [string]         , datetime),
+    declareBuiltInFunction(s, "random"  , [int, int]       , int),
+    declareBuiltInFunction(s, "random"  , [int]            , int),
+    declareBuiltInFunction(s, "random"  , []               , float),
+    declareBuiltInFunction(s, "url"     , [string]         , url),
 
-    declareFunction(s, "randomUUID"     , []      , uuid),
-    declareFunction(s, "UUIDFromString" , [string], uuid),
+    declareBuiltInFunction(s, "randomUUID"     , []      , uuid),
+    declareBuiltInFunction(s, "UUIDFromString" , [string], uuid),
 
-    declareFunction(s, "getSessionManager", [], definedTypeNoRef(s, "SessionManager")),
+    declareBuiltInFunction(s, "getSessionManager", [], definedTypeNoRef(s, "SessionManager")),
 
-    declareFunction(s, "cancel"  , [], void),
-    declareFunction(s, "rollback", [], void),
-    declareFunction(s, "flush"   , [], void),
+    declareBuiltInFunction(s, "cancel"  , [], void),
+    declareBuiltInFunction(s, "rollback", [], void),
+    declareBuiltInFunction(s, "flush"   , [], void),
 
-    declareFunction(s, "getValidationErrorsByName", [string], LIST(string)),
+    declareBuiltInFunction(s, "getValidationErrorsByName", [string], LIST(string)),
 
-    declareFunction(s, "getHttpMethod"          , []      , string),
-    declareFunction(s, "getRequestParameter"    , [string], string),
-    declareFunction(s, "getRequestParameterList", [string], LIST(string)),
-    declareFunction(s, "readRequestBody"        , []      , string),
+    declareBuiltInFunction(s, "getHttpMethod"          , []      , string),
+    declareBuiltInFunction(s, "getRequestParameter"    , [string], string),
+    declareBuiltInFunction(s, "getRequestParameterList", [string], LIST(string)),
+    declareBuiltInFunction(s, "readRequestBody"        , []      , string),
 
-    declareFunction(s, "attribute"          , [string]        , string),
-    declareFunction(s, "attribute"          , [string, string], string),
-    declareFunction(s, "hasNotNullAttribute", []              , bool),
+    declareBuiltInFunction(s, "attribute"          , [string]        , string),
+    declareBuiltInFunction(s, "attribute"          , [string, string], string),
+    declareBuiltInFunction(s, "hasNotNullAttribute", []              , bool),
 
-    declareFunction(s, "message", [string], void),
-    declareFunction(s, "log"    , [object], void),
+    declareBuiltInFunction(s, "message", [string], void),
+    declareBuiltInFunction(s, "log"    , [object], void),
 
-    declareFunction(s, "assert", [bool], void),
-    declareFunction(s, "assert", [bool, string], void),
+    declareBuiltInFunction(s, "assert", [bool], void),
+    declareBuiltInFunction(s, "assert", [bool, string], void),
 
-    declareFunction(s, "loadEntity", [string, uuid], entity).
+    declareBuiltInFunction(s, "loadEntity", [string, uuid], entity).

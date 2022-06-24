@@ -22,18 +22,18 @@ rules
 
   declareLoadOrFindEntity : scope * string * string * string * string * string * TYPE * BOOL
   declareLoadOrFindEntity(s, loadName, _, _, _, _, t, FALSE()) :-
-    declareFunction(s, loadName, [uuid(s)], t).
+    declareFunction(s, loadName, GENERATED_ORIGIN(1), [uuid(s)], t).
 
   declareLoadOrFindEntity(s, _, findName, getUniqueName, isUniqueName, isUniqueIdName, t, TRUE()) :- { s_ent idName idType bool }
     bool == bool(s),
     t == ENTITY(_, s_ent),
     resolveAnnotationByAnno(s_ent, ID()) == [(_, (idName, _))],
     idType == propertyType(s_ent, idName),
-    declareFunction(s, findName, [idType], t),
-    declareFunction(s, getUniqueName, [idType], t),
-    declareFunction(s, isUniqueName, [t], bool),
-    declareFunction(s, isUniqueIdName, [idType], bool),
-    declareFunction(s, isUniqueIdName, [idType, t], bool).
+    declareFunction(s, findName,       GENERATED_ORIGIN(1), [idType], t),
+    declareFunction(s, getUniqueName,  GENERATED_ORIGIN(1), [idType], t),
+    declareFunction(s, isUniqueName,   GENERATED_ORIGIN(1), [t], bool),
+    declareFunction(s, isUniqueIdName, GENERATED_ORIGIN(1), [idType], bool),
+    declareFunction(s, isUniqueIdName, GENERATED_ORIGIN(2), [idType, t], bool).
 
 rules
 
@@ -50,5 +50,5 @@ rules
   declareFindEntityByProperty : scope * string * string * TYPE * TYPE * BOOL
   declareFindEntityByProperty(_, _, _, _, _, FALSE()).
   declareFindEntityByProperty(s, findByPropName, findByPropLikeName, entType, propType, TRUE()) :-
-    declareFunction(s, findByPropName, [propType], LIST(entType)),
-    declareFunction(s, findByPropLikeName, [propType], LIST(entType)).
+    declareFunction(s, findByPropName, PROP_ORIGIN(), [propType], LIST(entType)),
+    declareFunction(s, findByPropLikeName, PROP_ORIGIN(), [propType], LIST(entType)).

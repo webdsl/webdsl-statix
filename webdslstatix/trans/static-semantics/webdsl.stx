@@ -26,12 +26,19 @@ imports
 signature
 
   sorts
-    TYPE // semantic type
-    BOOL // used as return values of functional constraints
+    TYPE   // semantic type
+    BOOL   // used as return values of functional constraints
+    ORIGIN // dummy data: used to guide scope graph differ
 
   constructors
     TRUE : BOOL
     FALSE : BOOL
+
+    FUNCTION_ORIGIN: list(FormalArg) -> ORIGIN
+    NATIVE_FUNCTION_ORIGIN: list(NativeType) -> ORIGIN
+    BUILTIN_ORIGIN: list(TYPE) -> ORIGIN
+    PROP_ORIGIN: ORIGIN // prop names should be unique. TODO: how about non-unique properties in incorrect programs?
+    GENERATED_ORIGIN: int -> ORIGIN  // unary identity-derived function
 
   name-resolution
     labels
@@ -55,7 +62,7 @@ signature
     template : string * scope
     ac       : string * scope
 
-    function : string * scope
+    function : string * ORIGIN * scope
 
     var      : string * scope
 
@@ -110,6 +117,11 @@ rules // type declaration and resolving
   typesOf maps typeOf(list(*)) = list(*)
   typeOf : (path * (string * scope)) -> (path * (string * TYPE))
   typeOf((p, (x, s))) = (p, (x, t)) :-
+    query typeOf filter e in s |-> [(_, t)].
+
+  typesOfStripOrigin maps typeOfStripOrigin(list(*)) = list(*)
+  typeOfStripOrigin : (path * (string * ORIGIN * scope)) -> (path * (string * TYPE))
+  typeOfStripOrigin((p, (x, _, s))) = (p, (x, t)) :-
     query typeOf filter e in s |-> [(_, t)].
 
   simpleTypeOf : scope -> TYPE
@@ -208,40 +220,40 @@ rules // ac rules
 
 rules // function declaration and resolving
 
-  declareFunction : scope * string * list(TYPE) * TYPE
-  declareFunction(s, f, args, return) :- declareFunction_internal(s, f, args, return, FALSE()).
+  declareFunction : scope * string * ORIGIN * list(TYPE) * TYPE
+  declareFunction(s, f, origin, args, return) :- declareFunction_internal(s, f, origin, args, return, FALSE()).
 
-  declareStaticFunction : scope * string * list(TYPE) * TYPE
-  declareStaticFunction(s, f, args, return) :- declareFunction_internal(s, f, args, return, TRUE()).
+  declareStaticFunction : scope * string * ORIGIN * list(TYPE) * TYPE
+  declareStaticFunction(s, f, origin, args, return) :- declareFunction_internal(s, f, origin, args, return, TRUE()).
 
-  declareFunction_internal : scope * string * list(TYPE) * TYPE * BOOL
-  declareFunction_internal(s, f, args, return, static) :- { s_type }
+  declareFunction_internal : scope * string * ORIGIN * list(TYPE) * TYPE * BOOL
+  declareFunction_internal(s, f, origin, args, return, static) :- { s_type }
     s_type == withType(FUNCTION(f, args, return, static)),
-    !function[f, s_type] in s.
+    !function[f, origin, s_type] in s.
 
   resolveFunction : scope * string -> list((path * (string * TYPE)))
-  resolveFunction(s, f) = filterFunctionResults(typesOf(ps), FALSE()) :-
+  resolveFunction(s, f) = filterFunctionResults(typesOfStripOrigin(ps), FALSE()) :-
     query function filter P* F* ((EXTEND? (INHERIT EXTEND?)*) | (DEF? (IMPORT | IMPORTLIB)?))
-                   and { f' :- f' == (f, _) }
+                   and { f' :- f' == (f, _, _) }
                    in s |-> ps.
 
   resolveEntityFunction : scope * string -> list((path * (string * TYPE)))
-  resolveEntityFunction(s, x) = filterFunctionResults(typesOf(ps), FALSE()) :-
+  resolveEntityFunction(s, x) = filterFunctionResults(typesOfStripOrigin(ps), FALSE()) :-
     query function filter EXTEND? (INHERIT EXTEND?)*
-                   and { x' :- x' == (x, _) }
+                   and { x' :- x' == (x, _, _) }
                    min $ < INHERIT, EXTEND < INHERIT // do not shadow EXTEND with $
-                   and { (f, T1), (f, T2) :- {args}
+                   and { (f, _, T1), (f, _, T2) :- {args}
                      simpleTypeOf(T1) == FUNCTION(f, args, _, _),
                      simpleTypeOf(T2) == FUNCTION(f, args, _, _)
                    } // only shadow when function has the same name and argument types
                    in s |-> ps.
 
   resolveStaticEntityFunction : scope * string -> list((path * (string * TYPE)))
-  resolveStaticEntityFunction(s, x) = filterFunctionResults(typesOf(ps), TRUE()) :-
+  resolveStaticEntityFunction(s, x) = filterFunctionResults(typesOfStripOrigin(ps), TRUE()) :-
     query function filter EXTEND? (INHERIT EXTEND?)*
-                   and { x' :- x' == (x, _) }
+                   and { x' :- x' == (x, _, _) }
                    min $ < INHERIT, EXTEND < INHERIT // do not shadow EXTEND with $
-                   and { (f, T1), (f, T2) :- {args}
+                   and { (f, _, T1), (f, _, T2) :- {args}
                      simpleTypeOf(T1) == FUNCTION(f, args, _, _),
                      simpleTypeOf(T2) == FUNCTION(f, args, _, _)
                    } // only shadow when function has the same name and argument types
@@ -256,15 +268,15 @@ rules // function declaration and resolving
 
 rules // action and placeholder declaration and resolving
 
-  declareAction : scope * string * list(TYPE)
-  declareAction(s, a, ts) :-
-    !function[a, withType(ACTION(a, ts))] in s,
+  declareAction : scope * string * ORIGIN * list(TYPE)
+  declareAction(s, a, origin, ts) :-
+    !function[a, origin, withType(ACTION(a, ts))] in s,
     resolveAction(s, a) == [(_, (_, ACTION(a, ts)))] | error $[Action [a] is defined multiple times] @a.
 
   resolveAction : scope * string -> list((path * (string * TYPE)))
-  resolveAction(s, a) = filterActionResults(typesOf(as)) :-
+  resolveAction(s, a) = filterActionResults(typesOfStripOrigin(as)) :-
     query function filter P*
-                   and { a' :- a' == (a, _) }
+                   and { a' :- a' == (a, _, _) }
                    in s |-> as.
 
   declarePlaceholder : scope * string

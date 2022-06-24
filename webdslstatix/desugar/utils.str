@@ -11,3 +11,5 @@ rules
     explode-string
     ; [to-lower | id]
     ; implode-string
+
+  raw-eq = strip-annos; eq

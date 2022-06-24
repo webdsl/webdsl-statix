@@ -1,0 +1,15 @@
+module static-semantics/webdsl-built-ins
+
+imports
+  static-semantics/actions/functions
+
+  static-semantics/webdsl
+
+rules
+
+  declareBuiltInFunction : scope * string * list(TYPE) * TYPE
+  declareBuiltInFunction(s, f, args, return) :- declareFunction(s, f, BUILTIN_ORIGIN(args), args, return).
+
+  declBuiltInFunctionEntity : scope * string * list(TYPE) * TYPE * BOOL
+  declBuiltInFunctionEntity(s, f, args, return, static) :-
+    declFunctionEntity(s, f, BUILTIN_ORIGIN(args), args, return, static).

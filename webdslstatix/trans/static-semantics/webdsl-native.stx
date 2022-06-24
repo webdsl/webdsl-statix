@@ -50,7 +50,8 @@ rules // native class extending
   defOk(s, ExtendNativeClass(c, NCAlias(alias), elems)) :- { s_extend_class class_scopes }
     resolveType(s, alias) == [(_, (_, NATIVECLASS(_, _)))] | error $[Native class [alias] is not defined],
     new s_extend_class, s_extend_class -DEF-> s,
-    declareExtendScopeIfDefined(s, alias, s_extend_class, nativeClassDeclaredB(resolveType(s, alias))),
+    declareExtendScope(s, alias, s_extend_class), // declare entity_scope to be linked to entity_name
+    extendScopes(resolveExtendScope(s, alias), s_extend_class),
     nativeClassElementsOk(s, s_extend_class, elems).
 
   nativeClassDeclaredB : list((path * (string * TYPE))) -> BOOL
@@ -83,12 +84,12 @@ rules // native class functions
   nativeClassFunctionOk(s, s_class, NCFunction(NCFunctionStatic(), f, args, NCFunctionReturn(return))) :- {argTypes returnType}
     argTypes   == typesOfNativeTypes(s, args),
     returnType == typeOfNativeType(s, return),
-    declareStaticFunction(s_class, f, argTypes, returnType).
+    declareStaticFunction(s_class, f, NATIVE_FUNCTION_ORIGIN(args), argTypes, returnType).
 
   nativeClassFunctionOk(s, s_class, NCFunction(NCFunctionStaticNone(), f, args, NCFunctionReturn(return))) :- {argTypes returnType}
     argTypes   == typesOfNativeTypes(s, args),
     returnType == typeOfNativeType(s, return),
-    declareFunction(s_class, f, argTypes, returnType).
+    declareFunction(s_class, f, NATIVE_FUNCTION_ORIGIN(args), argTypes, returnType).
 
 rules // constructors
 
@@ -97,11 +98,11 @@ rules // constructors
   declareNativeClassConstructor(_, _, _, _).
   declareNativeClassConstructor(s, s_class, name, NCConstructor(args)) :- {argTypes}
     argTypes == typesOfNativeTypes(s, args),
-    declFunctionGlobal(s, name, argTypes, NATIVECLASS(name, s_class)).
+    declFunctionGlobal(s, name, NATIVE_FUNCTION_ORIGIN(args), argTypes, NATIVECLASS(name, s_class)).
 
   declareNativeClassConstructor(s, s_class, name, NCConstructorFromStatic(_, args)) :- {argTypes}
     argTypes == typesOfNativeTypes(s, args),
-    declFunctionGlobal(s, name, argTypes, NATIVECLASS(name, s_class)).
+    declFunctionGlobal(s, name, NATIVE_FUNCTION_ORIGIN(args), argTypes, NATIVECLASS(name, s_class)).
 
 rules // typing of expressions
 
