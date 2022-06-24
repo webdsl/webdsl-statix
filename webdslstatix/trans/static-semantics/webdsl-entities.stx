@@ -171,8 +171,8 @@ rules // entity resolving
   typeOfExp(s, exp@ObjectCreation(x, prop_assignments)) = e :-
     definedType(s, x) == e,
     e == ENTITY(_, _),
+    propAssignmentsOk(s, e, prop_assignments),
     @exp.type := e.
-    // TO-DO: check prop assignments
 
   typeOfThis : scope -> TYPE
   typeOfThis(s_ent) = t :-
@@ -182,6 +182,16 @@ rules // entity resolving
 
   typeOfProperty(_, _, "this") = UNTYPED() :-
     false | error $[This is only accessible from within the entity].
+
+  // object creation properties
+  propAssignmentsOk maps propAssignmentOk(*, *, list(*))
+  propAssignmentOk : scope * TYPE * PropAssignment
+  propAssignmentOk(_, _, _) :- try { false } | warning $[This property assignment is not yet implemented].
+  propAssignmentOk(s, ent@ENTITY(e, s_ent), PropAssignment(ObjectPropertyAssignment(x, exp))) :- { propType expType }
+    typeOfProperty(s, ent, x) == propType | error $[Entity [e] does not contain a property [x]],
+    isMutable(s_ent, x) | error $[Assignment to derived property is not allowed.],
+    typeOfExp(s, exp) == expType,
+    typeCompatible(expType, propType) | error $[Type of expression [expType] is incompatible with type of entity property [propType]].
 
 rules // subtyping
 
