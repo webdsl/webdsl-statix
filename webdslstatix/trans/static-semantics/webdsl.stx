@@ -27,7 +27,7 @@ signature
 
   sorts
     TYPE   // semantic type
-    BOOL   // used as return values of functional constraints
+    BOOL   // used as return values of functional rules
     ORIGIN // dummy data: used to guide scope graph differ
 
   constructors

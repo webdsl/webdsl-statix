@@ -27,7 +27,7 @@ rules // binary operators
   typeOfExp(s, exp@Sub(e1, e2)) = T :- { T1 T2 }
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) == T,
+    lubForAddNumeric(T1, T2) == T,
     inequalType(T, UNTYPED()) | error $[Wrong operand types for operator -: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := T.
 
@@ -35,7 +35,7 @@ rules // binary operators
   typeOfExp(s, exp@Mul(e1, e2)) = T :- { T1 T2 }
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) == T,
+    lubForAddNumeric(T1, T2) == T,
     inequalType(T, UNTYPED()) | error $[Wrong operand types for operator *: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := T.
 
@@ -43,7 +43,7 @@ rules // binary operators
   typeOfExp(s, exp@Div(e1, e2)) = T :- { T1 T2 }
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) == T,
+    lubForAddNumeric(T1, T2) == T,
     inequalType(T, UNTYPED()) | error $[Wrong operand types for operator /: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := T.
 
@@ -51,7 +51,7 @@ rules // binary operators
   typeOfExp(s, exp@Mod(e1, e2)) = T :- { T1 T2 }
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) == T,
+    lubForAddNumeric(T1, T2) == T,
     inequalType(T, UNTYPED()) | error $[Wrong operand types for operator %: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := T.
 
@@ -60,7 +60,7 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator >: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    lubForAddNumeric(T1, T2) != UNTYPED() | error $[Wrong operand types for operator >: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 >= e2)
@@ -68,7 +68,7 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator >=: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    lubForAddNumeric(T1, T2) != UNTYPED() | error $[Wrong operand types for operator >=: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 < e2)
@@ -76,7 +76,7 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator <: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    lubForAddNumeric(T1, T2) != UNTYPED() | error $[Wrong operand types for operator <: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 <= e2)
@@ -84,7 +84,7 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    equalNumericType(T1, T2) != UNTYPED() | error $[Wrong operand types for operator <=: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    lubForAddNumeric(T1, T2) != UNTYPED() | error $[Wrong operand types for operator <=: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 && e2)
@@ -106,10 +106,10 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    orB(
+    or(
       typeCompatibleB(T1, T2),
       typeCompatibleB(T2, T1)
-    ) == TRUE() | error $[Wrong operand types for operator ==: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    ) | error $[Wrong operand types for operator ==: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 != e2)
@@ -117,10 +117,10 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    orB(
+    or(
       typeCompatibleB(T1, T2),
       typeCompatibleB(T2, T1)
-    ) == TRUE() | error $[Wrong operand types for operator !=: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    ) | error $[Wrong operand types for operator !=: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type :=t.
 
   // e1 in e2
@@ -141,21 +141,21 @@ rules // unary operators
 rules // utils
 
   lubForAdd : TYPE * TYPE -> TYPE
-  lubForAdd(T1, T2) = equalNumericType(T1, T2).
+  lubForAdd(T1, T2) = lubForAddNumeric(T1, T2).
   lubForAdd(t@BUILTINTYPE("String", _), _) = t.
   lubForAdd(_, t@BUILTINTYPE("String", _)) = t.
 
-  equalNumericType : TYPE * TYPE -> TYPE
-  equalNumericType(_, _) = UNTYPED().
-  equalNumericType(t@BUILTINTYPE("Int", _)    , BUILTINTYPE("Int", _))    = t.
-  equalNumericType(t@BUILTINTYPE("Long", _)   , BUILTINTYPE("Long", _))   = t.
-  equalNumericType(t@BUILTINTYPE("Float", _)  , BUILTINTYPE("Float", _))  = t.
-  equalNumericType(t@NATIVECLASS("Double", _) , NATIVECLASS("Double", _)) = t.
+  lubForAddNumeric : TYPE * TYPE -> TYPE
+  lubForAddNumeric(_, _) = UNTYPED().
+  lubForAddNumeric(t@BUILTINTYPE("Int", _)    , t) = t.
+  lubForAddNumeric(t@BUILTINTYPE("Long", _)   , t) = t.
+  lubForAddNumeric(t@BUILTINTYPE("Float", _)  , t) = t.
+  lubForAddNumeric(t@NATIVECLASS("Double", _) , t) = t.
 
   // implicit widening from int to long
-  equalNumericType(BUILTINTYPE("Int", _)      , t@BUILTINTYPE("Long", _))   = t.
-  equalNumericType(t@BUILTINTYPE("Long", _)   , BUILTINTYPE("Int", _))      = t.
+  lubForAddNumeric(BUILTINTYPE("Int", _)      , t@BUILTINTYPE("Long", _))   = t.
+  lubForAddNumeric(t@BUILTINTYPE("Long", _)   , BUILTINTYPE("Int", _))      = t.
 
   // implicit widening from float to double
-  equalNumericType(t@NATIVECLASS("Double", _) , BUILTINTYPE("Float", _))    = t.
-  equalNumericType(BUILTINTYPE("Float", _)    , t@NATIVECLASS("Double", _)) = t.
+  lubForAddNumeric(t@NATIVECLASS("Double", _) , BUILTINTYPE("Float", _))    = t.
+  lubForAddNumeric(BUILTINTYPE("Float", _)    , t@NATIVECLASS("Double", _)) = t.
