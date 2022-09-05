@@ -247,6 +247,11 @@ rules // resolve reference types
     ps == [(_, (x', t))],
     @x.ref := x'.
 
+  propertyTypeNoRef : scope * string -> TYPE
+  propertyTypeNoRef(s, x) = t :- { ps x' }
+    ps == withoutAnnotation(resolveProperty(s, x), OVERRIDABLE()),
+    ps == [(_, (x', t))].
+
   singleResult : list((path * (string * TYPE))) * string * string
   singleResult([], type, x) :- false | error $[[type] [x] is not defined] @x.
   singleResult([_ | [_ | _]], type, x) :- false | error $[[type] [x] is defined multiple times] @x.

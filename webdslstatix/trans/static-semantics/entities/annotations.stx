@@ -220,8 +220,8 @@ rules // predicates
 
   isMutable : scope * string
   isMutable(s, x) :- hasAnnotationB(resolveAnnotation(s, x), DERIVED()) == FALSE().
-  isMutable(s, x@"name") :- { t } propertyType(s, x) == t.      // only allow assignment if the property is overridden
-  isMutable(s, x@"naturalId") :- { t } propertyType(s, x) == t. // only allow assignment if the property is overridden
+  isMutable(s, x@"name") :- { t } propertyTypeNoRef(s, x) == t.      // only allow assignment if the property is overridden
+  isMutable(s, x@"naturalId") :- { t } propertyTypeNoRef(s, x) == t. // only allow assignment if the property is overridden
 
   isMutableProperty : TYPE * string
   isMutableProperty(_, _) :- false | error $[Can only check mutability of native class and entity properties].

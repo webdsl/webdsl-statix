@@ -189,7 +189,7 @@ rules // entity resolving
   propAssignmentOk(_, _, _) :- try { false } | warning $[This property assignment is not yet implemented].
   propAssignmentOk(s, ent@ENTITY(e, s_ent), PropAssignment(ObjectPropertyAssignment(x, exp))) :- { propType expType }
     typeOfProperty(s, ent, x) == propType | error $[Entity [e] does not contain a property [x]],
-    isMutable(s_ent, x) | error $[Assignment to derived property is not allowed.],
+    isMutable(s_ent, x) | error $[Assignment to derived property is not allowed.], // correct error message for tests
     typeOfExp(s, exp) == expType,
     typeCompatible(expType, propType) | error $[Type of expression [expType] is incompatible with type of entity property [propType]].
 
