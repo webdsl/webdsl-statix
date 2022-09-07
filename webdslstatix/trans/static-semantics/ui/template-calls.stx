@@ -62,6 +62,14 @@ rules // pre-defined template calls
   templateCallOk(s, _, ValidationErrors(_)).
   templateCallOk(s, _, ValidationErrorsEmpty()).
 
+  // navigatebutton
+  templateCallOk(s, s_pha, tc@TemplateCall(TemplateCallId("navigatebutton"), TCallArgs([Exp(ThisCall2Exp(ThisCall("url", _))) | _]), _, _)) :-
+    templateCallOk_internal(s, s_pha, tc, FALSE()).
+
+  templateCallOk(s, s_pha, tc@TemplateCall(TemplateCallId(t@"navigatebutton"), TCallArgs([Exp(ThisCall2Exp(ThisCall(p, args))) | [Exp(e)]]), _, _)) :-
+    typeCompatible(typeOfExp(s, e), string(s)) | error $[Cannot resolve template [t] with compatible argument types] @tc,
+    pageCallOk_internal(s, p, args).
+
 rules // navigate calls
 
   templateElementOk(s, _, s_pha, NavigateCall(pc, props, elems)) :-
