@@ -20,12 +20,13 @@ rules // unimplemented
 rules // entity declaration
 
   // entity x : super { ... }
-  defOk(s, e@Entity(x, super, bodydecs)) :- {s_entity super' s_super}
-    resolveType(s, super) == [(_, (super', ENTITY(_, s_super)))] | error $[Entity [super] is not defined] @super,
+  defOk(s, e@Entity(x, super, bodydecs)) :- {s_entity super' s_super superType }
+    resolveType(s, super) == [(_, (super', superType@ENTITY(_, s_super)))] | error $[Entity [super] is not defined] @super,
     new s_entity, s_entity -INHERIT-> s_super, s_entity -DEF-> s,
     noCircularInheritance(s_entity) | error $[Circular inhertitance detected] @e,
     declEntity(s, s_entity, x, bodydecs),
     declareVar(s, x, STATICENTITY(x, s_entity)), // declare entity_name as global variable that refers to the static scope
+    declSuperVar(s_entity, superType),
     declareEntityAnnotation(s_entity, SUBENTITY()),
     @super.ref := super'.
 
@@ -83,6 +84,11 @@ rules // entity declaration
   declThisVar(s_ent, t) :-
     declareVar(s_ent, "this", t),
     declareAnnotation(s_ent, "this", DERIVED()). // prevent mutability of this var
+
+  declSuperVar : scope * TYPE
+  declSuperVar(s_ent, t) :-
+    declareVar(s_ent, "super", t),
+    declareAnnotation(s_ent, "super", DERIVED()). // prevent mutability of super var
 
   defOk(s, Enum(e, values)) :- { s_entity s_super t }
     entity(s) == ENTITY(_, s_super),
@@ -176,7 +182,7 @@ rules // entity resolving
 
   typeOfThis : scope -> TYPE
   typeOfThis(s_ent) = t :-
-    resolveVar(s_ent, "this") == [(_, (_, t))] | error $["this" is not defined in this context].
+    resolveVar(s_ent, "this") == [(_, (_, t))] | error $[Variable "this" not defined].
 
   typeOfExp(s, This(_)) = typeOfThis(s).
 

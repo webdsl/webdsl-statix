@@ -91,6 +91,7 @@ rules // variable declaration and assignment
 
   noDuplicateVarDefsInSuper : scope * string
   noDuplicateVarDefsInSuper(_, "this"). // allow "this" var to be redefined in sub
+  noDuplicateVarDefsInSuper(_, "super"). // allow "super" var to be redefined in sub
   noDuplicateVarDefsInSuper(s_sub, x) :- { xs nonOverridable }
     resolveProperty(s_sub, x) == xs,
     withoutAnnotation(xs, OVERRIDABLE()) == nonOverridable,

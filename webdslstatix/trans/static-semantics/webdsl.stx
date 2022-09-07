@@ -128,12 +128,6 @@ rules // type declaration and resolving
   simpleTypeOf(s) = t :-
     query typeOf filter e in s |-> [(_, t)].
 
-  typeDeclaredInLibB : scope * string -> BOOL
-  typeDeclaredInLibB(s, t) = notB(emtpyQueryResultB(typesOf(ts))) :-
-    query type filter P* F* DEF? IMPORTLIB
-               and { t' :- t' == (t, _) }
-               in s |-> ts.
-
 rules // extend entity declaration
 
   declareExtendScope : scope * string * scope
