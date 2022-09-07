@@ -1,4 +1,4 @@
-//Syntax error
+//Unexpected input
 
 application f_Po5__2B8V
 
