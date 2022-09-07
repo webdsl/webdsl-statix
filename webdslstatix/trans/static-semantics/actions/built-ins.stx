@@ -61,5 +61,9 @@ rules
 
     declareBuiltInFunction(s, "assert", [bool], void),
     declareBuiltInFunction(s, "assert", [bool, string], void),
+    declareBuiltInFunction(s, "assertEquals", [object, object], void),
+    declareBuiltInFunction(s, "assertEquals", [object, object, string], void),
+    declareBuiltInFunction(s, "assertNotSame", [object, object], void),
+    declareBuiltInFunction(s, "assertNotSame", [object, object, string], void),
 
     declareBuiltInFunction(s, "loadEntity", [string, uuid], entity).
