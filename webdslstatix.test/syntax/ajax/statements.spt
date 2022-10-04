@@ -14,11 +14,11 @@ fixture [[
 // replace
 test ajax replace [[
   replace(ph, content());
-]] parse succeeds parse to AjaxStatement(AjaxReplace(Var("ph"), TemplateCall(TemplateCallId("content"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone())))
+]] parse succeeds parse to AjaxStatement(AjaxReplace(Var("ph"), AjaxReplaceTemplateCall(TemplateCall(TemplateCallId("content"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone()))))
 
 test ajax replace string [[
   replace("ph", content());
-]] parse succeeds parse to AjaxStatement(AjaxReplace(Const(StringConst(String([StringValue("ph")]))), TemplateCall(TemplateCallId("content"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone())))
+]] parse succeeds parse to AjaxStatement(AjaxReplace(Const(StringConst(String([StringValue("ph")]))), AjaxReplaceTemplateCall(TemplateCall(TemplateCallId("content"), TCallArgs([]), OptTCallPropAssignsNone(), TemplateBodyNone()))))
 
 
 // append
