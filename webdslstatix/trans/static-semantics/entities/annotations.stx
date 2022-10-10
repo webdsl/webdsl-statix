@@ -113,7 +113,12 @@ rules // annotations
     noDoubleInverse(sortType, prop),
     thisType == typeOfThis(s),
     propType == typeOfProperty(s_eval, sortType, prop),
-    equalType(propType, thisType) | error $[Inverse property must be the same type as this entity] @prop.
+    inverseListAnnoTypeOk(propType, thisType, prop).
+
+  inverseListAnnoTypeOk : TYPE * TYPE * string
+  inverseListAnnoTypeOk(T, T, _).
+  inverseListAnnoTypeOk(LIST(_), _, prop) :- false | error $[Inverse between lists not allowed] @prop. // correct error message for tests
+  inverseListAnnoTypeOk(_, _, prop) :- false | error $[Inverse property must be the same type as this entity] @prop.
 
   // inverse property on Set<t>
   annotationOk(s, p, SET(t), InverseAnno(sort, prop)) :- { sortType s_eval thisType propType }
