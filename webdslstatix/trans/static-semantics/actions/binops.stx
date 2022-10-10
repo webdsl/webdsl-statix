@@ -21,14 +21,14 @@ rules // binary operators
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     lubForAdd(T1, T2) == T,
-    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator +: [e1] has type [T1], [e2] has type [T2]]. // correct error message for tests
+    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator Add: [e1] has type [T1], [e2] has type [T2]]. // correct error message for tests
 
   // (e1 - e2)
   typeOfExp(s, exp@Sub(e1, e2)) = T :- { T1 T2 }
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     lubForAddNumeric(T1, T2) == T,
-    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator -: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator Sub: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := T.
 
   // (e1 * e2)
@@ -36,7 +36,7 @@ rules // binary operators
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     lubForAddNumeric(T1, T2) == T,
-    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator *: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator Mul: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := T.
 
   // (e1 / e2)
@@ -44,7 +44,7 @@ rules // binary operators
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     lubForAddNumeric(T1, T2) == T,
-    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator /: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator Div: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := T.
 
   // (e1 % e2)
@@ -52,7 +52,7 @@ rules // binary operators
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
     lubForAddNumeric(T1, T2) == T,
-    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator %: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    inequalType(T, UNTYPED()) | error $[Wrong operand types for operator Mod: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := T.
 
   // (e1 > e2)
@@ -60,7 +60,7 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    lubForAddNumeric(T1, T2) != UNTYPED() | error $[Wrong operand types for operator >: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    lubForAddNumeric(T1, T2) != UNTYPED() | error $[Wrong operand types for operator LargerThan: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 >= e2)
@@ -68,7 +68,7 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    lubForAddNumeric(T1, T2) != UNTYPED() | error $[Wrong operand types for operator >=: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    lubForAddNumeric(T1, T2) != UNTYPED() | error $[Wrong operand types for operator LargerThanOrEqual: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 < e2)
@@ -76,7 +76,7 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    lubForAddNumeric(T1, T2) != UNTYPED() | error $[Wrong operand types for operator <: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    lubForAddNumeric(T1, T2) != UNTYPED() | error $[Wrong operand types for operator SmallerThan: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 <= e2)
@@ -84,7 +84,7 @@ rules // binary operators
     t == bool(s),
     typeOfExp(s, e1) == T1,
     typeOfExp(s, e2) == T2,
-    lubForAddNumeric(T1, T2) != UNTYPED() | error $[Wrong operand types for operator <=: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    lubForAddNumeric(T1, T2) != UNTYPED() | error $[Wrong operand types for operator SmallerThanOrEqual: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 && e2)
@@ -109,7 +109,7 @@ rules // binary operators
     or(
       typeCompatibleB(T1, T2),
       typeCompatibleB(T2, T1)
-    ) | error $[Wrong operand types for operator ==: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
+    ) | error $[Wrong operand types for operator Eq: [e1] has type [T1], [e2] has type [T2]], // correct error message for tests
     @exp.type := t.
 
   // (e1 != e2)
