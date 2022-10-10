@@ -6,7 +6,7 @@ application ifexp
 
   define page root(){
     output(if("asd")"1"else"2")
-    output(if(1==1)"1"else2)
+    output(if(1==1)"1"else 2)
     output(if(2!=34) 1 else "2")
   }
   

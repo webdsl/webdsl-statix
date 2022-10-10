@@ -149,10 +149,10 @@ rules // built-in functions and properties for built-in generic type List
   typeOfProperty(s, LIST(t), "last") = t.
 
   typeOfCall(s, LIST(t), "add", [arg]) = VOID() :-
-    typeCompatible(typeOfExp(s, arg), t).
+    typeCompatible(typeOfExp(s, arg), t) | error $[No function 'add' with compatible argument types found].
 
   typeOfCall(s, LIST(t), "remove", [arg]) = VOID() :-
-    typeCompatible(typeOfExp(s, arg), t).
+    typeCompatible(typeOfExp(s, arg), t) | error $[No function 'remove' with compatible argument types found].
 
   typeOfCall(s, LIST(_), "clear", []) = VOID().
 
