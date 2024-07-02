@@ -3,6 +3,7 @@ module WebDSL-Generated
 imports
   WebDSL-Core
   WebDSL-Lexical
+  WebDSL-DataModel
 
 /*
   Add sort and constructors for elements that can be generated durig the desugaring phase.
