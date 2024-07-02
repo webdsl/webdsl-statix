@@ -1,0 +1,18 @@
+module desugar/utils
+
+imports
+  strategolib
+
+rules
+
+  capitalize-string =
+    explode-string
+    ; [to-upper | id]
+    ; implode-string
+
+  decapitalize-string =
+    explode-string
+    ; [to-lower | id]
+    ; implode-string
+
+  raw-eq = strip-annos; eq

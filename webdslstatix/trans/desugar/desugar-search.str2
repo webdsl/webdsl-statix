@@ -1,0 +1,526 @@
+module desugar/desugar-search
+
+imports
+  strategolib
+  signatures/-
+  desugar/utils
+
+rules
+
+  normalize-search : CharFilterDepr(name, args) -> CharFilter(name, args)
+  normalize-search : TokenFilterDepr(name, args) -> TokenFilter(name, args)
+
+  normalize-search : ConstraintFilterAlt(constraints) -> ConstraintFilter(constraints)
+  normalize-search : FacetDefAlt(constraints) -> FacetDef(constraints)
+
+  normalize-search : DiscreteFacetDefDepr(sf, exp) -> DiscreteFacetDef(sf, exp)
+  normalize-search : RangeFacetDefDepr(sf, ranges) -> RangeFacetDef(sf, ranges)
+
+  normalize-search : SearchMappingDepr(x, content) -> SearchMapping(x, content)
+  normalize-search : SearchMappingEmbeddedDepr(content) -> SearchMappingEmbedded(content)
+
+  normalize-search : SearchNamespaceMappingAlt(x) -> SearchNamespaceMapping(x)
+  normalize-search : SearchFieldMappingAlt(sf, kw, parts) -> SearchFieldMapping(sf, kw, parts)
+
+  normalize-search : EmbeddedDepthAlt(x) -> EmbeddedDepth(x)
+
+  normalize-search : RangeAlt(open, exp1, exp2, close) -> Range(open, exp1, exp2, close)
+  normalize-search : AscendingAbbr() -> Ascending()
+  normalize-search : DescendingAbbr() -> Descending()
+
+  normalize-search : OptAnalyzerArgumentsNone() -> AnalyzerArguments([])
+
+  normalize-search : AllFacetResults(field, e_searcher) -> FacetResults(field, e_searcher)
+
+  normalize-search : Section(s, defs) -> Section(s, defs')
+    where ents := <filter(entities-without-search-elems(|defs))> defs
+        ; <not(?0)> <length> ents
+    with  new-search-elems := <concat> <map(construct-search-elems)> ents
+        ; defs' := <conc> (defs, new-search-elems)
+
+// helper rules to filter and construct entity search definitions
+
+  entities-without-search-elems(|defs) : e -> e
+    where
+          <?Entity(entity_name, _, _) <+ ?EntityNoSuper(entity_name, _)> e
+        ; searcher_name := <concat-strings> [entity_name, "Searcher"]
+        ; <not(fetch(?NativeClass(_, NCAlias(searcher_name), _, _)))> defs
+
+  construct-search-elems : e -> elems
+    with <?Entity(entity_name, _, defs) <+ ?EntityNoSuper(entity_name, defs)> e
+        ; searcher := <construct-searcher-class> (entity_name, <concat-strings> [entity_name, "Searcher"])
+        ; search_functions := <construct-search-functions> (entity_name, <concat-strings> ["search", entity_name])
+        ; generated_functions := <construct-generated-functions> (entity_name, defs)
+        ; searcher_mapping := <construct-entity-to-searcher-mapping> entity_name
+        ; elems := [searcher | [searcher_mapping | <conc> (search_functions, generated_functions)]]
+
+  construct-searcher-class : (entity_name, searcher_name) -> NativeClass(<concat-strings> ["webdsl.generated.search.", searcher_name], NCAlias(searcher_name), NCSuper("Searcher"),
+      [ NCConstructor([])
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStatic()
+          , "escapeQuery"
+          , [NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType("String"))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStatic()
+          , "autoCompleteSuggest"
+          , [NativeSimpleType("String"), NativeSimpleType("String"), NativeSimpleType("String"), NativeSimpleType("Int")]
+          , NCFunctionReturn(NativeGenericType("List", [NativeSimpleType("String")]))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStatic()
+          , "autoCompleteSuggest"
+          , [ NativeSimpleType("String")
+            , NativeSimpleType("String")
+            , NativeGenericType("List", [NativeSimpleType("String")])
+            , NativeSimpleType("Int")
+            ]
+          , NCFunctionReturn(NativeGenericType("List", [NativeSimpleType("String")]))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStatic()
+          , "autoCompleteSuggest"
+          , [NativeSimpleType("String"), NativeSimpleType("String"), NativeSimpleType("Int")]
+          , NCFunctionReturn(NativeGenericType("List", [NativeSimpleType("String")]))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStatic()
+          , "autoCompleteSuggest"
+          , [NativeSimpleType("String"), NativeGenericType("List", [NativeSimpleType("String")]), NativeSimpleType("Int")]
+          , NCFunctionReturn(NativeGenericType("List", [NativeSimpleType("String")]))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStatic()
+          , "spellSuggest"
+          , [ NativeSimpleType("String")
+            , NativeSimpleType("String")
+            , NativeGenericType("List", [NativeSimpleType("String")])
+            , NativeSimpleType("Float")
+            , NativeSimpleType("Int")
+            ]
+          , NCFunctionReturn(NativeGenericType("List", [NativeSimpleType("String")]))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStatic()
+          , "spellSuggest"
+          , [ NativeSimpleType("String")
+            , NativeSimpleType("String")
+            , NativeSimpleType("String")
+            , NativeSimpleType("Float")
+            , NativeSimpleType("Int")
+            ]
+          , NCFunctionReturn(NativeGenericType("List", [NativeSimpleType("String")]))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStatic()
+          , "spellSuggest"
+          , [ NativeSimpleType("String")
+            , NativeGenericType("List", [NativeSimpleType("String")])
+            , NativeSimpleType("Float")
+            , NativeSimpleType("Int")
+            ]
+          , NCFunctionReturn(NativeGenericType("List", [NativeSimpleType("String")]))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStatic()
+          , "spellSuggest"
+          , [NativeSimpleType("String"), NativeSimpleType("String"), NativeSimpleType("Float"), NativeSimpleType("Int")]
+          , NCFunctionReturn(NativeGenericType("List", [NativeSimpleType("String")]))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStatic()
+          , "fromString"
+          , [NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "allowLuceneSyntax"
+          , [NativeSimpleType("Bool")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "addFieldFilter"
+          , [NativeSimpleType("String"), NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "addFieldFilter"
+          , [NativeSimpleType("String"), NativeSimpleType("Object")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "removeFieldFilter"
+          , [NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "clearFieldFilters", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "setNamespace"
+          , [NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "setNamespace"
+          , [NativeSimpleType("Object")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "getNamespace", [], NCFunctionReturn(NativeSimpleType("String"))))
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "removeNamespace", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "boost"
+          , [NativeSimpleType("String"), NativeSimpleType("Float")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "strictMatching"
+          , [NativeSimpleType("Bool")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "enableFaceting"
+          , [NativeSimpleType("String"), NativeSimpleType("Int")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "enableFaceting"
+          , [NativeSimpleType("String"), NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "addFacetSelection"
+          , [NativeSimpleType("Facet")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "addFacetSelection"
+          , [NativeGenericType("List", [NativeSimpleType("Facet")])]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "removeFacetSelection"
+          , [NativeSimpleType("Facet")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "clearFacetSelection"
+          , [NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "clearFacetSelection", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "defaultFields", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "field"
+          , [NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "fields"
+          , [NativeGenericType("List", [NativeSimpleType("String")])]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "setOffset"
+          , [NativeSimpleType("Int")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "setLimit"
+          , [NativeSimpleType("Int")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "moreLikeThis"
+          , [NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "moreLikeThis"
+          , [ NativeSimpleType("String")
+            , NativeSimpleType("Int")
+            , NativeSimpleType("Int")
+            , NativeSimpleType("Int")
+            , NativeSimpleType("Int")
+            , NativeSimpleType("Int")
+            , NativeSimpleType("Int")
+            ]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "must", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "mustNot", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "should", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "startMustClause", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "startMustNotClause", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "endClause", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "query"
+          , [NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "query"
+          , [NativeSimpleType("Object")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "phraseQuery"
+          , [NativeSimpleType("String"), NativeSimpleType("Int")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "phraseQuery"
+          , [NativeSimpleType("Object"), NativeSimpleType("Int")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "regexQuery"
+          , [NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "sortDesc"
+          , [NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "sortAsc"
+          , [NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "clearSorting", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "rangeQuery"
+          , [NativeSimpleType("Int"), NativeSimpleType("Int"), NativeSimpleType("Bool"), NativeSimpleType("Bool")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "rangeQuery"
+          , [NativeSimpleType("Float"), NativeSimpleType("Float"), NativeSimpleType("Bool"), NativeSimpleType("Bool")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "rangeQuery"
+          , [NativeSimpleType("Date"), NativeSimpleType("Date"), NativeSimpleType("Bool"), NativeSimpleType("Bool")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "rangeQuery"
+          , [NativeSimpleType("String"), NativeSimpleType("String"), NativeSimpleType("Bool"), NativeSimpleType("Bool")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "rangeQuery"
+          , [NativeSimpleType("Int"), NativeSimpleType("Int")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "rangeQuery"
+          , [NativeSimpleType("Float"), NativeSimpleType("Float")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "rangeQuery"
+          , [NativeSimpleType("Date"), NativeSimpleType("Date")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "rangeQuery"
+          , [NativeSimpleType("String"), NativeSimpleType("String")]
+          , NCFunctionReturn(NativeSimpleType(searcher_name))
+          )
+        )
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "matchAllQuery", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
+      , NCFunctionElement(
+          NCFunction(
+            NCFunctionStaticNone()
+          , "results"
+          , []
+          , NCFunctionReturn(NativeGenericType("List", [NativeSimpleType(entity_name)]))
+          )
+        )
+      , NCFunctionElement(NCFunction(NCFunctionStaticNone(), "reset", [], NCFunctionReturn(NativeSimpleType(searcher_name))))
+      ]
+    )
+
+  construct-search-functions : (entity_name, function_name) -> [
+      GlobalFunction(
+        Function(
+            function_name
+          , FormalArgs([Arg("query", SimpleSort("String"))])
+          , OptSortSome(GenericSort("List", [SimpleSort(entity_name)]))
+          , Block([])
+        )
+      )
+    , GlobalFunction(
+        Function(
+            function_name
+          , FormalArgs([Arg("query", SimpleSort("String")), Arg("limit", SimpleSort("Int"))])
+          , OptSortSome(GenericSort("List", [SimpleSort(entity_name)]))
+          , Block([])
+        )
+      )
+    , GlobalFunction(
+        Function(
+            function_name
+          , FormalArgs([Arg("query", SimpleSort("String")), Arg("limit", SimpleSort("Int")), Arg("offset", SimpleSort("Int"))])
+          , OptSortSome(GenericSort("List", [SimpleSort(entity_name)]))
+          , Block([])
+        )
+      )
+    ]
+
+  construct-entity-to-searcher-mapping : entity_name -> result
+    with
+        result := GeneratedDefinition(Generated([
+            "entitySearcherMapping"
+          , entity_name
+          , <concat-strings> [entity_name, "Searcher"]
+        ]))
+
+  construct-generated-functions : (entity_name, entity_body_defs) -> result
+    with
+        load_or_find := GeneratedDefinition(Generated([
+            "loadOrFindEntity"
+          , entity_name
+          , <concat-strings> ["load", entity_name]
+          , <concat-strings> ["find", entity_name]
+          , <concat-strings> ["getUnique", entity_name]
+          , <concat-strings> ["isUnique", entity_name]
+          , <concat-strings> ["isUnique", entity_name, "Id"]]))
+      ; find_by_property_functions := <filter(construct-find-entity-by-property-function(|entity_name))> entity_body_defs
+      ; result := [load_or_find | find_by_property_functions]
+
+  construct-find-entity-by-property-function(|entity_name) : Property(p, _, _, _) -> f
+    with
+        function_name := ""
+      ; f := GeneratedDefinition(Generated([
+            "findEntityByProperty"
+          , entity_name
+          , p
+          , <concat-strings> ["find", entity_name, "By", <capitalize-string> p]
+          , <concat-strings> ["find", entity_name, "By", <capitalize-string> p, "Like"]]
+        ))

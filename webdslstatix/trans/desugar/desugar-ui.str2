@@ -1,0 +1,117 @@
+module desugar/desugar-ui
+
+imports
+  strategolib
+  signatures/-
+  desugar/utils
+
+rules
+
+  normalize-ui : Define(mods, x, fargs, targs, telements) -> DefinePage(newMods, x, fargs, targs, telements)
+    where
+        <elem(raw-eq)> (Page(), mods)
+      ; newMods := <filter(not(?Page()))> mods
+
+//  normalize-ui : Define([], x, fargs, targs, telements) -> DefineTemplate([], x, fargs, targs, telements)
+
+  normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineTemplate(newMods, x, fargs, targs, telements)
+    where
+        <elem(raw-eq)> (Template(), mods)
+      ; <not(fetch-elem(?Email()))> mods
+      ; newMods := <filter(not(?Template()))> mods
+
+  normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineTemplate(mods, x, fargs, targs, telements)
+    where
+        <elem(raw-eq)> (AjaxTemplate(), mods)
+
+  normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineEmail(newMods, x, fargs, targs, telements)
+    where
+        <elem(raw-eq)> (Email(), mods)
+      ; newMods := <filter(not(?Email() <+ ?Template()))> mods
+
+  normalize-ui : DefineTemplate(mods, x, fargs, targs, telements) -> DefineEmail(newMods, x, fargs, targs, telements)
+    where
+        <elem(raw-eq)> (Email(), mods)
+      ; newMods := <filter(not(?Email()))> mods
+
+  normalize-ui : Define(mods, x, fargs, targs, telements) -> DefineTemplate(mods, x, fargs, targs, telements)
+    where
+        <not(fetch-elem(?Page()))> mods
+      ; <not(fetch-elem(?Template()))> mods
+      ; <not(fetch-elem(?AjaxTemplate()))> mods
+      ; <not(fetch-elem(?Email()))> mods
+
+  normalize-ui : OptFormalArgsNone() -> FormalArgs([])
+  normalize-ui : OptTemplateArgsNone() -> TemplateArgs([])
+  normalize-ui : OptTCallArgsNone() -> TCallArgs([])
+  normalize-ui : OptTCallPropAssignsNone() -> TCallPropAssigns([])
+  normalize-ui : TemplateBodyNone() -> TemplateBody([])
+  normalize-ui : HTMLWrapperAssignsNone() -> HTMLWrapperAssigns([])
+
+  normalize-ui : NavigateCallParenthesesNoProps(p, elems) -> NavigateCall(p, [], elems)
+  normalize-ui : NavigateCallParentheses(p, props, elems) -> NavigateCall(p, props, elems)
+  normalize-ui : NavigateCallNoProps(p, elems) -> NavigateCall(p, [], elems)
+
+  normalize-ui : SubmitActionNoProps(exp, action) -> Submit(exp, action, [])
+  normalize-ui : SubmitAction(exp, action, props) -> Submit(exp, action, props)
+  normalize-ui : SubmitNoProps(exp, action) -> Submit(exp, action, [])
+
+  normalize-ui : SubmitLinkActionNoProps(exp, action) -> SubmitLink(exp, action, [])
+  normalize-ui : SubmitLinkAction(exp, action, props) -> SubmitLink(exp, action, props)
+  normalize-ui : SubmitLinkNoProps(exp, action) -> SubmitLink(exp, action, [])
+
+  // desugar deprecated submit and submitlink syntax to submitelem and submitlinkelem
+  normalize-ui : Submit(exp, action, props) -> SubmitElem(action, [], elems)
+    with elems := [TemplateCall(TemplateCallId("output"), TCallArgs([Exp(exp)]), TCallPropAssigns([]), TemplateBody([]))]
+  normalize-ui : SubmitLink(exp, action, props) -> SubmitLinkElem(action, [], elems)
+    with elems := [TemplateCall(TemplateCallId("output"), TCallArgs([Exp(exp)]), TCallPropAssigns([]), TemplateBody([]))]
+
+  normalize-ui : SubmitElemNoProps(action, elems) -> SubmitElem(action, [], elems)
+  normalize-ui : SubmitLinkElemNoProps(action, elems) -> SubmitLinkElem(action, [], elems)
+  normalize-ui : DownloadLinkNoProps(action, elems) -> DownloadLink(action, [], elems)
+  normalize-ui : OutputImageNoProps(action, elems) -> OutputImage(action, [], elems)
+
+  normalize-ui : PropertySubmitColon(prop, call) -> PropertySubmit(prop, call)
+  normalize-ui : PropertySubmitAssign(prop, call) -> PropertySubmit(prop, call)
+
+  normalize-ui : PropertyAssignmentColon(x, val) -> PropertyAssignment(x, val)
+  normalize-ui : PropertyAssignmentAssign(x, val) -> PropertyAssignment(x, val)
+
+  normalize-ui : HTMLWrapperAssignComma(attribute) -> HTMLWrapperAssign(attribute)
+
+  normalize-ui :
+    IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)], OptElseTemplNone()){anno*} -> IfTempl(e1, elem1*, [IfTempl(e2, elem2*, [])]){anno*}
+
+  normalize-ui:
+    IfNoElseTempl(e1, elem1*) -> IfTempl(e1, elem1*, [])
+
+  normalize-ui :
+    IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)], ElseTempl(elem3*)){anno*} -> IfTempl(e1, elem1*, [IfTempl(e2, elem2*, elem3*)]){anno*}
+
+  normalize-ui :
+    IfElseIfTempl(e1, elem1*, [ElseIfTempl(e2, elem2*)|elseif*@[_|_]], elem){anno*} ->
+    IfTempl(e1, elem1*, [IfElseIfTempl(e2, elem2*, elseif*, elem)]){anno*}
+
+  normalize-ui: OptFilterNone() -> OptFilterSome(FilterNoOrderByNoLimit(True()))
+
+  normalize-ui: ForSeparatorNone() -> ForSeparator([])
+
+  normalize-ui : TemplateVarDeclDepr(x, sort) -> TemplateVarDecl(x, sort)
+  normalize-ui : TemplateVarDeclInitDepr(x, sort, exp) -> TemplateVarDeclInit(x, sort, exp)
+  normalize-ui : TemplateVarDeclInitInferredDepr(x, exp) -> TemplateVarDeclInitInferred(x, exp)
+
+  normalize-ui : HTMLWrapper(HTMLWrapperBody(x, y, HTMLWrapperAssigns(assigns))) -> DefineTemplate([], x, OptFormalArgsNone(), OptTemplateArgsNone(), [
+    XMLElement(
+        y
+      , attrs //TO-DO attributes here
+      , [] // no template elements, no need to analyze "elements" call
+      , y
+    )
+  ])
+    with attrs := <map(\HTMLWrapperAssign(attr) -> attr\)> assigns
+
+  normalize-ui: Section(s, defs) -> Section(s, defs')
+    where <fetch(?TemplateDefinition(HTMLWrapperMultiple(_)))> defs
+    with  (body*,rest*) := <partition(?TemplateDefinition(HTMLWrapperMultiple(<id>)))> defs
+        ; newtemplate* := <concat; map(\x@HTMLWrapperBody(a,b,c) -> TemplateDefinition(HTMLWrapper(x))\)> body*
+        ; defs' := [newtemplate*, rest*]

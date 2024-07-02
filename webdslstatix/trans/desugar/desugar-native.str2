@@ -1,0 +1,15 @@
+module desugar/desugar-native
+
+imports
+  strategolib
+  signatures/-
+
+rules
+
+  normalize-native : NativeGenericTypeList(x) -> NativeGenericType("List", x)
+  normalize-native : NativeGenericTypeSet(x)  -> NativeGenericType("Set", x)
+
+  normalize-native : NCFunctionReturnNone() -> NCFunctionReturn(NativeSimpleType("Void"))
+
+  normalize-native : NativeClass(c, NCAliasNone(), s, elems) -> NativeClass(c, NCAlias(c), s, elems)
+  normalize-native : ExtendNativeClass(c, NCAliasNone(), elems) -> ExtendNativeClass(c, NCAlias(c), elems)

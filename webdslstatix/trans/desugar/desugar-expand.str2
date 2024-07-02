@@ -1,0 +1,49 @@
+module desugar/desugar-expand
+
+imports
+  strategolib
+  signatures/-
+  desugar/utils
+
+rules
+
+  normalize-expand : DeriveNoBody(p, exp, ps) -> Derive(p, exp, ps, DeriveBody([]))
+  normalize-expand : DeriveNoForNoBody(p, exp) -> Derive(p, exp, [], DeriveBody([]))
+  normalize-expand : DeriveNoFor(p, exp, body) -> Derive(p, exp, [], body)
+
+  normalize-expand : Section(s, defs) -> Section(s, defs')
+    where derives := <filter(derive-cruds-without-page-elems(|defs))> defs
+        ; <not(?0)> <length> derives
+    with  new-derive-page-elems := <concat> <map(construct-derive-page-elems)> derives
+        ; defs' := <conc> (defs, new-derive-page-elems)
+
+// helper rules to filter and construct expand definitions
+
+  derive-cruds-without-page-elems(|defs) : e -> e
+    where <?DeriveCrud(entity_name)> e
+        ; (create, view, edit, manage) := <crud-page-names> entity_name
+        ; (
+               <not(fetch(?TemplateDefinition(DefinePage(_, create, _, _, _))))> defs
+            <+ <not(fetch(?TemplateDefinition(DefinePage(_, view, _, _, _))))> defs
+            <+ <not(fetch(?TemplateDefinition(DefinePage(_, edit, _, _, _))))> defs
+            <+ <not(fetch(?TemplateDefinition(DefinePage(_, manage, _, _, _))))> defs
+          )
+
+  construct-derive-page-elems : e -> derive-page-elems
+    with <?DeriveCrud(entity_name)> e
+        ; (create, view, edit, manage) := <crud-page-names> entity_name
+        ; derive-page-elems := <construct-crud-pages> (entity_name, create, view, edit, manage)
+
+  crud-page-names : entity_name -> (create, view, edit, manage)
+    with
+        create := <concat-strings> ["create", entity_name]
+      ; view := <decapitalize-string> entity_name
+      ; edit := <concat-strings> ["edit", entity_name]
+      ; manage := <concat-strings> ["manage", entity_name]
+
+  construct-crud-pages : (entity_name, create, view, edit, manage) -> [create_page, view_page, edit_page, manage_page]
+    with
+        create_page := TemplateDefinition(DefinePage([], create, FormalArgs([]), TemplateArgs([]), []))
+      ; view_page := TemplateDefinition(DefinePage([], view, FormalArgs([Arg("arg", SimpleSort(entity_name))]), TemplateArgs([]), []))
+      ; edit_page := TemplateDefinition(DefinePage([], edit, FormalArgs([Arg("arg", SimpleSort(entity_name))]), TemplateArgs([]), []))
+      ; manage_page := TemplateDefinition(DefinePage([], manage, FormalArgs([]), TemplateArgs([]), []))

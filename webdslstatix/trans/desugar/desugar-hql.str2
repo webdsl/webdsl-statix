@@ -1,0 +1,18 @@
+module desugar/desugar-hql
+
+imports
+  strategolib
+  signatures/-
+
+rules
+
+  normalize-hql : HQLAscendingAbbr() -> HQLAscending()
+  normalize-hql : HQLDescendingAbbr() -> HQLDescending()
+  normalize-hql : HQLQueryRuleAlt(q) -> HQLQueryRule(q)
+
+  normalize-hql : Path(ids) -> Path(ids')
+    where
+        ids_with_underscore := <filter(string-starts-with(|"_"))> ids
+      ; <not(?0)> <length> ids_with_underscore
+    with
+        ids' := <map(string-replace(|"_", ""))> ids

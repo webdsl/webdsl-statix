@@ -1,0 +1,25 @@
+module desugar/desugar-all
+
+imports
+  strategolib
+  libspoofax/term/origin
+  signatures/-
+  desugar/-
+
+rules
+  // All rules and signatures in here are copied directly from the WebDSL compiler.
+  // Some concrete syntax transformations have been rewritten as abstract syntax transformations 
+
+  desugar-all = innermost(origin-track-forced(normalize))
+
+  normalize = normalize-accesscontrol
+  normalize = normalize-action
+  normalize = normalize-ajax
+  normalize = normalize-core
+  normalize = normalize-data
+  normalize = normalize-expand
+  normalize = normalize-hql
+  normalize = normalize-native
+  normalize = normalize-search
+  normalize = normalize-test
+  normalize = normalize-ui

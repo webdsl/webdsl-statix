@@ -1,0 +1,9 @@
+module desugar/desugar-test
+
+imports
+  strategolib
+  signatures/-
+
+rules
+
+  normalize-test : UnnamedTest(xs) -> Test("", xs)

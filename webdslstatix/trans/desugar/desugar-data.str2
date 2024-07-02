@@ -1,0 +1,111 @@
+module desugar/desugar-data
+
+imports
+  strategolib
+  signatures/-
+  desugar/utils
+
+rules
+
+  normalize-data : OptPropAnnosNone() -> PropAnnos([])
+  normalize-data : ListSort(x) -> GenericSort("List", [x])
+  normalize-data : SetSort(x) -> GenericSort("Set", [x])
+  normalize-data : FunctionSortParamsNone() -> FunctionSortParams([])
+  normalize-data : FunctionSortReturnNone() -> FunctionSortReturn(SimpleSort("Void"))
+
+  normalize-data : GlobalVarDeclDepr(x, sort) -> GlobalVarDecl(x, sort)
+  normalize-data : GlobalVarDeclInitDepr(x, sort, exp) -> GlobalVarDeclInit(x, sort, exp)
+  normalize-data : GlobalVarDeclInitInferredDepr(x, exp) -> GlobalVarDeclInitInferred(x, exp)
+
+  normalize-data : RequestVarDeclDepr(x, sort) -> RequestVarDecl(x, sort)
+  normalize-data : RequestVarDeclInitDepr(x, sort, exp) -> RequestVarDeclInit(x, sort, exp)
+  normalize-data : RequestVarDeclInitInferredDepr(x, exp) -> RequestVarDeclInitInferred(x, exp)
+
+  normalize-data : Property(x, k, srt, PropAnnos(annos)) -> Property(x, k, srt, PropAnnos(annos'))
+    where   <not(fetch-elem(?NameAnno()))> annos
+          ; <?"name"> x
+    with  annos' := [NameAnno() | annos]
+
+  normalize-data : Entity(entity_name, super, defs) -> Entity(entity_name, super, defs')
+    where
+        all-function := StaticEntityFunction(Function("all", FormalArgs([]), OptSortSome(GenericSort("List", [SimpleSort(entity_name)])), Block([])))
+      ; <not(fetch(?all-function))> defs
+    with
+        fs := <built-in-entity-functions> entity_name
+      ; defs' := <conc> (fs, defs)
+
+  normalize-data : EntityNoSuper(entity_name, defs) -> EntityNoSuper(entity_name, defs')
+    where
+        all-function := StaticEntityFunction(Function("all", FormalArgs([]), OptSortSome(GenericSort("List", [SimpleSort(entity_name)])), Block([])))
+      ; <not(fetch(?all-function))> defs
+    with
+        fs := <built-in-entity-functions> entity_name
+      ; defs' := <conc> (fs, defs)
+
+  built-in-entity-functions : entity_name -> fs
+    with
+        all-function := StaticEntityFunction(Function("all", FormalArgs([]), OptSortSome(GenericSort("List", [SimpleSort(entity_name)])), Block([])))
+      ; validate-save-function := EntityFunction(Function("validateSave", FormalArgs([]), OptSortSome(SimpleSort("ValidationExceptionMultiple")), Block([])))
+      ; fs := [all-function, validate-save-function]
+
+  normalize-data : Entity(e, super, defs) -> Entity(e, super, defs')
+    where
+          props := <filter(properties-without-validate-elems(|defs))> defs
+        ; <not(?0)> <length> props
+    with
+          new-validate-elems := <map(construct-prop-validate-elems)> props
+        ; new-prop-events := <map(construct-prop-events(|e))> props
+        ; defs' := <flatten-list> [defs, new-validate-elems, new-prop-events]
+
+  normalize-data : EntityNoSuper(e, defs) -> EntityNoSuper(e, defs')
+    where
+          props := <filter(properties-without-validate-elems(|defs))> defs
+        ; <not(?0)> <length> props
+    with
+          new-validate-elems := <map(construct-prop-validate-elems)> props
+        ; new-prop-events := <map(construct-prop-events(|e))> props
+        ; defs' := <flatten-list> [defs, new-validate-elems, new-prop-events]
+
+  normalize-data: Property(x, k, srt, PropAnnos(annos)) -> Property(x, k, srt, PropAnnos(annos'))
+    where <fetch-elem(?IncompleteInverseAnno(prop))> annos
+    with  ent := <try(?GenericSort(_,[<id>])); ?SimpleSort(<id>)> srt
+        ; annos' := <map(try(\IncompleteInverseAnno(prop) -> InverseAnno(ent, prop)\))> annos
+
+rules // utils
+
+  properties-without-validate-elems(|defs) : e@Property(x, _, _, _) -> e
+    where
+          f := <validate-function-for-name> x
+        ; <not(fetch(?f))> defs
+
+  construct-prop-validate-elems : Property(x, _, _, _) -> f
+    with
+        f := <validate-function-for-name> x
+
+  validate-function-for-name : x -> EntityFunction(Function(validate-name, FormalArgs([]), OptSortSome(SimpleSort("ValidationExceptionMultiple")), Block([])))
+    with
+        validate-name := <concat-strings> ["validate", <capitalize-string> x]
+
+  construct-prop-events(|entity_name) : Property(p, _, srt@SimpleSort(_), _) -> fs
+    with
+        set-function-name := <concat-strings> ["set", <capitalize-string> p]
+      ; set-function := EntityFunction(Function(set-function-name, FormalArgs([Arg("value", srt)]), OptSortSome(SimpleSort("Void")), Block([])))
+      ; fs := [set-function]
+
+  construct-prop-events(|entity_name) : Property(p, _, srt@GenericSort(_, [srt2@SimpleSort(_)]), _) -> fs
+    with
+        add-to-function-name := <concat-strings> ["addTo", <capitalize-string> p]
+      ; add-to-function := EntityFunction(Function(add-to-function-name, FormalArgs([Arg("value", srt2)]), OptSortSome(SimpleSort("Void")), Block([])))
+      ; remove-from-function-name := <concat-strings> ["removeFrom", <capitalize-string> p]
+      ; remove-from-function := EntityFunction(Function(remove-from-function-name, FormalArgs([Arg("value", srt2)]), OptSortSome(SimpleSort("Void")), Block([])))
+      ; replace-all-function-name := <concat-strings> ["replaceAll", <capitalize-string> p]
+      ; replace-all-function := EntityFunction(Function(replace-all-function-name, FormalArgs([Arg("value", srt)]), OptSortSome(SimpleSort(entity_name)), Block([])))
+      ; fs := [add-to-function, remove-from-function, replace-all-function]
+
+  construct-prop-events(|entity_name) : Property(p, k, ListSort(srt), a) -> fs
+    with
+      fs := <construct-prop-events(|entity_name)> Property(p, k, GenericSort("List", srt), a)
+
+  construct-prop-events(|entity_name) : Property(p, k, SetSort(srt), a) -> fs
+    with
+      fs := <construct-prop-events(|entity_name)> Property(p, k, GenericSort("Set", srt), a)

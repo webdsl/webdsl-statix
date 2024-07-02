@@ -1,0 +1,50 @@
+module desugar/desugar-action
+
+imports
+  strategolib
+  signatures/-
+
+rules
+
+  normalize-action : OptSortNone() -> OptSortSome(SimpleSort("Void"))
+  normalize-action : OptElseNone() -> OptElseSome(Block([]))
+
+  normalize-action : ForExpShort(x, sort, exp) -> ForExp(Var(x), x, sort, exp, OptFilterNone(), OptGroupByNone())
+  normalize-action : ForExpShortFilter(x, sort, exp, filter) -> ForExp(Var(x), x, sort, exp, OptFilterSome(filter), OptGroupByNone())
+  normalize-action : ForExpShortFilterInferred(x, exp, filter) -> ForExpInferred(Var(x), x, exp, OptFilterSome(filter), OptGroupByNone())
+  normalize-action : ForExpShortGroupBy(x, sort, exp, groupby) -> ForExp(Var(x), x, sort, exp, OptFilterNone(), OptGroupBySome(groupby))
+  normalize-action : ForExpShortGroupByInferred(x, exp, groupby) -> ForExpInferred(Var(x), x, exp, OptFilterNone(), OptGroupBySome(groupby))
+  normalize-action : ForExpShortFilterGroupBy(x, sort, exp, filter, groupby) -> ForExp(Var(x), x, sort, exp, OptFilterSome(filter), OptGroupBySome(groupby))
+  normalize-action : ForExpShortFilterGroupByInferred(x, exp, filter, groupby) -> ForExpInferred(Var(x), x, exp, OptFilterSome(filter), OptGroupBySome(groupby))
+
+  normalize-action : GoToAlt(pagecall) -> GoTo(pagecall)
+  normalize-action : PropAssignmentComma(assignment) -> PropAssignment(assignment)
+  normalize-action : EmailFunctionCallAlt(emailcall) -> EmailFunctionCall(emailcall)
+
+  normalize-action : FilterNoOrderByNoLimit(we) -> Filter(we, [], Limit(Const(Int("-1")), Const(Int("0"))))
+  normalize-action : FilterNoWhereNoLimit(obe)  -> Filter(True(), obe, Limit(Const(Int("-1")), Const(Int("0"))))
+  normalize-action : FilterNoLimit(we, obe)     -> Filter(we, obe, Limit(Const(Int("-1")), Const(Int("0"))))
+  normalize-action : FilterNoOrderBy(we, l)     -> Filter(we, [], l)
+  normalize-action : FilterNoWhere(obe, l)      -> Filter(True(), obe, l)
+  normalize-action : FilterNoWhereNoOrderBy(l)  -> Filter(True(), [], l)
+
+  normalize-action : RequestVarDecl(x, sort)            -> GlobalVarDecl(x, sort)
+  normalize-action : RequestVarDeclInit(x, sort, exp)   -> GlobalVarDeclInit(x, sort, exp)
+  normalize-action : RequestVarDeclInitInferred(x, exp) -> GlobalVarDeclInitInferred(x, exp)
+
+// All rules and signatures below are copied directly from the WebDSL compiler.
+// Some concrete syntax transformations have been rewritten as abstract syntax transformations
+
+  normalize-action : LimitNoLimit(e) -> Limit(Const(Int("-1")), e)
+  normalize-action : LimitNoOffset(e) -> Limit(e, Const(Int("0")))
+
+  normalize-action : OrderNonSpecific(x) -> OrderAscending(x)
+
+  normalize-action : IfNoElse(e, bit) -> If(e, bit, Block([]))
+  normalize-action : If(e, then, OptElseSome(else)) -> If(e, then, else)
+
+  normalize-action : IfWithElseIf(e, then, elseif*, else) -> If(e, then, else')
+    with
+      else' := <foldr(\ (ElseIf(c, t), rest) -> Block([If(c, t, rest)]) \ | else)> elseif*
+
+  foldr(s | init) = foldr(!init, s)

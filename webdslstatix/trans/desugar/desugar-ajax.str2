@@ -1,0 +1,9 @@
+module desugar/desugar-ajax
+
+imports
+  strategolib
+  signatures/-
+
+rules
+
+  normalize-ajax : AjaxReplaceEmpty(e) -> AjaxReplaceTemplateCall(TemplateCall(TemplateCallId(e), TCallArgs([]), TCallPropAssigns([]), TemplateBody([])))

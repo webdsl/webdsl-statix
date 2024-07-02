@@ -1,0 +1,22 @@
+module main
+
+imports
+  strategolib
+  statixruntime
+  statix/api
+  statix/runtime/-
+  injections/-
+  signatures/webdsl-statix-sig
+  pp
+  completion
+
+  desugar/desugar-all
+
+rules // Analysis
+
+  pre-analyze     = desugar-all; origin-track-forced(explicate-injections-webdsl)
+  post-analyze    =              origin-track-forced(implicate-injections-webdsl)
+
+  editor-analyze = stx-editor-analyze(pre-analyze, post-analyze|"statics", "projectOk", "fileOk")
+  editor-resolve = stx-editor-resolve
+  editor-hover   = stx-editor-hover
