@@ -1,40 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path="src/main/java">
-        <attributes>
-            <attribute name="optional" value="true"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="src" path="build/generated/sources/language">
-        <attributes>
-            <attribute name="optional" value="true"/>
-            <attribute name="ignore_optional_problems" value="true"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="src" path="build/generated/sources/adapter">
-        <attributes>
-            <attribute name="optional" value="true"/>
-            <attribute name="ignore_optional_problems" value="true"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="src" path="build/generated/sources/eclipse">
-        <attributes>
-            <attribute name="optional" value="true"/>
-            <attribute name="ignore_optional_problems" value="true"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="src" path="build/generated/sources/metalang/java">
-        <attributes>
-            <attribute name="optional" value="true"/>
-            <attribute name="ignore_optional_problems" value="true"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="src" path="build/generated/sources/annotationProcessor/java/main">
-        <attributes>
-            <attribute name="optional" value="true"/>
-            <attribute name="ignore_optional_problems" value="true"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-    <classpathentry kind="output" path="build/eclipseclasses"/>
+	<classpathentry kind="src" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="build/generated/sources/language">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="ignore_optional_problems" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="build/generated/sources/adapter">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="ignore_optional_problems" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="build/generated/sources/eclipse">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="ignore_optional_problems" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="build/generated/sources/metalang/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="ignore_optional_problems" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="build/generated/sources/annotationProcessor/java/main">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="ignore_optional_problems" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/gpp.eclipse_0.22.2.develop-202407031002.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.core.commands_3.10.200.v20220512-0851.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.core.contenttype_3.8.100.v20210910-0640.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.core.jobs_3.13.0.v20220512-1935.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.core.resources_3.17.0.v20220517-0751.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.core.runtime_3.25.0.v20220506-1157.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.equinox.common_3.16.100.v20220315-2327.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.equinox.registry_3.11.100.v20211021-1418.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.jface.text_3.20.100.v20220516-0819.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.jface_3.26.0.v20220513-0449.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.osgi.compatibility.state_1.2.600.v20220207-1403.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.osgi_3.18.0.v20220516-2155.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.swt.cocoa.macosx.x86_64_3.120.0.v20220530-1036.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.swt_3.120.0.v20220530-1036.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.text_3.12.100.v20220506-1404.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.ui.editors_3.14.300.v20210913-0815.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.ui.ide_3.19.0.v20220511-1638.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.ui.workbench.texteditor_3.16.500.v20220331-0848.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/org.eclipse.ui.workbench_3.125.100.v20220524-1304.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/rv32im.eclipse_0.22.2.develop-202407031002.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/spoofax.compiler.eclipsebundle_0.22.2.develop-202407031002.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/spoofax.eclipse_0.22.2.develop-202407031002.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/spoofax.lwb.eclipse_0.22.2.develop-202407031002.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/strategolib.eclipse_0.22.2.develop-202407031002.jar"/>
+	<classpathentry kind="lib" path="/Users/daniel/Downloads/Spoofax32.app/Contents/Eclipse/plugins/tooling.eclipsebundle_0.22.2.develop-202407031002.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="build/eclipseclasses"/>
 </classpath>
