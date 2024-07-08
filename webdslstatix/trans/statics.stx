@@ -7,11 +7,11 @@ imports
 
 rules // single-file entry point
 
-//  applicationOk : Unit
-//  applicationOk(u) :- {s_init}
-//    new s_init,
-//    init(s_init),
-//    programOk(s_init, u).
+  applicationOk : Unit
+  applicationOk(u) :- {s_global}
+    new s_global,
+    projectOk(s_global),
+    unitOk(s_global, u).
 
 rules // multi-file entry point
 
