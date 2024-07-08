@@ -42,13 +42,25 @@ context-free syntax
 
 context-free sorts
 
-  Unit Section Definition EnumValue
+  TestApplication TestFile Unit Section Definition EnumValue
 
 syntax
 
   Section-CF.Section = "section" SectionName-CF LAYOUT?-CF Definition*-CF
 
 context-free syntax
+
+  
+  Unit.TestUnit = <
+    test
+    <{TestFile "\n"}*>
+  >
+  
+  TestFile.TestFile = <
+    file <Id> {
+      <Unit>
+    }
+  >
 
   Unit.ApplicationDefs = <
     application <QId>

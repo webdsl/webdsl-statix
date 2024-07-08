@@ -4,6 +4,7 @@ imports
   static-semantics/webdsl-ac
   static-semantics/webdsl-ui
   static-semantics/webdsl
+  statics
 
 signature
 
@@ -13,6 +14,9 @@ signature
 
 rules // unit rules
 
+  unitOk(s_global, TestUnit(files)) :-
+    testFilesOk(s_global, files).
+    
   unitOk(s_global, Application(app, sections)) :- { s_mod }
     new s_mod, s_mod -IMPORT-> s_global, s_global -GLOBAL-> s_mod,
     declareACBuiltIns(s_global, s_mod),
@@ -45,6 +49,14 @@ rules // unit rules
     declareMod(s_global, ["_BUILTIN"], s_mod),
     importModules(s_global, s_mod, sections),
     sectionsOk(s_mod, sections).
+    
+rules // test file rules
+
+  testFileOk : scope * TestFile
+  testFilesOk maps testFileOk(*, list(*))
+  
+  testFileOk(s, TestFile(_, unit)) :-
+    fileOk(s, unit).
 
 rules // import definition rules
 
