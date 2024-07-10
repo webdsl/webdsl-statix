@@ -177,11 +177,11 @@ rules // annotations
 
 rules // resolving entity.name
 
-  typeOfProperty(_, ENTITY(_, s_ent), n@"name") = t :- { path s_name nameProp n' }
+  typeOfProperty(_, ENTITY(_, s_ent), nn@"name") = t :- { path s_name nameProp nn' }
     resolveClosestAnnotationByAnno(s_ent, NAME()) == [(path, (nameProp, _))],
     s_name == scopeFromPath(path),
-    resolveLocalProperty(s_name, nameProp) == [(_, (n', t))],
-    @n.ref := n'.
+    resolveLocalProperty(s_name, nameProp) == [(_, (nn', t))],
+    @nn.ref := nn'.
 
 rules // validation
 

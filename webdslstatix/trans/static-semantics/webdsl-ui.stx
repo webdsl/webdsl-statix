@@ -129,9 +129,9 @@ rules // template definitions
 
   // helper function that results in the amount of template definitions with the given argument types
   amountOfTemplateDeclsWithArgs : list((path *(string * TYPE))) * list(TYPE) * int -> int
-  amountOfTemplateDeclsWithArgs([], _, n) = n.
-  amountOfTemplateDeclsWithArgs([ (_, (_, TEMPLATE(_, args, _))) | tail], args, n) = amountOfTemplateDeclsWithArgs(tail, args, i) :- i #= n + 1.
-  amountOfTemplateDeclsWithArgs([ _ | tail], args, n) = amountOfTemplateDeclsWithArgs(tail, args, n).
+  amountOfTemplateDeclsWithArgs([], _, nx) = nx.
+  amountOfTemplateDeclsWithArgs([ (_, (_, TEMPLATE(_, args, _))) | tail], args, ny) = amountOfTemplateDeclsWithArgs(tail, args, i) :- i #= ny + 1.
+  amountOfTemplateDeclsWithArgs([ _ | tail], args, nz) = amountOfTemplateDeclsWithArgs(tail, args, nz).
 
 rules // template elements
 
