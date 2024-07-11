@@ -15,15 +15,14 @@ node('spoofax-buildenv-jenkins') {
   try{
     stage('Echo') {
       // Print important variables and versions for debugging purposes.
-      echo "Job ${jobName} (base: ${jobBaseName}) on branch ${branchName}"
-      exec 'env'
-      exec 'bash --version'
-      exec 'git --version'
-      exec 'python3 --version'
-      exec 'pip3 --version'
-      exec '$JAVA_HOME/bin/java -version'
-      exec '$JAVA_HOME/bin/javac -version'
-      exec 'mvn --version'
+      sh 'env'
+      sh 'bash --version'
+      sh 'git --version'
+      sh 'python3 --version'
+      sh 'pip3 --version'
+      sh "$JAVA_HOME/bin/java -version"
+      sh "$JAVA_HOME/bin/javac -version"
+      sh 'mvn --version'
     }
     
     stage('Checkout') {
